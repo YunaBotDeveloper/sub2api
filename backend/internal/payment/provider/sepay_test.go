@@ -198,7 +198,11 @@ func TestSePayCreatePaymentReturnsSignedForm(t *testing.T) {
 	assert.Equal(t, "sub2_20260903abcd1234", fields["order_invoice_number"])
 	assert.Equal(t, "250000", fields["order_amount"])
 	assert.Equal(t, "VND", fields["currency"])
-	assert.Equal(t, "https://panel.example.com/payment/result", fields["success_url"])
+	// Each return URL carries its own status so the result page can tell a
+	// cancellation apart from a payment still in flight.
+	assert.Equal(t, "https://panel.example.com/payment/result?status=success", fields["success_url"])
+	assert.Equal(t, "https://panel.example.com/payment/result?status=failed", fields["error_url"])
+	assert.Equal(t, "https://panel.example.com/payment/result?status=cancelled", fields["cancel_url"])
 
 	// Signed with the documented field order, not the SDK's own ordering.
 	assert.Equal(t, sepaySignFields(fields, "sk_test_secret"), fields["signature"])
@@ -566,4 +570,24 @@ func TestSePayVerifyNotificationSkipsHeaderCheckWhenUnconfigured(t *testing.T) {
 		`{"order":{"order_invoice_number":"sub2_1"}}`, nil)
 	require.NoError(t, err)
 	require.NotNil(t, notification)
+}
+
+func TestSePayReturnURLWithStatusOverridesExistingStatus(t *testing.T) {
+	t.Parallel()
+
+	// The service already appends status=success; the provider must replace it
+	// per URL rather than append a second one.
+	got := sepayReturnURLWithStatus(
+		"https://panel.example.com/payment/result?order_id=4&status=success", "cancelled")
+
+	parsed, err := url.Parse(got)
+	require.NoError(t, err)
+	assert.Equal(t, []string{"cancelled"}, parsed.Query()["status"])
+	assert.Equal(t, "4", parsed.Query().Get("order_id"))
+}
+
+func TestSePayReturnURLWithStatusLeavesUnparseableInputAlone(t *testing.T) {
+	t.Parallel()
+
+	assert.Equal(t, "://nope", sepayReturnURLWithStatus("://nope", "cancelled"))
 }

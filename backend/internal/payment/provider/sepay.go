@@ -189,10 +189,12 @@ func (s *SePay) CreatePayment(ctx context.Context, req payment.CreatePaymentRequ
 		"currency":             currency,
 		"order_description":    req.Subject,
 	}
+	// 三个回跳地址必须带不同的 status：SePay 只按用户的实际去向选其中之一，
+	// 全都写成 success 的话，用户点「取消」也会被带回一个自称成功的页面。
 	if returnURL := strings.TrimSpace(req.ReturnURL); returnURL != "" {
-		fields["success_url"] = returnURL
-		fields["error_url"] = returnURL
-		fields["cancel_url"] = returnURL
+		fields["success_url"] = sepayReturnURLWithStatus(returnURL, "success")
+		fields["error_url"] = sepayReturnURLWithStatus(returnURL, "failed")
+		fields["cancel_url"] = sepayReturnURLWithStatus(returnURL, "cancelled")
 	}
 	signature := sepaySignFields(fields, s.secretKey())
 
@@ -216,6 +218,21 @@ func (s *SePay) CreatePayment(ctx context.Context, req payment.CreatePaymentRequ
 		FormAction: s.client.Checkout.InitCheckoutURL(),
 		FormFields: formFields,
 	}, nil
+}
+
+// sepayReturnURLWithStatus 覆写回跳地址上的 status 查询参数。
+//
+// 这个参数只用来挑选结果页的文案：订单到底什么状态，结果页始终以库里的
+// 订单为准，因此用户手改 URL 也改不出一个「已支付」。
+func sepayReturnURLWithStatus(rawURL, status string) string {
+	parsed, err := url.Parse(rawURL)
+	if err != nil {
+		return rawURL
+	}
+	query := parsed.Query()
+	query.Set("status", status)
+	parsed.RawQuery = query.Encode()
+	return parsed.String()
 }
 
 // QueryOrder 按订单号（order_invoice_number，即 out_trade_no）查询上游状态。

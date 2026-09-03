@@ -113,6 +113,7 @@ import type { PublicOrderVerifyResult } from '@/api/payment'
 import type { OrderStatus, PaymentOrder } from '@/types/payment'
 import { formatPaymentAmount, normalizePaymentCurrency } from '@/components/payment/currency'
 import { normalizePaymentMethodForDisplay, paymentMethodI18nKey } from './paymentUx'
+import { reportResultToOpener } from './paymentPopupBridge'
 
 const i18n = useI18n()
 const { t } = i18n
@@ -177,11 +178,22 @@ const isPending = computed(() => {
   return isPendingStatus(order.value?.status)
 })
 
+// 网关回跳时带的 status 只用来挑文案，绝不参与「是否已支付」的判定——
+// 那始终以库里的订单状态为准，否则用户手改 URL 就能伪造一个成功页。
+const returnedStatus = computed(() =>
+  String(route.query.status || '').trim().toLowerCase(),
+)
+
 const statusTitle = computed(() => {
   if (isSuccess.value) {
     return t('payment.result.success')
   }
   if (isPending.value) {
+    // 用户在网关点了取消：订单要到过期或对账后才落终态，此时一直显示
+    // 「处理中」会让人以为钱还在路上。
+    if (returnedStatus.value === 'cancelled') {
+      return t('payment.result.cancelled')
+    }
     return t('payment.result.processing')
   }
   return t('payment.result.failed')
@@ -356,6 +368,12 @@ function scheduleStatusRefresh(refreshOrder: (() => Promise<ResolvedOrder | null
 }
 
 onMounted(async () => {
+  // Opened as the checkout popup: hand the order back to the window the user
+  // actually started from and close, instead of stranding the outcome here.
+  if (reportResultToOpener(route.query as Record<string, unknown>)) {
+    return
+  }
+
   const resumeToken = readRouteQueryString('resume_token')
   const routeOrderId = Number(readRouteQueryString('order_id')) || 0
   let outTradeNo = readRouteQueryString('out_trade_no')

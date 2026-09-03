@@ -378,6 +378,7 @@ export default {
       success: '支付成功',
       subscriptionSuccess: '订阅成功',
       processing: '支付处理中',
+      cancelled: '支付已取消',
       processingHint: '支付结果仍在确认中，页面会自动刷新。',
       failed: '支付失败',
       backToRecharge: '返回充值',
