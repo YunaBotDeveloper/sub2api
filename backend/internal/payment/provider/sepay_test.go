@@ -169,7 +169,29 @@ func TestSePayCreatePaymentReturnsSignedForm(t *testing.T) {
 	assert.Equal(t, sepayEnvSandbox, resp.PaymentEnv)
 	assert.Empty(t, resp.PayURL, "the service layer supplies the bridge URL, not the provider")
 
-	fields := resp.FormFields
+	// Input order is part of the protocol: the gateway rejects a form whose
+	// fields are arranged differently from the sequence it signs over.
+	// https://developer.sepay.vn/en/cong-thanh-toan/API/don-hang/form-thanh-toan
+	var names []string
+	fields := map[string]string{}
+	for _, f := range resp.FormFields {
+		names = append(names, f.Name)
+		fields[f.Name] = f.Value
+	}
+	assert.Equal(t, []string{
+		"order_amount",
+		"merchant",
+		"currency",
+		"operation",
+		"order_description",
+		"order_invoice_number",
+		"payment_method",
+		"success_url",
+		"error_url",
+		"cancel_url",
+		"signature",
+	}, names)
+
 	assert.Equal(t, "MERCHANT_TEST", fields["merchant"])
 	assert.Equal(t, "PURCHASE", fields["operation"])
 	assert.Equal(t, "NAPAS_BANK_TRANSFER", fields["payment_method"])

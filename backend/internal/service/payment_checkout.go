@@ -20,8 +20,9 @@ type CheckoutForm struct {
 	OrderID    int64
 	OutTradeNo string
 	Action     string
-	Fields     map[string]string
-	ExpiresAt  time.Time
+	// Fields are the form inputs in submission order — see payment.FormField.
+	Fields    []payment.FormField
+	ExpiresAt time.Time
 }
 
 // BuildCheckoutRedirectPath 生成带 resume token 的收银台页面地址。
