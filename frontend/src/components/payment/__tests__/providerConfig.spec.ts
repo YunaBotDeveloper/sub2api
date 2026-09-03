@@ -31,10 +31,14 @@ describe('PROVIDER_CONFIG_FIELDS.sepay', () => {
     expect(findField(PROVIDER_SEPAY, 'currency')?.sensitive).toBe(false)
   })
 
-  it('requires every credential field', () => {
-    for (const field of PROVIDER_CONFIG_FIELDS[PROVIDER_SEPAY]) {
-      expect(field.optional).toBeFalsy()
+  it('requires the merchant credentials but leaves the IPN key optional', () => {
+    // ipnSecretKey only exists when the merchant portal sets IPN auth type to
+    // SECRET_KEY; forcing it would block an otherwise valid configuration.
+    for (const key of ['merchantId', 'secretKey', 'env', 'currency']) {
+      expect(findField(PROVIDER_SEPAY, key)?.optional).toBeFalsy()
     }
+    expect(findField(PROVIDER_SEPAY, 'ipnSecretKey')?.optional).toBe(true)
+    expect(findField(PROVIDER_SEPAY, 'ipnSecretKey')?.sensitive).toBe(true)
   })
 
   it('defaults to the production environment and VND', () => {

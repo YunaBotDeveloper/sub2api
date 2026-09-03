@@ -4,6 +4,9 @@ package provider
 
 import (
 	"context"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -175,8 +178,7 @@ func TestSePayCreatePaymentReturnsSignedForm(t *testing.T) {
 	assert.Equal(t, "VND", fields["currency"])
 	assert.Equal(t, "https://panel.example.com/payment/result", fields["success_url"])
 
-	// The provider must sign with exactly the SDK's canonical field order, or
-	// the gateway rejects the checkout.
+	// Signed with the documented field order, not the SDK's own ordering.
 	assert.Equal(t, sepaySignFields(fields, "sk_test_secret"), fields["signature"])
 	assert.NotEmpty(t, fields["signature"])
 }
@@ -367,63 +369,6 @@ func TestSePayVerifyNotificationMarksFailedUpstreamOrder(t *testing.T) {
 	assert.Equal(t, payment.ProviderStatusFailed, notification.Status)
 }
 
-func TestSePayVerifyNotificationRejectsBadSignature(t *testing.T) {
-	t.Parallel()
-
-	srv := newSePayNotificationServer(t, "COMPLETED", "250000")
-	defer srv.Close()
-
-	p := newTestSePay(t, nil)
-	pointSePayAtServer(t, p, srv)
-
-	_, err := p.VerifyNotification(context.Background(),
-		`{"merchant":"MERCHANT_TEST","order_invoice_number":"sub2_1","signature":"not-the-right-signature"}`,
-		nil)
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "signature mismatch")
-}
-
-func TestSePayVerifyNotificationAcceptsValidSignature(t *testing.T) {
-	t.Parallel()
-
-	srv := newSePayNotificationServer(t, "COMPLETED", "250000")
-	defer srv.Close()
-
-	p := newTestSePay(t, nil)
-	pointSePayAtServer(t, p, srv)
-
-	fields := map[string]string{
-		"merchant":             "MERCHANT_TEST",
-		"operation":            "PURCHASE",
-		"order_amount":         "250000",
-		"currency":             "VND",
-		"order_invoice_number": "sub2_1",
-	}
-	fields["signature"] = sepaySignFields(fields, "sk_test_secret")
-	body, err := json.Marshal(fields)
-	require.NoError(t, err)
-
-	notification, err := p.VerifyNotification(context.Background(), string(body), nil)
-	require.NoError(t, err)
-	require.NotNil(t, notification)
-	assert.Equal(t, payment.NotificationStatusSuccess, notification.Status)
-}
-
-func TestSePayVerifyNotificationRejectsForeignMerchant(t *testing.T) {
-	t.Parallel()
-
-	srv := newSePayNotificationServer(t, "COMPLETED", "250000")
-	defer srv.Close()
-
-	p := newTestSePay(t, nil)
-	pointSePayAtServer(t, p, srv)
-
-	_, err := p.VerifyNotification(context.Background(),
-		`{"merchant":"SOMEONE_ELSE","order_invoice_number":"sub2_1"}`, nil)
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "merchant mismatch")
-}
-
 func TestSePayVerifyNotificationRequiresOrderReference(t *testing.T) {
 	t.Parallel()
 
@@ -490,4 +435,113 @@ func TestCreateProviderRoutesSePayKeyOnly(t *testing.T) {
 	_, err = CreateProvider("stripe", "1", testSePayConfig())
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "unknown provider key")
+}
+
+func TestSePaySignFieldOrderMatchesGatewayDocs(t *testing.T) {
+	t.Parallel()
+
+	// Order is part of the protocol: the gateway recomputes the signature over
+	// the same sequence, so a single swapped position makes every checkout fail
+	// with "Yêu cầu không hợp lệ".
+	// https://developer.sepay.vn/en/cong-thanh-toan/API/don-hang/form-thanh-toan
+	assert.Equal(t, []string{
+		"order_amount",
+		"merchant",
+		"currency",
+		"operation",
+		"order_description",
+		"order_invoice_number",
+		"customer_id",
+		"payment_method",
+		"success_url",
+		"error_url",
+		"cancel_url",
+	}, sepaySignFieldOrder)
+}
+
+func TestSePaySignFieldsMatchesDocumentedAlgorithm(t *testing.T) {
+	t.Parallel()
+
+	fields := map[string]string{
+		"merchant":             "M1",
+		"operation":            "PURCHASE",
+		"order_amount":         "250000",
+		"currency":             "VND",
+		"order_invoice_number": "sub2_1",
+		"order_description":    "desc",
+		"payment_method":       "BANK_TRANSFER",
+		"signature":            "ignored",
+	}
+
+	// base64(hmac_sha256("field=value,...", secret)) over the documented order,
+	// skipping fields that were not submitted.
+	want := "order_amount=250000,merchant=M1,currency=VND,operation=PURCHASE," +
+		"order_description=desc,order_invoice_number=sub2_1,payment_method=BANK_TRANSFER"
+	mac := hmac.New(sha256.New, []byte("sk"))
+	_, _ = mac.Write([]byte(want))
+	expected := base64.StdEncoding.EncodeToString(mac.Sum(nil))
+
+	assert.Equal(t, expected, sepaySignFields(fields, "sk"))
+}
+
+func TestSePayVerifyNotificationReadsNestedIPNPayload(t *testing.T) {
+	t.Parallel()
+
+	// The real IPN nests the order under "order" and reports CAPTURED.
+	srv := newSePayNotificationServer(t, "CAPTURED", "250000")
+	defer srv.Close()
+
+	p := newTestSePay(t, nil)
+	pointSePayAtServer(t, p, srv)
+
+	body := `{"timestamp":1767225600,"notification_type":"ORDER_PAID",` +
+		`"order":{"order_invoice_number":"sub2_1","order_status":"CAPTURED","order_amount":250000,"order_currency":"VND"},` +
+		`"transaction":{"payment_method":"BANK_TRANSFER","transaction_status":"SUCCESS"}}`
+
+	notification, err := p.VerifyNotification(context.Background(), body, nil)
+	require.NoError(t, err)
+	require.NotNil(t, notification)
+	assert.Equal(t, payment.NotificationStatusSuccess, notification.Status)
+	assert.Equal(t, "sub2_1", notification.OrderID)
+	assert.Equal(t, "ORDER_PAID", notification.Metadata["notification_type"])
+}
+
+func TestSePayVerifyNotificationChecksSecretKeyHeader(t *testing.T) {
+	t.Parallel()
+
+	srv := newSePayNotificationServer(t, "CAPTURED", "250000")
+	defer srv.Close()
+
+	p := newTestSePay(t, map[string]string{"ipnSecretKey": "ipn-secret"})
+	pointSePayAtServer(t, p, srv)
+	body := `{"order":{"order_invoice_number":"sub2_1"}}`
+
+	_, err := p.VerifyNotification(context.Background(), body, map[string]string{"x-secret-key": "wrong"})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "X-Secret-Key mismatch")
+
+	_, err = p.VerifyNotification(context.Background(), body, nil)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "missing X-Secret-Key")
+
+	notification, err := p.VerifyNotification(context.Background(), body, map[string]string{"x-secret-key": "ipn-secret"})
+	require.NoError(t, err)
+	require.NotNil(t, notification)
+}
+
+func TestSePayVerifyNotificationSkipsHeaderCheckWhenUnconfigured(t *testing.T) {
+	t.Parallel()
+
+	// Merchants that leave auth type unset never send the header; refusing the
+	// callback there would break every payment on a valid configuration.
+	srv := newSePayNotificationServer(t, "CAPTURED", "250000")
+	defer srv.Close()
+
+	p := newTestSePay(t, nil)
+	pointSePayAtServer(t, p, srv)
+
+	notification, err := p.VerifyNotification(context.Background(),
+		`{"order":{"order_invoice_number":"sub2_1"}}`, nil)
+	require.NoError(t, err)
+	require.NotNil(t, notification)
 }

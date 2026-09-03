@@ -107,7 +107,7 @@ var pendingOrderStatuses = []string{
 // Key matching is case-insensitive. Non-listed keys (e.g. merchantId, env,
 // currency) are returned in plaintext by the admin GET API.
 var providerSensitiveConfigFields = map[string]map[string]struct{}{
-	payment.TypeSePay: {"secretkey": {}},
+	payment.TypeSePay: {"secretkey": {}, "ipnsecretkey": {}},
 }
 
 // providerPendingOrderProtectedConfigFields lists config keys that cannot be

@@ -85,6 +85,14 @@ export const PROVIDER_CONFIG_FIELDS: Record<string, ConfigFieldDef[]> = {
     { key: 'merchantId', label: 'Merchant ID', sensitive: false },
     { key: 'secretKey', label: 'Secret Key', sensitive: true },
     {
+      key: 'ipnSecretKey',
+      label: 'IPN Secret Key',
+      sensitive: true,
+      optional: true,
+      clearable: true,
+      hintKey: 'admin.settings.payment.field_ipnSecretKeyHint',
+    },
+    {
       key: 'env',
       label: 'Environment',
       sensitive: false,

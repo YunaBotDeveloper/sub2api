@@ -775,6 +775,8 @@ export default {
         callbackBaseUrl: 'Callback Base URL',
         field_secretKey: 'Secret Key',
         field_merchantId: 'Merchant ID',
+        field_ipnSecretKey: 'IPN Secret Key',
+        field_ipnSecretKeyHint: 'Only needed when the SePay merchant portal sets the IPN auth type to SECRET_KEY. Leave blank otherwise — callbacks are still confirmed against the SePay order API.',
         field_env: 'Environment',
         field_paymentCurrencyHint: 'Default is VND, the currency SePay settles in. Pick another listed currency only if your merchant account is enabled for it.',
         sepayWebhookHint: 'Configure the following URL as the payment notification (IPN) endpoint in the SePay merchant portal:',

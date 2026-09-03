@@ -769,6 +769,8 @@ export default {
         callbackBaseUrl: '回调基础地址',
         field_secretKey: '密钥',
         field_merchantId: '商户号',
+        field_ipnSecretKey: 'IPN 密钥',
+        field_ipnSecretKeyHint: '仅当 SePay 商户后台把 IPN 认证方式设为 SECRET_KEY 时才需要填写。留空即可——回调仍会通过 SePay 订单查询接口二次确认。',
         field_env: '环境',
         field_paymentCurrencyHint: '默认 VND，即 SePay 的结算币种。仅当商户账户已开通其他币种时才选择其它选项。',
         sepayWebhookHint: '在 SePay 商户后台把下面的地址配置为支付通知（IPN）地址：',

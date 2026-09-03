@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/hmac"
 	"crypto/sha256"
+	"crypto/subtle"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -118,6 +119,10 @@ func (s *SePay) SupportedTypes() []payment.PaymentType {
 func (s *SePay) merchantID() string { return strings.TrimSpace(s.config["merchantId"]) }
 func (s *SePay) secretKey() string  { return strings.TrimSpace(s.config["secretKey"]) }
 
+// ipnSecretKey 是商户后台「认证方式 = SECRET_KEY」时 IPN 请求头里的密钥。
+// 留空表示商户没启用该认证方式。
+func (s *SePay) ipnSecretKey() string { return strings.TrimSpace(s.config["ipnSecretKey"]) }
+
 func (s *SePay) currency() string {
 	currency, err := payment.NormalizePaymentCurrency(s.config["currency"])
 	if err != nil {
@@ -171,21 +176,25 @@ func (s *SePay) CreatePayment(ctx context.Context, req payment.CreatePaymentRequ
 		return nil, fmt.Errorf("sepay create payment: %w", err)
 	}
 
-	fields := sepay.OnetimePaymentFields{
-		Operation:          sepay.OperationPurchase,
-		PaymentMethod:      method,
-		OrderInvoiceNumber: req.OrderID,
-		OrderAmount:        amount.InexactFloat64(),
-		Currency:           currency,
-		OrderDescription:   req.Subject,
+	// 表单字段与签名都在这里自行组装，不走 SDK 的 InitOneTimePaymentFields：
+	// 该 SDK 的签名字段顺序（merchant, env, operation, payment_method, ...）与
+	// SePay 官方文档不一致，用它签出来的 checkout 会被网关判为「请求无效」。
+	// 文档来源：https://developer.sepay.vn/en/cong-thanh-toan/API/don-hang/form-thanh-toan
+	fields := map[string]string{
+		"merchant":             s.merchantID(),
+		"operation":            string(sepay.OperationPurchase),
+		"payment_method":       string(method),
+		"order_invoice_number": req.OrderID,
+		"order_amount":         amount.String(),
+		"currency":             currency,
+		"order_description":    req.Subject,
 	}
 	if returnURL := strings.TrimSpace(req.ReturnURL); returnURL != "" {
-		fields.SuccessURL = sepay.String(returnURL)
-		fields.ErrorURL = sepay.String(returnURL)
-		fields.CancelURL = sepay.String(returnURL)
+		fields["success_url"] = returnURL
+		fields["error_url"] = returnURL
+		fields["cancel_url"] = returnURL
 	}
-
-	signed := s.client.Checkout.InitOneTimePaymentFields(fields)
+	fields["signature"] = sepaySignFields(fields, s.secretKey())
 
 	return &payment.CreatePaymentResponse{
 		// SePay 在收银台完成前不会分配上游交易号，订单号就是我们的 out_trade_no。
@@ -194,7 +203,7 @@ func (s *SePay) CreatePayment(ctx context.Context, req payment.CreatePaymentRequ
 		PaymentEnv: s.env(),
 		ResultType: payment.CreatePaymentResultFormPost,
 		FormAction: s.client.Checkout.InitCheckoutURL(),
-		FormFields: signed.FormValues(),
+		FormFields: fields,
 	}, nil
 }
 
@@ -245,18 +254,22 @@ func (s *SePay) buildQueryResponse(tradeNo string, order *sepayOrder) *payment.Q
 // 上游查询返回的状态和金额才是唯一依据。
 // 回调若自带 signature，则按与收银台相同的 HMAC-SHA256 规则校验，签名不符直接拒绝。
 func (s *SePay) VerifyNotification(ctx context.Context, rawBody string, headers map[string]string) (*payment.PaymentNotification, error) {
-	_ = headers
+	// SePay 的 IPN 用 X-Secret-Key 请求头做认证，请求体里没有签名字段。
+	// 只有在实例配置了 ipnSecretKey 时才比对——商户后台把认证方式设为
+	// SECRET_KEY 之后才会带这个头，未配置时不能因此拒收回调。
+	if expected := s.ipnSecretKey(); expected != "" {
+		provided := strings.TrimSpace(headers["x-secret-key"])
+		if provided == "" {
+			return nil, fmt.Errorf("sepay notification missing X-Secret-Key header")
+		}
+		if subtle.ConstantTimeCompare([]byte(provided), []byte(expected)) != 1 {
+			return nil, fmt.Errorf("sepay notification X-Secret-Key mismatch")
+		}
+	}
 
 	fields, err := parseSePayNotificationFields(rawBody)
 	if err != nil {
 		return nil, err
-	}
-
-	if signature := strings.TrimSpace(fields["signature"]); signature != "" {
-		expected := sepaySignFields(fields, s.secretKey())
-		if !hmac.Equal([]byte(signature), []byte(expected)) {
-			return nil, fmt.Errorf("sepay notification signature mismatch")
-		}
 	}
 
 	outTradeNo := sepayFirstNonEmpty(fields, "order_invoice_number", "orderInvoiceNumber", "invoice_number")
@@ -264,13 +277,8 @@ func (s *SePay) VerifyNotification(ctx context.Context, rawBody string, headers 
 		return nil, fmt.Errorf("sepay notification missing order_invoice_number")
 	}
 
-	// 回调携带的商户号必须与本实例一致，避免把别的商户的回调认到自己的订单上。
-	if merchant := sepayFirstNonEmpty(fields, "merchant", "merchant_id", "merchantId"); merchant != "" {
-		if !strings.EqualFold(merchant, s.merchantID()) {
-			return nil, fmt.Errorf("sepay notification merchant mismatch: expected %s, got %s", s.merchantID(), merchant)
-		}
-	}
-
+	// 回调体只用来定位订单。是否已付、付了多少，一律以带 Basic 认证的上游
+	// 订单查询为准——伪造的回调因此无法把订单推到已支付。
 	queried, err := s.QueryOrder(ctx, outTradeNo)
 	if err != nil {
 		return nil, fmt.Errorf("sepay notification upstream confirmation failed: %w", err)
@@ -287,9 +295,12 @@ func (s *SePay) VerifyNotification(ctx context.Context, rawBody string, headers 
 		status = payment.ProviderStatusFailed
 	}
 
-	metadata := make(map[string]string, len(queried.Metadata))
+	metadata := make(map[string]string, len(queried.Metadata)+1)
 	for k, v := range queried.Metadata {
 		metadata[k] = v
+	}
+	if notificationType := strings.TrimSpace(fields["notification_type"]); notificationType != "" {
+		metadata["notification_type"] = notificationType
 	}
 
 	return &payment.PaymentNotification{
@@ -377,7 +388,9 @@ func parseSePayOrder(body []byte) (*sepayOrder, error) {
 // 未知状态一律视为 pending：宁可让订单继续等待轮询/回调，也不能凭猜测判定失败。
 func sepayStatusToProviderStatus(status string) string {
 	switch strings.ToUpper(strings.TrimSpace(status)) {
-	case "COMPLETED", "PAID", "SUCCESS", "SUCCEEDED", "SETTLED":
+	// CAPTURED 是 SePay 订单已收款的状态（见 IPN 文档的 order.order_status），
+	// 其余取值一并接受，避免上游换词就漏判。
+	case "CAPTURED", "COMPLETED", "PAID", "SUCCESS", "SUCCEEDED", "SETTLED":
 		return payment.ProviderStatusPaid
 	case "FAILED", "ERROR", "DECLINED", "CANCELLED", "CANCELED", "EXPIRED", "VOIDED", "REJECTED":
 		return payment.ProviderStatusFailed
@@ -468,27 +481,24 @@ func sepayFirstNonEmpty(fields map[string]string, keys ...string) string {
 	return ""
 }
 
-// sepaySignFieldOrder 是签名的规范字段顺序，与 SDK 内部 signFieldOrder 保持一致。
-// SDK 没有导出签名函数，回调校验只能在这里重建同一套规则。
+// sepaySignFieldOrder 是签名的规范字段顺序，取自 SePay 官方文档：
+// https://developer.sepay.vn/en/cong-thanh-toan/API/don-hang/form-thanh-toan
+//
+// 顺序即协议的一部分，网关按同一顺序重算签名后比对，错一个位置就会被判为
+// 「请求无效」。不要按字母序或结构体字段序重排。
+// 未提交的字段在拼接时跳过。
 var sepaySignFieldOrder = []string{
-	"merchant",
-	"env",
-	"operation",
-	"payment_method",
 	"order_amount",
+	"merchant",
 	"currency",
-	"order_invoice_number",
+	"operation",
 	"order_description",
+	"order_invoice_number",
 	"customer_id",
-	"agreement_id",
-	"agreement_name",
-	"agreement_type",
-	"agreement_payment_frequency",
-	"agreement_amount_per_payment",
+	"payment_method",
 	"success_url",
 	"error_url",
 	"cancel_url",
-	"order_id",
 }
 
 // sepaySignFields 按规范顺序拼接字段并计算 HMAC-SHA256，输出 base64。
