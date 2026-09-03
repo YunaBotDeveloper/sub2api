@@ -45,11 +45,11 @@
           </div>
           <div class="flex justify-between">
             <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.amount') }}</span>
-            <span class="font-medium text-gray-900 dark:text-white">{{ creditedAmountSymbol }}{{ paidOrder.amount.toFixed(2) }}</span>
+            <span class="font-medium text-gray-900 dark:text-white">{{ formatCreditedAmount(paidOrder.amount) }}</span>
           </div>
           <div class="flex justify-between">
             <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.payAmount') }}</span>
-            <span class="font-medium text-gray-900 dark:text-white">{{ paymentAmountSymbol(paidOrder) }}{{ paidOrder.pay_amount.toFixed(2) }}</span>
+            <span class="font-medium text-gray-900 dark:text-white">{{ formatOrderAmount(paidOrder.pay_amount, paidOrder.currency) }}</span>
           </div>
         </div>
       </div>
@@ -81,7 +81,7 @@ import { paymentAPI } from '@/api/payment'
 import { extractI18nErrorMessage } from '@/utils/apiError'
 import { getPaymentPopupFeatures } from '@/components/payment/providerConfig'
 import type { PaymentOrder } from '@/types/payment'
-import { currencySymbol } from '@/components/payment/currency'
+import { formatPaymentAmount } from '@/components/payment/currency'
 import QRCode from 'qrcode'
 
 const props = defineProps<{
@@ -99,7 +99,10 @@ const emit = defineEmits<{
   success: []
 }>()
 
-const { t } = useI18n()
+const i18n = useI18n()
+const { t } = i18n
+// i18n.locale 在部分测试替身里不存在；格式化不该因为拿不到语言而炸掉整块渲染。
+const localeCode = computed(() => String(i18n.locale?.value ?? 'en'))
 const paymentStore = usePaymentStore()
 const appStore = useAppStore()
 
@@ -110,7 +113,15 @@ const expired = ref(false)
 const cancelling = ref(false)
 const success = ref(false)
 const paidOrder = ref<PaymentOrder | null>(null)
-const creditedAmountSymbol = currencySymbol('USD')
+// 支付金额按订单币种格式化：VND 等零小数币种不能出现 .00。
+function formatOrderAmount(value: number, currency?: string | null): string {
+  return formatPaymentAmount(value, currency, localeCode.value)
+}
+
+// 入账余额始终是 USD，与网关币种无关。
+function formatCreditedAmount(value: number): string {
+  return formatPaymentAmount(value, 'USD', localeCode.value)
+}
 
 let pollTimer: ReturnType<typeof setInterval> | null = null
 let countdownTimer: ReturnType<typeof setInterval> | null = null
@@ -129,10 +140,6 @@ const dialogTitle = computed(() => {
 const scanHint = computed(() => {
   return ''
 })
-
-function paymentAmountSymbol(order: PaymentOrder): string {
-  return currencySymbol(order.currency)
-}
 
 const countdownDisplay = computed(() => {
   const m = Math.floor(remainingSeconds.value / 60)

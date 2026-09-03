@@ -20,3 +20,17 @@ describe('currencySymbol', () => {
     expect(currencySymbol('XYZ')).toBe('XYZ')
   })
 })
+
+describe('formatPaymentAmount decimals per currency', () => {
+  it('renders VND without decimals', () => {
+    // ₫10000.00 was the bug: a hard-coded toFixed(2) on an amount whose
+    // currency has no minor unit.
+    const formatted = formatPaymentAmount(10000, 'VND', 'en')
+    expect(formatted).not.toContain('.00')
+    expect(formatted).toContain('10,000')
+  })
+
+  it('keeps two decimals for USD', () => {
+    expect(formatPaymentAmount(100, 'USD', 'en')).toContain('100.00')
+  })
+})
