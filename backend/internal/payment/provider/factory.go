@@ -11,6 +11,8 @@ func CreateProvider(providerKey string, instanceID string, config map[string]str
 	switch providerKey {
 	case payment.TypeSePay:
 		return NewSePay(instanceID, config)
+	case payment.TypeNowPayments:
+		return NewNowPayments(instanceID, config)
 	default:
 		return nil, fmt.Errorf("unknown provider key: %s", providerKey)
 	}

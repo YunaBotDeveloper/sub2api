@@ -153,6 +153,48 @@ describe('PaymentResultView', () => {
     expect(wrapper.text()).not.toContain('payment.result.failed')
   })
 
+  it('reports a failed gateway return instead of claiming the payment is still on its way', async () => {
+    // SePay sends status=failed on its error_url while the order stays PENDING
+    // until it expires. Saying "still pending, will refresh automatically" is
+    // both wrong and a promise this page cannot keep.
+    routeState.query = {
+      resume_token: 'resume-11',
+      order_id: '11',
+      status: 'failed',
+    }
+    resolveOrderPublicByResumeToken.mockResolvedValue({
+      data: orderFactory('PENDING'),
+    })
+
+    const wrapper = mount(PaymentResultView, {
+      global: { stubs: { OrderStatusBadge: true } },
+    })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('payment.result.failed')
+    expect(wrapper.text()).not.toContain('payment.result.processing')
+    expect(wrapper.text()).toContain('payment.result.failedHint')
+  })
+
+  it('reports a cancelled gateway return without polling on', async () => {
+    routeState.query = {
+      resume_token: 'resume-12',
+      order_id: '12',
+      status: 'cancelled',
+    }
+    resolveOrderPublicByResumeToken.mockResolvedValue({
+      data: orderFactory('PENDING'),
+    })
+
+    const wrapper = mount(PaymentResultView, {
+      global: { stubs: { OrderStatusBadge: true } },
+    })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('payment.result.cancelled')
+    expect(wrapper.text()).toContain('payment.result.cancelledHint')
+  })
+
   it('prefers the public resume-token result over a stale restored DB snapshot', async () => {
     routeState.query = {
       resume_token: 'resume-authoritative',

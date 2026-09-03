@@ -43,6 +43,12 @@ func (h *PaymentWebhookHandler) SePayNotify(c *gin.Context) {
 	h.handleNotify(c, payment.TypeSePay)
 }
 
+// NowPaymentsNotify handles NOWPayments IPN callbacks.
+// POST /api/v1/payment/webhook/nowpayments
+func (h *PaymentWebhookHandler) NowPaymentsNotify(c *gin.Context) {
+	h.handleNotify(c, payment.TypeNowPayments)
+}
+
 // handleNotify is the shared logic for provider webhook handlers.
 func (h *PaymentWebhookHandler) handleNotify(c *gin.Context, providerKey string) {
 	var rawBody string
@@ -126,25 +132,38 @@ func extractOutTradeNo(rawBody string) string {
 		return ""
 	}
 	if strings.HasPrefix(trimmed, "{") {
+		// order_invoice_number is SePay's name for it, order_id is NOWPayments'.
 		var payload struct {
 			OrderInvoiceNumber string `json:"order_invoice_number"`
+			OrderID            string `json:"order_id"`
 			Data               struct {
 				OrderInvoiceNumber string `json:"order_invoice_number"`
+				OrderID            string `json:"order_id"`
 			} `json:"data"`
 		}
 		if err := json.Unmarshal([]byte(trimmed), &payload); err != nil {
 			return ""
 		}
-		if v := strings.TrimSpace(payload.OrderInvoiceNumber); v != "" {
-			return v
+		for _, candidate := range []string{
+			payload.OrderInvoiceNumber,
+			payload.OrderID,
+			payload.Data.OrderInvoiceNumber,
+			payload.Data.OrderID,
+		} {
+			if v := strings.TrimSpace(candidate); v != "" {
+				return v
+			}
 		}
-		return strings.TrimSpace(payload.Data.OrderInvoiceNumber)
+		return ""
 	}
 	values, err := url.ParseQuery(trimmed)
 	if err != nil {
 		return ""
 	}
-	return strings.TrimSpace(values.Get("order_invoice_number"))
+	if v := strings.TrimSpace(values.Get("order_invoice_number")); v != "" {
+		return v
+	}
+	return strings.TrimSpace(values.Get("order_id"))
 }
 
 func verifyNotificationWithProviders(ctx context.Context, providers []payment.Provider, rawBody string, headers map[string]string) (string, *payment.PaymentNotification, error) {

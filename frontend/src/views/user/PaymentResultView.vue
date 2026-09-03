@@ -184,17 +184,19 @@ const returnedStatus = computed(() =>
   String(route.query.status || '').trim().toLowerCase(),
 )
 
-// 用户在网关点了取消：订单要到过期或对账后才落终态，这段时间既不该说
-// 「处理中」，也不该继续轮询——不会有任何变化，只会白转到上限。
-const isCancelledReturn = computed(
-  () => returnedStatus.value === 'cancelled' && isPending.value,
+// 网关明说这单没成（用户取消，或支付失败）：订单要到过期或对账后才落终态，
+// 这段时间既不该说「处理中」，也不该继续轮询——不会有任何变化，只会白转到上限。
+const ABANDONED_RETURN_STATUSES = new Set(['cancelled', 'failed'])
+const isAbandonedReturn = computed(
+  () => ABANDONED_RETURN_STATUSES.has(returnedStatus.value) && isPending.value,
 )
 
-const statusHint = computed(() =>
-  isCancelledReturn.value
+const statusHint = computed(() => {
+  if (!isAbandonedReturn.value) return t('payment.result.processingHint')
+  return returnedStatus.value === 'cancelled'
     ? t('payment.result.cancelledHint')
-    : t('payment.result.processingHint'),
-)
+    : t('payment.result.failedHint')
+})
 
 const statusTitle = computed(() => {
   if (isSuccess.value) {
@@ -203,8 +205,10 @@ const statusTitle = computed(() => {
   if (isPending.value) {
     // 用户在网关点了取消：订单要到过期或对账后才落终态，此时一直显示
     // 「处理中」会让人以为钱还在路上。
-    if (isCancelledReturn.value) {
-      return t('payment.result.cancelled')
+    if (isAbandonedReturn.value) {
+      return returnedStatus.value === 'cancelled'
+        ? t('payment.result.cancelled')
+        : t('payment.result.failed')
     }
     return t('payment.result.processing')
   }
@@ -361,7 +365,7 @@ function clearRecoverySnapshotForTerminalStatus(status: string | null | undefine
 
 function scheduleStatusRefresh(refreshOrder: (() => Promise<ResolvedOrder | null>) | null): void {
   clearStatusRefreshTimer()
-  if (!refreshOrder || !isPending.value || isCancelledReturn.value
+  if (!refreshOrder || !isPending.value || isAbandonedReturn.value
     || refreshAttempts.value >= STATUS_REFRESH_MAX_ATTEMPTS) {
     return
   }

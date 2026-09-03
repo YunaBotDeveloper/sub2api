@@ -8968,6 +8968,7 @@ import { useAppStore } from "@/stores";
 import { useAdminSettingsStore } from "@/stores/adminSettings";
 import {
   METHOD_ORDER,
+  PROVIDER_NOWPAYMENTS,
   PROVIDER_SEPAY,
   isProviderKeyEnabled,
 } from "@/components/payment/providerConfig";
@@ -12538,6 +12539,10 @@ const providerDialogRef = ref<InstanceType<
 
 const providerKeyOptions = computed(() => [
   { value: PROVIDER_SEPAY, label: t("admin.settings.payment.providerSepay") },
+  {
+    value: PROVIDER_NOWPAYMENTS,
+    label: t("admin.settings.payment.providerNowPayments"),
+  },
 ]);
 
 const enabledProviderKeyOptions = computed(() =>

@@ -107,7 +107,8 @@ var pendingOrderStatuses = []string{
 // Key matching is case-insensitive. Non-listed keys (e.g. merchantId, env,
 // currency) are returned in plaintext by the admin GET API.
 var providerSensitiveConfigFields = map[string]map[string]struct{}{
-	payment.TypeSePay: {"secretkey": {}, "ipnsecretkey": {}},
+	payment.TypeSePay:       {"secretkey": {}, "ipnsecretkey": {}},
+	payment.TypeNowPayments: {"apikey": {}, "ipnsecretkey": {}},
 }
 
 // providerPendingOrderProtectedConfigFields lists config keys that cannot be
@@ -115,7 +116,8 @@ var providerSensitiveConfigFields = map[string]map[string]struct{}{
 // all provider identity fields that are snapshotted into orders or used by
 // webhook verification.
 var providerPendingOrderProtectedConfigFields = map[string]map[string]struct{}{
-	payment.TypeSePay: {"merchantid": {}, "secretkey": {}, "env": {}, "currency": {}},
+	payment.TypeSePay:       {"merchantid": {}, "secretkey": {}, "env": {}, "currency": {}},
+	payment.TypeNowPayments: {"apikey": {}, "ipnsecretkey": {}, "env": {}, "currency": {}},
 }
 
 func isSensitiveProviderConfigField(providerKey, fieldName string) bool {

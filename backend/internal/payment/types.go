@@ -4,6 +4,7 @@ package payment
 
 import (
 	"context"
+	"strings"
 
 	"github.com/shopspring/decimal"
 )
@@ -13,15 +14,22 @@ type PaymentType = string
 
 // Supported payment type constants.
 //
-// TypeSePay is the provider key; the remaining constants are the user-facing
-// payment methods a SePay instance can offer, and map one-to-one onto the
-// gateway's payment_method values.
+// TypeSePay and TypeNowPayments are provider keys; the remaining constants are
+// the user-facing payment methods an instance of that provider offers. For
+// SePay they map one-to-one onto the gateway's payment_method values.
 const (
 	TypeSePay             PaymentType = "sepay"
 	TypeSePayBankTransfer PaymentType = "sepay_bank_transfer"
 	TypeSePayNapas        PaymentType = "sepay_napas"
 	TypeSePayCard         PaymentType = "sepay_card"
+
+	TypeNowPayments       PaymentType = "nowpayments"
+	TypeNowPaymentsCrypto PaymentType = "nowpayments_crypto"
 )
+
+// providerKeyPrefixes are the provider keys that user-facing payment types are
+// prefixed with. No key may be a prefix of another one.
+var providerKeyPrefixes = []PaymentType{TypeSePay, TypeNowPayments}
 
 // Order status constants shared across payment and service layers.
 const (
@@ -79,10 +87,13 @@ const (
 const DefaultLoadBalanceStrategy = "round-robin"
 
 // GetBasePaymentType extracts the base payment method from a composite key.
-// For example, "sepay_card" maps back to "sepay".
+// For example, "sepay_card" maps back to "sepay" and "nowpayments_crypto" to
+// "nowpayments". Unknown values are returned unchanged.
 func GetBasePaymentType(t string) string {
-	if len(t) >= len(TypeSePay) && t[:len(TypeSePay)] == TypeSePay {
-		return TypeSePay
+	for _, key := range providerKeyPrefixes {
+		if strings.HasPrefix(t, key) {
+			return key
+		}
 	}
 	return t
 }

@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import {
   METHOD_ORDER,
+  NOWPAYMENTS_CRYPTO,
   PAYMENT_CURRENCY_OPTIONS,
   PROVIDER_CONFIG_FIELDS,
+  PROVIDER_NOWPAYMENTS,
   PROVIDER_SEPAY,
   PROVIDER_SUPPORTED_TYPES,
   SEPAY_BANK_TRANSFER,
@@ -58,6 +60,30 @@ describe('PROVIDER_CONFIG_FIELDS.sepay', () => {
   })
 })
 
+describe('PROVIDER_CONFIG_FIELDS.nowpayments', () => {
+  it('marks the API key and the IPN secret as sensitive', () => {
+    // Must stay in sync with providerSensitiveConfigFields in
+    // internal/service/payment_config_providers.go.
+    expect(findField(PROVIDER_NOWPAYMENTS, 'apiKey')?.sensitive).toBe(true)
+    expect(findField(PROVIDER_NOWPAYMENTS, 'ipnSecretKey')?.sensitive).toBe(true)
+    expect(findField(PROVIDER_NOWPAYMENTS, 'env')?.sensitive).toBe(false)
+    expect(findField(PROVIDER_NOWPAYMENTS, 'currency')?.sensitive).toBe(false)
+  })
+
+  it('requires the IPN secret', () => {
+    // Unlike SePay's, it is not optional: the signature is the only proof a
+    // callback is genuine, and the backend constructor rejects a blank one.
+    expect(findField(PROVIDER_NOWPAYMENTS, 'ipnSecretKey')?.optional).toBeFalsy()
+    expect(findField(PROVIDER_NOWPAYMENTS, 'apiKey')?.optional).toBeFalsy()
+    expect(findField(PROVIDER_NOWPAYMENTS, 'payCurrency')?.optional).toBe(true)
+  })
+
+  it('defaults to production and USD', () => {
+    expect(findField(PROVIDER_NOWPAYMENTS, 'env')?.defaultValue).toBe('production')
+    expect(findField(PROVIDER_NOWPAYMENTS, 'currency')?.defaultValue).toBe('USD')
+  })
+})
+
 describe('supported payment types', () => {
   it('exposes exactly the three SePay methods', () => {
     expect(PROVIDER_SUPPORTED_TYPES[PROVIDER_SEPAY]).toEqual([
@@ -65,13 +91,20 @@ describe('supported payment types', () => {
       SEPAY_NAPAS,
       SEPAY_CARD,
     ])
-    expect([...METHOD_ORDER]).toEqual([SEPAY_BANK_TRANSFER, SEPAY_NAPAS, SEPAY_CARD])
+    expect(PROVIDER_SUPPORTED_TYPES[PROVIDER_NOWPAYMENTS]).toEqual([NOWPAYMENTS_CRYPTO])
+    expect([...METHOD_ORDER]).toEqual([
+      SEPAY_BANK_TRANSFER,
+      SEPAY_NAPAS,
+      SEPAY_CARD,
+      NOWPAYMENTS_CRYPTO,
+    ])
   })
 
   it('registers no removed gateway', () => {
-    expect(Object.keys(PROVIDER_SUPPORTED_TYPES)).toEqual([PROVIDER_SEPAY])
-    expect(Object.keys(WEBHOOK_PATHS)).toEqual([PROVIDER_SEPAY])
+    expect(Object.keys(PROVIDER_SUPPORTED_TYPES)).toEqual([PROVIDER_SEPAY, PROVIDER_NOWPAYMENTS])
+    expect(Object.keys(WEBHOOK_PATHS)).toEqual([PROVIDER_SEPAY, PROVIDER_NOWPAYMENTS])
     expect(WEBHOOK_PATHS[PROVIDER_SEPAY]).toBe('/api/v1/payment/webhook/sepay')
+    expect(WEBHOOK_PATHS[PROVIDER_NOWPAYMENTS]).toBe('/api/v1/payment/webhook/nowpayments')
   })
 
   it('falls back to the raw value when a type has no supplied label', () => {
