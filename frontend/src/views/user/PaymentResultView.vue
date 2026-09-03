@@ -113,6 +113,7 @@ import type { PublicOrderVerifyResult } from '@/api/payment'
 import type { OrderStatus, PaymentOrder } from '@/types/payment'
 import { formatPaymentAmount, normalizePaymentCurrency } from '@/components/payment/currency'
 import { normalizePaymentMethodForDisplay, paymentMethodI18nKey } from './paymentUx'
+import { reportResultToOpener } from './paymentPopupBridge'
 
 const i18n = useI18n()
 const { t } = i18n
@@ -367,6 +368,12 @@ function scheduleStatusRefresh(refreshOrder: (() => Promise<ResolvedOrder | null
 }
 
 onMounted(async () => {
+  // Opened as the checkout popup: hand the order back to the window the user
+  // actually started from and close, instead of stranding the outcome here.
+  if (reportResultToOpener(route.query as Record<string, unknown>)) {
+    return
+  }
+
   const resumeToken = readRouteQueryString('resume_token')
   const routeOrderId = Number(readRouteQueryString('order_id')) || 0
   let outTradeNo = readRouteQueryString('out_trade_no')

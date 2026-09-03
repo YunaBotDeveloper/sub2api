@@ -255,7 +255,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -290,6 +290,7 @@ import { DEFAULT_PAYMENT_CURRENCY, formatPaymentAmount, normalizePaymentCurrency
 import { planValiditySuffix as validitySuffixOf } from '@/components/payment/validity'
 import type { PaymentMethodOption } from '@/components/payment/PaymentMethodSelector.vue'
 import { buildPaymentErrorToastMessage, describePaymentScenarioError } from './paymentUx'
+import { listenForPopupResult } from './paymentPopupBridge'
 
 const i18n = useI18n()
 const { t } = i18n
@@ -767,6 +768,24 @@ function applyScenarioError(err: unknown, paymentMethod: string): boolean {
   appStore.showError(buildPaymentErrorToastMessage(errorMessage.value, errorHintMessage.value))
   return true
 }
+
+// The checkout popup posts the order back here when the gateway returns, so
+// the result lands in this window rather than in a popup the user then has to
+// close by hand. The query only addresses the order; the result page reloads
+// its real status from the backend.
+let stopPopupResultListener: (() => void) | null = null
+
+onMounted(() => {
+  stopPopupResultListener = listenForPopupResult((query) => {
+    removeRecoverySnapshot()
+    router.push({ path: '/payment/result', query }).catch(() => {})
+  })
+})
+
+onUnmounted(() => {
+  stopPopupResultListener?.()
+  stopPopupResultListener = null
+})
 
 onMounted(async () => {
   try {
