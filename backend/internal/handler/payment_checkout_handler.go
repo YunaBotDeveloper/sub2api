@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/Wei-Shaw/sub2api/internal/payment"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/response"
 	"github.com/Wei-Shaw/sub2api/internal/server/middleware"
 
@@ -34,7 +35,7 @@ button{margin-top:16px;padding:10px 20px;font:inherit;border:0;border-radius:6px
 <main>
 <p>Redirecting you to the payment page…</p>
 <form id="checkout" method="POST" action="{{.Action}}">
-{{range $name, $value := .Fields}}<input type="hidden" name="{{$name}}" value="{{$value}}">
+{{range .Fields}}<input type="hidden" name="{{.Name}}" value="{{.Value}}">
 {{end}}<button type="submit">Continue to payment</button>
 </form>
 </main>
@@ -46,7 +47,9 @@ button{margin-top:16px;padding:10px 20px;font:inherit;border:0;border-radius:6px
 type checkoutPageData struct {
 	Nonce  string
 	Action string
-	Fields map[string]string
+	// Fields must stay ordered: the gateway rejects a form whose inputs are
+	// arranged differently from the sequence it signs over.
+	Fields []payment.FormField
 }
 
 // Checkout renders the auto-submitting bridge page for form-based gateways.

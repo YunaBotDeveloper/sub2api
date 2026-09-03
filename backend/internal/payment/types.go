@@ -127,7 +127,17 @@ type CreatePaymentResponse struct {
 	PaymentEnv string                  // 服务商前端环境标识
 	ResultType CreatePaymentResultType // Typed result contract for frontend flows
 	FormAction string                  // POST target for CreatePaymentResultFormPost
-	FormFields map[string]string       // Signed form fields for CreatePaymentResultFormPost
+	// FormFields are the signed form inputs, in submission order. Order is
+	// significant: SePay recomputes the signature over a fixed field sequence
+	// and rejects a form whose inputs are arranged differently, so this must
+	// stay an ordered list rather than a map.
+	FormFields []FormField
+}
+
+// FormField is a single hidden input of a form-post checkout.
+type FormField struct {
+	Name  string
+	Value string
 }
 
 // QueryOrderResponse describes the payment status from the upstream provider.

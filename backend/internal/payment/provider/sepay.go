@@ -194,7 +194,18 @@ func (s *SePay) CreatePayment(ctx context.Context, req payment.CreatePaymentRequ
 		fields["error_url"] = returnURL
 		fields["cancel_url"] = returnURL
 	}
-	fields["signature"] = sepaySignFields(fields, s.secretKey())
+	signature := sepaySignFields(fields, s.secretKey())
+
+	// 表单 input 的先后顺序同样是协议的一部分：文档要求与示例表单一致，
+	// 顺序变了网关会判为签名无效。这里直接复用签名字段顺序，最后补 signature，
+	// 避免两处顺序各写一份而悄悄漂移。
+	formFields := make([]payment.FormField, 0, len(sepaySignFieldOrder)+1)
+	for _, name := range sepaySignFieldOrder {
+		if value, ok := fields[name]; ok {
+			formFields = append(formFields, payment.FormField{Name: name, Value: value})
+		}
+	}
+	formFields = append(formFields, payment.FormField{Name: "signature", Value: signature})
 
 	return &payment.CreatePaymentResponse{
 		// SePay 在收银台完成前不会分配上游交易号，订单号就是我们的 out_trade_no。
@@ -203,7 +214,7 @@ func (s *SePay) CreatePayment(ctx context.Context, req payment.CreatePaymentRequ
 		PaymentEnv: s.env(),
 		ResultType: payment.CreatePaymentResultFormPost,
 		FormAction: s.client.Checkout.InitCheckoutURL(),
-		FormFields: fields,
+		FormFields: formFields,
 	}, nil
 }
 

@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Wei-Shaw/sub2api/internal/payment"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,9 +20,9 @@ func TestCheckoutPageAutoSubmitsEscapedFields(t *testing.T) {
 	err := checkoutPageTemplate.Execute(&page, checkoutPageData{
 		Nonce:  "test-nonce",
 		Action: "https://pay-sandbox.sepay.vn/v1/checkout/init",
-		Fields: map[string]string{
-			"merchant":  "MERCHANT_TEST",
-			"signature": `abc+/=" onload="alert(1)`,
+		Fields: []payment.FormField{
+			{Name: "merchant", Value: "MERCHANT_TEST"},
+			{Name: "signature", Value: `abc+/=" onload="alert(1)`},
 		},
 	})
 	require.NoError(t, err)
@@ -28,6 +30,8 @@ func TestCheckoutPageAutoSubmitsEscapedFields(t *testing.T) {
 
 	assert.Contains(t, html, `action="https://pay-sandbox.sepay.vn/v1/checkout/init"`)
 	assert.Contains(t, html, `<input type="hidden" name="merchant" value="MERCHANT_TEST">`)
+	// Rendered in the order given, not re-sorted.
+	assert.Less(t, strings.Index(html, `name="merchant"`), strings.Index(html, `name="signature"`))
 	assert.Contains(t, html, `nonce="test-nonce"`)
 
 	// A gateway field is attacker-influenced only through our own signing, but
