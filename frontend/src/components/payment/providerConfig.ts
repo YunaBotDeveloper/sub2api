@@ -122,24 +122,15 @@ export function getPaymentPopupFeatures(): string {
 
 // --- Helpers ---
 
-/** Resolve type label for display. */
-export function resolveTypeLabel(
-  typeVal: string,
-  _providerKey: string,
-  allTypes: TypeOption[],
-  _redirectLabel: string,
-): TypeOption {
+/** Resolve a payment type to its display option, falling back to the raw value. */
+export function resolveTypeLabel(typeVal: string, allTypes: TypeOption[]): TypeOption {
   return allTypes.find(pt => pt.value === typeVal) || { value: typeVal, label: typeVal }
 }
 
 /** Get available type options for a provider key. */
-export function getAvailableTypes(
-  providerKey: string,
-  allTypes: TypeOption[],
-  redirectLabel: string,
-): TypeOption[] {
+export function getAvailableTypes(providerKey: string, allTypes: TypeOption[]): TypeOption[] {
   const types = PROVIDER_SUPPORTED_TYPES[providerKey] || []
-  return types.map(t => resolveTypeLabel(t, providerKey, allTypes, redirectLabel))
+  return types.map(t => resolveTypeLabel(t, allTypes))
 }
 
 /** Extract base URL from a full callback URL by removing the known path suffix. */

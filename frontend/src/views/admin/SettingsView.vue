@@ -8354,7 +8354,6 @@
             :can-create="hasAnyPaymentTypeEnabled"
             :enabled-payment-types="form.payment_enabled_types"
             :all-payment-types="allPaymentTypes"
-            :redirect-label="t('admin.settings.payment.easypayRedirect')"
             @refresh="loadProviders"
             @create="openCreateProvider"
             @edit="openEditProvider"
@@ -8836,7 +8835,6 @@
         :all-key-options="providerKeyOptions"
         :enabled-key-options="enabledProviderKeyOptions"
         :all-payment-types="allPaymentTypes"
-        :redirect-label="t('admin.settings.payment.easypayRedirect')"
         @close="showProviderDialog = false"
         @save="handleSaveProvider"
       />
@@ -8930,6 +8928,10 @@ import { extractApiErrorMessage, extractI18nErrorMessage } from "@/utils/apiErro
 import { DEFAULT_ALLOWED_IFRAME_HOSTS } from "@/utils/iframeSanitize";
 import { useAppStore } from "@/stores";
 import { useAdminSettingsStore } from "@/stores/adminSettings";
+import {
+  METHOD_ORDER,
+  PROVIDER_SEPAY,
+} from "@/components/payment/providerConfig";
 import {
   isRegistrationEmailSuffixDomainValid,
   normalizeRegistrationEmailSuffixDomain,
@@ -12438,13 +12440,9 @@ async function saveBetaPolicySettings() {
 
 // ==================== Provider Management ====================
 
-const allPaymentTypes = computed(() => [
-  { value: "easypay", label: t("payment.methods.easypay") },
-  { value: "alipay", label: t("payment.methods.alipay") },
-  { value: "wxpay", label: t("payment.methods.wxpay") },
-  { value: "stripe", label: t("payment.methods.stripe") },
-  { value: "airwallex", label: t("payment.methods.airwallex") },
-]);
+const allPaymentTypes = computed(() =>
+  METHOD_ORDER.map((value) => ({ value, label: t(`payment.methods.${value}`) })),
+);
 
 function isPaymentTypeEnabled(type: string): boolean {
   return form.payment_enabled_types.includes(type);
@@ -12496,11 +12494,7 @@ const providerDialogRef = ref<InstanceType<
 > | null>(null);
 
 const providerKeyOptions = computed(() => [
-  { value: "easypay", label: t("admin.settings.payment.providerEasypay") },
-  { value: "alipay", label: t("admin.settings.payment.providerAlipay") },
-  { value: "wxpay", label: t("admin.settings.payment.providerWxpay") },
-  { value: "stripe", label: t("admin.settings.payment.providerStripe") },
-  { value: "airwallex", label: t("admin.settings.payment.providerAirwallex") },
+  { value: PROVIDER_SEPAY, label: t("admin.settings.payment.providerSepay") },
 ]);
 
 const enabledProviderKeyOptions = computed(() => {
