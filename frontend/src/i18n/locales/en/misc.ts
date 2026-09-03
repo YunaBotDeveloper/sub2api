@@ -355,6 +355,7 @@ export default {
       subscriptionSuccess: 'Subscription Successful',
       processing: 'Payment Processing',
       cancelled: 'Payment Cancelled',
+      cancelledHint: 'You cancelled this payment. The order stays open until it expires — start a new payment when you are ready.',
       processingHint: 'Payment confirmation is still pending. This page will refresh automatically.',
       failed: 'Payment Failed',
       backToRecharge: 'Back to Recharge',
@@ -375,6 +376,9 @@ export default {
     amountTooHigh: 'Maximum amount is {max}',
     amountNoMethod: 'No payment method available for this amount',
     rechargeRatePreview: 'Current rate: 1 {currency} = {usd} USD',
+    exchangeRateNote: 'Exchange rate: 1 USD = {rate}',
+    convertedAmount: 'You will be charged {amount}',
+    exchangeRateUnavailable: 'The exchange rate is unavailable right now. Please try again in a moment.',
     errors: {
       tooManyPending: 'Too many pending orders (max {max}). Please complete or cancel existing orders first.',
       methodUnavailable: 'This payment method is temporarily unavailable.',

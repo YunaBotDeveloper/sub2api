@@ -2,9 +2,27 @@
   <div class="space-y-4">
     <!-- Quick Amount Buttons -->
     <div>
-      <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-        {{ t('payment.quickAmounts') }}
-      </label>
+      <div class="mb-2 flex items-center justify-between gap-2">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          {{ t('payment.quickAmounts') }}
+        </label>
+        <div v-if="currencyOptions.length > 1" class="inline-flex rounded-lg border border-gray-200 p-0.5 dark:border-dark-600">
+          <button
+            v-for="code in currencyOptions"
+            :key="code"
+            type="button"
+            :class="[
+              'rounded-md px-2.5 py-1 text-xs font-semibold transition-colors',
+              code === currency
+                ? 'bg-primary-500 text-white'
+                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200',
+            ]"
+            @click="emit('update:currency', code)"
+          >
+            {{ code }}
+          </button>
+        </div>
+      </div>
       <div class="grid grid-cols-3 gap-2">
         <button
           v-for="amt in filteredAmounts"
@@ -30,7 +48,7 @@
       </label>
       <div class="relative">
         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-dark-500">
-          $
+          {{ currencySymbol(currency) }}
         </span>
         <input
           type="text"
@@ -48,20 +66,32 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import {
+  DEFAULT_PAYMENT_CURRENCY,
+  currencySymbol,
+  paymentCurrencyFractionDigits,
+} from './currency'
 
 const props = withDefaults(defineProps<{
   amounts?: number[]
   modelValue: number | null
   min?: number
   max?: number
+  /** Currency the typed amount is in. Drives the symbol and the decimals allowed. */
+  currency?: string
+  /** Currencies the user may switch between. One entry hides the switch. */
+  currencyOptions?: string[]
 }>(), {
   amounts: () => [10, 20, 50, 100, 200, 500, 1000, 2000, 5000],
   min: 0,
   max: 0,
+  currency: DEFAULT_PAYMENT_CURRENCY,
+  currencyOptions: () => [],
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: number | null]
+  'update:currency': [value: string]
 }>()
 
 const { t } = useI18n()
@@ -80,7 +110,11 @@ const placeholderText = computed(() => {
   return t('payment.enterAmount')
 })
 
-const AMOUNT_PATTERN = /^\d*(\.\d{0,2})?$/
+// Zero-decimal currencies (VND) must not accept a fractional part at all.
+const amountPattern = computed(() => {
+  const digits = paymentCurrencyFractionDigits(props.currency)
+  return digits > 0 ? new RegExp(String.raw`^\d*(\.\d{0,${digits}})?$`) : /^\d*$/
+})
 
 function selectAmount(amt: number) {
   customText.value = String(amt)
@@ -89,7 +123,7 @@ function selectAmount(amt: number) {
 
 function handleInput(e: Event) {
   const val = (e.target as HTMLInputElement).value
-  if (!AMOUNT_PATTERN.test(val)) return
+  if (!amountPattern.value.test(val)) return
   customText.value = val
   if (val === '') {
     emit('update:modelValue', null)

@@ -58,11 +58,15 @@ type PaymentConfig struct {
 	// SubscriptionUSDToCNYRate 为 0 时订阅换算关闭（兼容存量行为）。
 	SubscriptionUSDToCNYRate float64 `json:"subscription_usd_to_cny_rate"`
 	RechargeFeeRate          float64 `json:"recharge_fee_rate"`
-	LoadBalanceStrategy      string  `json:"load_balance_strategy"`
-	ProductNamePrefix        string  `json:"product_name_prefix"`
-	ProductNameSuffix        string  `json:"product_name_suffix"`
-	HelpImageURL             string  `json:"help_image_url"`
-	HelpText                 string  `json:"help_text"`
+	// ExchangeRateMarkupPercent 叠加在牌价上：0 表示按牌价原价换算。
+	ExchangeRateMarkupPercent float64 `json:"exchange_rate_markup_percent"`
+	// ExchangeRateMaxAgeHours 是缓存汇率的最长可用时长，超过就拒绝建单。
+	ExchangeRateMaxAgeHours int    `json:"exchange_rate_max_age_hours"`
+	LoadBalanceStrategy     string `json:"load_balance_strategy"`
+	ProductNamePrefix       string `json:"product_name_prefix"`
+	ProductNameSuffix       string `json:"product_name_suffix"`
+	HelpImageURL            string `json:"help_image_url"`
+	HelpText                string `json:"help_text"`
 
 	// Cancel rate limit settings
 	CancelRateLimitEnabled bool   `json:"cancel_rate_limit_enabled"`
@@ -90,6 +94,8 @@ type UpdatePaymentConfigRequest struct {
 	BalanceRechargeMultiplier *float64 `json:"balance_recharge_multiplier"`
 	SubscriptionUSDToCNYRate  *float64 `json:"subscription_usd_to_cny_rate"`
 	RechargeFeeRate           *float64 `json:"recharge_fee_rate"`
+	ExchangeRateMarkupPercent *float64 `json:"exchange_rate_markup_percent"`
+	ExchangeRateMaxAgeHours   *int     `json:"exchange_rate_max_age_hours"`
 	LoadBalanceStrategy       *string  `json:"load_balance_strategy"`
 	ProductNamePrefix         *string  `json:"product_name_prefix"`
 	ProductNameSuffix         *string  `json:"product_name_suffix"`
@@ -214,7 +220,8 @@ func (s *PaymentConfigService) GetPaymentConfig(ctx context.Context) (*PaymentCo
 	keys := []string{
 		SettingPaymentEnabled, SettingMinRechargeAmount, SettingMaxRechargeAmount,
 		SettingDailyRechargeLimit, SettingOrderTimeoutMinutes, SettingMaxPendingOrders,
-		SettingEnabledPaymentTypes, SettingBalancePayDisabled, SettingBalanceRechargeMult, SettingSubscriptionUSDToCNYRate, SettingRechargeFeeRate, SettingLoadBalanceStrategy,
+		SettingEnabledPaymentTypes, SettingBalancePayDisabled, SettingBalanceRechargeMult, SettingSubscriptionUSDToCNYRate, SettingRechargeFeeRate,
+		SettingExchangeRateMarkupPercent, SettingExchangeRateMaxAgeHours, SettingLoadBalanceStrategy,
 		SettingProductNamePrefix, SettingProductNameSuffix,
 		SettingHelpImageURL, SettingHelpText,
 		SettingCancelRateLimitOn, SettingCancelRateLimitMax,
@@ -239,6 +246,8 @@ func (s *PaymentConfigService) parsePaymentConfig(vals map[string]string) *Payme
 		BalanceRechargeMultiplier: normalizeBalanceRechargeMultiplier(pcParseFloat(vals[SettingBalanceRechargeMult], defaultBalanceRechargeMultiplier)),
 		SubscriptionUSDToCNYRate:  normalizeSubscriptionUSDToCNYRate(pcParseFloat(vals[SettingSubscriptionUSDToCNYRate], 0)),
 		RechargeFeeRate:           pcParseFloat(vals[SettingRechargeFeeRate], 0),
+		ExchangeRateMarkupPercent: pcParseFloat(vals[SettingExchangeRateMarkupPercent], 0),
+		ExchangeRateMaxAgeHours:   pcParseInt(vals[SettingExchangeRateMaxAgeHours], defaultExchangeRateMaxAgeHours),
 		LoadBalanceStrategy:       vals[SettingLoadBalanceStrategy],
 		ProductNamePrefix:         vals[SettingProductNamePrefix],
 		ProductNameSuffix:         vals[SettingProductNameSuffix],
@@ -293,6 +302,19 @@ func (s *PaymentConfigService) UpdatePaymentConfig(ctx context.Context, req Upda
 			return infraerrors.BadRequest("INVALID_RECHARGE_FEE_RATE", "recharge fee rate allows at most 2 decimal places")
 		}
 	}
+	if req.ExchangeRateMarkupPercent != nil {
+		v := *req.ExchangeRateMarkupPercent
+		// 100% 以上的加价几乎肯定是填错了，挡住比事后退款便宜。
+		if math.IsNaN(v) || math.IsInf(v, 0) || v < 0 || v > 100 {
+			return infraerrors.BadRequest("INVALID_EXCHANGE_RATE_MARKUP", "exchange rate markup must be between 0 and 100 percent")
+		}
+	}
+	if req.ExchangeRateMaxAgeHours != nil {
+		// 0 会让每一次抓取失败都变成「随便用多旧的价格」，所以下限是 1 小时。
+		if v := *req.ExchangeRateMaxAgeHours; v < 1 || v > 24*30 {
+			return infraerrors.BadRequest("INVALID_EXCHANGE_RATE_MAX_AGE", "exchange rate max age must be between 1 and 720 hours")
+		}
+	}
 	m := make(map[string]string)
 	if req.Enabled != nil {
 		m[SettingPaymentEnabled] = formatBoolOrEmpty(req.Enabled)
@@ -326,6 +348,12 @@ func (s *PaymentConfigService) UpdatePaymentConfig(ctx context.Context, req Upda
 	}
 	if req.RechargeFeeRate != nil {
 		m[SettingRechargeFeeRate] = formatNonNegativeFloat(req.RechargeFeeRate)
+	}
+	if req.ExchangeRateMarkupPercent != nil {
+		m[SettingExchangeRateMarkupPercent] = formatNonNegativeFloat(req.ExchangeRateMarkupPercent)
+	}
+	if req.ExchangeRateMaxAgeHours != nil {
+		m[SettingExchangeRateMaxAgeHours] = strconv.Itoa(*req.ExchangeRateMaxAgeHours)
 	}
 	if req.LoadBalanceStrategy != nil {
 		m[SettingLoadBalanceStrategy] = derefStr(req.LoadBalanceStrategy)

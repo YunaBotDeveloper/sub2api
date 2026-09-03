@@ -77,18 +77,22 @@ func generateRandomString(n int) string {
 }
 
 type CreateOrderRequest struct {
-	UserID        int64
-	Amount        float64
-	PaymentType   string
-	ClientIP      string
-	IsMobile      bool
-	SrcHost       string
-	SrcURL        string
-	ReturnURL     string
-	PaymentSource string
-	OrderType     string
-	PlanID        int64
-	Locale        string
+	UserID int64
+	// Amount 是用户填的数字，单位由 AmountCurrency 决定。
+	Amount float64
+	// AmountCurrency 是用户填金额时选的币种：USD 或网关结算币种（VND）。
+	// 空值按网关结算币种处理，保持老客户端的行为不变。
+	AmountCurrency string
+	PaymentType    string
+	ClientIP       string
+	IsMobile       bool
+	SrcHost        string
+	SrcURL         string
+	ReturnURL      string
+	PaymentSource  string
+	OrderType      string
+	PlanID         int64
+	Locale         string
 }
 
 type CreateOrderResponse struct {
@@ -171,6 +175,7 @@ type PaymentService struct {
 	userRepo                 UserRepository
 	groupRepo                GroupRepository
 	resumeService            *PaymentResumeService
+	exchangeRateService      *ExchangeRateService
 	affiliateService         *AffiliateService
 	notificationEmailService *NotificationEmailService
 }
@@ -179,6 +184,12 @@ func NewPaymentService(entClient *dbent.Client, registry *payment.Registry, load
 	svc := &PaymentService{entClient: entClient, registry: registry, loadBalancer: loadBalancer, redeemService: redeemService, subscriptionSvc: subscriptionSvc, configService: configService, userRepo: userRepo, groupRepo: groupRepo, affiliateService: affiliateService}
 	svc.resumeService = psNewPaymentResumeService(configService)
 	return svc
+}
+
+// SetExchangeRateService 注入汇率服务。用 setter 而不是构造参数：
+// PaymentService 的构造函数已经被多处调用，加参数会牵动一片测试替身。
+func (s *PaymentService) SetExchangeRateService(exchangeRateService *ExchangeRateService) {
+	s.exchangeRateService = exchangeRateService
 }
 
 func (s *PaymentService) SetNotificationEmailService(notificationEmailService *NotificationEmailService) {

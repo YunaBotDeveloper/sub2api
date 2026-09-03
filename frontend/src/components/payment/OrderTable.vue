@@ -14,12 +14,12 @@
     </template>
     <template #cell-pay_amount="{ value, row }">
       <div class="text-sm">
-        <span class="font-medium text-gray-900 dark:text-white">{{ paymentAmountSymbol(row) }}{{ value.toFixed(2) }}</span>
+        <span class="font-medium text-gray-900 dark:text-white">{{ formatOrderAmount(value, row.currency) }}</span>
         <span v-if="row.fee_rate > 0" class="ml-1 text-xs text-gray-400" :title="t('payment.orders.fee') + ': ' + row.fee_rate + '%'">
           ({{ t('payment.orders.fee') }} {{ row.fee_rate }}%)
         </span>
         <div v-if="row.amount !== row.pay_amount" class="text-xs text-gray-500">
-          {{ t('payment.orders.creditedAmount') }}: {{ creditedAmountSymbol }}{{ row.amount.toFixed(2) }}
+          {{ t('payment.orders.creditedAmount') }}: {{ formatCreditedAmount(row.amount) }}
         </div>
       </div>
     </template>
@@ -45,9 +45,12 @@ import type { PaymentOrder } from '@/types/payment'
 import type { Column } from '@/components/common/types'
 import DataTable from '@/components/common/DataTable.vue'
 import OrderStatusBadge from '@/components/payment/OrderStatusBadge.vue'
-import { currencySymbol } from '@/components/payment/currency'
+import { formatPaymentAmount } from '@/components/payment/currency'
 
-const { t } = useI18n()
+const i18n = useI18n()
+const { t } = i18n
+// i18n.locale 在部分测试替身里不存在；格式化不该因为拿不到语言而炸掉整块渲染。
+const localeCode = computed(() => String(i18n.locale?.value ?? 'en'))
 
 const props = defineProps<{
   orders: PaymentOrder[]
@@ -57,10 +60,14 @@ const props = defineProps<{
 
 function formatDate(dateStr: string) { return new Date(dateStr).toLocaleString() }
 
-const creditedAmountSymbol = currencySymbol('USD')
+// 支付金额按订单币种格式化：VND 等零小数币种不能出现 .00。
+function formatOrderAmount(value: number, currency?: string | null): string {
+  return formatPaymentAmount(value, currency, localeCode.value)
+}
 
-function paymentAmountSymbol(order: PaymentOrder): string {
-  return currencySymbol(order.currency)
+// 入账余额始终是 USD，与网关币种无关。
+function formatCreditedAmount(value: number): string {
+  return formatPaymentAmount(value, 'USD', localeCode.value)
 }
 
 const columns = computed((): Column[] => {

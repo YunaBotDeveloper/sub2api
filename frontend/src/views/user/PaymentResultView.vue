@@ -29,7 +29,7 @@
             {{ statusTitle }}
           </h2>
           <p v-if="isPending" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-            {{ t('payment.result.processingHint') }}
+            {{ statusHint }}
           </p>
         </div>
         <!-- Order Info -->
@@ -184,6 +184,18 @@ const returnedStatus = computed(() =>
   String(route.query.status || '').trim().toLowerCase(),
 )
 
+// 用户在网关点了取消：订单要到过期或对账后才落终态，这段时间既不该说
+// 「处理中」，也不该继续轮询——不会有任何变化，只会白转到上限。
+const isCancelledReturn = computed(
+  () => returnedStatus.value === 'cancelled' && isPending.value,
+)
+
+const statusHint = computed(() =>
+  isCancelledReturn.value
+    ? t('payment.result.cancelledHint')
+    : t('payment.result.processingHint'),
+)
+
 const statusTitle = computed(() => {
   if (isSuccess.value) {
     return t('payment.result.success')
@@ -191,7 +203,7 @@ const statusTitle = computed(() => {
   if (isPending.value) {
     // 用户在网关点了取消：订单要到过期或对账后才落终态，此时一直显示
     // 「处理中」会让人以为钱还在路上。
-    if (returnedStatus.value === 'cancelled') {
+    if (isCancelledReturn.value) {
       return t('payment.result.cancelled')
     }
     return t('payment.result.processing')
@@ -349,7 +361,8 @@ function clearRecoverySnapshotForTerminalStatus(status: string | null | undefine
 
 function scheduleStatusRefresh(refreshOrder: (() => Promise<ResolvedOrder | null>) | null): void {
   clearStatusRefreshTimer()
-  if (!refreshOrder || !isPending.value || refreshAttempts.value >= STATUS_REFRESH_MAX_ATTEMPTS) {
+  if (!refreshOrder || !isPending.value || isCancelledReturn.value
+    || refreshAttempts.value >= STATUS_REFRESH_MAX_ATTEMPTS) {
     return
   }
 
