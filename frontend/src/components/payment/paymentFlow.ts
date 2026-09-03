@@ -49,6 +49,8 @@ export interface PaymentLaunchDecision {
 
 export interface BuildCreateOrderPayloadInput {
   amount: number
+  /** Currency `amount` is typed in. Blank lets the backend use the gateway currency. */
+  amountCurrency?: string
   paymentType: string
   orderType: OrderType
   planId?: number
@@ -97,6 +99,9 @@ export function buildCreateOrderPayload(input: BuildCreateOrderPayloadInput): Cr
     payment_source: 'hosted_redirect',
   }
 
+  if (input.amountCurrency) {
+    payload.amount_currency = input.amountCurrency
+  }
   if (input.planId) {
     payload.plan_id = input.planId
   }

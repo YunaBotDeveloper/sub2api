@@ -34,11 +34,11 @@ export function currencySymbol(currency?: string | null): string {
   return PAYMENT_CURRENCY_SYMBOLS[normalized] || normalized
 }
 
-function paymentCurrencyFractionDigits(currency: string): number {
+export function paymentCurrencyFractionDigits(currency?: string | null): number {
   try {
     return new Intl.NumberFormat(undefined, {
       style: 'currency',
-      currency,
+      currency: normalizePaymentCurrency(currency),
     }).resolvedOptions().maximumFractionDigits ?? 2
   } catch {
     return 2

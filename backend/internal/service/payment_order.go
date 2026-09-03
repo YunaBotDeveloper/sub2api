@@ -56,14 +56,6 @@ func (s *PaymentService) CreateOrder(ctx context.Context, req CreateOrderRequest
 	if s.notificationEmailService != nil {
 		s.notificationEmailService.RememberRecipientLocale(ctx, req.UserID, user.Email, req.Locale)
 	}
-	orderAmount := req.Amount
-	limitAmount := req.Amount
-	if plan != nil {
-		orderAmount = plan.Price
-		limitAmount = plan.Price
-	} else if req.OrderType == payment.OrderTypeBalance {
-		orderAmount = calculateCreditedBalance(req.Amount, cfg.BalanceRechargeMultiplier)
-	}
 	feeRate := cfg.RechargeFeeRate
 	methodCurrency := payment.DefaultPaymentCurrency
 	if s.configService != nil {
@@ -71,6 +63,21 @@ func (s *PaymentService) CreateOrder(ctx context.Context, req CreateOrderRequest
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	// 用户填的金额可能是 USD，也可能是网关结算币种。两条路都要落到同一组数：
+	// limitAmount 用网关币种收钱，orderAmount 用 USD 记账户余额。
+	gatewayAmount, creditedUSD, err := s.resolveOrderAmounts(ctx, req, methodCurrency)
+	if err != nil {
+		return nil, err
+	}
+	orderAmount := creditedUSD
+	limitAmount := gatewayAmount
+	if plan != nil {
+		orderAmount = plan.Price
+		limitAmount = plan.Price
+	} else if req.OrderType == payment.OrderTypeBalance {
+		orderAmount = calculateCreditedBalance(creditedUSD, cfg.BalanceRechargeMultiplier)
 	}
 	payAmountStr, payAmount, err := calculateCreateOrderPayAmountForOrderType(limitAmount, feeRate, methodCurrency, req.OrderType, cfg.SubscriptionUSDToCNYRate)
 	if err != nil {
@@ -105,6 +112,85 @@ func (s *PaymentService) CreateOrder(ctx context.Context, req CreateOrderRequest
 		return nil, err
 	}
 	return resp, nil
+}
+
+// resolveOrderAmounts 把用户填的金额拆成「按网关币种要收多少」和
+// 「按 USD 应记多少余额」。
+//
+// 订阅单不走这里：套餐价格本来就以 USD 定价，换算由
+// calculateSubscriptionGatewayBaseAmount 用管理员配置的订阅汇率完成。
+func (s *PaymentService) resolveOrderAmounts(ctx context.Context, req CreateOrderRequest, methodCurrency string) (gatewayAmount float64, creditedUSD float64, err error) {
+	if req.OrderType == payment.OrderTypeSubscription {
+		return req.Amount, req.Amount, nil
+	}
+
+	amountCurrency := NormalizeAmountCurrency(req.AmountCurrency, methodCurrency)
+	if strings.EqualFold(amountCurrency, methodCurrency) {
+		// 用户按网关币种填的：收多少就是填的数，换算只作用在记账那一侧。
+		credited, convErr := s.convertGatewayToUSD(ctx, req.Amount, methodCurrency)
+		if convErr != nil {
+			return 0, 0, convErr
+		}
+		return req.Amount, credited, nil
+	}
+
+	// 用户按 USD 填的：余额就是这个数，收款金额按汇率折成网关币种。
+	charged, convErr := s.convertUSDToGateway(ctx, req.Amount, methodCurrency)
+	if convErr != nil {
+		return 0, 0, convErr
+	}
+	return charged, req.Amount, nil
+}
+
+// NormalizeAmountCurrency 归一化用户所选的填写币种。
+// 只接受 USD 与网关结算币种两种，其余一律按网关币种处理。
+func NormalizeAmountCurrency(raw string, methodCurrency string) string {
+	normalized := strings.ToUpper(strings.TrimSpace(raw))
+	if normalized == "USD" {
+		return "USD"
+	}
+	return strings.ToUpper(strings.TrimSpace(methodCurrency))
+}
+
+func (s *PaymentService) convertGatewayToUSD(ctx context.Context, amount float64, methodCurrency string) (float64, error) {
+	if strings.EqualFold(methodCurrency, "USD") {
+		return amount, nil
+	}
+	rate, err := s.effectiveExchangeRate(ctx)
+	if err != nil {
+		return 0, err
+	}
+	// 记入余额的 USD 向下取到分：宁可少记一分，也不要凭空多给。
+	return decimal.NewFromFloat(amount).Div(rate).RoundDown(2).InexactFloat64(), nil
+}
+
+func (s *PaymentService) convertUSDToGateway(ctx context.Context, amount float64, methodCurrency string) (float64, error) {
+	if strings.EqualFold(methodCurrency, "USD") {
+		return amount, nil
+	}
+	rate, err := s.effectiveExchangeRate(ctx)
+	if err != nil {
+		return 0, err
+	}
+	// 收款金额向上取到该币种的最小单位：换算余数由用户承担，而不是我们贴。
+	digits := int32(payment.CurrencyMaxFractionDigits(methodCurrency))
+	return decimal.NewFromFloat(amount).Mul(rate).RoundUp(digits).InexactFloat64(), nil
+}
+
+func (s *PaymentService) effectiveExchangeRate(ctx context.Context) (decimal.Decimal, error) {
+	if s.exchangeRateService == nil {
+		return decimal.Zero, infraerrors.ServiceUnavailable("EXCHANGE_RATE_UNAVAILABLE",
+			"exchange rate service is not configured")
+	}
+	rate, _, err := s.exchangeRateService.EffectiveRate(ctx)
+	if err != nil {
+		return decimal.Zero, err
+	}
+	if !rate.IsPositive() {
+		return decimal.Zero, infraerrors.ServiceUnavailable("EXCHANGE_RATE_UNAVAILABLE",
+			"exchange rate must be positive")
+	}
+	return rate, nil
 }
 
 func (s *PaymentService) validateOrderInput(ctx context.Context, req CreateOrderRequest, cfg *PaymentConfig) (*dbent.SubscriptionPlan, error) {

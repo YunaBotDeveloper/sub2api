@@ -400,6 +400,9 @@ export default {
     amountTooHigh: '最高金额为 {max}',
     amountNoMethod: '该金额没有可用的支付方式',
     rechargeRatePreview: '当前倍率：1 {currency} = {usd} USD',
+    exchangeRateNote: '参考汇率：1 USD = {rate}',
+    convertedAmount: '实际扣款 {amount}',
+    exchangeRateUnavailable: '暂时取不到汇率，请稍后再试。',
     errors: {
       tooManyPending: '待支付订单过多（最多 {max} 个），请先完成或取消现有订单',
       methodUnavailable: '该支付方式暂时不可用。',

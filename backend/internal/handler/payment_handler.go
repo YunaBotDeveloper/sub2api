@@ -208,14 +208,29 @@ func (h *PaymentHandler) GetLimits(c *gin.Context) {
 	response.Success(c, resp)
 }
 
+// GetExchangeRate returns the USD-to-gateway-currency rate used to price orders.
+// GET /api/v1/payment/exchange-rate?payment_type=xxx
+func (h *PaymentHandler) GetExchangeRate(c *gin.Context) {
+	info, err := h.paymentService.ExchangeRate(c.Request.Context(), c.Query("payment_type"))
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+	response.Success(c, info)
+}
+
 // CreateOrderRequest is the request body for creating a payment order.
 type CreateOrderRequest struct {
-	Amount        float64 `json:"amount"`
-	PaymentType   string  `json:"payment_type" binding:"required"`
-	ReturnURL     string  `json:"return_url"`
-	PaymentSource string  `json:"payment_source"`
-	OrderType     string  `json:"order_type"`
-	PlanID        int64   `json:"plan_id"`
+	Amount float64 `json:"amount"`
+	// AmountCurrency is the currency the user typed Amount in: "USD" or the
+	// gateway's settlement currency. Blank keeps the old behaviour (gateway
+	// currency), so existing clients are unaffected.
+	AmountCurrency string `json:"amount_currency"`
+	PaymentType    string `json:"payment_type" binding:"required"`
+	ReturnURL      string `json:"return_url"`
+	PaymentSource  string `json:"payment_source"`
+	OrderType      string `json:"order_type"`
+	PlanID         int64  `json:"plan_id"`
 	// IsMobile lets the frontend declare its mobile status directly. When
 	// nil we fall back to User-Agent heuristics (which miss iPadOS / some
 	// embedded browsers that strip the "Mobile" keyword).
@@ -240,18 +255,19 @@ func (h *PaymentHandler) CreateOrder(c *gin.Context) {
 		mobile = *req.IsMobile
 	}
 	result, err := h.paymentService.CreateOrder(c.Request.Context(), service.CreateOrderRequest{
-		UserID:        subject.UserID,
-		Amount:        req.Amount,
-		PaymentType:   req.PaymentType,
-		ClientIP:      c.ClientIP(),
-		IsMobile:      mobile,
-		SrcHost:       c.Request.Host,
-		SrcURL:        c.Request.Referer(),
-		ReturnURL:     req.ReturnURL,
-		PaymentSource: req.PaymentSource,
-		OrderType:     req.OrderType,
-		PlanID:        req.PlanID,
-		Locale:        c.GetHeader("Accept-Language"),
+		UserID:         subject.UserID,
+		Amount:         req.Amount,
+		AmountCurrency: req.AmountCurrency,
+		PaymentType:    req.PaymentType,
+		ClientIP:       c.ClientIP(),
+		IsMobile:       mobile,
+		SrcHost:        c.Request.Host,
+		SrcURL:         c.Request.Referer(),
+		ReturnURL:      req.ReturnURL,
+		PaymentSource:  req.PaymentSource,
+		OrderType:      req.OrderType,
+		PlanID:         req.PlanID,
+		Locale:         c.GetHeader("Accept-Language"),
 	})
 	if err != nil {
 		response.ErrorFrom(c, err)

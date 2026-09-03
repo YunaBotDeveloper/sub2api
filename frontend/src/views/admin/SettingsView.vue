@@ -8138,6 +8138,44 @@
                     </p>
                   </div>
                   <div>
+                    <label class="input-label">{{
+                      t("admin.settings.payment.exchangeRateMarkup")
+                    }}</label>
+                    <div class="relative">
+                      <input
+                        v-model.number="form.payment_exchange_rate_markup_percent"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="100"
+                        class="input pr-8"
+                      />
+                      <span
+                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400"
+                        >%</span
+                      >
+                    </div>
+                    <p class="mt-0.5 text-xs text-gray-400">
+                      {{ t("admin.settings.payment.exchangeRateMarkupHint") }}
+                    </p>
+                  </div>
+                  <div>
+                    <label class="input-label">{{
+                      t("admin.settings.payment.exchangeRateMaxAge")
+                    }}</label>
+                    <input
+                      v-model.number="form.payment_exchange_rate_max_age_hours"
+                      type="number"
+                      step="1"
+                      min="1"
+                      max="720"
+                      class="input"
+                    />
+                    <p class="mt-0.5 text-xs text-gray-400">
+                      {{ t("admin.settings.payment.exchangeRateMaxAgeHint") }}
+                    </p>
+                  </div>
+                  <div>
                     <label class="input-label"
                       >{{ t("admin.settings.payment.orderTimeout") }}
                       <span class="text-red-500">*</span></label
@@ -9776,6 +9814,8 @@ const form = reactive<SettingsForm>({
   payment_balance_recharge_multiplier: 1,
   payment_subscription_usd_to_cny_rate: 0,
   payment_recharge_fee_rate: 0,
+  payment_exchange_rate_markup_percent: 0,
+  payment_exchange_rate_max_age_hours: 24,
   payment_enabled_types: [],
   payment_help_image_url: "",
   payment_help_text: "",
@@ -11620,6 +11660,8 @@ async function saveSettings() {
       payment_subscription_usd_to_cny_rate:
         Number(form.payment_subscription_usd_to_cny_rate) || 0,
       payment_recharge_fee_rate: Number(form.payment_recharge_fee_rate) || 0,
+      payment_exchange_rate_markup_percent: Number(form.payment_exchange_rate_markup_percent) || 0,
+      payment_exchange_rate_max_age_hours: Number(form.payment_exchange_rate_max_age_hours) || 24,
       payment_enabled_types: form.payment_enabled_types,
       payment_load_balance_strategy: form.payment_load_balance_strategy,
       payment_product_name_prefix: form.payment_product_name_prefix,

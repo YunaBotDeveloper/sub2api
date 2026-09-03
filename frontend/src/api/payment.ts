@@ -9,6 +9,7 @@ import type {
   SubscriptionPlan,
   MethodLimitsResponse,
   CheckoutInfoResponse,
+  ExchangeRateInfo,
   CreateOrderRequest,
   CreateOrderResult,
   PaymentOrder
@@ -40,6 +41,10 @@ export const paymentAPI = {
   },
 
   /** Get payment method limits and fee rates */
+  getExchangeRate(paymentType: string) {
+    return apiClient.get<ExchangeRateInfo>('/payment/exchange-rate', { params: { payment_type: paymentType } })
+  },
+
   getLimits() {
     return apiClient.get<MethodLimitsResponse>('/payment/limits')
   },

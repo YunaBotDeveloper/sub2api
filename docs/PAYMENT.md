@@ -72,6 +72,38 @@ The subscription rate setting (1 USD = X gateway currency) converts a plan's USD
 price into the settlement currency. It is opt-in: leave it at `0` and plan prices
 are charged as-is.
 
+### Top-up in USD or VND
+
+Account balances are denominated in USD, but SePay settles in VND. A customer may
+type the top-up amount in either currency; the picker sits next to the quick-amount
+buttons and is hidden when the gateway already settles in USD.
+
+The rate comes from the Vietcombank published board
+(`portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx`), **Sell**
+column — we are selling USD to the customer, so the sell rate is the one that
+applies. It is fetched at most once an hour and the last successful fetch is
+persisted, so a restart does not leave the system without a rate.
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| **Exchange Rate Markup** | Percent added on top of the published sell rate | `0` |
+| **Exchange Rate Max Age** | Hours a cached rate may be used for while the provider is unreachable | `24` |
+
+Rounding is deliberately asymmetric, always away from us: the VND charged is
+rounded **up** to a whole dong, and the USD credited is truncated **down** to the
+cent. The customer never gets balance we were not paid for.
+
+If the rate provider is unreachable and the cached rate is older than the max age,
+top-up order creation fails with `EXCHANGE_RATE_STALE` rather than pricing an
+order against a rate of unknown age. With no cached rate at all the code is
+`EXCHANGE_RATE_UNAVAILABLE`. Paying in the gateway's own currency still needs a
+rate, because the balance credited is in USD.
+
+`GET /api/v1/payment/exchange-rate?payment_type=<type>` returns the rate the
+backend will price with, so the top-up form previews the same number the order
+is created at. The frontend preview is never authoritative — the backend
+re-derives both amounts from the submitted `amount` and `amount_currency`.
+
 ---
 
 ## Provider Configuration

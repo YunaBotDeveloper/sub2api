@@ -47,10 +47,14 @@
             <div class="card p-6">
               <AmountInput
                 v-model="amount"
-                :amounts="[10, 20, 50, 100, 200, 500, 1000, 2000, 5000]"
-                :min="globalMinAmount"
-                :max="globalMaxAmount"
+                v-model:currency="inputCurrency"
+                :amounts="quickAmounts"
+                :min="inputMinAmount"
+                :max="inputMaxAmount"
+                :currency-options="currencyOptions"
               />
+              <p v-if="exchangeRateError" class="mt-2 text-xs text-amber-600 dark:text-amber-300">{{ exchangeRateError }}</p>
+              <p v-else-if="conversionHint" class="mt-2 text-xs text-gray-500 dark:text-gray-400">{{ conversionHint }}</p>
               <p v-if="amountError" class="mt-2 text-xs text-amber-600 dark:text-amber-300">{{ amountError }}</p>
             </div>
             <div v-if="enabledMethods.length >= 1" class="card p-6">
@@ -74,12 +78,15 @@
                   <span class="font-medium text-gray-700 dark:text-gray-300">{{ t('payment.actualPay') }}</span>
                   <span class="text-lg font-bold text-primary-600 dark:text-primary-400">{{ formatSelectedPaymentAmount(totalAmount) }}</span>
                 </div>
-                <div v-if="balanceRechargeMultiplier !== 1" class="flex justify-between" :class="{ 'border-t border-gray-200 pt-2 dark:border-dark-600': feeRate <= 0 }">
+                <div class="flex justify-between" :class="{ 'border-t border-gray-200 pt-2 dark:border-dark-600': feeRate <= 0 }">
                   <span class="text-gray-500 dark:text-gray-400">{{ t('payment.creditedBalance') }}</span>
                   <span class="text-gray-900 dark:text-white">${{ creditedAmount.toFixed(2) }}</span>
                 </div>
-                <p v-if="balanceRechargeMultiplier !== 1" class="border-t border-gray-200 pt-2 text-xs text-gray-500 dark:border-dark-600 dark:text-gray-400">
-                  {{ t('payment.rechargeRatePreview', { currency: selectedCurrency, usd: balanceRechargeMultiplier.toFixed(2) }) }}
+                <p v-if="exchangeRateText || balanceRechargeMultiplier !== 1" class="space-y-1 border-t border-gray-200 pt-2 text-xs text-gray-500 dark:border-dark-600 dark:text-gray-400">
+                  <span v-if="exchangeRateText" class="block">{{ exchangeRateText }}</span>
+                  <span v-if="balanceRechargeMultiplier !== 1" class="block">
+                    {{ t('payment.rechargeRatePreview', { currency: selectedCurrency, usd: balanceRechargeMultiplier.toFixed(2) }) }}
+                  </span>
                 </p>
               </div>
             </div>
@@ -332,6 +339,7 @@ const paymentPhase = ref<'select' | 'paying'>('select')
 interface CreateOrderOptions {
   paymentType?: string
   isResume?: boolean
+  amountCurrency?: string
 }
 
 function emptyPaymentState(): PaymentRecoverySnapshot {
@@ -426,7 +434,85 @@ const tabs = computed(() => {
 
 const visibleMethods = computed(() => getVisibleMethods(checkout.value.methods))
 const enabledMethods = computed(() => Object.keys(visibleMethods.value))
-const validAmount = computed(() => amount.value ?? 0)
+
+// 用户可以按网关结算币种（VND）或 USD 填金额，两者通过越南外贸银行牌价换算。
+// 这里只做预览，真正定价在后端用同一个汇率完成。
+const inputCurrency = ref(DEFAULT_PAYMENT_CURRENCY)
+const exchangeRate = ref(0)
+const exchangeRateError = ref('')
+
+const currencyOptions = computed(() => {
+  const gateway = selectedCurrency.value
+  if (gateway === 'USD') return [gateway]
+  return exchangeRate.value > 0 ? [gateway, 'USD'] : [gateway]
+})
+
+/** 用户填的数额，单位是 inputCurrency。 */
+const typedAmount = computed(() => amount.value ?? 0)
+
+/** 折算成网关结算币种后要收的钱；后端用 RoundUp，这里镜像它。 */
+const validAmount = computed(() => {
+  if (inputCurrency.value === selectedCurrency.value) return typedAmount.value
+  if (exchangeRate.value <= 0) return 0
+  return ceilPaymentAmount(typedAmount.value * exchangeRate.value, selectedCurrency.value)
+})
+
+/** 折算成 USD 后要记的余额；后端向下取到分，这里同样向下。 */
+const usdAmount = computed(() => {
+  if (inputCurrency.value === 'USD') return typedAmount.value
+  if (selectedCurrency.value === 'USD') return typedAmount.value
+  if (exchangeRate.value <= 0) return 0
+  return Math.floor((typedAmount.value / exchangeRate.value) * 100) / 100
+})
+
+const quickAmounts = computed(() =>
+  inputCurrency.value === 'USD'
+    ? [5, 10, 20, 50, 100, 200, 500]
+    : [100000, 200000, 500000, 1000000, 2000000, 5000000]
+)
+
+/** 限额是按网关币种配置的，用户按 USD 填时要把边界折回去。 */
+function limitToInputCurrency(limit: number): number {
+  if (limit <= 0) return 0
+  if (inputCurrency.value === selectedCurrency.value || exchangeRate.value <= 0) return limit
+  return Math.ceil((limit / exchangeRate.value) * 100) / 100
+}
+const inputMinAmount = computed(() => limitToInputCurrency(globalMinAmount.value))
+const inputMaxAmount = computed(() => limitToInputCurrency(globalMaxAmount.value))
+
+const exchangeRateText = computed(() => {
+  if (exchangeRate.value <= 0 || selectedCurrency.value === 'USD') return ''
+  return t('payment.exchangeRateNote', {
+    rate: formatPaymentAmount(exchangeRate.value, selectedCurrency.value, localeCode.value),
+  })
+})
+
+const conversionHint = computed(() => {
+  if (typedAmount.value <= 0 || inputCurrency.value === selectedCurrency.value) return ''
+  if (exchangeRate.value <= 0) return ''
+  return t('payment.convertedAmount', {
+    amount: formatPaymentAmount(validAmount.value, selectedCurrency.value, localeCode.value),
+  })
+})
+
+async function loadExchangeRate() {
+  const method = selectedMethod.value
+  if (!method) return
+  try {
+    const { data: info } = await paymentAPI.getExchangeRate(method)
+    const parsed = Number(info.rate)
+    exchangeRate.value = Number.isFinite(parsed) && parsed > 0 ? parsed : 0
+    exchangeRateError.value = ''
+  } catch (err) {
+    // 汇率拿不到时只允许按网关币种充值：不要拿一个猜的价格给用户看。
+    exchangeRate.value = 0
+    exchangeRateError.value = extractApiErrorMessage(err) || t('payment.exchangeRateUnavailable')
+  }
+  if (!currencyOptions.value.includes(inputCurrency.value)) {
+    inputCurrency.value = selectedCurrency.value
+  }
+}
+
 const balanceRechargeMultiplier = computed(() => {
   const multiplier = checkout.value.balance_recharge_multiplier
   return Number.isFinite(multiplier) && multiplier > 0 ? multiplier : 1
@@ -436,7 +522,7 @@ const subscriptionUsdToCnyRate = computed(() => {
   const rate = checkout.value.subscription_usd_to_cny_rate
   return Number.isFinite(rate) && rate > 0 ? rate : 0
 })
-const creditedAmount = computed(() => Math.round((validAmount.value * balanceRechargeMultiplier.value) * 100) / 100)
+const creditedAmount = computed(() => Math.round((usdAmount.value * balanceRechargeMultiplier.value) * 100) / 100)
 
 // Adaptive grid: center single card, 2-col for 2 plans, 3-col for 3+
 const planGridClass = computed(() => {
@@ -472,6 +558,14 @@ const globalMaxAmount = computed(() => {
 // Selected method's limits (for validation and error messages)
 const selectedLimit = computed(() => visibleMethods.value[selectedMethod.value])
 const selectedCurrency = computed(() => normalizePaymentCurrency(selectedLimit.value?.currency))
+
+watch(selectedCurrency, (currency) => {
+  inputCurrency.value = currency
+})
+watch(selectedMethod, () => {
+  void loadExchangeRate()
+})
+
 const localeCode = computed(() => {
   const raw = i18n.locale as unknown
   if (typeof raw === 'string') return raw
@@ -669,7 +763,7 @@ function closeRenewalModal() {
 
 async function handleSubmitRecharge() {
   if (!canSubmit.value || submitting.value) return
-  await createOrder(validAmount.value, 'balance')
+  await createOrder(typedAmount.value, 'balance', undefined, { amountCurrency: inputCurrency.value })
 }
 
 async function confirmSubscribe() {
@@ -685,6 +779,7 @@ async function createOrder(orderAmount: number, orderType: OrderType, planId?: n
   try {
     const payload = buildCreateOrderPayload({
       amount: orderAmount,
+      amountCurrency: options.amountCurrency,
       paymentType: requestType,
       orderType,
       planId,

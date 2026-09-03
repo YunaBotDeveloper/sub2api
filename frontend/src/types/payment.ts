@@ -164,12 +164,22 @@ export interface ProviderInstance {
 
 export interface CreateOrderRequest {
   amount: number
+  amount_currency?: string
   payment_type: string
   order_type: string
   plan_id?: number
   return_url?: string
   payment_source?: string
   is_mobile?: boolean
+}
+
+/** Rate the backend prices orders at, from GET /payment/exchange-rate. */
+export interface ExchangeRateInfo {
+  gateway_currency: string
+  /** Units of `gateway_currency` per 1 USD, markup included. */
+  rate: string
+  fetched_at?: string
+  source?: string
 }
 
 /**

@@ -376,6 +376,9 @@ export default {
     amountTooHigh: 'Maximum amount is {max}',
     amountNoMethod: 'No payment method available for this amount',
     rechargeRatePreview: 'Current rate: 1 {currency} = {usd} USD',
+    exchangeRateNote: 'Exchange rate: 1 USD = {rate}',
+    convertedAmount: 'You will be charged {amount}',
+    exchangeRateUnavailable: 'The exchange rate is unavailable right now. Please try again in a moment.',
     errors: {
       tooManyPending: 'Too many pending orders (max {max}). Please complete or cancel existing orders first.',
       methodUnavailable: 'This payment method is temporarily unavailable.',
