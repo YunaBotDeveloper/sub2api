@@ -14,6 +14,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/Wei-Shaw/sub2api/internal/util/urlvalidator"
 	"github.com/spf13/viper"
 	"golang.org/x/net/http/httpguts"
 )
@@ -733,6 +734,21 @@ type SecurityConfig struct {
 	TrustForwardedIPForAPIKeyACL  bool                                       `mapstructure:"trust_forwarded_ip_for_api_key_acl"`
 	ForwardedClientIPHeaders      []string                                   `mapstructure:"forwarded_client_ip_headers" json:"forwarded_client_ip_headers" yaml:"forwarded_client_ip_headers"`
 	forwardedClientIPSettingsLive *atomic.Pointer[ForwardedClientIPSettings] `mapstructure:"-" json:"-" yaml:"-"`
+
+	// SecretEncryptionKey 是应用级 SecretEncryptor 的主密钥（AES-256，32 字节 hex，
+	// 即 64 位十六进制字符）。它是全站唯一一把静态数据加密密钥，保护备份 S3 凭据、
+	// 渠道监控上游 API Key、S3 图片存储凭据、Ollama Cloud 会话、插件配置与插件 UI
+	// 会话 token、TOTP 密钥，以及支付服务商实例配置。
+	//
+	// 规范环境变量：SECURITY_SECRET_ENCRYPTION_KEY
+	// 兼容别名：totp.encryption_key / TOTP_ENCRYPTION_KEY（历史命名，语义早已超出 TOTP）
+	//
+	// 留空不会生成随机密钥：留空意味着上述功能全部不可用，且在数据库中已存在密文时
+	// 启动会失败。见 load() 中的归一逻辑与 repository.ensureSecretEncryptionKeyUsable。
+	SecretEncryptionKey string `mapstructure:"secret_encryption_key" json:"-" yaml:"-"`
+	// SecretEncryptionKeyConfigured 标记主密钥是否由运维显式配置。
+	// 只有显式配置了密钥，才允许启用任何会写入密文的功能。
+	SecretEncryptionKeyConfigured bool `mapstructure:"-" json:"-" yaml:"-"`
 }
 
 func NormalizeForwardedClientIPHeaders(headers []string) ([]string, error) {
@@ -1645,12 +1661,67 @@ type JWTConfig struct {
 
 // TotpConfig TOTP 双因素认证配置
 type TotpConfig struct {
-	// EncryptionKey 用于加密 TOTP 密钥的 AES-256 密钥（32 字节 hex 编码）
-	// 如果为空，将自动生成一个随机密钥（仅适用于开发环境）
+	// EncryptionKey 是应用级密钥加密主密钥的**兼容别名**。
+	//
+	// 规范位置是 Security.SecretEncryptionKey（security.secret_encryption_key /
+	// SECURITY_SECRET_ENCRYPTION_KEY）。这个字段之所以叫 totp，是历史命名遗留：
+	// 它从来就不只加密 TOTP 密钥，而是全站唯一的静态数据加密密钥。
+	//
+	// load() 会把新旧两个键归一之后，把最终生效值镜像写回这里，因此所有既有的
+	// cfg.Totp.EncryptionKey 读取点读到的都是正确的生效密钥。新代码请改用
+	// Security.SecretEncryptionKey。
 	EncryptionKey string `mapstructure:"encryption_key"`
-	// EncryptionKeyConfigured 标记加密密钥是否为手动配置（非自动生成）
-	// 只有手动配置了密钥才允许在管理后台启用 TOTP 功能
+	// EncryptionKeyConfigured 是 Security.SecretEncryptionKeyConfigured 的镜像。
+	// 只有显式配置了密钥才允许启用任何会写入密文的功能（含 TOTP）。
 	EncryptionKeyConfigured bool `mapstructure:"-"`
+}
+
+const (
+	// SecretEncryptionKeyEnvVar 是应用级密钥加密主密钥的规范环境变量名。
+	// viper 的 AutomaticEnv + SetEnvKeyReplacer(".", "_") 把配置键
+	// security.secret_encryption_key 映射到这个名字。
+	SecretEncryptionKeyEnvVar = "SECURITY_SECRET_ENCRYPTION_KEY"
+	// LegacySecretEncryptionKeyEnvVar 是同一把密钥的历史环境变量名。
+	// 对应配置键 totp.encryption_key，保留为只读别名以免升级打断存量安装。
+	LegacySecretEncryptionKeyEnvVar = "TOTP_ENCRYPTION_KEY"
+)
+
+// resolveSecretEncryptionKey 归一应用级密钥加密主密钥。
+//
+// 规范键 security.secret_encryption_key（SECURITY_SECRET_ENCRYPTION_KEY）优先，
+// 历史别名 totp.encryption_key（TOTP_ENCRYPTION_KEY）作为回退。
+//
+// 这里刻意**不**在密钥为空时生成随机密钥。历史行为是空则每次进程启动生成一把新的
+// 随机密钥，于是从未配置过密钥的运维会在每次重启后静默失去解密全部已存密文的能力：
+// 不报错、无提示、数据无声损坏。密钥为空现在就保持为空，是否阻断启动由
+// repository.ensureSecretEncryptionKeyUsable 在能看到数据库的地方决定。
+func resolveSecretEncryptionKey(cfg *Config) {
+	canonical := strings.TrimSpace(cfg.Security.SecretEncryptionKey)
+	legacy := strings.TrimSpace(cfg.Totp.EncryptionKey)
+
+	resolved := canonical
+	switch {
+	case canonical == "" && legacy != "":
+		resolved = legacy
+		slog.Warn("secret encryption key is configured under its legacy name; "+
+			"please migrate to the canonical variable — the key protects far more than TOTP",
+			"legacy_env", LegacySecretEncryptionKeyEnvVar,
+			"canonical_env", SecretEncryptionKeyEnvVar)
+	case canonical != "" && legacy != "" && canonical != legacy:
+		// 规范名胜出：否则运维无法通过设置新变量来覆盖一个遗留的旧变量。
+		// 两个值都不进日志。
+		slog.Warn("secret encryption key is set to different values under both names; "+
+			"the canonical variable wins — remove the legacy one once verified",
+			"canonical_env", SecretEncryptionKeyEnvVar,
+			"legacy_env", LegacySecretEncryptionKeyEnvVar)
+	}
+
+	cfg.Security.SecretEncryptionKey = resolved
+	cfg.Security.SecretEncryptionKeyConfigured = resolved != ""
+
+	// 镜像回历史字段，使约十处既有 cfg.Totp.* 读取点无需修改即可读到生效密钥。
+	cfg.Totp.EncryptionKey = resolved
+	cfg.Totp.EncryptionKeyConfigured = cfg.Security.SecretEncryptionKeyConfigured
 }
 
 type TurnstileConfig struct {
@@ -1922,19 +1993,9 @@ func load(allowMissingJWTSecret bool) (*Config, error) {
 		cfg.Gateway.UserMessageQueue.Mode = ""
 	}
 
-	// Auto-generate TOTP encryption key if not set (32 bytes = 64 hex chars for AES-256)
-	cfg.Totp.EncryptionKey = strings.TrimSpace(cfg.Totp.EncryptionKey)
-	if cfg.Totp.EncryptionKey == "" {
-		key, err := generateJWTSecret(32) // Reuse the same random generation function
-		if err != nil {
-			return nil, fmt.Errorf("generate totp encryption key error: %w", err)
-		}
-		cfg.Totp.EncryptionKey = key
-		cfg.Totp.EncryptionKeyConfigured = false
-		slog.Warn("TOTP encryption key auto-generated. Consider setting a fixed key for production.")
-	} else {
-		cfg.Totp.EncryptionKeyConfigured = true
-	}
+	// 归一应用级密钥加密主密钥。
+	// 规范键 security.secret_encryption_key 与兼容别名 totp.encryption_key 都被接受。
+	resolveSecretEncryptionKey(&cfg)
 
 	originalJWTSecret := cfg.JWT.Secret
 	if allowMissingJWTSecret && originalJWTSecret == "" {
@@ -1950,8 +2011,17 @@ func load(allowMissingJWTSecret bool) (*Config, error) {
 		cfg.JWT.Secret = ""
 	}
 
+	// 把「是否阻断私网上游」注入 urlvalidator：白名单关闭时的降级校验路径
+	// （ValidateURLFormat）没有 *Config 可用，只能由加载流程一次性注入。
+	// 由于 allow_private_hosts 默认 false，任何真实部署（都经由 Load/LoadForBootstrap）
+	// 都会在这里打开私网阻断；出网口 repository 侧还有一层基于 Config 的兜底校验。
+	urlvalidator.SetBlockPrivateUpstreams(!cfg.Security.URLAllowlist.AllowPrivateHosts)
+
 	if !cfg.Security.URLAllowlist.Enabled {
-		slog.Warn("security.url_allowlist.enabled=false; allowlist/SSRF checks disabled (minimal format validation only).")
+		slog.Warn("security.url_allowlist.enabled=false; upstream host allowlist is not enforced (private/loopback targets are still blocked unless security.url_allowlist.allow_private_hosts=true).")
+	}
+	if cfg.Security.URLAllowlist.AllowPrivateHosts {
+		slog.Warn("security.url_allowlist.allow_private_hosts=true; SSRF protection is disabled: upstream/pricing/CRS URLs may point at localhost, RFC1918 or link-local addresses (169.254.169.254). Only use this on trusted networks.")
 	}
 	if !cfg.Security.ResponseHeaders.Enabled {
 		slog.Warn("security.response_headers.enabled=false; configurable header filtering disabled (default allowlist only).")
@@ -2038,6 +2108,20 @@ func setDefaults() {
 	viper.SetDefault("webauthn.rp_origins", []string{})
 
 	// Security
+	//
+	// 出站 URL 策略被拆成两个独立开关，不要把它们混为一谈：
+	//
+	//  1. security.url_allowlist.enabled —— 主机白名单（默认关闭）。
+	//     开启后调用方走 ValidateHTTPSURL + RequireAllowlist=true：强制 HTTPS，
+	//     且上游主机必须逐一列在 upstream_hosts/pricing_hosts/crs_hosts 中。
+	//     这是封闭部署的收敛策略，默认开启会直接打断所有自建/第三方中转上游，
+	//     因此保持 opt-in。
+	//
+	//  2. security.url_allowlist.allow_private_hosts —— 私网目标（默认禁止）。
+	//     这是 SSRF 基线防护，与白名单是否开启无关：无论走白名单路径还是降级的
+	//     格式校验路径，指向 localhost / RFC1918 / 169.254.169.254 的上游都会被
+	//     拒绝，且解析后 IP 校验（DNS Rebinding / 重定向）同步生效。
+	//     指向 LAN、局域网中转或 localhost 的部署需要显式设为 true。
 	viper.SetDefault("security.url_allowlist.enabled", false)
 	viper.SetDefault("security.url_allowlist.upstream_hosts", []string{
 		"api.openai.com",
@@ -2055,7 +2139,10 @@ func setDefaults() {
 		"raw.githubusercontent.com",
 	})
 	viper.SetDefault("security.url_allowlist.crs_hosts", []string{})
-	viper.SetDefault("security.url_allowlist.allow_private_hosts", true)
+	// 默认阻断私网/环回/链路本地上游（SSRF 基线）。
+	// 历史默认值为 true，配合默认关闭的白名单，等于所有部署都对
+	// http://169.254.169.254 之类的目标完全不设防（安全审计 M2）。
+	viper.SetDefault("security.url_allowlist.allow_private_hosts", false)
 	viper.SetDefault("security.url_allowlist.allow_insecure_http", true)
 	viper.SetDefault("security.response_headers.enabled", true)
 	viper.SetDefault("security.response_headers.additional_allowed", []string{})
@@ -2264,7 +2351,11 @@ func setDefaults() {
 	viper.SetDefault("jwt.refresh_token_expire_days", 30)  // 30天Refresh Token有效期
 	viper.SetDefault("jwt.refresh_window_minutes", 2)      // 过期前2分钟开始允许刷新
 
-	// TOTP
+	// 应用级密钥加密主密钥。
+	// 规范键 + 历史别名都要注册默认值：viper.Unmarshal 只解码 AllKeys() 里的键，
+	// AutomaticEnv 只能覆盖已在其中的键、从不新增，所以缺了 SetDefault 的键在
+	// 纯环境变量部署下会被读进来然后静默丢弃（image_storage 凭据就是这么丢的）。
+	viper.SetDefault("security.secret_encryption_key", "")
 	viper.SetDefault("totp.encryption_key", "")
 
 	// Default

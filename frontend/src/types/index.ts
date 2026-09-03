@@ -193,6 +193,11 @@ export interface CustomMenuItem {
   page_slug?: string
   visibility: 'user' | 'admin'
   sort_order: number
+  /**
+   * 是否把当前用户的访问令牌（JWT）作为 `token` query 透传给内嵌页面。
+   * 缺省/false = 不透传。开启后后端要求该菜单项 URL 必须是 https。
+   */
+  pass_token?: boolean
 }
 
 export interface CustomEndpoint {
@@ -280,6 +285,12 @@ export interface PublicSettings {
   service_quota_enabled: boolean
   affiliate_enabled: boolean
   allow_user_view_error_requests?: boolean
+  /**
+   * 自定义页面 Markdown 正文里允许被嵌入的**主机名**（不是 URL）。
+   * 空数组 = 运维显式禁止任何 iframe；字段缺失（旧后端）= 回落内置默认列表。
+   * 同一份列表也会被后端注入 CSP frame-src，参见 utils/iframeSanitize.ts。
+   */
+  custom_page_iframe_hosts?: string[]
 }
 
 export interface AuthResponse {

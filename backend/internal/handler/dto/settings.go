@@ -16,6 +16,10 @@ type CustomMenuItem struct {
 	PageSlug   string `json:"page_slug,omitempty"`
 	Visibility string `json:"visibility"` // "user" or "admin"
 	SortOrder  int    `json:"sort_order"`
+	// PassToken 控制是否把当前用户的访问令牌（JWT）作为 `token` query 透传给内嵌页面。
+	// 该令牌与 Authorization: Bearer 是同一枚（默认 24 小时有效，管理员打开管理员可见
+	// 页面时泄露的是管理员令牌），所以默认关闭；开启时 URL 必须是 https。
+	PassToken bool `json:"pass_token"`
 }
 
 // CustomEndpoint represents an admin-configured API endpoint for quick copy.
@@ -343,6 +347,13 @@ type SystemSettings struct {
 
 	// 允许终端用户在用量页查看自己的失败请求
 	AllowUserViewErrorRequests bool `json:"allow_user_view_error_requests"`
+
+	// CustomPageIframeHosts 是自定义页面正文允许嵌入的 iframe 主机白名单。
+	// 三态直接编码在 JSON 里，**不要加 omitempty**：
+	//   null  → 从未配置，实际生效的是后端内置默认列表；
+	//   []    → 运维显式锁死，自定义页面不允许任何 iframe；
+	//   [...] → 显式白名单。
+	CustomPageIframeHosts []string `json:"custom_page_iframe_hosts"`
 }
 
 type DefaultSubscriptionSetting struct {
@@ -429,6 +440,11 @@ type PublicSettings struct {
 	RiskControlEnabled bool `json:"risk_control_enabled"`
 
 	AllowUserViewErrorRequests bool `json:"allow_user_view_error_requests"`
+
+	// CustomPageIframeHosts 是自定义页面 Markdown 正文里允许被嵌入的主机名（非 URL），
+	// 驱动 frontend/src/utils/iframeSanitize.ts 的 iframe 白名单。
+	// 空数组 = 运维显式禁止任何 iframe；字段缺失（旧后端）= 前端回落到内置默认列表。
+	CustomPageIframeHosts []string `json:"custom_page_iframe_hosts"`
 }
 
 type LoginAgreementDocument struct {
