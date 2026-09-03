@@ -177,10 +177,9 @@ const statusFilterOptions = computed(() => [
 
 const paymentTypeFilterOptions = computed(() => [
   { value: '', label: t('payment.admin.allPaymentTypes') },
-  { value: 'alipay', label: t('payment.methods.alipay') },
-  { value: 'wxpay', label: t('payment.methods.wxpay') },
-  { value: 'stripe', label: t('payment.methods.stripe') },
-  { value: 'airwallex', label: t('payment.methods.airwallex') },
+  { value: 'sepay_bank_transfer', label: t('payment.methods.sepay_bank_transfer') },
+  { value: 'sepay_napas', label: t('payment.methods.sepay_napas') },
+  { value: 'sepay_card', label: t('payment.methods.sepay_card') },
 ])
 
 const orderTypeFilterOptions = computed(() => [

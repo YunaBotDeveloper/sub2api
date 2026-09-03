@@ -107,7 +107,6 @@ const props = defineProps<{
   canCreate: boolean
   enabledPaymentTypes: string[]
   allPaymentTypes: TypeOption[]
-  redirectLabel: string
 }>()
 
 const emit = defineEmits<{
@@ -141,7 +140,7 @@ function isEnabled(providerKey: string): boolean {
 }
 
 function getTypes(providerKey: string): TypeOption[] {
-  return getAvailableTypes(providerKey, props.allPaymentTypes, props.redirectLabel)
+  return getAvailableTypes(providerKey, props.allPaymentTypes)
     .map(opt => opt.label === opt.value
       ? { ...opt, label: t(`payment.methods.${opt.value}`, opt.value) }
       : opt,

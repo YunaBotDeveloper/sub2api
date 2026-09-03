@@ -273,7 +273,6 @@ const props = defineProps<{
   allKeyOptions: TypeOption[]
   enabledKeyOptions: TypeOption[]
   allPaymentTypes: TypeOption[]
-  redirectLabel: string
 }>()
 
 const emit = defineEmits<{
@@ -327,7 +326,7 @@ const paymentModeOptions = computed(() => [
 ])
 
 const availableTypes = computed(() => {
-  const base = getAvailableTypes(form.provider_key, props.allPaymentTypes, props.redirectLabel)
+  const base = getAvailableTypes(form.provider_key, props.allPaymentTypes)
   // Resolve i18n labels for types the caller did not supply a label for.
   return base.map(opt =>
     opt.label === opt.value
