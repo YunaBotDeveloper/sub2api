@@ -19,7 +19,11 @@ export type OrderStatus =
   | 'REFUNDED'
   | 'REFUND_FAILED'
 
-export type PaymentType = 'sepay_bank_transfer' | 'sepay_napas' | 'sepay_card'
+export type PaymentType =
+  | 'sepay_bank_transfer'
+  | 'sepay_napas'
+  | 'sepay_card'
+  | 'nowpayments_crypto'
 
 export type OrderType = 'balance' | 'subscription'
 

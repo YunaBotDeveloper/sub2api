@@ -25,6 +25,7 @@
             :order-type="paymentState.orderType"
             :currency="paymentState.currency || selectedCurrency"
             :out-trade-no="paymentState.outTradeNo"
+            :gateway-return-status="gatewayReturnStatus"
             @done="onPaymentDone"
             @success="onPaymentSuccess"
             @settled="onPaymentSettled"
@@ -335,6 +336,9 @@ const selectedPlan = ref<SubscriptionPlan | null>(null)
 const previewImage = ref('')
 
 const paymentPhase = ref<'select' | 'paying'>('select')
+// 网关回跳时带回来的 status，转交给支付面板提前收尾用。每开一张新单都要清掉，
+// 否则上一单的「失败」会立刻把新单也判死。
+const gatewayReturnStatus = ref('')
 
 interface CreateOrderOptions {
   paymentType?: string
@@ -375,6 +379,7 @@ function removeRecoverySnapshot() {
 
 function resetPayment() {
   paymentPhase.value = 'select'
+  gatewayReturnStatus.value = ''
   paymentState.value = emptyPaymentState()
   removeRecoverySnapshot()
 }
@@ -807,6 +812,7 @@ async function createOrder(orderAmount: number, orderType: OrderType, planId?: n
     }
 
     paymentState.value = decision.paymentState
+    gatewayReturnStatus.value = ''
     paymentPhase.value = 'paying'
     persistRecoverySnapshot(decision.recovery)
 
@@ -872,13 +878,14 @@ let stopPopupResultListener: (() => void) | null = null
 
 onMounted(() => {
   stopPopupResultListener = listenForPopupResult((query) => {
-    // 取消不是一个「结果」：订单还在挂起，把用户丢到结果页只会让他盯着
-    // 一个什么都没发生的页面。退回选择页，让他直接重来。
-    if (query.status === 'cancelled') {
-      resetPayment()
-      appStore.showInfo(t('payment.qr.cancelled'))
+    // 支付面板本来就开在充值卡片里，而且一直在轮询这张单。用户从网关回来时
+    // 把他推去一个独立的结果页，等于让他离开正在看的东西再看一遍同一件事。
+    // 面板还在的话就把网关的说法交给它，人留在原地。
+    if (paymentPhase.value === 'paying') {
+      gatewayReturnStatus.value = String(query.status || '').trim().toLowerCase()
       return
     }
+    // 面板已经不在了（比如中途刷新过），只能退回结果页。
     removeRecoverySnapshot()
     router.push({ path: '/payment/result', query }).catch(() => {})
   })
@@ -912,7 +919,8 @@ onMounted(async () => {
       )
       if (restored) {
         paymentState.value = restored
-        paymentPhase.value = 'paying'
+        gatewayReturnStatus.value = ''
+    paymentPhase.value = 'paying'
         const restoredMethod = normalizeVisibleMethod(restored.paymentType)
           || (visibleMethods.value[restored.paymentType] ? restored.paymentType : '')
         if (restoredMethod) {

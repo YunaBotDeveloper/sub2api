@@ -165,6 +165,11 @@ const props = defineProps<{
   orderType?: string
   currency?: string
   outTradeNo?: string
+  /**
+   * What the gateway said when it sent the customer back, lowercased.
+   * Only a negative verdict is honoured — see settleFromGatewayReturn.
+   */
+  gatewayReturnStatus?: string
 }>()
 
 type PaymentOutcome = 'success' | 'cancelled' | 'expired'
@@ -244,6 +249,23 @@ function setOutcome(next: PaymentOutcome) {
   if (outcome.value === next) return
   outcome.value = next
   emit('settled', next)
+}
+
+// 网关回跳只用来提前结束「等待中」，从不用来宣布成功：那必须由后端订单
+// 状态说了算，否则用户改一下 URL 就能看到一个假的成功页。
+//
+// 即便如此也先再查一次订单：网关说失败、而 IPN 已经把订单标成已支付的
+// 情况虽然少见，但一旦发生，直接收摊会让用户以为钱丢了。
+async function settleFromGatewayReturn(status: string) {
+  if (outcome.value) return
+  const normalized = status.trim().toLowerCase()
+  if (normalized !== 'cancelled' && normalized !== 'failed') return
+
+  await pollStatus()
+  if (outcome.value) return
+
+  setOutcome(normalized === 'cancelled' ? 'cancelled' : 'expired')
+  cleanup()
 }
 
 async function renderQR() {
@@ -357,6 +379,10 @@ if (props.expiresAt) {
   seconds = Math.floor((new Date(props.expiresAt).getTime() - Date.now()) / 1000)
 }
 startCountdown(seconds)
+watch(() => props.gatewayReturnStatus, (status) => {
+  if (status) void settleFromGatewayReturn(status)
+}, { immediate: true })
+
 pollTimer = setInterval(pollStatus, 3000)
 renderQR()
 

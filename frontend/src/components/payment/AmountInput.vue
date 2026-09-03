@@ -36,7 +36,7 @@
           ]"
           @click="selectAmount(amt)"
         >
-          {{ amt }}
+          {{ formatQuickAmount(amt) }}
         </button>
       </div>
     </div>
@@ -69,6 +69,7 @@ import { useI18n } from 'vue-i18n'
 import {
   DEFAULT_PAYMENT_CURRENCY,
   currencySymbol,
+  formatPaymentAmount,
   paymentCurrencyFractionDigits,
 } from './currency'
 
@@ -94,7 +95,8 @@ const emit = defineEmits<{
   'update:currency': [value: string]
 }>()
 
-const { t } = useI18n()
+const i18n = useI18n()
+const { t } = i18n
 
 const customText = ref('')
 
@@ -104,9 +106,11 @@ const filteredAmounts = computed(() =>
 )
 
 const placeholderText = computed(() => {
-  if (props.min > 0 && props.max > 0) return `${props.min} - ${props.max}`
-  if (props.min > 0) return `≥ ${props.min}`
-  if (props.max > 0) return `≤ ${props.max}`
+  const min = formatQuickAmount(props.min)
+  const max = formatQuickAmount(props.max)
+  if (props.min > 0 && props.max > 0) return `${min} - ${max}`
+  if (props.min > 0) return `≥ ${min}`
+  if (props.max > 0) return `≤ ${max}`
   return t('payment.enterAmount')
 })
 
@@ -115,6 +119,11 @@ const amountPattern = computed(() => {
   const digits = paymentCurrencyFractionDigits(props.currency)
   return digits > 0 ? new RegExp(String.raw`^\d*(\.\d{0,${digits}})?$`) : /^\d*$/
 })
+
+// 1000000 读起来要数零；带分隔符的 ₫1,000,000 才看得出是一百万。
+function formatQuickAmount(amt: number): string {
+  return formatPaymentAmount(amt, props.currency, i18n.locale?.value ?? 'en')
+}
 
 function selectAmount(amt: number) {
   customText.value = String(amt)

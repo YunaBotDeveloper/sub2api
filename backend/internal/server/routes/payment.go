@@ -59,6 +59,7 @@ func RegisterPaymentRoutes(
 	webhook := v1.Group("/payment/webhook")
 	{
 		webhook.POST("/sepay", webhookHandler.SePayNotify)
+		webhook.POST("/nowpayments", webhookHandler.NowPaymentsNotify)
 	}
 
 	// --- Hosted checkout bridge (no auth) ---

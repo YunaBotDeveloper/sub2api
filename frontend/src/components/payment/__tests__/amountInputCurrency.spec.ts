@@ -44,6 +44,13 @@ describe('AmountInput currency switch', () => {
     expect(wrapper.emitted('update:modelValue')).toEqual([[10.55]])
   })
 
+  it('renders quick amounts with thousand separators', () => {
+    // 1000000 makes the reader count zeroes; ₫1,000,000 does not.
+    const text = mountInput({ currency: 'VND', amounts: [1000000] }).text()
+    expect(text).toContain('1,000,000')
+    expect(text).not.toContain('1000000')
+  })
+
   it('shows the symbol for the active currency', async () => {
     expect(mountInput({ currency: 'VND' }).text()).toContain('₫')
     expect(mountInput({ currency: 'USD' }).text()).toContain('$')

@@ -29,32 +29,40 @@ export interface CallbackPaths {
 
 // --- Constants ---
 
-/** Provider key of the only supported gateway. */
+/** Provider keys of the supported gateways. */
 export const PROVIDER_SEPAY = 'sepay'
+export const PROVIDER_NOWPAYMENTS = 'nowpayments'
 
 /** User-facing SePay payment methods. */
 export const SEPAY_BANK_TRANSFER = 'sepay_bank_transfer'
 export const SEPAY_NAPAS = 'sepay_napas'
 export const SEPAY_CARD = 'sepay_card'
 
+/** NOWPayments offers a single method: its hosted crypto checkout. */
+export const NOWPAYMENTS_CRYPTO = 'nowpayments_crypto'
+
 /** Maps provider key -> available payment types. */
 export const PROVIDER_SUPPORTED_TYPES: Record<string, string[]> = {
   [PROVIDER_SEPAY]: [SEPAY_BANK_TRANSFER, SEPAY_NAPAS, SEPAY_CARD],
+  [PROVIDER_NOWPAYMENTS]: [NOWPAYMENTS_CRYPTO],
 }
 
 /** Fixed display order for user-facing payment methods. */
-export const METHOD_ORDER = [SEPAY_BANK_TRANSFER, SEPAY_NAPAS, SEPAY_CARD] as const
+export const METHOD_ORDER = [SEPAY_BANK_TRANSFER, SEPAY_NAPAS, SEPAY_CARD, NOWPAYMENTS_CRYPTO] as const
 
 /** Payment mode constants. */
 export const PAYMENT_MODE_QRCODE = 'qrcode'
 export const PAYMENT_MODE_POPUP = 'popup'
 export const PAYMENT_MODE_REDIRECT = 'redirect'
 
-/** SePay environments, mirroring the backend `env` config field. */
-export const SEPAY_ENV_OPTIONS: TypeOption[] = [
+/** Gateway environments, mirroring the backend `env` config field. Both
+ * gateways use the same two values. */
+export const PROVIDER_ENV_OPTIONS: TypeOption[] = [
   { value: 'production', label: 'Production' },
   { value: 'sandbox', label: 'Sandbox' },
 ]
+
+export const SEPAY_ENV_OPTIONS = PROVIDER_ENV_OPTIONS
 
 export const PAYMENT_CURRENCY_OPTIONS: TypeOption[] = [
   { value: 'VND', label: 'VND' },
@@ -64,6 +72,7 @@ export const PAYMENT_CURRENCY_OPTIONS: TypeOption[] = [
 /** Webhook paths for each provider (relative to origin). */
 export const WEBHOOK_PATHS: Record<string, string> = {
   [PROVIDER_SEPAY]: '/api/v1/payment/webhook/sepay',
+  [PROVIDER_NOWPAYMENTS]: '/api/v1/payment/webhook/nowpayments',
 }
 
 export const RETURN_PATH = '/payment/result'
@@ -71,6 +80,7 @@ export const RETURN_PATH = '/payment/result'
 /** Fixed callback paths per provider - displayed as read-only after base URL. */
 export const PROVIDER_CALLBACK_PATHS: Record<string, CallbackPaths> = {
   [PROVIDER_SEPAY]: { notifyUrl: WEBHOOK_PATHS[PROVIDER_SEPAY], returnUrl: RETURN_PATH },
+  [PROVIDER_NOWPAYMENTS]: { notifyUrl: WEBHOOK_PATHS[PROVIDER_NOWPAYMENTS], returnUrl: RETURN_PATH },
 }
 
 /**
@@ -106,6 +116,41 @@ export const PROVIDER_CONFIG_FIELDS: Record<string, ConfigFieldDef[]> = {
       defaultValue: 'VND',
       hintKey: 'admin.settings.payment.field_paymentCurrencyHint',
       options: PAYMENT_CURRENCY_OPTIONS,
+    },
+  ],
+  [PROVIDER_NOWPAYMENTS]: [
+    { key: 'apiKey', label: 'API Key', sensitive: true },
+    {
+      // Required, unlike SePay's: the IPN signature is the only proof a
+      // NOWPayments callback is genuine — the gateway offers no order lookup
+      // to double-check it against.
+      key: 'ipnSecretKey',
+      label: 'IPN Secret Key',
+      sensitive: true,
+      hintKey: 'admin.settings.payment.field_nowPaymentsIpnSecretKeyHint',
+    },
+    {
+      key: 'env',
+      label: 'Environment',
+      sensitive: false,
+      defaultValue: 'production',
+      options: PROVIDER_ENV_OPTIONS,
+    },
+    {
+      key: 'currency',
+      label: 'Currency',
+      sensitive: false,
+      defaultValue: 'USD',
+      hintKey: 'admin.settings.payment.field_nowPaymentsCurrencyHint',
+      options: PAYMENT_CURRENCY_OPTIONS,
+    },
+    {
+      key: 'payCurrency',
+      label: 'Pay Currency',
+      sensitive: false,
+      optional: true,
+      clearable: true,
+      hintKey: 'admin.settings.payment.field_payCurrencyHint',
     },
   ],
 }

@@ -100,6 +100,104 @@ describe('PaymentStatusPanel', () => {
     expect(wrapper.emitted('success')).toHaveLength(1)
   })
 
+  it('settles in place when the gateway sends the customer back failed', async () => {
+    // The panel lives inside the top-up card and is already polling this order.
+    // Sending the customer to a separate result page makes them leave what they
+    // are looking at to look at the same thing again.
+    pollOrderStatus.mockResolvedValue(orderFactory('PENDING'))
+
+    const wrapper = mount(PaymentStatusPanel, {
+      props: {
+        orderId: 42,
+        qrCode: '',
+        payUrl: 'https://pay.example.com/session/42',
+        expiresAt: '2099-01-01T12:30:00Z',
+        paymentType: 'sepay_napas',
+        orderType: 'balance',
+        gatewayReturnStatus: 'failed',
+      },
+      global: { stubs: { Icon: true } },
+    })
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('payment.qr.expired')
+    expect(wrapper.emitted('settled')).toEqual([['expired']])
+
+    // Settled means settled: the poll timer must be gone, not just ignored.
+    const callsAfterSettle = pollOrderStatus.mock.calls.length
+    await vi.advanceTimersByTimeAsync(9000)
+    await flushPromises()
+    expect(pollOrderStatus.mock.calls.length).toBe(callsAfterSettle)
+  })
+
+  it('shows the cancelled state when the gateway reports a cancelled return', async () => {
+    pollOrderStatus.mockResolvedValue(orderFactory('PENDING'))
+
+    const wrapper = mount(PaymentStatusPanel, {
+      props: {
+        orderId: 42,
+        qrCode: '',
+        expiresAt: '2099-01-01T12:30:00Z',
+        paymentType: 'sepay_napas',
+        orderType: 'balance',
+        gatewayReturnStatus: 'cancelled',
+      },
+      global: { stubs: { Icon: true } },
+    })
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('payment.qr.cancelled')
+    expect(wrapper.emitted('settled')).toEqual([['cancelled']])
+  })
+
+  it('never lets the gateway declare success on its own', async () => {
+    // A customer who edits the return URL must not be able to show themselves
+    // a paid order. Only the order row decides that.
+    pollOrderStatus.mockResolvedValue(orderFactory('PENDING'))
+
+    const wrapper = mount(PaymentStatusPanel, {
+      props: {
+        orderId: 42,
+        qrCode: '',
+        expiresAt: '2099-01-01T12:30:00Z',
+        paymentType: 'sepay_napas',
+        orderType: 'balance',
+        gatewayReturnStatus: 'success',
+      },
+      global: { stubs: { Icon: true } },
+    })
+
+    await flushPromises()
+
+    expect(wrapper.text()).not.toContain('payment.result.success')
+    expect(wrapper.emitted('settled')).toBeFalsy()
+  })
+
+  it('keeps a paid order paid even when the gateway says it failed', async () => {
+    // Rare, but it happens: the IPN lands while the customer is bouncing
+    // through the error URL. Closing up shop here would read as lost money.
+    pollOrderStatus.mockResolvedValue(orderFactory('COMPLETED'))
+
+    const wrapper = mount(PaymentStatusPanel, {
+      props: {
+        orderId: 42,
+        qrCode: '',
+        expiresAt: '2099-01-01T12:30:00Z',
+        paymentType: 'sepay_napas',
+        orderType: 'balance',
+        gatewayReturnStatus: 'failed',
+      },
+      global: { stubs: { Icon: true } },
+    })
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('payment.result.success')
+    expect(wrapper.emitted('settled')).toEqual([['success']])
+  })
+
   it('shows reopen button in QR mode when payUrl is also available', async () => {
     const openSpy = vi.spyOn(window, 'open').mockReturnValue({ closed: false } as Window)
 
