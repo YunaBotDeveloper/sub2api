@@ -379,6 +379,7 @@ export default {
       subscriptionSuccess: '订阅成功',
       processing: '支付处理中',
       cancelled: '支付已取消',
+      cancelledHint: '您已取消本次支付。订单会保留到过期为止，随时可以重新发起支付。',
       processingHint: '支付结果仍在确认中，页面会自动刷新。',
       failed: '支付失败',
       backToRecharge: '返回充值',

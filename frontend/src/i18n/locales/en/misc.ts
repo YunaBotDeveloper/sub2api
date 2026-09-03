@@ -355,6 +355,7 @@ export default {
       subscriptionSuccess: 'Subscription Successful',
       processing: 'Payment Processing',
       cancelled: 'Payment Cancelled',
+      cancelledHint: 'You cancelled this payment. The order stays open until it expires — start a new payment when you are ready.',
       processingHint: 'Payment confirmation is still pending. This page will refresh automatically.',
       failed: 'Payment Failed',
       backToRecharge: 'Back to Recharge',

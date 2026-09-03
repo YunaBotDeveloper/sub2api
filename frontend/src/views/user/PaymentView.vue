@@ -777,6 +777,13 @@ let stopPopupResultListener: (() => void) | null = null
 
 onMounted(() => {
   stopPopupResultListener = listenForPopupResult((query) => {
+    // 取消不是一个「结果」：订单还在挂起，把用户丢到结果页只会让他盯着
+    // 一个什么都没发生的页面。退回选择页，让他直接重来。
+    if (query.status === 'cancelled') {
+      resetPayment()
+      appStore.showInfo(t('payment.qr.cancelled'))
+      return
+    }
     removeRecoverySnapshot()
     router.push({ path: '/payment/result', query }).catch(() => {})
   })
