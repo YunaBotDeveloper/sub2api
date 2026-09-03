@@ -322,7 +322,7 @@ export default {
     createOrder: '确认支付',
     methods: {
       sepay: 'SePay',
-      sepay_bank_transfer: '银行转账（VietQR）',
+      sepay_bank_transfer: 'VietQR',
       sepay_napas: 'Napas 银行转账',
       sepay_card: '银行卡（Visa / Mastercard / JCB）',
       nowpayments: 'NOWPayments',

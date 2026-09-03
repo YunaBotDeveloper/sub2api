@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { METHOD_ORDER, SEPAY_BANK_TRANSFER, SEPAY_CARD, SEPAY_NAPAS } from './providerConfig'
+import { METHOD_ORDER, SEPAY_BANK_TRANSFER } from './providerConfig'
 import paymentIcon from '@/assets/icons/payment.svg'
 
 export interface PaymentMethodOption {
@@ -70,8 +70,6 @@ const { t } = useI18n()
 // glyph rather than a borrowed brand icon.
 const METHOD_ICONS: Record<string, string> = {
   [SEPAY_BANK_TRANSFER]: paymentIcon,
-  [SEPAY_NAPAS]: paymentIcon,
-  [SEPAY_CARD]: paymentIcon,
 }
 
 const sortedMethods = computed(() => {
@@ -95,10 +93,6 @@ function methodSelectedClass(type: string): string {
   switch (type) {
     case SEPAY_BANK_TRANSFER:
       return 'border-[#0A66C2] bg-blue-50 text-gray-900 shadow-sm dark:bg-blue-950 dark:text-gray-100'
-    case SEPAY_NAPAS:
-      return 'border-[#00875A] bg-emerald-50 text-gray-900 shadow-sm dark:bg-emerald-950 dark:text-gray-100'
-    case SEPAY_CARD:
-      return 'border-[#6D28D9] bg-violet-50 text-gray-900 shadow-sm dark:bg-violet-950 dark:text-gray-100'
     default:
       return 'border-primary-500 bg-primary-50 text-gray-900 shadow-sm dark:bg-primary-950 dark:text-gray-100'
   }

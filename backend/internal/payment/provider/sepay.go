@@ -109,10 +109,10 @@ func (s *SePay) Name() string        { return "SePay" }
 func (s *SePay) ProviderKey() string { return payment.TypeSePay }
 
 func (s *SePay) SupportedTypes() []payment.PaymentType {
+	// 只对外提供 VietQR 银行转账。Napas 与银行卡的映射保留在
+	// sepayMethodForPaymentType 里，好让停用之前建的挂起订单还能重新打开收银台。
 	return []payment.PaymentType{
 		payment.TypeSePayBankTransfer,
-		payment.TypeSePayNapas,
-		payment.TypeSePayCard,
 	}
 }
 

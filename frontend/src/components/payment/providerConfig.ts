@@ -33,22 +33,26 @@ export interface CallbackPaths {
 export const PROVIDER_SEPAY = 'sepay'
 export const PROVIDER_NOWPAYMENTS = 'nowpayments'
 
-/** User-facing SePay payment methods. */
+/**
+ * User-facing SePay payment methods.
+ *
+ * Napas and card were retired — SePay now sells VietQR bank transfer only.
+ * Their identifiers survive in `payment.methods.*` i18n keys and in the admin
+ * order filters, because orders placed before the change still carry them.
+ */
 export const SEPAY_BANK_TRANSFER = 'sepay_bank_transfer'
-export const SEPAY_NAPAS = 'sepay_napas'
-export const SEPAY_CARD = 'sepay_card'
 
 /** NOWPayments offers a single method: its hosted crypto checkout. */
 export const NOWPAYMENTS_CRYPTO = 'nowpayments_crypto'
 
 /** Maps provider key -> available payment types. */
 export const PROVIDER_SUPPORTED_TYPES: Record<string, string[]> = {
-  [PROVIDER_SEPAY]: [SEPAY_BANK_TRANSFER, SEPAY_NAPAS, SEPAY_CARD],
+  [PROVIDER_SEPAY]: [SEPAY_BANK_TRANSFER],
   [PROVIDER_NOWPAYMENTS]: [NOWPAYMENTS_CRYPTO],
 }
 
 /** Fixed display order for user-facing payment methods. */
-export const METHOD_ORDER = [SEPAY_BANK_TRANSFER, SEPAY_NAPAS, SEPAY_CARD, NOWPAYMENTS_CRYPTO] as const
+export const METHOD_ORDER = [SEPAY_BANK_TRANSFER, NOWPAYMENTS_CRYPTO] as const
 
 /** Payment mode constants. */
 export const PAYMENT_MODE_QRCODE = 'qrcode'

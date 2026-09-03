@@ -8,9 +8,7 @@ import {
   PROVIDER_SEPAY,
   PROVIDER_SUPPORTED_TYPES,
   SEPAY_BANK_TRANSFER,
-  SEPAY_CARD,
   SEPAY_ENV_OPTIONS,
-  SEPAY_NAPAS,
   WEBHOOK_PATHS,
   extractBaseUrl,
   getAvailableTypes,
@@ -88,15 +86,11 @@ describe('supported payment types', () => {
   it('exposes exactly the three SePay methods', () => {
     expect(PROVIDER_SUPPORTED_TYPES[PROVIDER_SEPAY]).toEqual([
       SEPAY_BANK_TRANSFER,
-      SEPAY_NAPAS,
-      SEPAY_CARD,
-    ])
+            ])
     expect(PROVIDER_SUPPORTED_TYPES[PROVIDER_NOWPAYMENTS]).toEqual([NOWPAYMENTS_CRYPTO])
     expect([...METHOD_ORDER]).toEqual([
       SEPAY_BANK_TRANSFER,
-      SEPAY_NAPAS,
-      SEPAY_CARD,
-      NOWPAYMENTS_CRYPTO,
+              NOWPAYMENTS_CRYPTO,
     ])
   })
 
@@ -108,17 +102,16 @@ describe('supported payment types', () => {
   })
 
   it('falls back to the raw value when a type has no supplied label', () => {
-    const types = getAvailableTypes(PROVIDER_SEPAY, [{ value: SEPAY_NAPAS, label: 'Napas' }], 'Redirect')
-
-    expect(types).toEqual([
+    expect(getAvailableTypes(PROVIDER_SEPAY, [])).toEqual([
       { value: SEPAY_BANK_TRANSFER, label: SEPAY_BANK_TRANSFER },
-      { value: SEPAY_NAPAS, label: 'Napas' },
-      { value: SEPAY_CARD, label: SEPAY_CARD },
+    ])
+    expect(getAvailableTypes(PROVIDER_SEPAY, [{ value: SEPAY_BANK_TRANSFER, label: 'VietQR' }])).toEqual([
+      { value: SEPAY_BANK_TRANSFER, label: 'VietQR' },
     ])
   })
 
   it('returns nothing for an unknown provider key', () => {
-    expect(getAvailableTypes('stripe', [], 'Redirect')).toEqual([])
+    expect(getAvailableTypes('stripe', [])).toEqual([])
   })
 })
 
@@ -143,12 +136,12 @@ describe('isProviderKeyEnabled', () => {
     // The admin stores enabled *methods*; looking the provider key itself up in
     // that list finds nothing and empties the "Add Provider" dropdown.
     expect(isProviderKeyEnabled(PROVIDER_SEPAY, [SEPAY_BANK_TRANSFER])).toBe(true)
-    expect(isProviderKeyEnabled(PROVIDER_SEPAY, [SEPAY_CARD, SEPAY_NAPAS])).toBe(true)
+    expect(isProviderKeyEnabled(PROVIDER_SEPAY, ['nowpayments_crypto', SEPAY_BANK_TRANSFER])).toBe(true)
     expect(isProviderKeyEnabled(PROVIDER_SEPAY, [PROVIDER_SEPAY])).toBe(false)
   })
 
   it('is false when nothing is enabled or the gateway is unknown', () => {
     expect(isProviderKeyEnabled(PROVIDER_SEPAY, [])).toBe(false)
-    expect(isProviderKeyEnabled('stripe', [SEPAY_CARD])).toBe(false)
+    expect(isProviderKeyEnabled('stripe', [SEPAY_BANK_TRANSFER])).toBe(false)
   })
 })
