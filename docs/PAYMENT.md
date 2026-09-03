@@ -84,7 +84,8 @@ A SePay provider instance needs the following credentials from the
 | `merchantId` | No | Merchant code |
 | `secretKey` | **Yes** | Merchant secret key, used to sign the checkout and verify callbacks |
 | `env` | No | `production` or `sandbox` |
-| `currency` | No | Settlement currency, `VND` by default |
+| `currency` | No | Settlement currency. SePay settles in `VND` only |
+| `ipnSecretKey` | **Yes** | Optional. Only needed when the merchant portal sets IPN auth type to `SECRET_KEY` |
 
 `secretKey` is encrypted at rest with `security.secret_encryption_key` and is
 never returned by the admin API. When editing an instance, leaving the secret
@@ -122,12 +123,15 @@ https://your-domain.com/api/v1/payment/webhook/sepay
 
 The admin provider dialog shows the exact URL for your deployment.
 
+SePay posts JSON with the order nested under `order`, and reports
+`order.order_status = CAPTURED` once the money is taken.
+
 **How a callback is trusted.** The callback body is only used to locate the
-order. Whether the order is actually paid — and for how much — is decided by a
-server-to-server order query against the SePay Open API using the merchant's
-Basic credentials. A forged callback therefore cannot mark an order paid. When
-the callback carries a `signature`, it is verified with HMAC-SHA256 over the
-gateway's canonical field order and a mismatch is rejected outright.
+order via `order.order_invoice_number`. Whether the order is actually paid — and
+for how much — is decided by a server-to-server order query against the SePay
+Open API using the merchant's Basic credentials. A forged callback therefore
+cannot mark an order paid. When `ipnSecretKey` is configured, the `X-Secret-Key`
+request header is compared in constant time first and a mismatch is rejected.
 
 ---
 
@@ -141,6 +145,9 @@ User selects amount and payment method
   ├─ Validate amount range, pending order count, daily limit
   ├─ Load balance to select provider instance
   └─ Sign the SePay checkout fields (local HMAC, no upstream call)
+     over the documented field order: order_amount, merchant, currency,
+     operation, order_description, order_invoice_number, customer_id,
+     payment_method, success_url, error_url, cancel_url
        │
        ▼
   Browser is sent to /api/v1/payment/checkout?token=<resume token>

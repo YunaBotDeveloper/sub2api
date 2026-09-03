@@ -76,7 +76,8 @@ SePay 实例需要在 [SePay 商户后台](https://my.sepay.vn) 获取以下凭�
 | `merchantId` | 否 | 商户号 |
 | `secretKey` | **是** | 商户密钥，用于签名收银台表单与校验回调 |
 | `env` | 否 | `production` 或 `sandbox` |
-| `currency` | 否 | 结算币种，默认 `VND` |
+| `currency` | 否 | 结算币种。SePay 仅结算 `VND` |
+| `ipnSecretKey` | **是** | 可选。仅当商户后台把 IPN 认证方式设为 `SECRET_KEY` 时才需要 |
 
 `secretKey` 使用 `security.secret_encryption_key` 加密落库，管理端接口永不回显。编辑实例时该字段留空即保留已存的密钥。
 
@@ -107,7 +108,9 @@ https://your-domain.com/api/v1/payment/webhook/sepay
 
 管理端的服务商编辑弹窗会显示当前部署的完整地址。
 
-**回调凭什么可信。** 回调体只用来定位订单；订单到底有没有支付、金额是多少，由随后一次带 Basic 认证的上游订单查询决定。因此伪造的回调无法把订单推到已支付。回调若自带 `signature`，则按网关的规范字段顺序做 HMAC-SHA256 校验，签名不符直接拒绝。
+SePay 推送 JSON，订单信息嵌在 `order` 下，收款完成后 `order.order_status` 为 `CAPTURED`。
+
+**回调凭什么可信。** 回调体只用来通过 `order.order_invoice_number` 定位订单；订单到底有没有支付、金额是多少，由随后一次带 Basic 认证的上游订单查询决定。因此伪造的回调无法把订单推到已支付。配置了 `ipnSecretKey` 时，会先以常量时间比对 `X-Secret-Key` 请求头，不符直接拒绝。
 
 ---
 
@@ -121,6 +124,9 @@ https://your-domain.com/api/v1/payment/webhook/sepay
   ├─ 校验金额范围、挂起订单数、每日限额
   ├─ 负载均衡选择服务商实例
   └─ 本地签名生成 SePay 收银台表单（不产生上游调用）
+     签名字段顺序按官方文档：order_amount, merchant, currency, operation,
+     order_description, order_invoice_number, customer_id, payment_method,
+     success_url, error_url, cancel_url
        │
        ▼
   浏览器跳转到 /api/v1/payment/checkout?token=<resume token>
