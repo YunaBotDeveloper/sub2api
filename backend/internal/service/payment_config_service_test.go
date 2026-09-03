@@ -207,7 +207,3 @@ func TestUpdatePaymentConfig_PersistsExplicitEmptyAndFalseValues(t *testing.T) {
 		}
 	}
 }
-
-func paymentConfigStrPtr(value string) *string {
-	return &value
-}

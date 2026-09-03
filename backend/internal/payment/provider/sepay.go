@@ -133,18 +133,6 @@ func (s *SePay) env() string {
 	return sepayEnvProduction
 }
 
-// MerchantIdentityMetadata 暴露订单快照要比对的非敏感商户身份字段。
-func (s *SePay) MerchantIdentityMetadata() map[string]string {
-	if s == nil {
-		return nil
-	}
-	return map[string]string{
-		"merchant_id": s.merchantID(),
-		"currency":    s.currency(),
-		"env":         s.env(),
-	}
-}
-
 // sepayMethodForPaymentType 把面板的支付方式映射到 SePay 的 payment_method。
 func sepayMethodForPaymentType(paymentType string) (sepay.PaymentMethod, error) {
 	switch strings.TrimSpace(paymentType) {
@@ -514,6 +502,6 @@ func sepaySignFields(fields map[string]string, secretKey string) string {
 		parts = append(parts, key+"="+value)
 	}
 	mac := hmac.New(sha256.New, []byte(secretKey))
-	mac.Write([]byte(strings.Join(parts, ",")))
+	_, _ = mac.Write([]byte(strings.Join(parts, ",")))
 	return base64.StdEncoding.EncodeToString(mac.Sum(nil))
 }

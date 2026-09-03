@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log/slog"
 	"math"
-	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -720,45 +719,6 @@ func buildCreateOrderResponse(order *dbent.PaymentOrder, req CreateOrderRequest,
 		ExpiresAt:   order.ExpiresAt,
 		PaymentMode: sel.PaymentMode,
 	}
-}
-
-func paymentRedirectPathFromURL(rawURL string) string {
-	rawURL = strings.TrimSpace(rawURL)
-	if rawURL == "" {
-		return "/purchase"
-	}
-	if strings.HasPrefix(rawURL, "/") && !strings.HasPrefix(rawURL, "//") {
-		return normalizePaymentRedirectPath(rawURL)
-	}
-	u, err := url.Parse(rawURL)
-	if err != nil {
-		return "/purchase"
-	}
-	path := strings.TrimSpace(u.EscapedPath())
-	if path == "" {
-		path = strings.TrimSpace(u.Path)
-	}
-	if path == "" || !strings.HasPrefix(path, "/") || strings.HasPrefix(path, "//") {
-		return "/purchase"
-	}
-	if strings.TrimSpace(u.RawQuery) != "" {
-		path += "?" + u.RawQuery
-	}
-	return normalizePaymentRedirectPath(path)
-}
-
-func normalizePaymentRedirectPath(path string) string {
-	path = strings.TrimSpace(path)
-	if path == "" {
-		return "/purchase"
-	}
-	if path == "/payment" {
-		return "/purchase"
-	}
-	if strings.HasPrefix(path, "/payment?") {
-		return "/purchase" + strings.TrimPrefix(path, "/payment")
-	}
-	return path
 }
 
 // --- Order Queries ---

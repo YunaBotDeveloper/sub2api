@@ -108,34 +108,3 @@ func (s *PaymentService) webhookRegistryFallbackAllowed(ctx context.Context, pro
 func psHasPinnedProviderInstance(order *dbent.PaymentOrder) bool {
 	return order != nil && (psOrderProviderSnapshot(order) != nil || (order.ProviderInstanceID != nil && strings.TrimSpace(*order.ProviderInstanceID) != ""))
 }
-
-func (s *PaymentService) getEnabledWebhookProvidersByKey(ctx context.Context, providerKey string) ([]payment.Provider, error) {
-	providerKey = strings.TrimSpace(providerKey)
-	instances, err := s.entClient.PaymentProviderInstance.Query().
-		Where(
-			paymentproviderinstance.ProviderKeyEQ(providerKey),
-			paymentproviderinstance.EnabledEQ(true),
-		).
-		Order(dbent.Asc(paymentproviderinstance.FieldSortOrder)).
-		All(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("query webhook provider instances: %w", err)
-	}
-	if len(instances) == 0 {
-		return nil, payment.ErrProviderNotFound
-	}
-
-	providers := make([]payment.Provider, 0, len(instances))
-	for _, inst := range instances {
-		prov, provErr := s.createProviderFromInstance(ctx, inst)
-		if provErr != nil {
-			slog.Warn("skip webhook provider instance", "provider", providerKey, "instanceID", inst.ID, "error", provErr)
-			continue
-		}
-		providers = append(providers, prov)
-	}
-	if len(providers) == 0 {
-		return nil, payment.ErrProviderNotFound
-	}
-	return providers, nil
-}

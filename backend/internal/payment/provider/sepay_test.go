@@ -115,7 +115,7 @@ func TestSePayDoesNotMutateCallerConfig(t *testing.T) {
 	assert.Equal(t, "PRODUCTION", cfg["env"], "provider must not normalise the caller's map in place")
 }
 
-func TestSePaySupportedTypesAndIdentity(t *testing.T) {
+func TestSePaySupportedTypes(t *testing.T) {
 	t.Parallel()
 
 	p := newTestSePay(t, nil)
@@ -124,11 +124,6 @@ func TestSePaySupportedTypesAndIdentity(t *testing.T) {
 		[]payment.PaymentType{payment.TypeSePayBankTransfer, payment.TypeSePayNapas, payment.TypeSePayCard},
 		p.SupportedTypes(),
 	)
-	assert.Equal(t, map[string]string{
-		"merchant_id": "MERCHANT_TEST",
-		"currency":    "VND",
-		"env":         "sandbox",
-	}, p.MerchantIdentityMetadata())
 }
 
 func TestSePayMethodForPaymentType(t *testing.T) {
@@ -483,7 +478,6 @@ func TestSePayImplementsCancelableProvider(t *testing.T) {
 	t.Parallel()
 
 	var _ payment.CancelableProvider = newTestSePay(t, nil)
-	var _ payment.MerchantIdentityProvider = newTestSePay(t, nil)
 }
 
 func TestCreateProviderRoutesSePayKeyOnly(t *testing.T) {
