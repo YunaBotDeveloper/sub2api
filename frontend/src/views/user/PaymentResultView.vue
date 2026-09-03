@@ -177,11 +177,22 @@ const isPending = computed(() => {
   return isPendingStatus(order.value?.status)
 })
 
+// 网关回跳时带的 status 只用来挑文案，绝不参与「是否已支付」的判定——
+// 那始终以库里的订单状态为准，否则用户手改 URL 就能伪造一个成功页。
+const returnedStatus = computed(() =>
+  String(route.query.status || '').trim().toLowerCase(),
+)
+
 const statusTitle = computed(() => {
   if (isSuccess.value) {
     return t('payment.result.success')
   }
   if (isPending.value) {
+    // 用户在网关点了取消：订单要到过期或对账后才落终态，此时一直显示
+    // 「处理中」会让人以为钱还在路上。
+    if (returnedStatus.value === 'cancelled') {
+      return t('payment.result.cancelled')
+    }
     return t('payment.result.processing')
   }
   return t('payment.result.failed')
