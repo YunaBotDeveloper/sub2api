@@ -133,6 +133,18 @@ export function getAvailableTypes(providerKey: string, allTypes: TypeOption[]): 
   return types.map(t => resolveTypeLabel(t, allTypes))
 }
 
+/**
+ * Report whether a gateway has at least one of its payment methods enabled.
+ *
+ * The gateway key (`sepay`) and its methods (`sepay_bank_transfer`, ...) are
+ * separate identifiers, so a provider key must never be looked up directly in
+ * the enabled-types list — that check silently yields nothing.
+ */
+export function isProviderKeyEnabled(providerKey: string, enabledTypes: string[]): boolean {
+  const types = PROVIDER_SUPPORTED_TYPES[providerKey] || []
+  return types.some(type => enabledTypes.includes(type))
+}
+
 /** Extract base URL from a full callback URL by removing the known path suffix. */
 export function extractBaseUrl(fullUrl: string, path: string): string {
   if (!fullUrl) return ''

@@ -8931,6 +8931,7 @@ import { useAdminSettingsStore } from "@/stores/adminSettings";
 import {
   METHOD_ORDER,
   PROVIDER_SEPAY,
+  isProviderKeyEnabled,
 } from "@/components/payment/providerConfig";
 import {
   isRegistrationEmailSuffixDomainValid,
@@ -12497,10 +12498,11 @@ const providerKeyOptions = computed(() => [
   { value: PROVIDER_SEPAY, label: t("admin.settings.payment.providerSepay") },
 ]);
 
-const enabledProviderKeyOptions = computed(() => {
-  const enabled = form.payment_enabled_types;
-  return providerKeyOptions.value.filter((opt) => enabled.includes(opt.value));
-});
+const enabledProviderKeyOptions = computed(() =>
+  providerKeyOptions.value.filter((opt) =>
+    isProviderKeyEnabled(opt.value, form.payment_enabled_types),
+  ),
+);
 
 const loadBalanceOptions = computed(() => [
   {

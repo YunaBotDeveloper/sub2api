@@ -12,6 +12,7 @@ import {
   WEBHOOK_PATHS,
   extractBaseUrl,
   getAvailableTypes,
+  isProviderKeyEnabled,
 } from '@/components/payment/providerConfig'
 
 function findField(providerKey: string, key: string) {
@@ -97,5 +98,20 @@ describe('extractBaseUrl', () => {
 
   it('returns an empty string for an empty URL', () => {
     expect(extractBaseUrl('', '/api/v1/payment/webhook/sepay')).toBe('')
+  })
+})
+
+describe('isProviderKeyEnabled', () => {
+  it('matches on the gateway methods, not the gateway key', () => {
+    // The admin stores enabled *methods*; looking the provider key itself up in
+    // that list finds nothing and empties the "Add Provider" dropdown.
+    expect(isProviderKeyEnabled(PROVIDER_SEPAY, [SEPAY_BANK_TRANSFER])).toBe(true)
+    expect(isProviderKeyEnabled(PROVIDER_SEPAY, [SEPAY_CARD, SEPAY_NAPAS])).toBe(true)
+    expect(isProviderKeyEnabled(PROVIDER_SEPAY, [PROVIDER_SEPAY])).toBe(false)
+  })
+
+  it('is false when nothing is enabled or the gateway is unknown', () => {
+    expect(isProviderKeyEnabled(PROVIDER_SEPAY, [])).toBe(false)
+    expect(isProviderKeyEnabled('stripe', [SEPAY_CARD])).toBe(false)
   })
 })
