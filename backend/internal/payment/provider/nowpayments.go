@@ -38,10 +38,27 @@ const (
 // nowPaymentsMaxResponseBytes 限制读取上游响应的字节数，避免异常响应撑爆内存。
 const nowPaymentsMaxResponseBytes = 1 << 20
 
-// errNowPaymentsNotFound 表示上游没有这条支付记录。
-// 这不是故障：账单（invoice）在用户选定币种之前不会产生 payment，
-// 用账单号查 payment 必然落到这里。
-var errNowPaymentsNotFound = errors.New("nowpayments: resource not found")
+// nowPaymentsIsMissingResource 判断一次查询是不是「上游还没有这条记录」。
+//
+// 账单刚创建、用户还没选币种时，/payment/{id} 会返回 404 或 400，这属于正常
+// 状态而不是错误。只有查询路径可以这样解读——创建账单时的 400 是参数错误。
+func nowPaymentsIsMissingResource(err error) bool {
+	var httpErr *nowPaymentsHTTPError
+	if !errors.As(err, &httpErr) {
+		return false
+	}
+	return httpErr.StatusCode == http.StatusNotFound || httpErr.StatusCode == http.StatusBadRequest
+}
+
+// nowPaymentsHTTPError 保留上游的状态码与响应体，供调用方自己解读。
+type nowPaymentsHTTPError struct {
+	StatusCode int
+	Body       string
+}
+
+func (e *nowPaymentsHTTPError) Error() string {
+	return fmt.Sprintf("upstream returned %d: %s", e.StatusCode, e.Body)
+}
 
 // NowPayments 实现 payment.Provider，接入 NOWPayments 的托管收银台（invoice）。
 //
@@ -177,7 +194,16 @@ func (n *NowPayments) CreatePayment(ctx context.Context, req payment.CreatePayme
 
 	var invoice nowPaymentsInvoice
 	if err := n.doRequest(ctx, http.MethodPost, "/invoice", body, &invoice); err != nil {
-		return nil, fmt.Errorf("nowpayments create payment: %w", err)
+		// 上游对无效的计价币种之类的参数只回一句 INTERNAL_ERROR，不说是哪个字段。
+		// 把我们实际发出去的几个值一起带上，否则排查只能靠猜——密钥不在其中。
+		return nil, infraerrors.ServiceUnavailable("PAYMENT_GATEWAY_ERROR",
+			fmt.Sprintf("nowpayments create payment: %v", err)).
+			WithMetadata(map[string]string{
+				"price_currency": body.PriceCurrency,
+				"price_amount":   string(body.PriceAmount),
+				"pay_currency":   body.PayCurrency,
+				"env":            n.env(),
+			})
 	}
 	invoiceURL := strings.TrimSpace(invoice.InvoiceURL)
 	if invoiceURL == "" {
@@ -220,7 +246,7 @@ func (n *NowPayments) QueryOrder(ctx context.Context, tradeNo string) (*payment.
 
 	var paid nowPaymentsPayment
 	err := n.doRequest(ctx, http.MethodGet, "/payment/"+nowPaymentsPathEscape(tradeNo), nil, &paid)
-	if errors.Is(err, errNowPaymentsNotFound) {
+	if nowPaymentsIsMissingResource(err) {
 		return &payment.QueryOrderResponse{
 			TradeNo: tradeNo,
 			Status:  payment.ProviderStatusPending,
@@ -508,11 +534,14 @@ func (n *NowPayments) doRequest(ctx context.Context, method, path string, body a
 	if err != nil {
 		return fmt.Errorf("read response: %w", err)
 	}
-	if resp.StatusCode == http.StatusNotFound || resp.StatusCode == http.StatusBadRequest {
-		return errNowPaymentsNotFound
-	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return fmt.Errorf("upstream returned %d: %s", resp.StatusCode, nowPaymentsTruncate(string(payloadBytes)))
+		// 状态码原样带出来：把 400 一律当成「资源不存在」是 QueryOrder 的语义，
+		// 放在这里会让创建账单时的参数错误变成一句「not found」，上游到底说了
+		// 什么全部丢掉。
+		return &nowPaymentsHTTPError{
+			StatusCode: resp.StatusCode,
+			Body:       nowPaymentsTruncate(string(payloadBytes)),
+		}
 	}
 	if out == nil {
 		return nil

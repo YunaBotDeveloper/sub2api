@@ -4,9 +4,15 @@ package provider
 
 import (
 	"context"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"testing"
 
 	"github.com/Wei-Shaw/sub2api/internal/payment"
+	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const nowPaymentsTestIPNSecret = "ipn-secret"
@@ -23,18 +29,33 @@ const nowPaymentsTestCanonical = `{"actually_paid":0.00034,"invoice_id":45226258
 	`"order_description":"a<b&c","order_id":"sub2_20240101_0001","pay_currency":"btc",` +
 	`"payment_id":5745459419,"payment_status":"finished","price_amount":10.5,"price_currency":"usd"}`
 
-func newTestNowPayments(t *testing.T) *NowPayments {
+func newTestNowPayments(t *testing.T, overrides map[string]string) *NowPayments {
 	t.Helper()
-	provider, err := NewNowPayments("1", map[string]string{
-		"apiKey":       "test-api-key",
+	cfg := map[string]string{
+		"apiKey":       "np_test_api_key",
 		"ipnSecretKey": nowPaymentsTestIPNSecret,
 		"env":          "sandbox",
 		"currency":     "USD",
-	})
+	}
+	for k, v := range overrides {
+		cfg[k] = v
+	}
+	provider, err := NewNowPayments("1", cfg)
 	if err != nil {
 		t.Fatalf("NewNowPayments: %v", err)
 	}
 	return provider
+}
+
+// pointNowPaymentsAtServer redirects the provider's fixed upstream host at a
+// test server; the base URL is derived from env, so this is the only seam.
+func pointNowPaymentsAtServer(t *testing.T, p *NowPayments, srv *httptest.Server) {
+	t.Helper()
+	target, err := url.Parse(srv.URL)
+	if err != nil {
+		t.Fatalf("parse test server url: %v", err)
+	}
+	p.client = &http.Client{Transport: rewriteHostTransport{target: target}}
 }
 
 func TestNowPaymentsCanonicalJSON(t *testing.T) {
@@ -48,7 +69,7 @@ func TestNowPaymentsCanonicalJSON(t *testing.T) {
 }
 
 func TestNowPaymentsVerifyNotification(t *testing.T) {
-	provider := newTestNowPayments(t)
+	provider := newTestNowPayments(t, nil)
 	signature := nowPaymentsSign([]byte(nowPaymentsTestCanonical), nowPaymentsTestIPNSecret)
 
 	notification, err := provider.VerifyNotification(context.Background(), nowPaymentsTestBody, map[string]string{
@@ -76,7 +97,7 @@ func TestNowPaymentsVerifyNotification(t *testing.T) {
 }
 
 func TestNowPaymentsVerifyNotificationRejectsBadSignature(t *testing.T) {
-	provider := newTestNowPayments(t)
+	provider := newTestNowPayments(t, nil)
 
 	cases := map[string]map[string]string{
 		"missing header": {},
@@ -97,7 +118,7 @@ func TestNowPaymentsVerifyNotificationRejectsBadSignature(t *testing.T) {
 }
 
 func TestNowPaymentsVerifyNotificationIgnoresIntermediateStatus(t *testing.T) {
-	provider := newTestNowPayments(t)
+	provider := newTestNowPayments(t, nil)
 	// partially_paid 是「收到钱但不够」，必须当作未结算事件放过，
 	// 不能按不足额的金额履约。
 	body := `{"order_id":"sub2_20240101_0001","payment_status":"partially_paid","price_amount":10.5,"price_currency":"usd"}`
@@ -118,7 +139,7 @@ func TestNowPaymentsVerifyNotificationIgnoresIntermediateStatus(t *testing.T) {
 }
 
 func TestNowPaymentsVerifyNotificationRejectsCurrencyMismatch(t *testing.T) {
-	provider := newTestNowPayments(t)
+	provider := newTestNowPayments(t, nil)
 	body := `{"order_id":"sub2_20240101_0001","payment_status":"finished","price_amount":10.5,"price_currency":"vnd"}`
 	canonical, err := nowPaymentsCanonicalJSON(body)
 	if err != nil {
@@ -164,4 +185,66 @@ func TestGetBasePaymentTypeCoversNowPayments(t *testing.T) {
 	if got := payment.GetBasePaymentType(payment.TypeSePayCard); got != payment.TypeSePay {
 		t.Fatalf("base type = %q, want %q", got, payment.TypeSePay)
 	}
+}
+
+func TestNowPaymentsCreatePaymentSurfacesUpstreamRejection(t *testing.T) {
+	t.Parallel()
+
+	// The upstream answers an invalid price_currency with a bare INTERNAL_ERROR
+	// that names no field. Whatever we send has to come back with the error, or
+	// the only way to find the bad value is to guess.
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte(`{"status":false,"statusCode":500,"code":"INTERNAL_ERROR","message":"The server encountered an internal error"}`))
+	}))
+	defer srv.Close()
+
+	p := newTestNowPayments(t, map[string]string{"currency": "VND"})
+	pointNowPaymentsAtServer(t, p, srv)
+
+	_, err := p.CreatePayment(context.Background(), payment.CreatePaymentRequest{
+		OrderID:     "sub2_20260904abcd1234",
+		Amount:      "250000",
+		PaymentType: payment.TypeNowPaymentsCrypto,
+		ReturnURL:   "https://panel.example.com/payment/result",
+	})
+	require.Error(t, err)
+	assert.Equal(t, "PAYMENT_GATEWAY_ERROR", infraerrors.Reason(err))
+	assert.Contains(t, err.Error(), "INTERNAL_ERROR")
+
+	var appErr *infraerrors.ApplicationError
+	require.ErrorAs(t, err, &appErr)
+	meta := appErr.Metadata
+	assert.Equal(t, "vnd", meta["price_currency"])
+	assert.Equal(t, "250000", meta["price_amount"])
+	// The API key must never ride along in an error the user can see.
+	for _, value := range meta {
+		assert.NotContains(t, value, "np_test_api_key")
+	}
+}
+
+func TestNowPaymentsCreatePaymentDoesNotSwallowBadRequest(t *testing.T) {
+	t.Parallel()
+
+	// A 400 on /invoice is a parameter error. Reading it as "resource not found"
+	// — which is only ever true for a payment lookup — throws away what the
+	// gateway actually said.
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = w.Write([]byte(`{"message":"price_currency is not supported"}`))
+	}))
+	defer srv.Close()
+
+	p := newTestNowPayments(t, nil)
+	pointNowPaymentsAtServer(t, p, srv)
+
+	_, err := p.CreatePayment(context.Background(), payment.CreatePaymentRequest{
+		OrderID:     "sub2_20260904abcd1234",
+		Amount:      "10",
+		PaymentType: payment.TypeNowPaymentsCrypto,
+		ReturnURL:   "https://panel.example.com/payment/result",
+	})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "price_currency is not supported")
+	assert.NotContains(t, err.Error(), "not found")
 }
