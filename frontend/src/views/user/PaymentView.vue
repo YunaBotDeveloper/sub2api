@@ -909,8 +909,12 @@ onMounted(async () => {
       )
       if (restored) {
         paymentState.value = restored
-        gatewayReturnStatus.value = ''
-    paymentPhase.value = 'paying'
+        // 从网关回跳过来时 URL 上带着结果，交给面板收尾——用户是被送回这一页的，
+        // 不是自己刷新出来的。
+        gatewayReturnStatus.value = typeof route.query.status === 'string'
+          ? route.query.status.trim().toLowerCase()
+          : ''
+        paymentPhase.value = 'paying'
         const restoredMethod = normalizeVisibleMethod(restored.paymentType)
           || (visibleMethods.value[restored.paymentType] ? restored.paymentType : '')
         if (restoredMethod) {

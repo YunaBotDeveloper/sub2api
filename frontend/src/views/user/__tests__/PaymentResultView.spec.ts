@@ -6,6 +6,7 @@ const routeState = vi.hoisted(() => ({
 }))
 
 const routerPush = vi.hoisted(() => vi.fn())
+const routerReplace = vi.hoisted(() => vi.fn())
 const pollOrderStatus = vi.hoisted(() => vi.fn())
 const verifyOrder = vi.hoisted(() => vi.fn())
 const verifyOrderPublic = vi.hoisted(() => vi.fn())
@@ -17,7 +18,7 @@ vi.mock('vue-router', async () => {
   return {
     ...actual,
     useRoute: () => routeState,
-    useRouter: () => ({ push: routerPush }),
+    useRouter: () => ({ push: routerPush, replace: routerReplace }),
   }
 })
 
@@ -94,6 +95,7 @@ describe('PaymentResultView', () => {
   beforeEach(() => {
     routeState.query = {}
     routerPush.mockReset()
+    routerReplace.mockReset()
     pollOrderStatus.mockReset()
     verifyOrder.mockReset()
     verifyOrderPublic.mockReset()
@@ -107,7 +109,10 @@ describe('PaymentResultView', () => {
     vi.useRealTimers()
   })
 
-  it('renders a pending state instead of a failure state when the restored order is still pending', async () => {
+  it('sends a gateway return back to the top-up page instead of stranding it here', async () => {
+    // The panel in the top-up card was already tracking this order. Landing the
+    // user on a separate result page makes them leave what they were looking at
+    // to look at the same thing again.
     routeState.query = {
       resume_token: 'resume-42',
       order_id: '999',
@@ -146,11 +151,31 @@ describe('PaymentResultView', () => {
 
     await flushPromises()
 
-    expect(resolveOrderPublicByResumeToken).toHaveBeenCalledWith('resume-42')
+    expect(routerReplace).toHaveBeenCalledWith({ path: '/purchase', query: routeState.query })
+    // Nothing is resolved here: the panel on the top-up page owns the outcome.
+    expect(resolveOrderPublicByResumeToken).not.toHaveBeenCalled()
     expect(pollOrderStatus).not.toHaveBeenCalled()
+    expect(wrapper.text()).not.toContain('payment.result.success')
+  })
+
+  it('renders here when the same link is reopened without a gateway status', async () => {
+    // A bookmarked or shared result link has no `status`, and the top-up page
+    // may hold nothing to restore — this page has to answer on its own.
+    routeState.query = {
+      resume_token: 'resume-42',
+      order_id: '999',
+    }
+    resolveOrderPublicByResumeToken.mockResolvedValue({ data: orderFactory('PENDING') })
+
+    const wrapper = mount(PaymentResultView, {
+      global: { stubs: { OrderStatusBadge: true } },
+    })
+    await flushPromises()
+
+    expect(routerReplace).not.toHaveBeenCalled()
+    expect(resolveOrderPublicByResumeToken).toHaveBeenCalledWith('resume-42')
     expect(wrapper.text()).toContain('payment.result.processing')
     expect(wrapper.text()).not.toContain('payment.result.success')
-    expect(wrapper.text()).not.toContain('payment.result.failed')
   })
 
   it('reports a failed gateway return instead of claiming the payment is still on its way', async () => {
@@ -196,10 +221,11 @@ describe('PaymentResultView', () => {
   })
 
   it('prefers the public resume-token result over a stale restored DB snapshot', async () => {
+    // No `status`: this is the reopened-link branch, which renders here. The
+    // gateway-return branch is covered by the redirect test below.
     routeState.query = {
       resume_token: 'resume-authoritative',
       order_id: '42',
-      status: 'success',
     }
     window.localStorage.setItem(PAYMENT_RECOVERY_STORAGE_KEY, JSON.stringify({
       orderId: 42,

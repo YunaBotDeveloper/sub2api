@@ -391,6 +391,26 @@ onMounted(async () => {
     return
   }
 
+  // Not a popup — the checkout ran in this window, so the top-up page it came
+  // from is gone. Send the user back there and let the panel that was already
+  // tracking this order report the outcome, instead of showing the same result
+  // on a page they never chose to open.
+  //
+  // Only when this browser still holds the snapshot for this order: without it
+  // the panel has nothing to restore, and a link opened on another device has
+  // to render here.
+  // `status` is only ever set by a gateway return URL, so it tells apart "the
+  // gateway just sent the user here" from "the user reopened this link", which
+  // must keep rendering in place.
+  if (readRouteQueryString('status') !== '' && restoreRecoverySnapshot({
+    resumeToken: readRouteQueryString('resume_token'),
+    routeOrderId: Number(readRouteQueryString('order_id')) || 0,
+    routeOutTradeNo: readRouteQueryString('out_trade_no'),
+  })) {
+    void router.replace({ path: '/purchase', query: route.query })
+    return
+  }
+
   const resumeToken = readRouteQueryString('resume_token')
   const routeOrderId = Number(readRouteQueryString('order_id')) || 0
   let outTradeNo = readRouteQueryString('out_trade_no')

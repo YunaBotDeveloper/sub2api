@@ -203,15 +203,14 @@ func (n *NowPayments) CreatePayment(ctx context.Context, req payment.CreatePayme
 
 	var invoice nowPaymentsInvoice
 	if err := n.doRequest(ctx, http.MethodPost, "/invoice", body, &invoice); err != nil {
-		// 上游对无效的计价币种之类的参数只回一句 INTERNAL_ERROR，不说是哪个字段。
-		// 把我们实际发出去的几个值一起带上，否则排查只能靠猜——密钥不在其中。
+		// 上游对无效参数只回一句 INTERNAL_ERROR，不说是哪个字段。把整个请求体
+		// 带上——密钥走的是请求头，不在这里面——否则每排查一个字段就要改一次代码。
+		encoded, _ := json.Marshal(body)
 		return nil, infraerrors.ServiceUnavailable("PAYMENT_GATEWAY_ERROR",
 			fmt.Sprintf("nowpayments create payment: %v", err)).
 			WithMetadata(map[string]string{
-				"price_currency": body.PriceCurrency,
-				"price_amount":   string(body.PriceAmount),
-				"pay_currency":   body.PayCurrency,
-				"env":            n.env(),
+				"request_body": nowPaymentsTruncate(string(encoded)),
+				"env":          n.env(),
 			})
 	}
 	invoiceURL := strings.TrimSpace(invoice.InvoiceURL)
