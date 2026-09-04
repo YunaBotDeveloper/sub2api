@@ -167,10 +167,6 @@ func (s *PaymentConfigService) countPendingOrdersByPlan(ctx context.Context, pla
 		).Count(ctx)
 }
 
-var validProviderKeys = map[string]bool{
-	payment.TypeSePay: true,
-}
-
 func (s *PaymentConfigService) CreateProviderInstance(ctx context.Context, req CreateProviderInstanceRequest) (*dbent.PaymentProviderInstance, error) {
 	typesStr := joinTypes(req.SupportedTypes)
 	if err := validateProviderRequest(req.ProviderKey, req.Name, typesStr); err != nil {
@@ -196,7 +192,7 @@ func validateProviderRequest(providerKey, name, supportedTypes string) error {
 	if strings.TrimSpace(name) == "" {
 		return infraerrors.BadRequest("VALIDATION_ERROR", "provider name is required")
 	}
-	if !validProviderKeys[providerKey] {
+	if !payment.IsProviderKey(providerKey) {
 		return infraerrors.BadRequest("VALIDATION_ERROR", fmt.Sprintf("invalid provider key: %s", providerKey))
 	}
 	// supported_types can be empty (provider accepts no payment types until configured)
