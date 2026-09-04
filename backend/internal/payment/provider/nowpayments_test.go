@@ -217,8 +217,9 @@ func TestNowPaymentsCreatePaymentSurfacesUpstreamRejection(t *testing.T) {
 	var appErr *infraerrors.ApplicationError
 	require.ErrorAs(t, err, &appErr)
 	meta := appErr.Metadata
-	assert.Equal(t, "vnd", meta["price_currency"])
-	assert.Equal(t, "250000", meta["price_amount"])
+	assert.Contains(t, meta["request_body"], `"price_currency":"vnd"`)
+	assert.Contains(t, meta["request_body"], `"price_amount":250000`)
+	assert.Contains(t, meta["request_body"], `"order_id":"sub2_20260904abcd1234"`)
 	// The API key must never ride along in an error the user can see.
 	for _, value := range meta {
 		assert.NotContains(t, value, "np_test_api_key")
