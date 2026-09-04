@@ -4,6 +4,7 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -207,6 +208,7 @@ func TestNowPaymentsCreatePaymentSurfacesUpstreamRejection(t *testing.T) {
 		Amount:      "250000",
 		PaymentType: payment.TypeNowPaymentsCrypto,
 		ReturnURL:   "https://panel.example.com/payment/result",
+		NotifyURL:   "https://panel.example.com/api/v1/payment/webhook/nowpayments",
 	})
 	require.Error(t, err)
 	assert.Equal(t, "PAYMENT_GATEWAY_ERROR", infraerrors.Reason(err))
@@ -243,8 +245,64 @@ func TestNowPaymentsCreatePaymentDoesNotSwallowBadRequest(t *testing.T) {
 		Amount:      "10",
 		PaymentType: payment.TypeNowPaymentsCrypto,
 		ReturnURL:   "https://panel.example.com/payment/result",
+		NotifyURL:   "https://panel.example.com/api/v1/payment/webhook/nowpayments",
 	})
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "price_currency is not supported")
 	assert.NotContains(t, err.Error(), "not found")
+}
+
+func TestNowPaymentsCreatePaymentRequiresNotifyURL(t *testing.T) {
+	t.Parallel()
+
+	// IPN is the only proof of payment this gateway offers — there is no order
+	// lookup to fall back on. Opening an invoice without a callback URL yields
+	// an order the customer can pay and we can never credit, which is worse
+	// than refusing up front.
+	called := false
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		called = true
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"id":"1","invoice_url":"https://nowpayments.io/invoice/1"}`))
+	}))
+	defer srv.Close()
+
+	p := newTestNowPayments(t, nil)
+	pointNowPaymentsAtServer(t, p, srv)
+
+	_, err := p.CreatePayment(context.Background(), payment.CreatePaymentRequest{
+		OrderID:     "sub2_20260904abcd1234",
+		Amount:      "5",
+		PaymentType: payment.TypeNowPaymentsCrypto,
+		ReturnURL:   "https://panel.example.com/payment/result",
+	})
+	require.Error(t, err)
+	assert.Equal(t, "NOWPAYMENTS_NOTIFY_URL_REQUIRED", infraerrors.Reason(err))
+	assert.False(t, called, "must not reach the gateway at all")
+}
+
+func TestNowPaymentsCreatePaymentSendsTheCallbackURL(t *testing.T) {
+	t.Parallel()
+
+	var sent nowPaymentsInvoiceRequest
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_ = json.NewDecoder(r.Body).Decode(&sent)
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"id":"1","invoice_url":"https://nowpayments.io/invoice/1"}`))
+	}))
+	defer srv.Close()
+
+	p := newTestNowPayments(t, nil)
+	pointNowPaymentsAtServer(t, p, srv)
+
+	resp, err := p.CreatePayment(context.Background(), payment.CreatePaymentRequest{
+		OrderID:     "sub2_20260904abcd1234",
+		Amount:      "5",
+		PaymentType: payment.TypeNowPaymentsCrypto,
+		ReturnURL:   "https://panel.example.com/payment/result",
+		NotifyURL:   "https://panel.example.com/api/v1/payment/webhook/nowpayments",
+	})
+	require.NoError(t, err)
+	assert.Equal(t, "https://nowpayments.io/invoice/1", resp.PayURL)
+	assert.Equal(t, "https://panel.example.com/api/v1/payment/webhook/nowpayments", sent.IPNCallbackURL)
 }

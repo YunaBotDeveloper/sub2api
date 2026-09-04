@@ -45,3 +45,31 @@ func TestClassifyCreatePaymentErrorWrapsPlainErrors(t *testing.T) {
 
 	assert.NoError(t, classifyCreatePaymentError(CreateOrderRequest{}, "sepay", nil))
 }
+
+func TestBuildPaymentNotifyURL(t *testing.T) {
+	t.Parallel()
+
+	// The origin comes from the already-validated return URL, not the Host
+	// header: behind a reverse proxy that header can be an internal name the
+	// gateway cannot reach, and for some gateways the IPN is the only proof a
+	// payment happened.
+	got, err := buildPaymentNotifyURL("https://panel.example.com/payment/result", "nowpayments")
+	require.NoError(t, err)
+	assert.Equal(t, "https://panel.example.com/api/v1/payment/webhook/nowpayments", got)
+
+	// The path and query of the return URL must not leak into the webhook URL.
+	got, err = buildPaymentNotifyURL("https://panel.example.com:8443/payment/result?order_id=7", "sepay")
+	require.NoError(t, err)
+	assert.Equal(t, "https://panel.example.com:8443/api/v1/payment/webhook/sepay", got)
+
+	// No return URL means no derivable origin. That is not an error here — only
+	// the gateways that need a callback get to refuse, and refusing for all of
+	// them would take SePay down with it.
+	got, err = buildPaymentNotifyURL("", "nowpayments")
+	require.NoError(t, err)
+	assert.Empty(t, got)
+
+	_, err = buildPaymentNotifyURL("/payment/result", "nowpayments")
+	require.Error(t, err)
+	assert.Equal(t, "INVALID_RETURN_URL", infraerrors.Reason(err))
+}

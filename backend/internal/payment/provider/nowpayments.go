@@ -181,12 +181,21 @@ func (n *NowPayments) CreatePayment(ctx context.Context, req payment.CreatePayme
 		return nil, fmt.Errorf("nowpayments create payment: %w", err)
 	}
 
+	// IPN 是这个网关唯一的到账凭据：上游没有可以复核账单状态的查询接口。
+	// 少了回调地址，账单能开出来、用户能付钱，但订单永远停在挂起——
+	// 那比建单直接失败糟糕得多。
+	notifyURL := strings.TrimSpace(req.NotifyURL)
+	if notifyURL == "" {
+		return nil, infraerrors.ServiceUnavailable("NOWPAYMENTS_NOTIFY_URL_REQUIRED",
+			"nowpayments needs an IPN callback URL: without it a paid invoice is never credited")
+	}
+
 	body := nowPaymentsInvoiceRequest{
 		PriceAmount:      json.Number(amount.String()),
 		PriceCurrency:    strings.ToLower(currency),
 		OrderID:          req.OrderID,
 		OrderDescription: req.Subject,
-		IPNCallbackURL:   strings.TrimSpace(req.NotifyURL),
+		IPNCallbackURL:   notifyURL,
 		SuccessURL:       strings.TrimSpace(req.ReturnURL),
 		CancelURL:        strings.TrimSpace(req.ReturnURL),
 		PayCurrency:      n.payCurrency(),
