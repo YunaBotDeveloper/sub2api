@@ -26,6 +26,7 @@ func TestValidateProviderRequest(t *testing.T) {
 		wantErr     bool
 	}{
 		{name: "sepay instance", providerKey: payment.TypeSePay, instName: "SePay", types: payment.TypeSePayBankTransfer},
+		{name: "nowpayments instance", providerKey: payment.TypeNowPayments, instName: "NOWPayments", types: payment.TypeNowPaymentsCrypto},
 		{name: "empty supported types is allowed", providerKey: payment.TypeSePay, instName: "SePay", types: ""},
 		{name: "blank name is rejected", providerKey: payment.TypeSePay, instName: "  ", types: payment.TypeSePayCard, wantErr: true},
 		{name: "removed provider key is rejected", providerKey: "stripe", instName: "Stripe", types: "stripe", wantErr: true},
@@ -257,4 +258,24 @@ func validSePayProviderConfig(t *testing.T) map[string]string {
 
 func boolPtrValue(v bool) *bool {
 	return &v
+}
+
+func TestEveryShippedGatewayCanBeAdded(t *testing.T) {
+	t.Parallel()
+
+	// A gateway that registers, routes and signs correctly but cannot be added
+	// in the admin UI is indistinguishable from a gateway that does not exist.
+	// This is what a second hand-maintained list of provider keys buys you, so
+	// pin the two config maps to the same source of truth as the validator.
+	for _, providerKey := range []string{payment.TypeSePay, payment.TypeNowPayments} {
+		require.True(t, payment.IsProviderKey(providerKey), providerKey)
+		require.NoError(t, validateProviderRequest(providerKey, "Instance", ""), providerKey)
+		assert.NotEmpty(t, providerSensitiveConfigFields[providerKey], providerKey)
+		assert.NotEmpty(t, providerPendingOrderProtectedConfigFields[providerKey], providerKey)
+	}
+
+	assert.False(t, payment.IsProviderKey("stripe"))
+	// A payment method is not a gateway: "sepay_bank_transfer" must never pass
+	// as a provider key just because it starts with one.
+	assert.False(t, payment.IsProviderKey(payment.TypeSePayBankTransfer))
 }

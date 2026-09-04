@@ -32,6 +32,19 @@ const (
 // prefixed with. No key may be a prefix of another one.
 var providerKeyPrefixes = []PaymentType{TypeSePay, TypeNowPayments}
 
+// IsProviderKey reports whether a string names one of the gateways this build
+// ships. Keep every "is this a known gateway" check on this one list: a second
+// hand-maintained copy is a gateway that registers, routes and signs correctly
+// but cannot be added in the admin UI.
+func IsProviderKey(key string) bool {
+	for _, providerKey := range providerKeyPrefixes {
+		if key == providerKey {
+			return true
+		}
+	}
+	return false
+}
+
 // Order status constants shared across payment and service layers.
 const (
 	OrderStatusPending    = "PENDING"
