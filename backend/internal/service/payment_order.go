@@ -780,12 +780,28 @@ func validateSelectedCreateOrderAmountCurrency(payAmount string, sel *payment.In
 	return nil
 }
 
+// classifyCreatePaymentError 把服务商的建单失败翻译成对外的网关错误。
+//
+// 服务商自己带了 reason 和 metadata 时原样放行：那些字段说明的正是「哪个参数
+// 被上游拒了」，重新包一层只会得到一句没有信息量的「payment gateway error」，
+// 排查时只能靠猜。
 func classifyCreatePaymentError(req CreateOrderRequest, providerKey string, err error) error {
 	if err == nil {
 		return nil
 	}
-	_, _ = req, providerKey
-	return infraerrors.ServiceUnavailable("PAYMENT_GATEWAY_ERROR", fmt.Sprintf("payment gateway error: %s", err.Error()))
+	_ = req
+
+	var appErr *infraerrors.ApplicationError
+	if errors.As(err, &appErr) {
+		return appErr
+	}
+
+	wrapped := infraerrors.ServiceUnavailable("PAYMENT_GATEWAY_ERROR",
+		fmt.Sprintf("payment gateway error: %s", err.Error()))
+	if strings.TrimSpace(providerKey) != "" {
+		wrapped = wrapped.WithMetadata(map[string]string{"provider_key": providerKey})
+	}
+	return wrapped
 }
 
 func buildCreateOrderResponse(order *dbent.PaymentOrder, req CreateOrderRequest, payAmount float64, sel *payment.InstanceSelection, pr *payment.CreatePaymentResponse, resultType payment.CreatePaymentResultType) *CreateOrderResponse {
