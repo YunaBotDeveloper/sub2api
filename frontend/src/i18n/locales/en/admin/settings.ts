@@ -789,7 +789,7 @@ export default {
         field_nowPaymentsIpnSecretKeyHint: 'Required. Callbacks are accepted only when their x-nowpayments-sig signature matches this secret — NOWPayments offers no order lookup to confirm a payment any other way.',
         field_nowPaymentsCurrencyHint: 'The fiat currency orders are priced in. The customer still pays in crypto; NOWPayments converts at checkout time.',
         field_payCurrencyHint: 'Optional. Lock every invoice to one coin (e.g. usdttrc20). Leave blank to let the customer pick at checkout.',
-        supportedTypesHint: 'Comma-separated, e.g. sepay_bank_transfer,sepay_card',
+        supportedTypesHint: 'Comma-separated, e.g. sepay_bank_transfer',
         field_currency: 'Payment currency',
         limitsTitle: 'Limits',
         limitSingleMin: 'Min per order',

@@ -8,7 +8,7 @@ import {
   readPaymentRecoverySnapshot,
   type PaymentRecoverySnapshot,
 } from '@/components/payment/paymentFlow'
-import { SEPAY_BANK_TRANSFER, SEPAY_CARD, SEPAY_NAPAS } from '@/components/payment/providerConfig'
+import { NOWPAYMENTS_CRYPTO, SEPAY_BANK_TRANSFER } from '@/components/payment/providerConfig'
 
 function methodLimit(overrides: Partial<MethodLimit> = {}): MethodLimit {
   return {
@@ -35,12 +35,11 @@ function createOrderResult(overrides: Partial<CreateOrderResult> = {}): CreateOr
 }
 
 describe('normalizeVisibleMethod', () => {
-  it('keeps each SePay method as its own visible choice', () => {
+  it('keeps each method as its own visible choice', () => {
     // Folding a sub-method onto the gateway key would make the order use a
     // method the user did not press.
-    expect(normalizeVisibleMethod(SEPAY_BANK_TRANSFER)).toBe(SEPAY_BANK_TRANSFER)
-    expect(normalizeVisibleMethod('  ' + SEPAY_NAPAS + '  ')).toBe(SEPAY_NAPAS)
-    expect(normalizeVisibleMethod(SEPAY_CARD)).toBe(SEPAY_CARD)
+    expect(normalizeVisibleMethod('  ' + SEPAY_BANK_TRANSFER + '  ')).toBe(SEPAY_BANK_TRANSFER)
+    expect(normalizeVisibleMethod(NOWPAYMENTS_CRYPTO)).toBe(NOWPAYMENTS_CRYPTO)
   })
 
   it('rejects a bare gateway key and unknown methods', () => {
@@ -54,12 +53,11 @@ describe('getVisibleMethods', () => {
   it('keeps every configured method separate', () => {
     const visible = getVisibleMethods({
       [SEPAY_BANK_TRANSFER]: methodLimit({ single_max: 100 }),
-      [SEPAY_NAPAS]: methodLimit({ single_max: 200 }),
-      [SEPAY_CARD]: methodLimit({ single_max: 300 }),
+      [NOWPAYMENTS_CRYPTO]: methodLimit({ single_max: 200 }),
     })
 
-    expect(Object.keys(visible).sort()).toEqual([SEPAY_BANK_TRANSFER, SEPAY_CARD, SEPAY_NAPAS].sort())
-    expect(visible[SEPAY_NAPAS].single_max).toBe(200)
+    expect(Object.keys(visible).sort()).toEqual([SEPAY_BANK_TRANSFER, NOWPAYMENTS_CRYPTO].sort())
+    expect(visible[NOWPAYMENTS_CRYPTO].single_max).toBe(200)
   })
 
   it('passes an unknown method through under its own key', () => {
@@ -100,7 +98,7 @@ describe('decidePaymentLaunch', () => {
     // page is the only path that reaches the gateway.
     const decision = decidePaymentLaunch(
       createOrderResult({ result_type: 'form_post', pay_url: '/bridge', qr_code: 'qr-payload' }),
-      { visibleMethod: SEPAY_CARD, orderType: 'balance', isMobile: false },
+      { visibleMethod: NOWPAYMENTS_CRYPTO, orderType: 'balance', isMobile: false },
     )
 
     expect(decision.kind).toBe('redirect_waiting')
@@ -118,7 +116,7 @@ describe('decidePaymentLaunch', () => {
   it('prefers redirect on mobile when both pay_url and qr_code are present', () => {
     const decision = decidePaymentLaunch(
       createOrderResult({ qr_code: 'qr-payload', pay_url: '/bridge' }),
-      { visibleMethod: SEPAY_NAPAS, orderType: 'balance', isMobile: true },
+      { visibleMethod: NOWPAYMENTS_CRYPTO, orderType: 'balance', isMobile: true },
     )
 
     expect(decision.kind).toBe('redirect_waiting')
@@ -127,7 +125,7 @@ describe('decidePaymentLaunch', () => {
   it('keeps the QR flow on desktop when both are present and no mode is set', () => {
     const decision = decidePaymentLaunch(
       createOrderResult({ qr_code: 'qr-payload', pay_url: '/bridge' }),
-      { visibleMethod: SEPAY_NAPAS, orderType: 'balance', isMobile: false },
+      { visibleMethod: NOWPAYMENTS_CRYPTO, orderType: 'balance', isMobile: false },
     )
 
     expect(decision.kind).toBe('qr_waiting')
@@ -136,7 +134,7 @@ describe('decidePaymentLaunch', () => {
   it('falls back to the redirect when only a pay_url is available', () => {
     const decision = decidePaymentLaunch(
       createOrderResult({ pay_url: '/bridge', payment_mode: 'qrcode' }),
-      { visibleMethod: SEPAY_CARD, orderType: 'balance', isMobile: false },
+      { visibleMethod: NOWPAYMENTS_CRYPTO, orderType: 'balance', isMobile: false },
     )
 
     expect(decision.kind).toBe('redirect_waiting')
@@ -145,7 +143,7 @@ describe('decidePaymentLaunch', () => {
   it('reports an unhandled scenario when the gateway returned nothing usable', () => {
     const decision = decidePaymentLaunch(
       createOrderResult({}),
-      { visibleMethod: SEPAY_CARD, orderType: 'balance', isMobile: false },
+      { visibleMethod: NOWPAYMENTS_CRYPTO, orderType: 'balance', isMobile: false },
     )
 
     expect(decision.kind).toBe('unhandled')
@@ -156,13 +154,13 @@ describe('buildCreateOrderPayload', () => {
   it('sends the selected method and a canonical result URL', () => {
     expect(buildCreateOrderPayload({
       amount: 250000,
-      paymentType: '  ' + SEPAY_NAPAS + '  ',
+      paymentType: '  ' + NOWPAYMENTS_CRYPTO + '  ',
       orderType: 'balance',
       origin: 'https://panel.example.com/',
       isMobile: false,
     })).toEqual({
       amount: 250000,
-      payment_type: SEPAY_NAPAS,
+      payment_type: NOWPAYMENTS_CRYPTO,
       order_type: 'balance',
       is_mobile: false,
       payment_source: 'hosted_redirect',
@@ -173,7 +171,7 @@ describe('buildCreateOrderPayload', () => {
   it('passes the real mobile signal through', () => {
     expect(buildCreateOrderPayload({
       amount: 10000,
-      paymentType: SEPAY_CARD,
+      paymentType: NOWPAYMENTS_CRYPTO,
       orderType: 'balance',
       isMobile: true,
     }).is_mobile).toBe(true)

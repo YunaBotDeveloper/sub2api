@@ -298,7 +298,7 @@ export default {
     createOrder: 'Confirm Payment',
     methods: {
       sepay: 'SePay',
-      sepay_bank_transfer: 'Bank Transfer (VietQR)',
+      sepay_bank_transfer: 'VietQR',
       sepay_napas: 'Napas Bank Transfer',
       sepay_card: 'Card (Visa / Mastercard / JCB)',
       nowpayments: 'NOWPayments',

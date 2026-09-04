@@ -278,7 +278,7 @@ import type { SubscriptionPlan, CheckoutInfoResponse, CreateOrderResult, OrderTy
 import AppLayout from '@/components/layout/AppLayout.vue'
 import AmountInput from '@/components/payment/AmountInput.vue'
 import PaymentMethodSelector from '@/components/payment/PaymentMethodSelector.vue'
-import { METHOD_ORDER, SEPAY_BANK_TRANSFER, SEPAY_CARD, SEPAY_NAPAS, getPaymentPopupFeatures } from '@/components/payment/providerConfig'
+import { METHOD_ORDER, getPaymentPopupFeatures } from '@/components/payment/providerConfig'
 import {
   PAYMENT_RECOVERY_STORAGE_KEY,
   buildCreateOrderPayload,
@@ -712,17 +712,7 @@ watch(() => [validAmount.value, selectedMethod.value] as const, ([amt, method]) 
   if (available) selectedMethod.value = available
 })
 
-// Payment button class: follows selected payment method color
-const paymentButtonClass = computed(() => {
-  switch (selectedMethod.value) {
-    case SEPAY_BANK_TRANSFER:
-    case SEPAY_NAPAS:
-    case SEPAY_CARD:
-      return 'btn-primary'
-    default:
-      return 'btn-primary'
-  }
-})
+const paymentButtonClass = 'btn-primary'
 
 // Subscription confirm: platform accent colors (clean card, no gradient)
 const planBadgeClass = computed(() => platformBadgeClass(selectedPlan.value?.group_platform || ''))

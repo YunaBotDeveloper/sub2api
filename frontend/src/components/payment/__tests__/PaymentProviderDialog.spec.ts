@@ -5,8 +5,6 @@ import PaymentProviderDialog from '@/components/payment/PaymentProviderDialog.vu
 import {
   PROVIDER_SEPAY,
   SEPAY_BANK_TRANSFER,
-  SEPAY_CARD,
-  SEPAY_NAPAS,
   WEBHOOK_PATHS,
 } from '@/components/payment/providerConfig'
 import type { ProviderInstance } from '@/types/payment'
@@ -58,9 +56,7 @@ function mountDialog(options: { editing?: ProviderInstance | null } = {}) {
       allKeyOptions: [{ value: PROVIDER_SEPAY, label: 'SePay' }],
       enabledKeyOptions: [{ value: PROVIDER_SEPAY, label: 'SePay' }],
       allPaymentTypes: [
-        { value: SEPAY_BANK_TRANSFER, label: 'Bank Transfer' },
-        { value: SEPAY_NAPAS, label: 'Napas' },
-        { value: SEPAY_CARD, label: 'Card' },
+        { value: SEPAY_BANK_TRANSFER, label: 'VietQR' },
       ],
       redirectLabel: 'Redirect',
     },
@@ -97,7 +93,7 @@ describe('PaymentProviderDialog', () => {
     expect(wrapper.text()).toContain(WEBHOOK_PATHS[PROVIDER_SEPAY])
   })
 
-  it('defaults a new instance to redirect mode and every SePay method', async () => {
+  it('defaults a new instance to redirect mode and the VietQR method', async () => {
     const wrapper = mountDialog()
     const vm = wrapper.vm as unknown as DialogVm
 
@@ -107,7 +103,7 @@ describe('PaymentProviderDialog', () => {
     // SePay reaches its checkout through a signed POST form, so redirect is the
     // only mode that actually completes a payment.
     expect(vm.form.payment_mode).toBe('redirect')
-    expect(vm.form.supported_types).toEqual([SEPAY_BANK_TRANSFER, SEPAY_NAPAS, SEPAY_CARD])
+    expect(vm.form.supported_types).toEqual([SEPAY_BANK_TRANSFER])
   })
 
   it('applies the SePay config defaults', async () => {

@@ -783,7 +783,7 @@ export default {
         field_nowPaymentsCurrencyHint: '订单计价用的法币币种。用户仍以加密货币付款，由 NOWPayments 在收银台按实时汇率换算。',
         field_payCurrencyHint: '选填。填写后所有账单固定用该币种结算（例如 usdttrc20）；留空则由用户在收银台自行选择。',
         sepayWebhookHint: '在 SePay 商户后台把下面的地址配置为支付通知（IPN）地址：',
-        supportedTypesHint: '英文逗号分隔，例如 sepay_bank_transfer,sepay_card',
+        supportedTypesHint: '英文逗号分隔，例如 sepay_bank_transfer',
         field_currency: '支付币种',
         limitsTitle: '限额配置',
         limitSingleMin: '单笔最低',

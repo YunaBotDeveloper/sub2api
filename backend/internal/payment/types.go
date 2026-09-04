@@ -20,8 +20,9 @@ type PaymentType = string
 const (
 	TypeSePay             PaymentType = "sepay"
 	TypeSePayBankTransfer PaymentType = "sepay_bank_transfer"
-	TypeSePayNapas        PaymentType = "sepay_napas"
-	TypeSePayCard         PaymentType = "sepay_card"
+	// Napas 与银行卡已经停售，只保留常量给历史订单和它们的收银台重放用。
+	TypeSePayNapas PaymentType = "sepay_napas"
+	TypeSePayCard  PaymentType = "sepay_card"
 
 	TypeNowPayments       PaymentType = "nowpayments"
 	TypeNowPaymentsCrypto PaymentType = "nowpayments_crypto"

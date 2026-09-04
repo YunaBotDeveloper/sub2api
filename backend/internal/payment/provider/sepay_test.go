@@ -123,10 +123,21 @@ func TestSePaySupportedTypes(t *testing.T) {
 
 	p := newTestSePay(t, nil)
 	assert.Equal(t, payment.TypeSePay, p.ProviderKey())
-	assert.ElementsMatch(t,
-		[]payment.PaymentType{payment.TypeSePayBankTransfer, payment.TypeSePayNapas, payment.TypeSePayCard},
-		p.SupportedTypes(),
-	)
+	// 只卖 VietQR。Napas 与银行卡已经停售，它们再出现在这里就会被下单路径当成
+	// 可选方式列出来，用户选中后建单会在网关那一步失败。
+	assert.Equal(t, []payment.PaymentType{payment.TypeSePayBankTransfer}, p.SupportedTypes())
+}
+
+func TestSePayStillBuildsCheckoutForRetiredMethods(t *testing.T) {
+	t.Parallel()
+
+	// 停售之前建出来的挂起订单还带着 sepay_napas / sepay_card，用户重新打开
+	// 支付链接时仍然要能进收银台，否则那些单既付不掉也只能干等过期。
+	for _, paymentType := range []string{payment.TypeSePayNapas, payment.TypeSePayCard} {
+		method, err := sepayMethodForPaymentType(paymentType)
+		require.NoError(t, err, paymentType)
+		assert.NotEmpty(t, method, paymentType)
+	}
 }
 
 func TestSePayMethodForPaymentType(t *testing.T) {

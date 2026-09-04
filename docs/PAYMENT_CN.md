@@ -22,10 +22,8 @@ Sub2API 内置支付系统，用户可自助充值，无需单独部署支付服
 | 支付方式 | SePay `payment_method` | 说明 |
 |----------|------------------------|------|
 | `sepay_bank_transfer` | `BANK_TRANSFER` | VietQR 银行转账 |
-| `sepay_napas` | `NAPAS_BANK_TRANSFER` | Napas 银行转账 |
-| `sepay_card` | `CARD` | Visa / Mastercard / JCB |
 
-三种方式在收银台上各是一个独立按钮。实例通过「支持的支付方式」决定对外开放其中哪几种。
+`sepay_napas` 与 `sepay_card` 已在迁移 241 中停售。停售之前建的订单还带着这两个类型，也仍然能进收银台，所以服务商保留了它们的 `payment_method` 映射；但新订单不再提供这两种方式，迁移会把它们从各实例的「支持的支付方式」和 `ENABLED_PAYMENT_TYPES` 里剔除。
 
 > 第三方支付服务商的安全性、可靠性与合规性请自行评估，本项目不做背书与担保。
 

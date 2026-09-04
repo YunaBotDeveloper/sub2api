@@ -22,11 +22,12 @@ Sub2API has a built-in payment system that enables user self-service top-up with
 | Payment type | SePay `payment_method` | Description |
 |--------------|------------------------|-------------|
 | `sepay_bank_transfer` | `BANK_TRANSFER` | VietQR bank transfer |
-| `sepay_napas` | `NAPAS_BANK_TRANSFER` | Napas bank transfer |
-| `sepay_card` | `CARD` | Visa / Mastercard / JCB |
 
-Each type is an independent button on the checkout page. A provider instance may
-offer any subset of them via its **supported types**.
+`sepay_napas` and `sepay_card` were retired in migration 241. Orders created
+before that still carry those types and still reach the checkout, so the
+provider keeps their `payment_method` mapping — but neither is offered for a new
+order, and the migration strips both from every instance's **supported types**
+and from `ENABLED_PAYMENT_TYPES`.
 
 > Evaluate the security, reliability, and compliance of any payment provider on
 > your own — this project does not endorse or guarantee any of them.
