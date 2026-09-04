@@ -462,3 +462,51 @@ describe('PaymentView payment recovery', () => {
     expect(wrapper.find('[data-test="method-selector"]').text()).toBe('ldc')
   })
 })
+
+describe('PaymentView gateway return', () => {
+  it('hands the gateway status to the panel when the user is sent back here', async () => {
+    // The result page redirects a gateway return to this page so the panel that
+    // was already tracking the order reports the outcome. It has to pick the
+    // status up from the URL — otherwise a cancelled checkout sits on
+    // "waiting for payment" until the order expires.
+    vi.useRealTimers()
+    routeState.path = '/purchase'
+    routeState.query = { resume_token: 'resume-7', order_id: '7', status: 'cancelled' }
+    getCheckoutInfo.mockReset().mockResolvedValue(checkoutInfoFixture())
+    window.localStorage.clear()
+    window.localStorage.setItem(PAYMENT_RECOVERY_STORAGE_KEY, JSON.stringify({
+      orderId: 7,
+      amount: 100000,
+      qrCode: '',
+      expiresAt: '2099-01-01T00:10:00.000Z',
+      paymentType: 'sepay_bank_transfer',
+      payUrl: 'https://pay.example.com/session/7',
+      outTradeNo: 'sub2_20260904abcd1234',
+      clientSecret: '',
+      intentId: '',
+      currency: 'VND',
+      countryCode: '',
+      paymentEnv: '',
+      payAmount: 100000,
+      orderType: 'balance',
+      paymentMode: 'redirect',
+      resumeToken: 'resume-7',
+      createdAt: Date.UTC(2099, 0, 1, 0, 0, 0),
+    }))
+
+    const wrapper = shallowMount(PaymentView, {
+      global: {
+        stubs: {
+          AppLayout: { template: '<div><slot /></div>' },
+          Teleport: true,
+          Transition: false,
+        },
+      },
+    })
+    await flushPromises()
+
+    const panel = wrapper.findComponent({ name: 'PaymentStatusPanel' })
+    expect(panel.exists()).toBe(true)
+    expect(panel.props('gatewayReturnStatus')).toBe('cancelled')
+  })
+})
