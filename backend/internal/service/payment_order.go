@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"math"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -602,12 +603,17 @@ func (s *PaymentService) invokeProvider(ctx context.Context, order *dbent.Paymen
 	if err != nil {
 		return nil, err
 	}
+	notifyURL, err := buildPaymentNotifyURL(canonicalReturnURL, sel.ProviderKey)
+	if err != nil {
+		return nil, err
+	}
 	providerReq := buildProviderCreatePaymentRequest(CreateOrderRequest{
 		PaymentType: req.PaymentType,
 		ClientIP:    req.ClientIP,
 		IsMobile:    req.IsMobile,
 		ReturnURL:   providerReturnURL,
 	}, sel, outTradeNo, payAmountStr, subject)
+	providerReq.NotifyURL = notifyURL
 	finishProviderCall := servertiming.ObserveDependency(ctx, "payment")
 	pr, err := prov.CreatePayment(ctx, providerReq)
 	finishProviderCall()
@@ -668,6 +674,30 @@ func removePostgresTextNUL(value string) string {
 		return value
 	}
 	return strings.ReplaceAll(value, "\x00", "")
+}
+
+// paymentWebhookPathPrefix 必须与 server/routes/payment.go 里注册的回调路由一致。
+const paymentWebhookPathPrefix = "/api/v1/payment/webhook/"
+
+// buildPaymentNotifyURL 推导本站的回调地址，交给需要在建单时声明它的网关。
+//
+// 用已经校验过的 canonicalReturnURL 的 origin，而不是 Host 头：反向代理后面的
+// Host 可能是内网名字，写进去网关根本回调不到，而 IPN 是有些网关唯一的到账凭据。
+//
+// canonicalReturnURL 为空时返回空串：不是所有网关都需要这个字段，需要的那个
+// 自己会拒绝。在这里一刀切地报错会把 SePay 也一起挡下来。
+func buildPaymentNotifyURL(canonicalReturnURL, providerKey string) (string, error) {
+	canonicalReturnURL = strings.TrimSpace(canonicalReturnURL)
+	providerKey = strings.TrimSpace(providerKey)
+	if canonicalReturnURL == "" || providerKey == "" {
+		return "", nil
+	}
+	parsed, err := url.Parse(canonicalReturnURL)
+	if err != nil || parsed.Scheme == "" || parsed.Host == "" {
+		return "", infraerrors.BadRequest("INVALID_RETURN_URL",
+			"cannot derive the notify URL from the return URL")
+	}
+	return parsed.Scheme + "://" + parsed.Host + paymentWebhookPathPrefix + providerKey, nil
 }
 
 func buildProviderCreatePaymentRequest(req CreateOrderRequest, sel *payment.InstanceSelection, orderID, amount, subject string) payment.CreatePaymentRequest {
