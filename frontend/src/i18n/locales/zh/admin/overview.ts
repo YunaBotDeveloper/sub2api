@@ -1185,7 +1185,9 @@ export default {
         free: '免费 Fast',
         freeHint: '该分组的 Fast 请求仍使用 priority 档位，但客户实际费用按同一请求的 Standard 价格计算。',
         disable: '禁用 Fast',
-        disableHint: '开启后，此分组的 OpenAI 请求会移除 service_tier，始终按 Standard 档位执行；优先级高于「强制使用 Fast」，全局 Fast/Flex 策略不再对这些请求生效。已建立的 WebSocket 会话需重连。'
+        disableHint: '开启后，此分组的 OpenAI 请求会移除 service_tier，始终按 Standard 档位执行；优先级高于「强制使用 Fast」，全局 Fast/Flex 策略不再对这些请求生效。已建立的 WebSocket 会话需重连。',
+        ultrafast: '强制 Ultrafast',
+        ultrafastHint: '强制该分组的 OpenAI 请求使用 service_tier=ultrafast。上游只有 gpt-5.6-sol 提供该档位，请配合渠道模型限制把分组限定到该模型。优先级高于强制 Fast，但仍会被禁用 Fast 覆盖；免费 Fast 不会为该档位打折。已建立的 WebSocket 会话需重连后生效。'
       },
       invalidRequestFallback: {
         title: '无效请求兜底分组',

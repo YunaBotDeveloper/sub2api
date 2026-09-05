@@ -2151,3 +2151,67 @@ func TestAdminService_CreateGroup_CodexModelsManifestConfigDisabledAccepted(t *t
 	require.Equal(t, []int64{1, 2}, group.CodexModelsManifestConfig.AccountIDs)
 	require.False(t, repo.created.CodexModelsManifestConfig.Enabled)
 }
+
+func TestAdminService_CreateGroup_ForceOpenAIUltrafastWinsOverForceFast(t *testing.T) {
+	repo := &groupRepoStubForAdmin{}
+	svc := &adminServiceImpl{groupRepo: repo}
+
+	group, err := svc.CreateGroup(context.Background(), &CreateGroupInput{
+		Name: "ultrafast-beats-fast", Platform: PlatformOpenAI, RateMultiplier: 1,
+		ForceOpenAIFast: true, ForceOpenAIUltrafast: true,
+	})
+
+	require.NoError(t, err)
+	require.NotNil(t, group)
+	require.True(t, repo.created.ForceOpenAIUltrafast)
+	require.False(t, repo.created.ForceOpenAIFast, "ultrafast must clear force fast when both are requested")
+}
+
+func TestAdminService_CreateGroup_DisableOpenAIFastClearsUltrafast(t *testing.T) {
+	repo := &groupRepoStubForAdmin{}
+	svc := &adminServiceImpl{groupRepo: repo}
+
+	group, err := svc.CreateGroup(context.Background(), &CreateGroupInput{
+		Name: "disable-beats-ultrafast", Platform: PlatformOpenAI, RateMultiplier: 1,
+		ForceOpenAIUltrafast: true, DisableOpenAIFast: true,
+	})
+
+	require.NoError(t, err)
+	require.NotNil(t, group)
+	require.True(t, repo.created.DisableOpenAIFast)
+	require.False(t, repo.created.ForceOpenAIUltrafast)
+}
+
+func TestAdminService_CreateGroup_ClearsForceOpenAIUltrafastOnNonOpenAIPlatform(t *testing.T) {
+	repo := &groupRepoStubForAdmin{}
+	svc := &adminServiceImpl{groupRepo: repo}
+
+	group, err := svc.CreateGroup(context.Background(), &CreateGroupInput{
+		Name: "ultrafast-anthropic", Platform: PlatformAnthropic, RateMultiplier: 1,
+		ForceOpenAIUltrafast: true,
+	})
+
+	require.NoError(t, err)
+	require.NotNil(t, group)
+	require.False(t, repo.created.ForceOpenAIUltrafast)
+}
+
+func TestAdminService_UpdateGroup_ForceOpenAIUltrafastInvalidatesAuthCache(t *testing.T) {
+	existingGroup := &Group{
+		ID: 1, Name: "existing-fast", Platform: PlatformOpenAI, Status: StatusActive, ForceOpenAIFast: true,
+	}
+	repo := &groupRepoStubForAdmin{getByID: existingGroup}
+	invalidator := &authCacheInvalidatorStub{}
+	svc := &adminServiceImpl{groupRepo: repo, authCacheInvalidator: invalidator}
+	enabled := true
+
+	group, err := svc.UpdateGroup(context.Background(), existingGroup.ID, &UpdateGroupInput{
+		ForceOpenAIUltrafast: &enabled,
+	})
+
+	require.NoError(t, err)
+	require.NotNil(t, group)
+	require.True(t, repo.updated.ForceOpenAIUltrafast)
+	require.False(t, repo.updated.ForceOpenAIFast)
+	require.Equal(t, []int64{existingGroup.ID}, invalidator.groupIDs)
+}

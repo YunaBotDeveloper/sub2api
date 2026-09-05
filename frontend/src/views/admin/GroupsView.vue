@@ -1602,7 +1602,10 @@
               data-testid="create-force-openai-fast"
               @click="
                 createForm.force_openai_fast = !createForm.force_openai_fast;
-                if (createForm.force_openai_fast) createForm.disable_openai_fast = false;
+                if (createForm.force_openai_fast) {
+                  createForm.disable_openai_fast = false;
+                  createForm.force_openai_ultrafast = false;
+                }
               "
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
@@ -1663,7 +1666,10 @@
               data-testid="create-disable-openai-fast"
               @click="
                 createForm.disable_openai_fast = !createForm.disable_openai_fast;
-                if (createForm.disable_openai_fast) createForm.force_openai_fast = false;
+                if (createForm.disable_openai_fast) {
+                  createForm.force_openai_fast = false;
+                  createForm.force_openai_ultrafast = false;
+                }
               "
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
@@ -1682,6 +1688,41 @@
           </div>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
             {{ t("admin.groups.openaiFast.disableHint") }}
+          </p>
+          <div class="flex items-center justify-between gap-4 mt-4">
+            <label class="text-sm text-gray-600 dark:text-gray-400">
+              {{ t("admin.groups.openaiFast.ultrafast") }}
+            </label>
+            <button
+              type="button"
+              role="switch"
+              :aria-checked="createForm.force_openai_ultrafast"
+              :aria-label="t('admin.groups.openaiFast.ultrafast')"
+              data-testid="create-force-openai-ultrafast"
+              @click="
+                createForm.force_openai_ultrafast = !createForm.force_openai_ultrafast;
+                if (createForm.force_openai_ultrafast) {
+                  createForm.force_openai_fast = false;
+                  createForm.disable_openai_fast = false;
+                }
+              "
+              class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+              :class="
+                createForm.force_openai_ultrafast
+                  ? 'bg-violet-500'
+                  : 'bg-gray-300 dark:bg-dark-600'
+              "
+            >
+              <span
+                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                :class="
+                  createForm.force_openai_ultrafast ? 'translate-x-6' : 'translate-x-1'
+                "
+              />
+            </button>
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            {{ t("admin.groups.openaiFast.ultrafastHint") }}
           </p>
         </div>
 
@@ -3443,7 +3484,10 @@
               data-testid="edit-force-openai-fast"
               @click="
                 editForm.force_openai_fast = !editForm.force_openai_fast;
-                if (editForm.force_openai_fast) editForm.disable_openai_fast = false;
+                if (editForm.force_openai_fast) {
+                  editForm.disable_openai_fast = false;
+                  editForm.force_openai_ultrafast = false;
+                }
               "
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
@@ -3504,7 +3548,10 @@
               data-testid="edit-disable-openai-fast"
               @click="
                 editForm.disable_openai_fast = !editForm.disable_openai_fast;
-                if (editForm.disable_openai_fast) editForm.force_openai_fast = false;
+                if (editForm.disable_openai_fast) {
+                  editForm.force_openai_fast = false;
+                  editForm.force_openai_ultrafast = false;
+                }
               "
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
@@ -3523,6 +3570,41 @@
           </div>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
             {{ t("admin.groups.openaiFast.disableHint") }}
+          </p>
+          <div class="flex items-center justify-between gap-4 mt-4">
+            <label class="text-sm text-gray-600 dark:text-gray-400">
+              {{ t("admin.groups.openaiFast.ultrafast") }}
+            </label>
+            <button
+              type="button"
+              role="switch"
+              :aria-checked="editForm.force_openai_ultrafast"
+              :aria-label="t('admin.groups.openaiFast.ultrafast')"
+              data-testid="edit-force-openai-ultrafast"
+              @click="
+                editForm.force_openai_ultrafast = !editForm.force_openai_ultrafast;
+                if (editForm.force_openai_ultrafast) {
+                  editForm.force_openai_fast = false;
+                  editForm.disable_openai_fast = false;
+                }
+              "
+              class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+              :class="
+                editForm.force_openai_ultrafast
+                  ? 'bg-violet-500'
+                  : 'bg-gray-300 dark:bg-dark-600'
+              "
+            >
+              <span
+                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                :class="
+                  editForm.force_openai_ultrafast ? 'translate-x-6' : 'translate-x-1'
+                "
+              />
+            </button>
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            {{ t("admin.groups.openaiFast.ultrafastHint") }}
           </p>
         </div>
 
@@ -5294,6 +5376,7 @@ const createForm = reactive({
   force_openai_fast: false,
   free_openai_fast: false,
   disable_openai_fast: false,
+  force_openai_ultrafast: false,
   model_pricing: [] as PricingFormEntry[],
   // 图片生成计费配置
   allow_image_generation: false,
@@ -5659,6 +5742,7 @@ const editForm = reactive({
   force_openai_fast: false,
   free_openai_fast: false,
   disable_openai_fast: false,
+  force_openai_ultrafast: false,
   model_pricing: [] as PricingFormEntry[],
   // 图片生成计费配置
   allow_image_generation: false,
@@ -6137,6 +6221,7 @@ const closeCreateModal = () => {
   createForm.force_openai_fast = false;
   createForm.free_openai_fast = false;
   createForm.disable_openai_fast = false;
+  createForm.force_openai_ultrafast = false;
   createForm.model_pricing = [];
   createForm.web_search_price_per_call = null;
   createForm.search_price_per_1k = null;
@@ -6249,6 +6334,10 @@ const handleCreateGroup = async () => {
       disable_openai_fast: normalizeGroupOpenAIFast(
         createForm.platform,
         createForm.disable_openai_fast,
+      ),
+      force_openai_ultrafast: normalizeGroupOpenAIFast(
+        createForm.platform,
+        createForm.force_openai_ultrafast,
       ),
       model_pricing: groupPricingToAPI(
         createForm.model_pricing,
@@ -6383,6 +6472,7 @@ const handleEdit = async (group: AdminGroup) => {
   editForm.force_openai_fast = group.force_openai_fast ?? false;
   editForm.free_openai_fast = group.free_openai_fast ?? false;
   editForm.disable_openai_fast = group.disable_openai_fast ?? false;
+  editForm.force_openai_ultrafast = group.force_openai_ultrafast ?? false;
   editForm.model_pricing = groupPricingFromAPI(group.model_pricing);
   editForm.allow_image_generation = group.allow_image_generation ?? false;
   editForm.allow_batch_image_generation =
@@ -6518,6 +6608,7 @@ const closeEditModal = () => {
   editForm.force_openai_fast = false;
   editForm.free_openai_fast = false;
   editForm.disable_openai_fast = false;
+  editForm.force_openai_ultrafast = false;
   editForm.model_pricing = [];
   editForm.web_search_price_per_call = null;
   editForm.search_price_per_1k = null;
@@ -6575,6 +6666,10 @@ const handleUpdateGroup = async () => {
       disable_openai_fast: normalizeGroupOpenAIFast(
         editForm.platform,
         editForm.disable_openai_fast,
+      ),
+      force_openai_ultrafast: normalizeGroupOpenAIFast(
+        editForm.platform,
+        editForm.force_openai_ultrafast,
       ),
       model_pricing: groupPricingToAPI(
         editForm.model_pricing,

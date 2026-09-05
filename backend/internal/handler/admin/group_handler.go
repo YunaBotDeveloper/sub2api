@@ -150,6 +150,7 @@ type CreateGroupRequest struct {
 	ForceOpenAIFast             bool                                      `json:"force_openai_fast"`
 	FreeOpenAIFast              bool                                      `json:"free_openai_fast"`
 	DisableOpenAIFast           bool                                      `json:"disable_openai_fast"`
+	ForceOpenAIUltrafast        bool                                      `json:"force_openai_ultrafast"`
 	RequireOAuthOnly            bool                                      `json:"require_oauth_only"`
 	RequirePrivacySet           bool                                      `json:"require_privacy_set"`
 	DefaultMappedModel          string                                    `json:"default_mapped_model"`
@@ -226,6 +227,7 @@ type UpdateGroupRequest struct {
 	ForceOpenAIFast             *bool                                      `json:"force_openai_fast"`
 	FreeOpenAIFast              *bool                                      `json:"free_openai_fast"`
 	DisableOpenAIFast           *bool                                      `json:"disable_openai_fast"`
+	ForceOpenAIUltrafast        *bool                                      `json:"force_openai_ultrafast"`
 	RequireOAuthOnly            *bool                                      `json:"require_oauth_only"`
 	RequirePrivacySet           *bool                                      `json:"require_privacy_set"`
 	DefaultMappedModel          *string                                    `json:"default_mapped_model"`
@@ -567,6 +569,7 @@ func (h *GroupHandler) Create(c *gin.Context) {
 		ForceOpenAIFast:                 req.ForceOpenAIFast,
 		FreeOpenAIFast:                  req.FreeOpenAIFast,
 		DisableOpenAIFast:               req.DisableOpenAIFast,
+		ForceOpenAIUltrafast:            req.ForceOpenAIUltrafast,
 		RequireOAuthOnly:                req.RequireOAuthOnly,
 		RequirePrivacySet:               req.RequirePrivacySet,
 		DefaultMappedModel:              req.DefaultMappedModel,
@@ -701,6 +704,7 @@ func (h *GroupHandler) Update(c *gin.Context) {
 		ForceOpenAIFast:                 req.ForceOpenAIFast,
 		FreeOpenAIFast:                  req.FreeOpenAIFast,
 		DisableOpenAIFast:               req.DisableOpenAIFast,
+		ForceOpenAIUltrafast:            req.ForceOpenAIUltrafast,
 		RequireOAuthOnly:                req.RequireOAuthOnly,
 		RequirePrivacySet:               req.RequirePrivacySet,
 		DefaultMappedModel:              req.DefaultMappedModel,

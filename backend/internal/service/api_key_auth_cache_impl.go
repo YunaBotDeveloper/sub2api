@@ -14,9 +14,10 @@ import (
 	"github.com/dgraph-io/ristretto"
 )
 
-// v24: 合并上游后快照同时携带 group disable_openai_fast 与 codex_models_manifest_config。
+// v25: 快照新增 group force_openai_ultrafast。
+// v24 合并上游后同时携带 group disable_openai_fast 与 codex_models_manifest_config：
 // 两条线各自发布过 v23 且字段不同，必须再进一位才能作废两边的旧缓存。
-const apiKeyAuthSnapshotVersion = 24
+const apiKeyAuthSnapshotVersion = 25
 
 type apiKeyAuthCacheConfig struct {
 	l1Size        int
@@ -423,6 +424,7 @@ func (s *APIKeyService) snapshotFromAPIKey(ctx context.Context, apiKey *APIKey) 
 			ForceOpenAIFast:                 apiKey.Group.ForceOpenAIFast,
 			FreeOpenAIFast:                  apiKey.Group.FreeOpenAIFast,
 			DisableOpenAIFast:               apiKey.Group.DisableOpenAIFast,
+			ForceOpenAIUltrafast:            apiKey.Group.ForceOpenAIUltrafast,
 			DefaultMappedModel:              apiKey.Group.DefaultMappedModel,
 			MessagesDispatchModelConfig:     apiKey.Group.MessagesDispatchModelConfig,
 			ModelsListConfig:                apiKey.Group.ModelsListConfig,
@@ -526,6 +528,7 @@ func (s *APIKeyService) snapshotToAPIKey(key string, snapshot *APIKeyAuthSnapsho
 			ForceOpenAIFast:                 snapshot.Group.ForceOpenAIFast,
 			FreeOpenAIFast:                  snapshot.Group.FreeOpenAIFast,
 			DisableOpenAIFast:               snapshot.Group.DisableOpenAIFast,
+			ForceOpenAIUltrafast:            snapshot.Group.ForceOpenAIUltrafast,
 			DefaultMappedModel:              snapshot.Group.DefaultMappedModel,
 			MessagesDispatchModelConfig:     snapshot.Group.MessagesDispatchModelConfig,
 			ModelsListConfig:                snapshot.Group.ModelsListConfig,
