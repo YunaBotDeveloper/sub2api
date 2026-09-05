@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"net/mail"
-	"strconv"
 	"strings"
 	"time"
 
@@ -1198,7 +1197,7 @@ func (s *AuthService) validateRegistrationEmailPolicy(ctx context.Context, email
 	}
 	whitelist := s.settingService.GetRegistrationEmailSuffixWhitelist(ctx)
 	if !IsRegistrationEmailSuffixAllowed(email, whitelist) {
-		return buildEmailSuffixNotAllowedError(whitelist)
+		return ErrEmailSuffixNotAllowed
 	}
 	return nil
 }
@@ -1215,12 +1214,12 @@ func (s *AuthService) validateRegistrationEmailQuota(ctx context.Context, email 
 		return nil
 	}
 	if !s.settingService.IsRegistrationEmailDomainQuotaEnabled(ctx) {
-		return buildEmailSuffixNotAllowedError(whitelist)
+		return ErrEmailSuffixNotAllowed
 	}
 
 	domain := RegistrationEmailDomain(email)
 	if domain == "" {
-		return buildEmailSuffixNotAllowedError(whitelist)
+		return ErrEmailSuffixNotAllowed
 	}
 	quotaRepo, ok := s.userRepo.(RegistrationEmailDomainRepository)
 	if !ok {
@@ -1256,10 +1255,10 @@ func (s *AuthService) createUserWithRegistrationEmailGuard(ctx context.Context, 
 	}
 	// 开关关闭时非白名单域名在校验阶段已被拒绝；此处兜底防御设置竞态变更。
 	if s.settingService == nil || !s.settingService.IsRegistrationEmailDomainQuotaEnabled(ctx) {
-		return buildEmailSuffixNotAllowedError(whitelist)
+		return ErrEmailSuffixNotAllowed
 	}
 	if domain == "" {
-		return buildEmailSuffixNotAllowedError(whitelist)
+		return ErrEmailSuffixNotAllowed
 	}
 	quotaRepo, ok := s.userRepo.(RegistrationEmailDomainRepository)
 	if !ok {
@@ -1327,21 +1326,6 @@ func (s *AuthService) createUserAndClaimInvitation(ctx context.Context, user *Us
 		return ErrServiceUnavailable
 	}
 	return nil
-}
-
-func buildEmailSuffixNotAllowedError(whitelist []string) error {
-	if len(whitelist) == 0 {
-		return ErrEmailSuffixNotAllowed
-	}
-
-	allowed := strings.Join(whitelist, ", ")
-	return infraerrors.BadRequest(
-		"EMAIL_SUFFIX_NOT_ALLOWED",
-		fmt.Sprintf("email suffix is not allowed, allowed suffixes: %s", allowed),
-	).WithMetadata(map[string]string{
-		"allowed_suffixes":     strings.Join(whitelist, ","),
-		"allowed_suffix_count": strconv.Itoa(len(whitelist)),
-	})
 }
 
 // ValidateToken 验证JWT token并返回用户声明

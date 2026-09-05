@@ -180,7 +180,7 @@ describe('RegisterView invitation layout', () => {
 
     expect(registerMock).not.toHaveBeenCalled()
     // 校验失败通过 validationToastMessage watcher 弹 toast
-    expect(showErrorMock).toHaveBeenCalledWith('auth.emailSuffixNotAllowedWithAllowed')
+    expect(showErrorMock).toHaveBeenCalledWith('auth.emailSuffixNotAllowed')
     expect(wrapper.get('#email').classes()).toContain('input-error')
   })
 

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import {
-  formatRegistrationEmailSuffixWhitelistForMessage,
   isRegistrationEmailSuffixAllowed,
   isRegistrationEmailSuffixDomainValid,
   normalizeRegistrationEmailSuffixDomain,
@@ -102,20 +101,5 @@ describe('registrationEmailPolicy utils', () => {
     expect(isRegistrationEmailSuffixAllowed('user@school.b.cn', whitelist)).toBe(true)
     expect(isRegistrationEmailSuffixAllowed('user@b.cn', whitelist)).toBe(true)
     expect(isRegistrationEmailSuffixAllowed('user@c.cn', whitelist)).toBe(false)
-  })
-
-  it('formatRegistrationEmailSuffixWhitelistForMessage lists up to five entries', () => {
-    expect(
-      formatRegistrationEmailSuffixWhitelistForMessage(
-        ['@a.com', '@b.com', '@c.com', '@d.com', '@e.com'],
-        { separator: ', ', more: (count) => `and ${count} more` }
-      )
-    ).toBe('@a.com, @b.com, @c.com, @d.com, @e.com')
-    expect(
-      formatRegistrationEmailSuffixWhitelistForMessage(
-        ['@a.com', '@b.com', '@c.com', '@d.com', '@e.com', '*.edu.cn', '@f.com'],
-        { separator: ', ', more: (count) => `and ${count} more` }
-      )
-    ).toBe('@a.com, @b.com, @c.com, @d.com, @e.com, and 2 more')
   })
 })

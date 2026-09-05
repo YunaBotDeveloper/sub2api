@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/Wei-Shaw/sub2api/internal/payment"
@@ -306,4 +307,49 @@ func TestNowPaymentsCreatePaymentSendsTheCallbackURL(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "https://nowpayments.io/invoice/1", resp.PayURL)
 	assert.Equal(t, "https://panel.example.com/api/v1/payment/webhook/nowpayments", sent.IPNCallbackURL)
+}
+
+func TestNowPaymentsRedirectURLDropsResumeTokenWhenTooLong(t *testing.T) {
+	t.Parallel()
+
+	base := "https://panel.example.com/payment/result?order_id=31&out_trade_no=sub2_202609045rC1GhW0&status=success"
+	// Short enough already: leave it exactly as the service built it.
+	assert.Equal(t, base, nowPaymentsRedirectURL(base))
+
+	long := base + "&resume_token=" + strings.Repeat("a", 300)
+	got := nowPaymentsRedirectURL(long)
+	assert.NotContains(t, got, "resume_token")
+	assert.LessOrEqual(t, len(got), nowPaymentsMaxRedirectURLLength)
+	// The order must still be identifiable, or the customer lands on a result
+	// page that cannot say which payment it is about.
+	assert.Contains(t, got, "order_id=31")
+	assert.Contains(t, got, "out_trade_no=sub2_202609045rC1GhW0")
+	assert.Contains(t, got, "status=success")
+}
+
+func TestNowPaymentsCreatePaymentSendsAShortRedirectURL(t *testing.T) {
+	t.Parallel()
+
+	var sent nowPaymentsInvoiceRequest
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_ = json.NewDecoder(r.Body).Decode(&sent)
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"id":"1","invoice_url":"https://nowpayments.io/invoice/1"}`))
+	}))
+	defer srv.Close()
+
+	p := newTestNowPayments(t, nil)
+	pointNowPaymentsAtServer(t, p, srv)
+
+	_, err := p.CreatePayment(context.Background(), payment.CreatePaymentRequest{
+		OrderID:     "sub2_20260904abcd1234",
+		Amount:      "50",
+		PaymentType: payment.TypeNowPaymentsCrypto,
+		ReturnURL:   "https://panel.example.com/payment/result?order_id=31&status=success&resume_token=" + strings.Repeat("a", 300),
+		NotifyURL:   "https://panel.example.com/api/v1/payment/webhook/nowpayments",
+	})
+	require.NoError(t, err)
+	assert.LessOrEqual(t, len(sent.SuccessURL), nowPaymentsMaxRedirectURLLength)
+	assert.LessOrEqual(t, len(sent.CancelURL), nowPaymentsMaxRedirectURLLength)
+	assert.Contains(t, sent.SuccessURL, "order_id=31")
 }

@@ -197,7 +197,6 @@ import { apiClient } from '@/api/client'
 import { buildAuthErrorMessage } from '@/utils/authError'
 import { extractApiErrorCode } from '@/utils/apiError'
 import {
-  formatRegistrationEmailSuffixWhitelistForMessage,
   isRegistrationEmailSuffixAllowed,
   normalizeRegistrationEmailSuffixWhitelist
 } from '@/utils/registrationEmailPolicy'
@@ -207,7 +206,7 @@ import {
   oauthAffiliatePayload
 } from '@/utils/oauthAffiliate'
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 
 // ==================== Router & Stores ====================
 
@@ -534,7 +533,7 @@ async function sendCode(): Promise<void> {
 
   try {
     if (!shouldBypassRegistrationEmailPolicy() && !isRegistrationEmailSuffixAllowed(email.value, registrationEmailSuffixWhitelist.value)) {
-      errorMessage.value = buildEmailSuffixNotAllowedMessage()
+      errorMessage.value = t('auth.emailSuffixNotAllowed')
       appStore.showError(errorMessage.value)
       return
     }
@@ -661,7 +660,7 @@ async function handleVerify(): Promise<void> {
   }
 
   if (!shouldBypassRegistrationEmailPolicy() && !isRegistrationEmailSuffixAllowed(email.value, registrationEmailSuffixWhitelist.value)) {
-    errorMessage.value = buildEmailSuffixNotAllowedMessage()
+    errorMessage.value = t('auth.emailSuffixNotAllowed')
     appStore.showError(errorMessage.value)
     return
   }
@@ -764,22 +763,6 @@ function handleBack(): void {
 
   // Go back to registration
   router.push('/register')
-}
-
-function buildEmailSuffixNotAllowedMessage(): string {
-  const normalizedWhitelist = normalizeRegistrationEmailSuffixWhitelist(
-    registrationEmailSuffixWhitelist.value
-  )
-  if (normalizedWhitelist.length === 0) {
-    return t('auth.emailSuffixNotAllowed')
-  }
-  const separator = String(locale.value || '').toLowerCase().startsWith('zh') ? '、' : ', '
-  return t('auth.emailSuffixNotAllowedWithAllowed', {
-    suffixes: formatRegistrationEmailSuffixWhitelistForMessage(normalizedWhitelist, {
-      separator,
-      more: (count) => t('auth.emailSuffixAllowedMore', { count })
-    })
-  })
 }
 
 function buildRegistrationErrorMessage(error: unknown, fallback: string): string {

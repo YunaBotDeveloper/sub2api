@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -196,8 +197,8 @@ func (n *NowPayments) CreatePayment(ctx context.Context, req payment.CreatePayme
 		OrderID:          req.OrderID,
 		OrderDescription: req.Subject,
 		IPNCallbackURL:   notifyURL,
-		SuccessURL:       strings.TrimSpace(req.ReturnURL),
-		CancelURL:        strings.TrimSpace(req.ReturnURL),
+		SuccessURL:       nowPaymentsRedirectURL(req.ReturnURL),
+		CancelURL:        nowPaymentsRedirectURL(req.ReturnURL),
 		PayCurrency:      n.payCurrency(),
 	}
 
@@ -209,7 +210,7 @@ func (n *NowPayments) CreatePayment(ctx context.Context, req payment.CreatePayme
 		return nil, infraerrors.ServiceUnavailable("PAYMENT_GATEWAY_ERROR",
 			fmt.Sprintf("nowpayments create payment: %v", err)).
 			WithMetadata(map[string]string{
-				"request_body": nowPaymentsTruncate(string(encoded)),
+				"request_body": nowPaymentsTruncateTo(string(encoded), 1500),
 				"env":          n.env(),
 			})
 	}
@@ -561,11 +562,39 @@ func (n *NowPayments) doRequest(ctx context.Context, method, path string, body a
 }
 
 func nowPaymentsTruncate(text string) string {
-	const limit = 200
+	return nowPaymentsTruncateTo(text, 200)
+}
+
+func nowPaymentsTruncateTo(text string, limit int) string {
 	if len(text) <= limit {
 		return text
 	}
 	return text[:limit] + "...(truncated)"
+}
+
+// nowPaymentsMaxRedirectURLLength 是 success_url / cancel_url 的安全长度。
+//
+// 上游对超长的回跳地址只回一句 INTERNAL_ERROR，不说是哪个字段。我们的回跳地址
+// 带着一个 JWT 形态的 resume token，轻易就超过 255。
+const nowPaymentsMaxRedirectURLLength = 255
+
+// nowPaymentsRedirectURL 把回跳地址压到上游能接受的长度。
+//
+// 砍掉的是 resume_token：结果页还能用 order_id 与 out_trade_no 定位这张单，
+// 而带着一个会被整体拒绝的地址，等于一张建不出来的账单。
+func nowPaymentsRedirectURL(raw string) string {
+	raw = strings.TrimSpace(raw)
+	if raw == "" || len(raw) <= nowPaymentsMaxRedirectURLLength {
+		return raw
+	}
+	parsed, err := url.Parse(raw)
+	if err != nil {
+		return raw
+	}
+	query := parsed.Query()
+	query.Del("resume_token")
+	parsed.RawQuery = query.Encode()
+	return parsed.String()
 }
 
 // nowPaymentsPathEscape 只允许上游编号里出现的字符进入路径，避免拼接出别的接口。

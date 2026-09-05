@@ -455,7 +455,7 @@ describe('EmailVerifyView', () => {
     await flushPromises()
 
     expect(sendVerifyCodeMock).not.toHaveBeenCalled()
-    expect(showErrorMock).toHaveBeenCalledWith('auth.emailSuffixNotAllowedWithAllowed')
+    expect(showErrorMock).toHaveBeenCalledWith('auth.emailSuffixNotAllowed')
   })
 
   it('uses the pending oauth verify-code endpoint when auth store only carries the pending provider', async () => {
