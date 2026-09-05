@@ -3153,6 +3153,17 @@ func TestGroupBillsOpenAIFastAtStandardRequiresOpenAIAccount(t *testing.T) {
 	))
 }
 
+func TestGroupBillsOpenAIFastAtStandardCoversUltrafast(t *testing.T) {
+	apiKey := &APIKey{Group: &Group{Platform: PlatformOpenAI, FreeOpenAIFast: true}}
+	account := &Account{Platform: PlatformOpenAI, Type: AccountTypeOAuth}
+
+	// ultrafast 与 priority 一样按 2 倍档位计上游成本，Free Fast 必须同样把
+	// 客户实付降回 Standard，否则强制 Ultrafast 的分组会绕过这个开关。
+	require.True(t, groupBillsOpenAIFastAtStandard(apiKey, account, OpenAIFastTierUltrafast))
+	require.False(t, groupBillsOpenAIFastAtStandard(apiKey, account, "flex"))
+	require.False(t, groupBillsOpenAIFastAtStandard(apiKey, account, ""))
+}
+
 func TestOpenAIGatewayServiceRecordUsage_ServiceTierNeverRaisedByUpstreamResponse(t *testing.T) {
 	usageRepo := &openAIRecordUsageLogRepoStub{inserted: true}
 	userRepo := &openAIRecordUsageUserRepoStub{}
