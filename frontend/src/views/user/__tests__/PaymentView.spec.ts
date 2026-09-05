@@ -24,6 +24,7 @@ const showError = vi.hoisted(() => vi.fn())
 const showInfo = vi.hoisted(() => vi.fn())
 const showWarning = vi.hoisted(() => vi.fn())
 const getCheckoutInfo = vi.hoisted(() => vi.fn())
+const getExchangeRate = vi.hoisted(() => vi.fn())
 const bridgeInvoke = vi.hoisted(() => vi.fn())
 const translate = vi.hoisted(() => vi.fn((key: string) => key))
 
@@ -84,6 +85,7 @@ vi.mock('@/stores', () => ({
 vi.mock('@/api/payment', () => ({
   paymentAPI: {
     getCheckoutInfo,
+    getExchangeRate,
   },
 }))
 
@@ -320,8 +322,10 @@ describe('PaymentView subscription confirmation amounts', () => {
     expect(wrapper.findAll('button').some(button => button.text().includes(convertedPrice))).toBe(true)
   })
 
-  it('keeps the plan price when the rate is unset or the currency is not the gateway currency', async () => {
-    // opt-in 回归锁：即使余额倍率已配置，未配置订阅汇率时仍按 price 直付
+  it('falls back to the live rate when the subscription rate is unset, never to the raw price', async () => {
+    // 回归锁：未配置订阅汇率时用实时牌价换算，绝不按面值直付
+    // （8000 USD 的套餐不能变成 8000 VND）。
+    getExchangeRate.mockResolvedValue({ data: { rate: '26000', gateway_currency: 'VND' } })
     const gatewayWrapper = await mountSubscriptionConfirm({
       checkout: {
         balance_recharge_multiplier: 0.14,
@@ -331,12 +335,12 @@ describe('PaymentView subscription confirmation amounts', () => {
         currency: 'VND',
       },
       plan: {
-        price: 8000,
+        price: 2,
       },
     })
 
-    expect(gatewayWrapper.text()).toContain(formatPaymentAmount(8000, 'VND'))
-    expect(gatewayWrapper.text()).not.toContain(formatPaymentAmount(200000000, 'VND'))
+    expect(gatewayWrapper.text()).toContain(formatPaymentAmount(52000, 'VND'))
+    expect(gatewayWrapper.text()).not.toContain(formatPaymentAmount(2, 'VND'))
 
     const usdWrapper = await mountSubscriptionConfirm({
       checkout: {

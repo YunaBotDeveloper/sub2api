@@ -80,7 +80,11 @@ func (s *PaymentService) CreateOrder(ctx context.Context, req CreateOrderRequest
 	} else if req.OrderType == payment.OrderTypeBalance {
 		orderAmount = calculateCreditedBalance(creditedUSD, cfg.BalanceRechargeMultiplier)
 	}
-	payAmountStr, payAmount, err := calculateCreateOrderPayAmountForOrderType(limitAmount, feeRate, methodCurrency, req.OrderType, cfg.SubscriptionUSDToCNYRate)
+	subscriptionRate, err := s.subscriptionGatewayRate(ctx, req.OrderType, methodCurrency, cfg.SubscriptionUSDToCNYRate)
+	if err != nil {
+		return nil, err
+	}
+	payAmountStr, payAmount, err := calculateCreateOrderPayAmountForOrderType(limitAmount, feeRate, methodCurrency, req.OrderType, subscriptionRate)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +97,11 @@ func (s *PaymentService) CreateOrder(ctx context.Context, req CreateOrderRequest
 		selectedCurrency = paymentProviderConfigCurrency(sel.ProviderKey, sel.Config)
 	}
 	if selectedCurrency != methodCurrency {
-		payAmountStr, payAmount, err = calculateCreateOrderPayAmountForOrderType(limitAmount, feeRate, selectedCurrency, req.OrderType, cfg.SubscriptionUSDToCNYRate)
+		selectedRate, rateErr := s.subscriptionGatewayRate(ctx, req.OrderType, selectedCurrency, cfg.SubscriptionUSDToCNYRate)
+		if rateErr != nil {
+			return nil, rateErr
+		}
+		payAmountStr, payAmount, err = calculateCreateOrderPayAmountForOrderType(limitAmount, feeRate, selectedCurrency, req.OrderType, selectedRate)
 		if err != nil {
 			return nil, err
 		}
@@ -776,17 +784,35 @@ func calculateCreateOrderPayAmountForOrderType(limitAmount, feeRate float64, cur
 }
 
 // calculateSubscriptionGatewayBaseAmount 计算订阅订单的网关扣款基数。
-// 换算是显式 opt-in：仅当管理员配置了订阅汇率（rate > 0，1 USD = rate CNY）
-// 且网关币种为 CNY 时，按 price × rate 换算；未配置时保持 price 直付的存量行为。
-func calculateSubscriptionGatewayBaseAmount(amount, usdToCnyRate float64, currency string) float64 {
-	rate := normalizeSubscriptionUSDToCNYRate(usdToCnyRate)
-	if rate <= 0 || currency != payment.DefaultPaymentCurrency {
+// 汇率由 subscriptionGatewayRate 解析后传入：0 表示网关本来就按 USD 结算，
+// 套餐价直付即可。除 USD 外的任何网关币种都必须换算，否则 USD 定价会被
+// 当成网关币种面值直付（100 USD 变成 100 VND）。
+func calculateSubscriptionGatewayBaseAmount(amount, usdToGatewayRate float64, currency string) float64 {
+	rate := normalizeSubscriptionUSDToCNYRate(usdToGatewayRate)
+	if rate <= 0 || strings.EqualFold(currency, "USD") {
 		return amount
 	}
 	return decimal.NewFromFloat(amount).
 		Mul(decimal.NewFromFloat(rate)).
 		Round(int32(payment.CurrencyMaxFractionDigits(currency))).
 		InexactFloat64()
+}
+
+// subscriptionGatewayRate 解析订阅订单的 USD 到网关币种汇率。
+// 管理员配置的固定汇率优先；没配就用实时牌价，绝不回落到 1:1——套餐以 USD
+// 定价，1:1 直付到 VND 网关等于按面值把套餐白送。取不到汇率就让下单失败。
+func (s *PaymentService) subscriptionGatewayRate(ctx context.Context, orderType, currency string, configured float64) (float64, error) {
+	if orderType != payment.OrderTypeSubscription || strings.EqualFold(currency, "USD") {
+		return 0, nil
+	}
+	if rate := normalizeSubscriptionUSDToCNYRate(configured); rate > 0 {
+		return rate, nil
+	}
+	rate, err := s.effectiveExchangeRate(ctx)
+	if err != nil {
+		return 0, err
+	}
+	return rate.InexactFloat64(), nil
 }
 
 func validateCreateOrderAmountCurrency(amount float64, currency string) error {
