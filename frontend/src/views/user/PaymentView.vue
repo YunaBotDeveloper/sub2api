@@ -482,8 +482,10 @@ function limitToInputCurrency(limit: number): number {
   if (inputCurrency.value === selectedCurrency.value || exchangeRate.value <= 0) return limit
   return Math.ceil((limit / exchangeRate.value) * 100) / 100
 }
-const inputMinAmount = computed(() => limitToInputCurrency(globalMinAmount.value))
-const inputMaxAmount = computed(() => limitToInputCurrency(globalMaxAmount.value))
+// 限额取当前网关自己的，不取跨网关的并集：两个网关币种不同时，
+// min/max 的 Math.min/max 会把 VND 和 USD 的数字混在一起比。
+const inputMinAmount = computed(() => limitToInputCurrency(selectedLimit.value?.single_min ?? globalMinAmount.value))
+const inputMaxAmount = computed(() => limitToInputCurrency(selectedLimit.value?.single_max ?? globalMaxAmount.value))
 
 const exchangeRateText = computed(() => {
   if (exchangeRate.value <= 0 || selectedCurrency.value === 'USD') return ''
@@ -564,8 +566,11 @@ const globalMaxAmount = computed(() => {
 const selectedLimit = computed(() => visibleMethods.value[selectedMethod.value])
 const selectedCurrency = computed(() => normalizePaymentCurrency(selectedLimit.value?.currency))
 
-watch(selectedCurrency, (currency) => {
+watch(selectedCurrency, (currency, previous) => {
   inputCurrency.value = currency
+  // 换网关就等于换计价币种，填过的数字不再是同一个意思：100000 VND 留在
+  // 按 USD 结算的加密货币网关上会变成 100000 USD 打过去。清掉让用户重填。
+  if (previous && currency !== previous) amount.value = null
 })
 watch(selectedMethod, () => {
   void loadExchangeRate()
@@ -603,10 +608,15 @@ function ceilPaymentAmount(value: number, currency: string): number {
   return Math.ceil(value * factor) / factor
 }
 
+// 套餐以 USD 定价。网关按别的币种结算时一定要换算：管理员配的订阅汇率优先，
+// 没配就用实时牌价，两条路都镜像后端。拿不到汇率就返回 0 挡住下单，
+// 绝不按面值直付——那会把 100 USD 的套餐卖成 100 VND。
 function subscriptionPaymentAmountForCurrency(value: number, currency: string): number {
-  const rate = subscriptionUsdToCnyRate.value
-  if (rate <= 0 || currency !== DEFAULT_PAYMENT_CURRENCY) return roundPaymentAmount(value, currency)
-  return roundPaymentAmount(value * rate, currency)
+  if (currency === 'USD') return roundPaymentAmount(value, currency)
+  const configured = subscriptionUsdToCnyRate.value
+  if (configured > 0) return roundPaymentAmount(value * configured, currency)
+  if (exchangeRate.value <= 0) return 0
+  return ceilPaymentAmount(value * exchangeRate.value, currency)
 }
 
 function formatSelectedPaymentAmount(value: number): string {

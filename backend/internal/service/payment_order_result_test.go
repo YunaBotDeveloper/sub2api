@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"testing"
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
@@ -193,5 +194,32 @@ func TestBuildPaymentSubjectAppliesAffixToSubscriptionPlanDefaultName(t *testing
 	got := svc.buildPaymentSubject(plan, 0, cfg, nil)
 	if got != "PRE Sub2API Subscription Team Monthly SUF" {
 		t.Fatalf("buildPaymentSubject() = %q, want %q", got, "PRE Sub2API Subscription Team Monthly SUF")
+	}
+}
+
+// 订阅换算不再是 opt-in：网关按 VND 结算而管理员没配订阅汇率时，必须去取实时
+// 牌价，绝不能回落成 rate=0（1:1 直付）——那会把 100 USD 的套餐卖成 100 VND。
+func TestSubscriptionGatewayRateNeverFallsBackToDirectPrice(t *testing.T) {
+	t.Parallel()
+
+	svc := &PaymentService{}
+
+	if _, err := svc.subscriptionGatewayRate(context.Background(), payment.OrderTypeSubscription, "VND", 0); err == nil {
+		t.Fatal("VND subscription without configured rate must fail instead of paying price 1:1")
+	}
+
+	rate, err := svc.subscriptionGatewayRate(context.Background(), payment.OrderTypeSubscription, "VND", 25000)
+	if err != nil || rate != 25000 {
+		t.Fatalf("configured rate = (%v, %v), want (25000, nil)", rate, err)
+	}
+
+	rate, err = svc.subscriptionGatewayRate(context.Background(), payment.OrderTypeSubscription, "USD", 0)
+	if err != nil || rate != 0 {
+		t.Fatalf("USD gateway rate = (%v, %v), want (0, nil)", rate, err)
+	}
+
+	rate, err = svc.subscriptionGatewayRate(context.Background(), payment.OrderTypeBalance, "VND", 0)
+	if err != nil || rate != 0 {
+		t.Fatalf("balance order rate = (%v, %v), want (0, nil)", rate, err)
 	}
 }
