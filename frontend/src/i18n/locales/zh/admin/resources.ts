@@ -161,8 +161,9 @@ export default {
       batchAdd: '快捷添加',
       batchInput: '代理列表',
       batchInputPlaceholder:
-        "每行输入一个代理，支持以下格式：\nsocks5://user:pass{'@'}192.168.1.1:1080\nhttp://192.168.1.1:8080\nhttps://user:pass{'@'}proxy.example.com:443",
-      batchInputHint: "支持 http、https、socks5 协议，格式：协议://[用户名:密码{'@'}]主机:端口",
+        "每行输入一个代理，支持以下格式：\nsocks5://user:pass{'@'}192.168.1.1:1080\nhttp://192.168.1.1:8080\n192.168.1.1:8080\n192.168.1.1:8080:user:pass\nuser:pass{'@'}proxy.example.com:443",
+      batchInputHint:
+        "协议可省略（默认 http）。支持 协议://[用户名:密码{'@'}]主机:端口、主机:端口、主机:端口:用户名:密码、用户名:密码:主机:端口、用户名:密码{'@'}主机:端口；字段也可用空格、逗号或 | 分隔。",
       parsedCount: '有效 {count} 个',
       invalidCount: '无效 {count} 个',
       duplicateCount: '重复 {count} 个',
@@ -171,6 +172,14 @@ export default {
       batchImportSuccess: '成功导入 {created} 个代理，跳过 {skipped} 个重复',
       batchImportAllSkipped: '全部 {skipped} 个代理已存在，跳过导入',
       failedToImport: '批量导入失败',
+      // 一键分配
+      autoAssign: '一键分配',
+      autoAssignHint: '把每个空闲代理 1:1 绑定到未配置代理的账号',
+      autoAssignConfirm: '将每个空闲代理（启用中、未过期、无账号占用）1:1 绑定到未配置代理的账号，是否继续？',
+      autoAssignSuccess: '已分配 {count} 个代理，剩余空闲代理 {proxies} 个、待分配账号 {accounts} 个',
+      autoAssignNone: '没有可分配的组合：无空闲代理或无未配置代理的账号',
+      autoAssignFailed: '{count} 个分配失败',
+      autoAssignError: '一键分配失败',
       // Other messages
       saving: '保存中...',
       testing: '测试中...',

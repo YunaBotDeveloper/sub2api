@@ -65,6 +65,15 @@
               {{ t('admin.proxies.batchQualityCheck') }}
             </button>
             <button
+              @click="showAutoAssignDialog = true"
+              :disabled="autoAssigning || loading"
+              class="btn btn-secondary"
+              :title="t('admin.proxies.autoAssignHint')"
+            >
+              <Icon name="link" size="md" class="mr-2" :class="autoAssigning ? 'animate-pulse' : ''" />
+              {{ t('admin.proxies.autoAssign') }}
+            </button>
+            <button
               @click="openBatchDelete"
               :disabled="selectedCount === 0"
               class="btn btn-danger"
@@ -825,6 +834,15 @@
       @cancel="showBatchDeleteDialog = false"
     />
     <ConfirmDialog
+      :show="showAutoAssignDialog"
+      :title="t('admin.proxies.autoAssign')"
+      :message="t('admin.proxies.autoAssignConfirm')"
+      :confirm-text="t('admin.proxies.autoAssign')"
+      :cancel-text="t('common.cancel')"
+      @confirm="handleAutoAssign"
+      @cancel="showAutoAssignDialog = false"
+    />
+    <ConfirmDialog
       :show="showExportDataDialog"
       :title="t('admin.proxies.dataExport')"
       :message="t('admin.proxies.dataExportConfirmMessage')"
@@ -988,6 +1006,7 @@ import { useTableSelection } from '@/composables/useTableSelection'
 import { getPersistedPageSize } from '@/composables/usePersistedPageSize'
 import { formatDateTime } from '@/utils/format'
 import { proxyExpiryBadgeClass, proxyExpiryLabelKey } from '@/utils/proxyExpiry'
+import { parseProxyLine } from '@/utils/proxyParse'
 
 const { t } = useI18n()
 const appStore = useAppStore()
@@ -1073,6 +1092,8 @@ const testingProxyIds = ref<Set<number>>(new Set())
 const qualityCheckingProxyIds = ref<Set<number>>(new Set())
 const batchTesting = ref(false)
 const batchQualityChecking = ref(false)
+const showAutoAssignDialog = ref(false)
+const autoAssigning = ref(false)
 const proxyTableRef = ref<HTMLElement | null>(null)
 const {
   selectedSet: selectedProxyIds,
@@ -1275,46 +1296,6 @@ const handleDataImported = () => {
   loadProxies()
 }
 
-// Parse proxy URL: protocol://user:pass@host:port or protocol://host:port
-// Host may be a domain, IPv4, or bracketed IPv6 ([2001:db8::1]).
-const parseProxyUrl = (
-  line: string
-): {
-  protocol: ProxyProtocol
-  host: string
-  port: number
-  username: string
-  password: string
-} | null => {
-  const trimmed = line.trim()
-  if (!trimmed) return null
-
-  // Regex to parse proxy URL (supports http, https, socks5, socks5h).
-  // Host alternatives: [bracketed-IPv6] | hostname/IPv4 (colon-free, so the
-  // match stops before the final :port).
-  const regex =
-    /^(https?|socks5h?):\/\/(?:([^:@\[\]]+):([^@\[\]]+)@)?(\[[0-9a-f:.]+\]|[^:\[\]]+):(\d+)$/i
-  const match = trimmed.match(regex)
-
-  if (!match) return null
-
-  const [, protocol, username, password, rawHost, port] = match
-  const portNum = parseInt(port, 10)
-
-  if (portNum < 1 || portNum > 65535) return null
-
-  // Strip brackets from IPv6 literals; the backend re-brackets via net.JoinHostPort.
-  const host = rawHost.replace(/^\[|\]$/g, '').trim()
-
-  return {
-    protocol: protocol.toLowerCase() as ProxyProtocol,
-    host,
-    port: portNum,
-    username: username?.trim() || '',
-    password: password?.trim() || ''
-  }
-}
-
 const parseBatchInput = () => {
   const lines = batchInput.value.split('\n').filter((l) => l.trim())
   const seen = new Set<string>()
@@ -1323,7 +1304,7 @@ const parseBatchInput = () => {
   let duplicate = 0
 
   for (const line of lines) {
-    const parsed = parseProxyUrl(line)
+    const parsed = parseProxyLine(line)
     if (!parsed) {
       invalid++
       continue
@@ -1368,6 +1349,39 @@ const handleBatchCreate = async () => {
     console.error('Error batch creating proxies:', error)
   } finally {
     submitting.value = false
+  }
+}
+
+// One click: bind every idle proxy to an account that has no proxy yet (1:1).
+const handleAutoAssign = async () => {
+  showAutoAssignDialog.value = false
+  if (autoAssigning.value) return
+
+  autoAssigning.value = true
+  try {
+    const result = await adminAPI.proxies.autoAssign()
+    if (result.assigned > 0) {
+      appStore.showSuccess(
+        t('admin.proxies.autoAssignSuccess', {
+          count: result.assigned,
+          proxies: result.remaining_proxies,
+          accounts: result.remaining_accounts
+        })
+      )
+    } else {
+      appStore.showInfo(t('admin.proxies.autoAssignNone'))
+    }
+    if (result.failed > 0) {
+      appStore.showError(t('admin.proxies.autoAssignFailed', { count: result.failed }))
+    }
+    loadProxies()
+  } catch (error: any) {
+    appStore.showError(
+      error.response?.data?.detail || t('admin.proxies.autoAssignError')
+    )
+    console.error('Error auto assigning proxies:', error)
+  } finally {
+    autoAssigning.value = false
   }
 }
 
