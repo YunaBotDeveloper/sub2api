@@ -119,6 +119,19 @@ func (k *APIKey) IsActive() bool {
 	return k.Status == StatusActive
 }
 
+// EffectiveConcurrency 返回该 Key 生效的并发上限。
+// 分组配置了正数并发时以分组为准，否则回退到用户级 users.concurrency。
+// 认证中间件构造 AuthSubject 时必须走这里，网关的用户并发槽读的就是这个值。
+func (k *APIKey) EffectiveConcurrency() int {
+	if k == nil || k.User == nil {
+		return 0
+	}
+	if k.Group != nil && k.Group.Concurrency > 0 {
+		return k.Group.Concurrency
+	}
+	return k.User.Concurrency
+}
+
 // HasRateLimits returns true if any rate limit window is configured
 func (k *APIKey) HasRateLimits() bool {
 	return k.RateLimit5h > 0 || k.RateLimit1d > 0 || k.RateLimit7d > 0

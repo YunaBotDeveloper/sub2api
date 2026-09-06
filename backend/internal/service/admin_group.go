@@ -532,6 +532,7 @@ func (s *adminServiceImpl) CreateGroup(ctx context.Context, input *CreateGroupIn
 		MessagesDispatchModelConfig:     normalizeOpenAIMessagesDispatchModelConfig(input.MessagesDispatchModelConfig),
 		ModelsListConfig:                normalizeGroupModelsListConfig(input.ModelsListConfig),
 		RPMLimit:                        input.RPMLimit,
+		Concurrency:                     input.Concurrency,
 		MaxReasoningEffort:              maxReasoningEffort,
 		MaxReasoningEffortOverLimit:     maxReasoningEffortOverLimit,
 		ReasoningEffortMappings:         reasoningEffortMappings,
@@ -916,6 +917,9 @@ func (s *adminServiceImpl) UpdateGroup(ctx context.Context, id int64, input *Upd
 	}
 	if input.RPMLimit != nil {
 		group.RPMLimit = *input.RPMLimit
+	}
+	if input.Concurrency != nil {
+		group.Concurrency = *input.Concurrency
 	}
 	if input.MaxReasoningEffort != nil {
 		maxReasoningEffort, err := normalizeMaxReasoningEffortForPlatform(group.Platform, *input.MaxReasoningEffort)

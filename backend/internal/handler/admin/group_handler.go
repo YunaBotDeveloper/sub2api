@@ -157,6 +157,8 @@ type CreateGroupRequest struct {
 	ModelsListConfig            service.GroupModelsListConfig             `json:"models_list_config"`
 	// 分组 RPM 上限（0 = 不限制）
 	RPMLimit int `json:"rpm_limit"`
+	// 分组并发上限（0 = 不限制，回退到用户级 users.concurrency）
+	Concurrency int `json:"concurrency" binding:"min=0"`
 	// OpenAI/Codex 请求推理强度上限，空字符串表示不限制。
 	MaxReasoningEffort string `json:"max_reasoning_effort"`
 	// 超过上限时的访问控制：downgrade（默认）或 deny。
@@ -231,6 +233,8 @@ type UpdateGroupRequest struct {
 	ModelsListConfig            *service.GroupModelsListConfig             `json:"models_list_config"`
 	// 分组 RPM 上限（0 = 不限制）；nil 表示未提供不改动
 	RPMLimit *int `json:"rpm_limit"`
+	// 分组并发上限（0 = 不限制，回退到用户级）；nil 表示未提供不改动
+	Concurrency *int `json:"concurrency" binding:"omitempty,min=0"`
 	// OpenAI/Codex 请求推理强度上限；空字符串清除，nil 不修改。
 	MaxReasoningEffort *string `json:"max_reasoning_effort"`
 	// 超过上限时的访问控制；空字符串视为 downgrade，nil 不修改。
@@ -569,6 +573,7 @@ func (h *GroupHandler) Create(c *gin.Context) {
 		MessagesDispatchModelConfig:     req.MessagesDispatchModelConfig,
 		ModelsListConfig:                req.ModelsListConfig,
 		RPMLimit:                        req.RPMLimit,
+		Concurrency:                     req.Concurrency,
 		MaxReasoningEffort:              req.MaxReasoningEffort,
 		MaxReasoningEffortOverLimit:     req.MaxReasoningEffortOverLimit,
 		ReasoningEffortMappings:         req.ReasoningEffortMappings,
@@ -702,6 +707,7 @@ func (h *GroupHandler) Update(c *gin.Context) {
 		MessagesDispatchModelConfig:     req.MessagesDispatchModelConfig,
 		ModelsListConfig:                req.ModelsListConfig,
 		RPMLimit:                        req.RPMLimit,
+		Concurrency:                     req.Concurrency,
 		MaxReasoningEffort:              req.MaxReasoningEffort,
 		MaxReasoningEffortOverLimit:     req.MaxReasoningEffortOverLimit,
 		ReasoningEffortMappings:         req.ReasoningEffortMappings,
