@@ -160,9 +160,9 @@ export default {
       batchAdd: 'Quick Add',
       batchInput: 'Proxy List',
       batchInputPlaceholder:
-        "Enter one proxy per line in the following formats:\nsocks5://user:pass{'@'}192.168.1.1:1080\nhttp://192.168.1.1:8080\nhttps://user:pass{'@'}proxy.example.com:443",
+        "Enter one proxy per line, any of these formats:\nsocks5://user:pass{'@'}192.168.1.1:1080\nhttp://192.168.1.1:8080\n192.168.1.1:8080\n192.168.1.1:8080:user:pass\nuser:pass{'@'}proxy.example.com:443",
       batchInputHint:
-        "Supports http, https, socks5 protocols. Format: protocol://[user:pass{'@'}]host:port",
+        "Scheme optional (defaults to http). Accepts protocol://[user:pass{'@'}]host:port, host:port, host:port:user:pass, user:pass:host:port and user:pass{'@'}host:port; fields may also be separated by spaces, commas or |.",
       parsedCount: '{count} valid',
       invalidCount: '{count} invalid',
       duplicateCount: '{count} duplicate',
@@ -171,6 +171,16 @@ export default {
       batchImportSuccess: 'Successfully imported {created} proxies, skipped {skipped} duplicates',
       batchImportAllSkipped: 'All {skipped} proxies already exist, skipped import',
       failedToImport: 'Failed to batch import',
+      // One-click assignment
+      autoAssign: 'Auto Assign',
+      autoAssignHint: 'Bind each idle proxy to an account that has no proxy (1:1)',
+      autoAssignConfirm:
+        'Bind every idle proxy (active, not expired, no account) to an account without a proxy, one to one. Continue?',
+      autoAssignSuccess:
+        'Assigned {count} proxies. {proxies} proxies and {accounts} accounts still free.',
+      autoAssignNone: 'Nothing to assign: no idle proxy or no account without a proxy',
+      autoAssignFailed: '{count} assignments failed',
+      autoAssignError: 'Auto assign failed',
       // Other messages
       saving: 'Saving...',
       testing: 'Testing...',

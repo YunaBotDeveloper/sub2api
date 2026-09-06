@@ -223,6 +223,40 @@ export async function batchDelete(ids: number[]): Promise<{
   return data
 }
 
+/**
+ * Bind every idle proxy (no account, active, not expired) to an account that has
+ * no proxy yet, one to one.
+ * @returns Assignment summary
+ */
+export async function autoAssign(): Promise<{
+  assigned: number
+  failed: number
+  remaining_proxies: number
+  remaining_accounts: number
+  pairs: Array<{
+    account_id: number
+    account_name: string
+    proxy_id: number
+    proxy_name: string
+  }>
+  errors?: string[]
+}> {
+  const { data } = await apiClient.post<{
+    assigned: number
+    failed: number
+    remaining_proxies: number
+    remaining_accounts: number
+    pairs: Array<{
+      account_id: number
+      account_name: string
+      proxy_id: number
+      proxy_name: string
+    }>
+    errors?: string[]
+  }>('/admin/proxies/auto-assign')
+  return data
+}
+
 export async function exportData(options?: {
   ids?: number[]
   filters?: {
@@ -270,6 +304,7 @@ export const proxiesAPI = {
   getProxyAccounts,
   batchCreate,
   batchDelete,
+  autoAssign,
   exportData,
   importData
 }
