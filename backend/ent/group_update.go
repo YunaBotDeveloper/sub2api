@@ -1136,6 +1136,27 @@ func (_u *GroupUpdate) AddRpmLimit(v int) *GroupUpdate {
 	return _u
 }
 
+// SetConcurrency sets the "concurrency" field.
+func (_u *GroupUpdate) SetConcurrency(v int) *GroupUpdate {
+	_u.mutation.ResetConcurrency()
+	_u.mutation.SetConcurrency(v)
+	return _u
+}
+
+// SetNillableConcurrency sets the "concurrency" field if the given value is not nil.
+func (_u *GroupUpdate) SetNillableConcurrency(v *int) *GroupUpdate {
+	if v != nil {
+		_u.SetConcurrency(*v)
+	}
+	return _u
+}
+
+// AddConcurrency adds value to the "concurrency" field.
+func (_u *GroupUpdate) AddConcurrency(v int) *GroupUpdate {
+	_u.mutation.AddConcurrency(v)
+	return _u
+}
+
 // SetMaxReasoningEffort sets the "max_reasoning_effort" field.
 func (_u *GroupUpdate) SetMaxReasoningEffort(v string) *GroupUpdate {
 	_u.mutation.SetMaxReasoningEffort(v)
@@ -1552,6 +1573,11 @@ func (_u *GroupUpdate) check() error {
 			return &ValidationError{Name: "default_mapped_model", err: fmt.Errorf(`ent: validator failed for field "Group.default_mapped_model": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Concurrency(); ok {
+		if err := group.ConcurrencyValidator(v); err != nil {
+			return &ValidationError{Name: "concurrency", err: fmt.Errorf(`ent: validator failed for field "Group.concurrency": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.MaxReasoningEffort(); ok {
 		if err := group.MaxReasoningEffortValidator(v); err != nil {
 			return &ValidationError{Name: "max_reasoning_effort", err: fmt.Errorf(`ent: validator failed for field "Group.max_reasoning_effort": %w`, err)}
@@ -1904,6 +1930,12 @@ func (_u *GroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.AddedRpmLimit(); ok {
 		_spec.AddField(group.FieldRpmLimit, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.Concurrency(); ok {
+		_spec.SetField(group.FieldConcurrency, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedConcurrency(); ok {
+		_spec.AddField(group.FieldConcurrency, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.MaxReasoningEffort(); ok {
 		_spec.SetField(group.FieldMaxReasoningEffort, field.TypeString, value)
@@ -3347,6 +3379,27 @@ func (_u *GroupUpdateOne) AddRpmLimit(v int) *GroupUpdateOne {
 	return _u
 }
 
+// SetConcurrency sets the "concurrency" field.
+func (_u *GroupUpdateOne) SetConcurrency(v int) *GroupUpdateOne {
+	_u.mutation.ResetConcurrency()
+	_u.mutation.SetConcurrency(v)
+	return _u
+}
+
+// SetNillableConcurrency sets the "concurrency" field if the given value is not nil.
+func (_u *GroupUpdateOne) SetNillableConcurrency(v *int) *GroupUpdateOne {
+	if v != nil {
+		_u.SetConcurrency(*v)
+	}
+	return _u
+}
+
+// AddConcurrency adds value to the "concurrency" field.
+func (_u *GroupUpdateOne) AddConcurrency(v int) *GroupUpdateOne {
+	_u.mutation.AddConcurrency(v)
+	return _u
+}
+
 // SetMaxReasoningEffort sets the "max_reasoning_effort" field.
 func (_u *GroupUpdateOne) SetMaxReasoningEffort(v string) *GroupUpdateOne {
 	_u.mutation.SetMaxReasoningEffort(v)
@@ -3776,6 +3829,11 @@ func (_u *GroupUpdateOne) check() error {
 			return &ValidationError{Name: "default_mapped_model", err: fmt.Errorf(`ent: validator failed for field "Group.default_mapped_model": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Concurrency(); ok {
+		if err := group.ConcurrencyValidator(v); err != nil {
+			return &ValidationError{Name: "concurrency", err: fmt.Errorf(`ent: validator failed for field "Group.concurrency": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.MaxReasoningEffort(); ok {
 		if err := group.MaxReasoningEffortValidator(v); err != nil {
 			return &ValidationError{Name: "max_reasoning_effort", err: fmt.Errorf(`ent: validator failed for field "Group.max_reasoning_effort": %w`, err)}
@@ -4145,6 +4203,12 @@ func (_u *GroupUpdateOne) sqlSave(ctx context.Context) (_node *Group, err error)
 	}
 	if value, ok := _u.mutation.AddedRpmLimit(); ok {
 		_spec.AddField(group.FieldRpmLimit, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.Concurrency(); ok {
+		_spec.SetField(group.FieldConcurrency, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedConcurrency(); ok {
+		_spec.AddField(group.FieldConcurrency, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.MaxReasoningEffort(); ok {
 		_spec.SetField(group.FieldMaxReasoningEffort, field.TypeString, value)

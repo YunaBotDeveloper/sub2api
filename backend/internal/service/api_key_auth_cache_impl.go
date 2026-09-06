@@ -16,7 +16,8 @@ import (
 
 // v24: 合并上游后快照同时携带 group disable_openai_fast 与 codex_models_manifest_config。
 // 两条线各自发布过 v23 且字段不同，必须再进一位才能作废两边的旧缓存。
-const apiKeyAuthSnapshotVersion = 24
+// v25: 快照新增 group concurrency，存量 v24 缓存里没有该字段，必须再进一位作废。
+const apiKeyAuthSnapshotVersion = 25
 
 type apiKeyAuthCacheConfig struct {
 	l1Size        int
@@ -428,6 +429,7 @@ func (s *APIKeyService) snapshotFromAPIKey(ctx context.Context, apiKey *APIKey) 
 			ModelsListConfig:                apiKey.Group.ModelsListConfig,
 			CodexModelsManifestConfig:       apiKey.Group.CodexModelsManifestConfig,
 			RPMLimit:                        apiKey.Group.RPMLimit,
+			Concurrency:                     apiKey.Group.Concurrency,
 			MaxReasoningEffort:              apiKey.Group.MaxReasoningEffort,
 			MaxReasoningEffortOverLimit:     apiKey.Group.MaxReasoningEffortOverLimit,
 			ReasoningEffortMappings:         apiKey.Group.ReasoningEffortMappings,
@@ -531,6 +533,7 @@ func (s *APIKeyService) snapshotToAPIKey(key string, snapshot *APIKeyAuthSnapsho
 			ModelsListConfig:                snapshot.Group.ModelsListConfig,
 			CodexModelsManifestConfig:       snapshot.Group.CodexModelsManifestConfig,
 			RPMLimit:                        snapshot.Group.RPMLimit,
+			Concurrency:                     snapshot.Group.Concurrency,
 			MaxReasoningEffort:              snapshot.Group.MaxReasoningEffort,
 			MaxReasoningEffortOverLimit:     snapshot.Group.MaxReasoningEffortOverLimit,
 			ReasoningEffortMappings:         snapshot.Group.ReasoningEffortMappings,
