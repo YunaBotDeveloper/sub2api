@@ -17,7 +17,9 @@ import (
 // v24: 合并上游后快照同时携带 group disable_openai_fast 与 codex_models_manifest_config。
 // 两条线各自发布过 v23 且字段不同，必须再进一位才能作废两边的旧缓存。
 // v25: 快照新增 group concurrency，存量 v24 缓存里没有该字段，必须再进一位作废。
-const apiKeyAuthSnapshotVersion = 25
+// v26: 上游也发布过自己的 v24（group model_allowlist，由 models_list_config 改名而来）。
+// 两条线的 v24/v25 语义不同，合并后必须再进一位，才能同时作废两边的存量缓存。
+const apiKeyAuthSnapshotVersion = 26
 
 type apiKeyAuthCacheConfig struct {
 	l1Size        int
@@ -426,7 +428,7 @@ func (s *APIKeyService) snapshotFromAPIKey(ctx context.Context, apiKey *APIKey) 
 			DisableOpenAIFast:               apiKey.Group.DisableOpenAIFast,
 			DefaultMappedModel:              apiKey.Group.DefaultMappedModel,
 			MessagesDispatchModelConfig:     apiKey.Group.MessagesDispatchModelConfig,
-			ModelsListConfig:                apiKey.Group.ModelsListConfig,
+			ModelAllowlist:                  apiKey.Group.ModelAllowlist,
 			CodexModelsManifestConfig:       apiKey.Group.CodexModelsManifestConfig,
 			RPMLimit:                        apiKey.Group.RPMLimit,
 			Concurrency:                     apiKey.Group.Concurrency,
@@ -530,7 +532,7 @@ func (s *APIKeyService) snapshotToAPIKey(key string, snapshot *APIKeyAuthSnapsho
 			DisableOpenAIFast:               snapshot.Group.DisableOpenAIFast,
 			DefaultMappedModel:              snapshot.Group.DefaultMappedModel,
 			MessagesDispatchModelConfig:     snapshot.Group.MessagesDispatchModelConfig,
-			ModelsListConfig:                snapshot.Group.ModelsListConfig,
+			ModelAllowlist:                  snapshot.Group.ModelAllowlist,
 			CodexModelsManifestConfig:       snapshot.Group.CodexModelsManifestConfig,
 			RPMLimit:                        snapshot.Group.RPMLimit,
 			Concurrency:                     snapshot.Group.Concurrency,

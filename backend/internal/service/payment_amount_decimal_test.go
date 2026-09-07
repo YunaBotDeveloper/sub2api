@@ -74,6 +74,9 @@ func TestConfirmPaymentAcceptsExactDecimalAmount(t *testing.T) {
 		Save(ctx)
 	require.NoError(t, err)
 
+	// 已使用的充值码必须带上使用者：validatePaymentRedeemCode 会核对
+	// UsedBy 是否就是下单用户，缺失即视为串码。
+	orderUserID := order.UserID
 	redeemRepo := &redeemCodeRepoStub{codesByCode: map[string]*RedeemCode{
 		order.RechargeCode: {
 			ID:     301,
@@ -81,6 +84,7 @@ func TestConfirmPaymentAcceptsExactDecimalAmount(t *testing.T) {
 			Type:   RedeemTypeBalance,
 			Value:  order.Amount,
 			Status: StatusUsed,
+			UsedBy: &orderUserID,
 		},
 	}}
 	svc := &PaymentService{entClient: client, redeemService: &RedeemService{redeemRepo: redeemRepo}}

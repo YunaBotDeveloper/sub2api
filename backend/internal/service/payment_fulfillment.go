@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -337,14 +338,48 @@ const (
 
 // resolveRedeemAction decides the idempotency action based on an existing redeem code lookup.
 // existing is the result of GetByCode; lookupErr is the error from that call.
-func resolveRedeemAction(existing *RedeemCode, lookupErr error) redeemAction {
-	if existing == nil || lookupErr != nil {
-		return redeemActionCreate
+func resolveRedeemAction(existing *RedeemCode, lookupErr error) (redeemAction, error) {
+	if lookupErr != nil {
+		if errors.Is(lookupErr, ErrRedeemCodeNotFound) {
+			return redeemActionCreate, nil
+		}
+		return redeemActionCreate, fmt.Errorf("lookup payment redeem code: %w", lookupErr)
+	}
+	if existing == nil {
+		return redeemActionCreate, nil
 	}
 	if existing.IsUsed() {
-		return redeemActionSkipCompleted
+		return redeemActionSkipCompleted, nil
 	}
-	return redeemActionRedeem
+	return redeemActionRedeem, nil
+}
+
+func validatePaymentRedeemCode(o *dbent.PaymentOrder, code *RedeemCode) error {
+	if o == nil || code == nil {
+		return errors.New("payment redeem code validation requires an order and code")
+	}
+	if code.Code != o.RechargeCode {
+		return fmt.Errorf("payment redeem code mismatch for order %d", o.ID)
+	}
+	if code.Type != RedeemTypeBalance {
+		return fmt.Errorf("payment redeem code type mismatch for order %d: got %s", o.ID, code.Type)
+	}
+	if math.IsNaN(code.Value) || math.IsInf(code.Value, 0) || math.Abs(code.Value-o.Amount) > 1e-8 {
+		return fmt.Errorf("payment redeem code amount mismatch for order %d: expected %.8f, got %.8f", o.ID, o.Amount, code.Value)
+	}
+	switch code.Status {
+	case StatusUnused:
+		if code.UsedBy != nil {
+			return fmt.Errorf("unused payment redeem code has a user for order %d", o.ID)
+		}
+	case StatusUsed:
+		if code.UsedBy == nil || *code.UsedBy != o.UserID {
+			return fmt.Errorf("payment redeem code user mismatch for order %d", o.ID)
+		}
+	default:
+		return fmt.Errorf("payment redeem code has invalid status for order %d: %s", o.ID, code.Status)
+	}
+	return nil
 }
 
 // doBalance 用订单上预生成的兑换码给用户加余额。
@@ -360,7 +395,15 @@ func resolveRedeemAction(existing *RedeemCode, lookupErr error) redeemAction {
 func (s *PaymentService) doBalance(ctx context.Context, o *dbent.PaymentOrder, lease *paymentFulfillmentLease) error {
 	// Idempotency: check if redeem code already exists (from a previous partial run)
 	existing, lookupErr := s.redeemService.GetByCode(ctx, o.RechargeCode)
-	action := resolveRedeemAction(existing, lookupErr)
+	action, err := resolveRedeemAction(existing, lookupErr)
+	if err != nil {
+		return err
+	}
+	if existing != nil {
+		if err := validatePaymentRedeemCode(o, existing); err != nil {
+			return err
+		}
+	}
 
 	if action == redeemActionSkipCompleted {
 		if err := s.applyAffiliateRebateForOrder(ctx, o); err != nil {
@@ -381,9 +424,12 @@ func (s *PaymentService) doBalance(ctx context.Context, o *dbent.PaymentOrder, l
 
 // createAndRedeemBalanceCode 在一个事务内创建（可选）并兑换充值码。
 //
-// RedeemService.Redeem 会复用 context 里的事务，所以标记兑换码已用与给用户加钱
+// redeemForPaymentFulfillment 会复用 context 里的事务，所以标记兑换码已用与给用户加钱
 // 和这里的 Create 同属一个事务；崩溃时整笔回滚，不留下 unused 的孤儿码。
 // 缓存失效与邀请返利由 ContextWithRedeemPostCommit 收集，Commit 成功后才执行。
+//
+// 走 redeemForPaymentFulfillment 而不是 Redeem：履约重试不该被用户侧的兑换失败
+// 计数器拦住，也不该给它记分。该方法自身已经套了 ContextSkipRedeemAffiliate。
 func (s *PaymentService) createAndRedeemBalanceCode(ctx context.Context, o *dbent.PaymentOrder, needCreate bool) error {
 	if s.entClient == nil {
 		return errors.New("payment service is not configured with a database client")
@@ -406,7 +452,7 @@ func (s *PaymentService) createAndRedeemBalanceCode(ctx context.Context, o *dben
 			return fmt.Errorf("create redeem code: %w", err)
 		}
 	}
-	if _, err := s.redeemService.Redeem(ContextSkipRedeemAffiliate(txCtx), o.UserID, o.RechargeCode); err != nil {
+	if _, err := s.redeemService.redeemForPaymentFulfillment(txCtx, o.UserID, o.RechargeCode); err != nil {
 		return fmt.Errorf("redeem balance: %w", err)
 	}
 	if err := tx.Commit(); err != nil {
