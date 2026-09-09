@@ -59,3 +59,28 @@ func TestAPIKeyAuthSnapshotGroupDisableOpenAIFastRoundtrip(t *testing.T) {
 	require.True(t, materialized.Group.DisableOpenAIFast)
 	require.False(t, materialized.Group.ForceOpenAIFast)
 }
+
+func TestAPIKeyAuthSnapshotGroupForceOpenAIUltrafastRoundtrip(t *testing.T) {
+	groupID := int64(52)
+	apiKey := &APIKey{
+		ID: 84, UserID: 41, GroupID: &groupID, Key: "sk-ultrafast-roundtrip", Status: StatusActive,
+		User: &User{ID: 41, Status: StatusActive},
+		Group: &Group{
+			ID: groupID, Name: "ultrafast-roundtrip", Platform: PlatformOpenAI, Status: StatusActive,
+			Hydrated: true, ForceOpenAIUltrafast: true,
+		},
+	}
+	svc := &APIKeyService{}
+
+	payload, err := json.Marshal(&APIKeyAuthCacheEntry{Snapshot: svc.snapshotFromAPIKey(context.Background(), apiKey)})
+	require.NoError(t, err)
+	var cached APIKeyAuthCacheEntry
+	require.NoError(t, json.Unmarshal(payload, &cached))
+
+	materialized, used, err := svc.applyAuthCacheEntry(apiKey.Key, &cached)
+	require.NoError(t, err)
+	require.True(t, used)
+	require.NotNil(t, materialized.Group)
+	require.True(t, materialized.Group.ForceOpenAIUltrafast)
+	require.False(t, materialized.Group.ForceOpenAIFast)
+}

@@ -18,6 +18,7 @@ func TestGetByKeyForAuthCarriesGroupForceOpenAIFast(t *testing.T) {
 	group := mustCreateGroup(t, integrationEntClient, &service.Group{
 		Name: fmt.Sprintf("fast-proj-group-%d", suffix), Platform: service.PlatformOpenAI,
 		RateMultiplier: 1, ForceOpenAIFast: true, FreeOpenAIFast: true, DisableOpenAIFast: true,
+		ForceOpenAIUltrafast: true,
 	})
 	user := mustCreateUser(t, integrationEntClient, &service.User{
 		Email: fmt.Sprintf("fast-proj-%d@example.com", suffix), Concurrency: 5,
@@ -44,4 +45,5 @@ func TestGetByKeyForAuthCarriesGroupForceOpenAIFast(t *testing.T) {
 	require.True(t, got.Group.ForceOpenAIFast)
 	require.True(t, got.Group.FreeOpenAIFast)
 	require.True(t, got.Group.DisableOpenAIFast)
+	require.True(t, got.Group.ForceOpenAIUltrafast)
 }

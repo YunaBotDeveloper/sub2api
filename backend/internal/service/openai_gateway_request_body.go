@@ -1656,6 +1656,31 @@ func openAIGroupForcesFast(ctx context.Context, account *Account) bool {
 	return IsGroupContextValid(group) && groupSupportsOpenAIFast(group.Platform) && group.ForceOpenAIFast && !group.DisableOpenAIFast
 }
 
+// openAIGroupForcedServiceTier reports which service_tier the trusted request
+// Group forces onto OpenAI requests, or "" when it forces none. Ultrafast wins
+// over Fast if both flags reach here (sanitizeGroupOpenAIFast already keeps
+// them mutually exclusive), and DisableOpenAIFast overrides both.
+func openAIGroupForcedServiceTier(ctx context.Context, account *Account) string {
+	if openAIGroupForcesUltrafast(ctx, account) {
+		return OpenAIFastTierUltrafast
+	}
+	if openAIGroupForcesFast(ctx, account) {
+		return OpenAIFastTierPriority
+	}
+	return ""
+}
+
+// openAIGroupForcesUltrafast reports whether the trusted request Group forces
+// the Ultrafast tier. Only gpt-5.6-sol advertises ultrafast upstream, so this
+// is meant for groups whose model list is restricted to it.
+func openAIGroupForcesUltrafast(ctx context.Context, account *Account) bool {
+	if ctx == nil || account == nil || account.Platform != PlatformOpenAI {
+		return false
+	}
+	group, _ := ctx.Value(ctxkey.Group).(*Group)
+	return IsGroupContextValid(group) && groupSupportsOpenAIFast(group.Platform) && group.ForceOpenAIUltrafast && !group.DisableOpenAIFast
+}
+
 // openAIGroupDisablesFast reports whether the trusted request Group forbids
 // Fast/Flex for OpenAI accounts. When true the caller strips service_tier
 // entirely, so the request runs at the default tier and the global policy
@@ -1676,7 +1701,8 @@ func openAIGroupDisablesFast(ctx context.Context, account *Account) bool {
 // action=force_priority rewrites any matched known tier to "priority". Before
 // the global policy is evaluated, a trusted request Group with
 // DisableOpenAIFast enabled strips service_tier and returns early, and a Group
-// with ForceOpenAIFast enabled unconditionally sets service_tier to "priority".
+// with ForceOpenAIFast (or ForceOpenAIUltrafast) enabled unconditionally sets
+// service_tier to "priority" (or "ultrafast").
 // The global policy remains authoritative and may still pass, filter, or block
 // that final value.
 //
@@ -1699,10 +1725,10 @@ func (s *OpenAIGatewayService) applyOpenAIFastPolicyToBody(ctx context.Context, 
 		}
 		return trimmed, nil
 	}
-	if openAIGroupForcesFast(ctx, account) {
-		updated, err := sjson.SetBytes(body, "service_tier", OpenAIFastTierPriority)
+	if forcedTier := openAIGroupForcedServiceTier(ctx, account); forcedTier != "" {
+		updated, err := sjson.SetBytes(body, "service_tier", forcedTier)
 		if err != nil {
-			return body, fmt.Errorf("force group service_tier priority on body: %w", err)
+			return body, fmt.Errorf("force group service_tier %s on body: %w", forcedTier, err)
 		}
 		body = updated
 	}
@@ -1780,7 +1806,8 @@ func writeOpenAIFastPolicyBlockedResponse(c *gin.Context, err *OpenAIFastBlocked
 //   - force_priority: keeps service_tier and rewrites it to "priority"
 //   - block: returns (frame, *OpenAIFastBlockedError)
 //   - Group DisableOpenAIFast: strips service_tier and returns before the global rule
-//   - Group ForceOpenAIFast: sets priority first, then applies the global rule
+//   - Group ForceOpenAIFast / ForceOpenAIUltrafast: sets priority / ultrafast first,
+//     then applies the global rule
 //
 // Only frames whose "type" field strictly equals "response.create" are
 // inspected/mutated. Any other frame type — including the empty string —
@@ -1829,10 +1856,10 @@ func (s *OpenAIGatewayService) applyOpenAIFastPolicyToWSResponseCreate(
 		}
 		return trimmed, nil, nil
 	}
-	if openAIGroupForcesFast(ctx, account) {
-		updated, err := sjson.SetBytes(frame, "service_tier", OpenAIFastTierPriority)
+	if forcedTier := openAIGroupForcedServiceTier(ctx, account); forcedTier != "" {
+		updated, err := sjson.SetBytes(frame, "service_tier", forcedTier)
 		if err != nil {
-			return frame, nil, fmt.Errorf("force group service_tier priority in ws frame: %w", err)
+			return frame, nil, fmt.Errorf("force group service_tier %s in ws frame: %w", forcedTier, err)
 		}
 		frame = updated
 	}
