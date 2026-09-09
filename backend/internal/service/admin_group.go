@@ -314,7 +314,7 @@ func defaultAllowImageGenerationForPlatform(platform string) bool {
 func compositeDefaultModelsListCandidateIDs() []string {
 	seen := make(map[string]struct{})
 	ids := make([]string, 0)
-	for _, platform := range []string{PlatformAnthropic, PlatformGemini, PlatformOpenAI, PlatformAntigravity, PlatformGrok, PlatformKimi, PlatformZhipu, PlatformDeepseek} {
+	for _, platform := range []string{PlatformAnthropic, PlatformGemini, PlatformOpenAI, PlatformAntigravity, PlatformGrok, PlatformKimi, PlatformZhipu, PlatformDeepseek, PlatformMiniMax} {
 		for _, id := range defaultModelsListCandidateIDs(platform) {
 			if _, ok := seen[id]; ok {
 				continue
@@ -352,11 +352,19 @@ func sanitizeGroupOpenAIFast(group *Group) {
 			group.ForceOpenAIFast = false
 			group.FreeOpenAIFast = false
 			group.DisableOpenAIFast = false
+			group.ForceOpenAIUltrafast = false
 		}
 		return
 	}
-	// 禁用 Fast 优先于强制 Fast：两者同时开启时以禁用为准。
+	// 禁用 Fast 优先于两个强制开关：三者同时开启时以禁用为准。
 	if group.DisableOpenAIFast {
+		group.ForceOpenAIFast = false
+		group.ForceOpenAIUltrafast = false
+		return
+	}
+	// 强制 Ultrafast 与强制 Fast 互斥：同时开启时以 Ultrafast 为准，
+	// 否则两个开关会各自往 service_tier 写不同的值。
+	if group.ForceOpenAIUltrafast {
 		group.ForceOpenAIFast = false
 	}
 }
@@ -607,6 +615,7 @@ func (s *adminServiceImpl) CreateGroup(ctx context.Context, input *CreateGroupIn
 		ForceOpenAIFast:                 input.ForceOpenAIFast,
 		FreeOpenAIFast:                  input.FreeOpenAIFast,
 		DisableOpenAIFast:               input.DisableOpenAIFast,
+		ForceOpenAIUltrafast:            input.ForceOpenAIUltrafast,
 		RequireOAuthOnly:                input.RequireOAuthOnly,
 		RequirePrivacySet:               input.RequirePrivacySet,
 		DefaultMappedModel:              input.DefaultMappedModel,
@@ -992,6 +1001,9 @@ func (s *adminServiceImpl) UpdateGroup(ctx context.Context, id int64, input *Upd
 	}
 	if input.DisableOpenAIFast != nil {
 		group.DisableOpenAIFast = *input.DisableOpenAIFast
+	}
+	if input.ForceOpenAIUltrafast != nil {
+		group.ForceOpenAIUltrafast = *input.ForceOpenAIUltrafast
 	}
 	if input.RequireOAuthOnly != nil {
 		group.RequireOAuthOnly = *input.RequireOAuthOnly

@@ -1054,6 +1054,9 @@ func collectCacheControlPaths(body []byte) (invalidThinking []cacheControlPath, 
 
 // enforceCacheControlLimit 强制执行 cache_control 块数量限制（最多 4 个）
 // 超限时优先移除工具断点，再移除 messages 断点，最后才移除 system 断点。
+//
+// 返回前还会跑一遍 normalizeCacheControlTTLOrder：它是 5 条 Anthropic 转发
+// 链路共用的最后一道收口，ttl 顺序必须在所有断点增删完成之后才能判定。
 func enforceCacheControlLimit(body []byte) []byte {
 	if len(body) == 0 {
 		return body
@@ -1061,7 +1064,6 @@ func enforceCacheControlLimit(body []byte) []byte {
 
 	invalidThinking, messagePaths, toolPaths, systemPaths := collectCacheControlPaths(body)
 	out := body
-	modified := false
 
 	// 先清理 thinking 块中的非法 cache_control（thinking 块不支持该字段）
 	for _, item := range invalidThinking {
@@ -1073,16 +1075,12 @@ func enforceCacheControlLimit(body []byte) []byte {
 			continue
 		}
 		out = next
-		modified = true
 		logger.LegacyPrintf("service.gateway", "%s", item.log)
 	}
 
 	count := len(messagePaths) + len(toolPaths) + len(systemPaths)
 	if count <= maxCacheControlBlocks {
-		if modified {
-			return out
-		}
-		return body
+		return normalizeCacheControlTTLOrder(out)
 	}
 
 	// 超限：优先从 tools 中移除，再从 messages 中移除，最后才从 system 中移除。
@@ -1097,7 +1095,6 @@ func enforceCacheControlLimit(body []byte) []byte {
 			continue
 		}
 		out = next
-		modified = true
 		remaining--
 	}
 
@@ -1113,7 +1110,6 @@ func enforceCacheControlLimit(body []byte) []byte {
 			continue
 		}
 		out = next
-		modified = true
 		remaining--
 	}
 
@@ -1127,14 +1123,56 @@ func enforceCacheControlLimit(body []byte) []byte {
 			continue
 		}
 		out = next
-		modified = true
 		remaining--
 	}
 
-	if modified {
-		return out
+	return normalizeCacheControlTTLOrder(out)
+}
+
+// normalizeCacheControlTTLOrder 消除 Anthropic 的 ttl 顺序冲突。上游按
+// tools -> system -> messages 的顺序处理缓存块，ttl 为 1h 的块不允许排在
+// ttl 为 5m 的块之后，否则整个请求被 400 拒绝。
+//
+// 触发场景：客户端自己在 messages 上打了 1h 断点，而网关按
+// claude.DefaultCacheControlTTL 在 tools[-1] 或 system 提示块上注入了 5m。
+// 网关注入的块永远排在客户端 messages 断点之前，于是必然违规。
+//
+// 归一方向是把靠前的块升到 1h，而不是把靠后的 1h 降到 5m：靠前的块
+// （billing header、system prompt、tools）本就是最稳定的前缀，真实
+// Claude Code CLI 对它们也用 1h；把客户端显式要的 1h 降级会让长会话反复
+// 重写缓存，反而更贵。
+func normalizeCacheControlTTLOrder(body []byte) []byte {
+	if len(body) == 0 {
+		return body
 	}
-	return body
+
+	_, messagePaths, toolPaths, systemPaths := collectCacheControlPaths(body)
+	ordered := make([]string, 0, len(toolPaths)+len(systemPaths)+len(messagePaths))
+	ordered = append(ordered, toolPaths...)
+	ordered = append(ordered, systemPaths...)
+	ordered = append(ordered, messagePaths...)
+
+	last1h := -1
+	for i, path := range ordered {
+		if gjson.GetBytes(body, path+".ttl").String() == cacheTTLTarget1h {
+			last1h = i
+		}
+	}
+	if last1h <= 0 {
+		return body
+	}
+
+	out := body
+	for _, path := range ordered[:last1h] {
+		cc := gjson.GetBytes(out, path)
+		if cc.Get("type").String() != "ephemeral" || cc.Get("ttl").String() == cacheTTLTarget1h {
+			continue
+		}
+		if next, err := sjson.SetBytes(out, path+".ttl", cacheTTLTarget1h); err == nil {
+			out = next
+		}
+	}
+	return out
 }
 
 // injectAnthropicCacheControlTTL1h 将已有 ephemeral cache_control 块的 ttl 强制写为 1h。

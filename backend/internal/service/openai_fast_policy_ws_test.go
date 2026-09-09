@@ -1228,3 +1228,36 @@ func TestWSResponseCreate_GroupDisableDoesNotTouchOtherFrames(t *testing.T) {
 	require.Nil(t, blocked)
 	require.Equal(t, string(frame), string(updated))
 }
+
+func TestWSResponseCreate_GroupForcesUltrafast(t *testing.T) {
+	svc := newOpenAIGatewayServiceWithSettings(t, DefaultOpenAIFastPolicySettings())
+	account := &Account{Platform: PlatformOpenAI, Type: AccountTypeOAuth}
+	ctx := context.WithValue(context.Background(), ctxkey.Group, &Group{
+		ID: 7, Platform: PlatformOpenAI, Status: StatusActive, Hydrated: true, ForceOpenAIUltrafast: true,
+	})
+
+	for _, frame := range [][]byte{
+		[]byte(`{"type":"response.create","model":"gpt-5.6-sol","input":[]}`),
+		[]byte(`{"type":"response.create","model":"gpt-5.6-sol","service_tier":"priority","input":[]}`),
+	} {
+		updated, blocked, err := svc.applyOpenAIFastPolicyToWSResponseCreate(ctx, account, "gpt-5.6-sol", frame)
+		require.NoError(t, err)
+		require.Nil(t, blocked)
+		require.Equal(t, OpenAIFastTierUltrafast, gjson.GetBytes(updated, "service_tier").String(),
+			"frame %s should be forced to ultrafast", frame)
+	}
+}
+
+func TestWSResponseCreate_GroupUltrafastDoesNotTouchOtherFrames(t *testing.T) {
+	svc := newOpenAIGatewayServiceWithSettings(t, DefaultOpenAIFastPolicySettings())
+	account := &Account{Platform: PlatformOpenAI, Type: AccountTypeOAuth}
+	ctx := context.WithValue(context.Background(), ctxkey.Group, &Group{
+		ID: 7, Platform: PlatformOpenAI, Status: StatusActive, Hydrated: true, ForceOpenAIUltrafast: true,
+	})
+	frame := []byte(`{"type":"response.cancel"}`)
+
+	updated, blocked, err := svc.applyOpenAIFastPolicyToWSResponseCreate(ctx, account, "gpt-5.6-sol", frame)
+	require.NoError(t, err)
+	require.Nil(t, blocked)
+	require.Equal(t, string(frame), string(updated))
+}

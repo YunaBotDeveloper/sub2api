@@ -579,6 +579,38 @@ describe('PaymentResultView', () => {
     expect(wrapper.text()).toContain(formatPaymentAmount(103, 'HKD'))
   })
 
+  it('never renders the subscription price in the gateway currency', async () => {
+    // order.amount 一律以 USD 记账。订阅单没有"到账余额"这回事，把它按网关币种
+    // 格式化会把 60 USD 的套餐价显示成 60 VND。
+    routeState.query = {
+      resume_token: 'resume-sub-vnd',
+    }
+    resolveOrderPublicByResumeToken.mockResolvedValue({
+      data: {
+        ...orderFactory('PAID'),
+        order_type: 'subscription',
+        currency: 'VND',
+        amount: 60,
+        pay_amount: 1575300,
+        fee_rate: 0,
+      },
+    })
+
+    const wrapper = mount(PaymentResultView, {
+      global: {
+        stubs: {
+          OrderStatusBadge: true,
+        },
+      },
+    })
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain(formatPaymentAmount(1575300, 'VND'))
+    expect(wrapper.text()).not.toContain(formatPaymentAmount(60, 'VND'))
+    expect(wrapper.text()).not.toContain('payment.orders.creditedAmount')
+  })
+
   it('renders each SePay method under its own label', async () => {
     // The methods are distinct user choices, so the result page must not fold
     // one onto another when naming what the payer used.

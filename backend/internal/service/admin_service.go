@@ -290,6 +290,7 @@ type CreateGroupInput struct {
 	ForceOpenAIFast             bool
 	FreeOpenAIFast              bool
 	DisableOpenAIFast           bool
+	ForceOpenAIUltrafast        bool
 	DefaultMappedModel          string
 	RequireOAuthOnly            bool
 	RequirePrivacySet           bool
@@ -374,6 +375,7 @@ type UpdateGroupInput struct {
 	ForceOpenAIFast             *bool
 	FreeOpenAIFast              *bool
 	DisableOpenAIFast           *bool
+	ForceOpenAIUltrafast        *bool
 	DefaultMappedModel          *string
 	RequireOAuthOnly            *bool
 	RequirePrivacySet           *bool
@@ -540,6 +542,8 @@ type CreateProxyInput struct {
 	ExpiryWarnDays int
 }
 
+// UpdateProxyInput preserves omitted expiry/backup values; Clear flags explicitly
+// remove them. A nil ExpiryWarnDays preserves the current warning period.
 type UpdateProxyInput struct {
 	Name           string
 	Protocol       string
@@ -549,9 +553,11 @@ type UpdateProxyInput struct {
 	Password       string
 	Status         string
 	ExpiresAt      *time.Time
+	ClearExpiresAt bool
 	FallbackMode   string
 	BackupProxyID  *int64
-	ExpiryWarnDays int
+	ClearBackupID  bool
+	ExpiryWarnDays *int
 }
 
 type GenerateRedeemCodesInput struct {
