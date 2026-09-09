@@ -55,9 +55,11 @@
               <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.payAmount') }}</span>
               <span class="font-bold text-primary-600 dark:text-primary-400">{{ formatGatewayAmount(order.pay_amount) }}</span>
             </div>
-            <div v-if="hasAmountFields(order) && order.amount !== order.pay_amount" class="flex justify-between">
+            <!-- 只有充值单才有"到账"这回事，订阅单买的是订阅本身。amount 一律以
+                 USD 记账，用网关币种格式化它会把 60 USD 显示成 60 VND。 -->
+            <div v-if="hasAmountFields(order) && order.order_type === 'balance' && order.amount !== order.pay_amount" class="flex justify-between">
               <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.creditedAmount') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ order.order_type === 'balance' ? '$' + order.amount.toFixed(2) : formatGatewayAmount(order.amount) }}</span>
+              <span class="font-medium text-gray-900 dark:text-white">{{ formatPaymentAmount(order.amount, 'USD', localeCode) }}</span>
             </div>
             <div v-if="hasPaymentType(order)" class="flex justify-between">
               <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.paymentMethod') }}</span>
