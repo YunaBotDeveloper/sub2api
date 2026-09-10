@@ -1377,6 +1377,10 @@ func (s *OpenAIGatewayService) buildUpstreamRequest(ctx context.Context, c *gin.
 	// previous_response_id，避免携带状态字段被上游拒绝。
 	body = normalizeDeepSeekResponsesRequestBody(account, body)
 
+	// 账号绑定时区：改写 input 里 environment_context 的时区与日期，必须在构造请求
+	// 之前完成，后续按 body 生成的路由提示与压缩帧才与出站正文一致。
+	body = applyCodexEnvironmentContextTimezone(account, body, time.Now())
+
 	req, err := http.NewRequestWithContext(ctx, "POST", targetURL, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
@@ -1492,6 +1496,10 @@ func (s *OpenAIGatewayService) buildUpstreamRequest(ctx context.Context, c *gin.
 	setOpenAICodexRoutingHintFromBody(req.Header, account, body)
 	logOpenAIRoutingDiagnosticsFromBody(ctx, account, "http", req.Header, body, "not_applicable")
 
+	// 压缩必须是最后一步：此后 body 与 req.Body 不再同源，任何按 body 改写请求头的
+	// 逻辑仍可读明文 body，但不得再重建 req.Body。
+	applyCodexRequestCompression(req, account, body)
+
 	return req, nil
 }
 
@@ -1502,5 +1510,5 @@ func (s *OpenAIGatewayService) codexIdentityOverrideUA(account *Account) string 
 	if s != nil && s.cfg != nil && s.cfg.Gateway.ForceCodexCLI {
 		return ""
 	}
-	return account.GetOpenAIUserAgent()
+	return codexAccountCandidateUA(account)
 }

@@ -61,11 +61,13 @@ type httpBridgeIsolationUpstream struct {
 }
 
 func (u *httpBridgeIsolationUpstream) Do(req *http.Request, _ string, _ int64, _ int) (*http.Response, error) {
-	body, err := io.ReadAll(req.Body)
+	wire, err := io.ReadAll(req.Body)
 	if err != nil {
 		return nil, err
 	}
 	_ = req.Body.Close()
+	// Codex 出站体走 zstd（openai_codex_request_compression.go），此处按明文解析。
+	body := decodeRecordedUpstreamBody(req.Header.Get("Content-Encoding"), wire)
 	input := gjson.GetBytes(body, "input")
 	var texts []string
 	if input.Type == gjson.String {

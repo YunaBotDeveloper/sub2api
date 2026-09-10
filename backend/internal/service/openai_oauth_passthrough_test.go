@@ -21,6 +21,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/internal/pkg/openai_compat"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/tlsfingerprint"
 	"github.com/gin-gonic/gin"
+	"github.com/klauspost/compress/zstd"
 	"github.com/stretchr/testify/require"
 	"github.com/tidwall/gjson"
 )
@@ -64,15 +65,39 @@ func (r passthroughErrReadCloser) Close() error {
 	return nil
 }
 
+// decodeRecordedUpstreamBody 与 testutil.DecodeUpstreamRequestBody 同义，供本包内读取
+// req.Body 的上游 mock 使用。不能直接复用 testutil：该包 import service，会成环。
+//
+// 刻意放在无构建标签的测试文件里：两个调用方都不带 unit 标签，放进 unit 标签文件会让
+// 不带标签的类型检查（golangci-lint 即如此）找不到定义。
+func decodeRecordedUpstreamBody(contentEncoding string, wire []byte) []byte {
+	if !strings.EqualFold(strings.TrimSpace(contentEncoding), "zstd") || len(wire) == 0 {
+		return wire
+	}
+	dec, err := zstd.NewReader(bytes.NewReader(wire))
+	if err != nil {
+		return wire
+	}
+	defer dec.Close()
+	plain, err := io.ReadAll(dec)
+	if err != nil {
+		return wire
+	}
+	return plain
+}
+
 func (u *httpUpstreamRecorder) Do(req *http.Request, proxyURL string, accountID int64, accountConcurrency int) (*http.Response, error) {
 	u.lastReq = req
 	u.lastProxyURL = proxyURL
 	if req != nil && req.Body != nil {
 		b, _ := io.ReadAll(req.Body)
-		u.lastBody = b
-		u.bodies = append(u.bodies, append([]byte(nil), b...))
 		_ = req.Body.Close()
 		req.Body = io.NopCloser(bytes.NewReader(b))
+		// Codex 出站体走 zstd（openai_codex_request_compression.go）。断言一律针对明文，
+		// 故在此解码；req.Body 仍还原成线上字节，需要检查编码本身的用例不受影响。
+		plain := decodeRecordedUpstreamBody(req.Header.Get("Content-Encoding"), b)
+		u.lastBody = plain
+		u.bodies = append(u.bodies, append([]byte(nil), plain...))
 	}
 	u.requests = append(u.requests, req)
 	if u.err != nil {

@@ -262,6 +262,8 @@ func (s *OpenAIGatewayService) handleStreamingResponseWithReasoning(ctx context.
 	var bareErrorPayload []byte
 	bareErrorAccountSideEffectsPending := false
 	pendingSSEEventType := ""
+	// 每次上游尝试一份：记录本次流内是否出现过真实输出，用于识别零输出的 response.incomplete。
+	emptyIncomplete := &codexEmptyIncompleteTracker{}
 	eventInProgress := false
 	eventStartsClientOutput := false
 	eventStartsTTFTOutput := false
@@ -481,6 +483,11 @@ func (s *OpenAIGatewayService) handleStreamingResponseWithReasoning(ctx context.
 		if data, ok := extractOpenAISSEDataLine(line); ok {
 			dataBytes := []byte(data)
 			eventType := effectiveOpenAISSEEventType(dataBytes, pendingSSEEventType)
+			// 零输出的 response.incomplete 就地改写成 response.failed，交给下面既有的
+			// 失败分支处理；命中时 data 与 eventType 一并换成改写后的值。
+			if rewrittenType, rewritten := rewriteCodexEmptyIncompleteTerminal(emptyIncomplete, account, eventType, dataBytes); rewrittenType != eventType {
+				eventType, dataBytes, data = rewrittenType, rewritten, string(rewritten)
+			}
 			if codexFailureTerminal && sawBareError && !sawResponseFailed &&
 				(eventType == "response.completed" || eventType == "response.done") {
 				// A later successful terminal is authoritative over a pending bare
@@ -1688,6 +1695,15 @@ func bodyHasSSEFraming(body []byte) bool {
 func (s *OpenAIGatewayService) handleSSEToJSON(resp *http.Response, c *gin.Context, account *Account, body []byte, originalModel, mappedModel string) (*openaiNonStreamingResult, error) {
 	bodyText := string(body)
 	terminalType, terminalPayload, terminalOK := extractOpenAISSETerminalEvent(bodyText)
+	// 零输出的 response.incomplete 在这里同样改写成 response.failed，非流式路径才能
+	// 走下面既有的换号分支，而不是把一个空回复当成功交付。
+	if terminalOK {
+		if rewrittenType, rewritten := rewriteCodexEmptyIncompleteTerminal(
+			&codexEmptyIncompleteTracker{}, account, terminalType, terminalPayload,
+		); rewrittenType != terminalType {
+			terminalType, terminalPayload = rewrittenType, rewritten
+		}
+	}
 	if terminalOK && (terminalType == "response.failed" || terminalType == "error") {
 		msg := extractOpenAISSEErrorMessage(terminalPayload)
 		if msg == "" {

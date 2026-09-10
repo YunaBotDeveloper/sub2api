@@ -20,6 +20,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/internal/pkg/xai"
 	"github.com/Wei-Shaw/sub2api/internal/server/middleware"
 	"github.com/Wei-Shaw/sub2api/internal/service"
+	"github.com/Wei-Shaw/sub2api/internal/testutil"
 	coderws "github.com/coder/websocket"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
@@ -325,7 +326,9 @@ type grokCredentialHandlerUpstream struct {
 func (u *grokCredentialHandlerUpstream) Do(req *http.Request, _ string, accountID int64, _ int) (*http.Response, error) {
 	var requestBody []byte
 	if req.Body != nil {
-		requestBody, _ = io.ReadAll(req.Body)
+		wire, _ := io.ReadAll(req.Body)
+		// Codex 出站体走 zstd（service/openai_codex_request_compression.go），断言按明文进行。
+		requestBody = testutil.DecodeUpstreamRequestBody(req.Header.Get("Content-Encoding"), wire)
 	}
 	u.mu.Lock()
 	u.hits = append(u.hits, accountID)
