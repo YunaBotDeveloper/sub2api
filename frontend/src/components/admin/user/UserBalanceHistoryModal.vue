@@ -13,7 +13,7 @@
           <div class="min-w-0 flex-1">
             <div class="flex items-center gap-2">
               <p class="truncate font-medium text-gray-900 dark:text-white">{{ user.email }}</p>
-              <span v-if="user.deleted_at" class="flex-shrink-0 inline-flex items-center rounded px-1 py-px text-[10px] font-medium leading-tight bg-rose-100 text-rose-600 ring-1 ring-inset ring-rose-200 dark:bg-rose-500/20 dark:text-rose-400 dark:ring-rose-500/30">
+              <span v-if="user.deleted_at" class="flex-shrink-0 inline-flex items-center rounded px-1 py-px text-[10px] font-medium leading-tight bg-danger-100 text-danger-600 ring-1 ring-inset ring-danger-200 dark:bg-danger-500/20 dark:text-danger-400 dark:ring-danger-500/30">
                 {{ t('admin.usage.userDeletedBadge') }}
               </span>
               <span
@@ -42,7 +42,7 @@
             <template v-else>&nbsp;</template>
           </p>
           <p class="ml-4 flex-shrink-0 text-xs text-gray-500 dark:text-dark-400">
-            {{ t('admin.users.totalRecharged') }}: <span class="font-semibold text-emerald-600 dark:text-emerald-400">${{ totalRecharged.toFixed(2) }}</span>
+            {{ t('admin.users.totalRecharged') }}: <span class="font-semibold text-success-600 dark:text-success-400">${{ totalRecharged.toFixed(2) }}</span>
           </p>
         </div>
       </div>
@@ -61,7 +61,7 @@
           @click="emit('deposit')"
           class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300 dark:hover:bg-dark-700"
         >
-          <Icon name="plus" size="sm" class="text-emerald-500" :stroke-width="2" />
+          <Icon name="plus" size="sm" class="text-success-500" :stroke-width="2" />
           {{ t('admin.users.deposit') }}
         </button>
         <!-- Withdraw button - matches menu style -->
@@ -70,7 +70,7 @@
           @click="emit('withdraw')"
           class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300 dark:hover:bg-dark-700"
         >
-          <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg class="h-4 w-4 text-warning-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
           </svg>
           {{ t('admin.users.withdraw') }}
@@ -255,39 +255,39 @@ const getIconName = (item: BalanceHistoryItem) => {
 const getIconBg = (item: BalanceHistoryItem) => {
   if (isBalanceType(item.type)) {
     return item.value >= 0
-      ? 'bg-emerald-100 dark:bg-emerald-900/30'
-      : 'bg-red-100 dark:bg-red-900/30'
+      ? 'bg-success-100 dark:bg-success-900/30'
+      : 'bg-danger-100 dark:bg-danger-900/30'
   }
-  if (isSubscriptionType(item.type)) return 'bg-purple-100 dark:bg-purple-900/30'
+  if (isSubscriptionType(item.type)) return 'bg-gray-100 dark:bg-gray-900/30'
   return item.value >= 0
-    ? 'bg-blue-100 dark:bg-blue-900/30'
-    : 'bg-orange-100 dark:bg-orange-900/30'
+    ? 'bg-accent-100 dark:bg-accent-900/30'
+    : 'bg-warning-100 dark:bg-warning-900/30'
 }
 
 // Icon text color
 const getIconColor = (item: BalanceHistoryItem) => {
   if (isBalanceType(item.type)) {
     return item.value >= 0
-      ? 'text-emerald-600 dark:text-emerald-400'
-      : 'text-red-600 dark:text-red-400'
+      ? 'text-success-600 dark:text-success-400'
+      : 'text-danger-600 dark:text-danger-400'
   }
-  if (isSubscriptionType(item.type)) return 'text-purple-600 dark:text-purple-400'
+  if (isSubscriptionType(item.type)) return 'text-gray-600 dark:text-gray-400'
   return item.value >= 0
-    ? 'text-blue-600 dark:text-blue-400'
-    : 'text-orange-600 dark:text-orange-400'
+    ? 'text-accent-600 dark:text-accent-400'
+    : 'text-warning-600 dark:text-warning-400'
 }
 
 // Value text color
 const getValueColor = (item: BalanceHistoryItem) => {
   if (isBalanceType(item.type)) {
     return item.value >= 0
-      ? 'text-emerald-600 dark:text-emerald-400'
-      : 'text-red-600 dark:text-red-400'
+      ? 'text-success-600 dark:text-success-400'
+      : 'text-danger-600 dark:text-danger-400'
   }
-  if (isSubscriptionType(item.type)) return 'text-purple-600 dark:text-purple-400'
+  if (isSubscriptionType(item.type)) return 'text-gray-600 dark:text-gray-400'
   return item.value >= 0
-    ? 'text-blue-600 dark:text-blue-400'
-    : 'text-orange-600 dark:text-orange-400'
+    ? 'text-accent-600 dark:text-accent-400'
+    : 'text-warning-600 dark:text-warning-400'
 }
 
 // Item title

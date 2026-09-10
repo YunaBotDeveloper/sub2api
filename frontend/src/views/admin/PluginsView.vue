@@ -58,7 +58,7 @@
       </p>
 
       <div
-        class="border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800 dark:border-blue-900/60 dark:bg-blue-950/30 dark:text-blue-200"
+        class="border border-accent-200 bg-accent-50 px-4 py-3 text-sm text-accent-800 dark:border-accent-900/60 dark:bg-accent-950/30 dark:text-accent-200"
       >
         <p>{{ t("admin.plugins.runtimeNotice") }}</p>
         <p class="mt-1">{{ t("admin.plugins.menuNotice") }}</p>
@@ -180,7 +180,7 @@
                   class="rounded px-2 py-0.5"
                   :class="
                     plugin.runtime_healthy
-                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+                      ? 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-300'
                       : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
                   "
                 >
@@ -199,7 +199,7 @@
               </div>
               <p
                 v-if="plugin.last_error"
-                class="mt-3 break-words text-xs text-red-600 dark:text-red-400"
+                class="mt-3 break-words text-xs text-danger-600 dark:text-danger-400"
               >
                 {{ plugin.last_error }}
               </p>
@@ -306,7 +306,7 @@
             v-if="uiError"
             class="absolute inset-0 z-20 flex flex-col items-center justify-center p-8 text-center"
           >
-            <Icon name="exclamationTriangle" size="xl" class="text-amber-500" />
+            <Icon name="exclamationTriangle" size="xl" class="text-warning-500" />
             <p class="mt-3 font-medium text-gray-800 dark:text-gray-200">
               {{ t("admin.plugins.uiUnavailable") }}
             </p>
@@ -686,11 +686,11 @@ async function handleBridgeMessage(event: MessageEvent): Promise<void> {
 
 function stateClass(state: PluginInstallation["state"]): string {
   if (state === "enabled")
-    return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300";
+    return "bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-300";
   if (state === "error" || state === "incompatible")
-    return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300";
+    return "bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300";
   if (state === "starting")
-    return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300";
+    return "bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300";
   return "bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300";
 }
 
@@ -698,10 +698,10 @@ function compatibilityClass(
   status: PluginInstallation["compatibility"]["status"],
 ): string {
   if (status === "compatible")
-    return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300";
+    return "bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-300";
   if (status === "untested")
-    return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300";
-  return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300";
+    return "bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300";
+  return "bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300";
 }
 
 onMounted(() => {

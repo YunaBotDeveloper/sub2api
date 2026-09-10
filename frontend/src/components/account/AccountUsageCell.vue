@@ -30,14 +30,14 @@
       </div>
 
       <!-- Error state -->
-      <div v-else-if="error" class="text-xs text-red-500">
+      <div v-else-if="error" class="text-xs text-danger-500">
         {{ error }}
       </div>
 
       <!-- Usage data -->
       <div v-else-if="usageInfo" class="space-y-1">
         <!-- API error (degraded response) -->
-        <div v-if="usageInfo.error" class="text-xs text-amber-600 dark:text-amber-400 truncate max-w-[200px]" :title="usageInfo.error">
+        <div v-if="usageInfo.error" class="text-xs text-warning-600 dark:text-warning-400 truncate max-w-[200px]" :title="usageInfo.error">
           {{ usageInfo.error }}
         </div>
         <!-- 5h Window -->
@@ -87,7 +87,7 @@
           </span>
           <button
             type="button"
-            class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 transition-colors"
+            class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] font-medium text-accent-600 hover:bg-accent-50 dark:text-accent-400 dark:hover:bg-accent-900/30 transition-colors"
             :disabled="activeQueryLoading"
             @click="loadActiveUsage"
           >
@@ -147,7 +147,7 @@
           <template #pre-actions>
             <button
               type="button"
-              class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+              class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium text-accent-600 hover:bg-accent-50 dark:text-accent-400 dark:hover:bg-accent-900/30 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
               :disabled="activeQueryLoading"
               @click="loadActiveUsage"
             >
@@ -211,7 +211,7 @@
           class="group relative cursor-help"
         >
           <svg
-            class="h-3.5 w-3.5 text-red-500"
+            class="h-3.5 w-3.5 text-danger-500"
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -244,7 +244,7 @@
             :href="validationURL"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-[10px] text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
+            class="text-[10px] text-accent-600 hover:text-accent-800 hover:underline dark:text-accent-400 dark:hover:text-accent-300"
             :title="t('admin.accounts.openVerification')"
           >
             {{ t('admin.accounts.openVerification') }}
@@ -262,14 +262,14 @@
 
       <!-- Needs reauth (401) -->
       <div v-else-if="needsReauth" class="space-y-1">
-        <span class="inline-block rounded px-1.5 py-0.5 text-[10px] font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">
+        <span class="inline-block rounded px-1.5 py-0.5 text-[10px] font-medium bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-300">
           {{ t('admin.accounts.needsReauth') }}
         </span>
       </div>
 
       <!-- Degraded error (non-403, non-401) -->
       <div v-else-if="usageInfo?.error" class="space-y-1">
-        <span class="inline-block rounded px-1.5 py-0.5 text-[10px] font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+        <span class="inline-block rounded px-1.5 py-0.5 text-[10px] font-medium bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-300">
           {{ usageErrorLabel }}
         </span>
       </div>
@@ -284,7 +284,7 @@
       </div>
 
       <!-- Error state -->
-      <div v-else-if="error" class="text-xs text-red-500">
+      <div v-else-if="error" class="text-xs text-danger-500">
         {{ error }}
       </div>
 
@@ -345,16 +345,16 @@
           <div class="h-3 w-[32px] animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
         </div>
       </div>
-      <div v-else-if="error" class="text-xs text-red-500">
+      <div v-else-if="error" class="text-xs text-danger-500">
         {{ error }}
       </div>
       <div v-else-if="needsReauth" class="space-y-1">
-        <span class="inline-block rounded px-1.5 py-0.5 text-[10px] font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">
+        <span class="inline-block rounded px-1.5 py-0.5 text-[10px] font-medium bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-300">
           {{ t('admin.accounts.needsReauth') }}
         </span>
       </div>
       <div v-else-if="isForbidden" class="space-y-1">
-        <span class="inline-block rounded px-1.5 py-0.5 text-[10px] font-medium bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300">
+        <span class="inline-block rounded px-1.5 py-0.5 text-[10px] font-medium bg-danger-100 text-danger-700 dark:bg-danger-900/40 dark:text-danger-300">
           {{ usageInfo?.grok_entitlement_status || t('admin.accounts.forbidden') }}
         </span>
       </div>
@@ -399,7 +399,7 @@
           >
             <span
               v-if="grokPrepaidMoneyLine.showPrepaid"
-              class="rounded bg-emerald-50 px-1 py-0.5 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
+              class="rounded bg-success-50 px-1 py-0.5 text-success-700 dark:bg-success-900/30 dark:text-success-300"
               :title="t('admin.accounts.usageWindow.grokPrepaid')"
             >
               {{ t('admin.accounts.usageWindow.grokPrepaid') }} ${{ grokPrepaidMoneyLine.prepaid }}
@@ -416,10 +416,10 @@
             {{ grokQuotaUnknownLabel }}
           </div>
         </template>
-        <div v-if="usageInfo.error" class="truncate text-xs text-amber-600 dark:text-amber-400 max-w-[200px]" :title="usageInfo.error">
+        <div v-if="usageInfo.error" class="truncate text-xs text-warning-600 dark:text-warning-400 max-w-[200px]" :title="usageInfo.error">
           {{ usageErrorLabel }}
         </div>
-        <div v-if="grokRetryAfterLabel" class="text-[10px] text-amber-600 dark:text-amber-400">
+        <div v-if="grokRetryAfterLabel" class="text-[10px] text-warning-600 dark:text-warning-400">
           {{ t('admin.accounts.usageWindow.grokRetryAfter', { time: grokRetryAfterLabel }) }}
         </div>
         <GrokQuotaProbeCell :account="account" compact @probed="handleGrokProbed" />
@@ -490,7 +490,7 @@
               <div><strong>{{ geminiQuotaPolicyChannel }}:</strong></div>
               <div class="pl-2">• {{ geminiQuotaPolicyLimits }}</div>
               <div class="mt-2">
-                <a :href="geminiQuotaPolicyDocsUrl" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">
+                <a :href="geminiQuotaPolicyDocsUrl" target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:text-accent-300 underline">
                   {{ t('admin.accounts.gemini.quotaPolicy.columns.docs') }} →
                 </a>
               </div>
@@ -539,7 +539,7 @@
             <div class="h-3 w-[32px] animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
           </div>
         </div>
-        <div v-else-if="error" class="text-xs text-red-500">
+        <div v-else-if="error" class="text-xs text-danger-500">
           {{ error }}
         </div>
         <!-- Gemini: show daily usage bars when available -->
@@ -1012,18 +1012,18 @@ const geminiTierClass = computed(() => {
   const level = geminiUserLevel.value
 
   if (channel === 'client' || channel === 'ai studio') {
-    return 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300'
+    return 'bg-accent-100 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
   }
 
   if (channel === 'google one') {
-    if (level === 'ultra') return 'bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-300'
-    if (level === 'pro') return 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300'
+    if (level === 'ultra') return 'bg-gray-100 text-gray-600 dark:bg-gray-900/40 dark:text-gray-300'
+    if (level === 'pro') return 'bg-accent-100 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
     return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
   }
 
   if (channel === 'gcp') {
-    if (level === 'enterprise') return 'bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-300'
-    return 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300'
+    if (level === 'enterprise') return 'bg-gray-100 text-gray-600 dark:bg-gray-900/40 dark:text-gray-300'
+    return 'bg-accent-100 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
   }
 
   return ''
@@ -1300,9 +1300,9 @@ const antigravityTierClass = computed(() => {
     case 'free-tier':
       return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
     case 'g1-pro-tier':
-      return 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300'
+      return 'bg-accent-100 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
     case 'g1-ultra-tier':
-      return 'bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-300'
+      return 'bg-gray-100 text-gray-600 dark:bg-gray-900/40 dark:text-gray-300'
     default:
       return ''
   }
@@ -1348,9 +1348,9 @@ const forbiddenLabel = computed(() => {
 
 const forbiddenBadgeClass = computed(() => {
   if (forbiddenType.value === 'validation') {
-    return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300'
+    return 'bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-300'
   }
-  return 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
+  return 'bg-danger-100 text-danger-700 dark:bg-danger-900/40 dark:text-danger-300'
 })
 
 const linkCopied = ref(false)

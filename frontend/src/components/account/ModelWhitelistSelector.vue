@@ -97,7 +97,7 @@
       <button
         type="button"
         @click="fillRelated"
-        class="rounded-lg border border-blue-200 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-900/30"
+        class="rounded-lg border border-accent-200 px-3 py-1.5 text-sm text-accent-600 hover:bg-accent-50 dark:border-accent-800 dark:text-accent-400 dark:hover:bg-accent-900/30"
       >
         {{ t('admin.accounts.fillRelatedModels') }}
       </button>
@@ -106,14 +106,14 @@
         type="button"
         @click="syncUpstreamModels"
         :disabled="isSyncingUpstream"
-        class="rounded-lg border border-emerald-200 px-3 py-1.5 text-sm text-emerald-600 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-emerald-800 dark:text-emerald-400 dark:hover:bg-emerald-900/30"
+        class="rounded-lg border border-success-200 px-3 py-1.5 text-sm text-success-600 hover:bg-success-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-success-800 dark:text-success-400 dark:hover:bg-success-900/30"
       >
         {{ isSyncingUpstream ? t('admin.accounts.syncUpstreamModelsLoading') : t('admin.accounts.syncUpstreamModels') }}
       </button>
       <button
         type="button"
         @click="clearAll"
-        class="rounded-lg border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/30"
+        class="rounded-lg border border-danger-200 px-3 py-1.5 text-sm text-danger-600 hover:bg-danger-50 dark:border-danger-800 dark:text-danger-400 dark:hover:bg-danger-900/30"
       >
         {{ t('admin.accounts.clearAllModels') }}
       </button>

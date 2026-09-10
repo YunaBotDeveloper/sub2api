@@ -173,13 +173,13 @@ function downloadChart() {
 </script>
 
 <template>
-  <div class="flex h-full min-w-0 flex-col rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
+  <div class="flex h-full min-w-0 flex-col rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
     <div
       data-testid="throughput-chart-header"
       class="mb-4 flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
     >
       <h3 class="flex min-w-0 items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
-        <svg class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg class="h-4 w-4 text-accent-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
         </svg>
         {{ t('admin.ops.throughputTrend') }}
@@ -189,8 +189,8 @@ function downloadChart() {
         data-testid="throughput-chart-toolbar"
         class="flex w-full min-w-0 flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400 sm:w-auto sm:justify-end"
       >
-        <span class="flex shrink-0 items-center gap-1"><span class="h-2 w-2 rounded-full bg-blue-500"></span>QPS</span>
-        <span class="flex shrink-0 items-center gap-1"><span class="h-2 w-2 rounded-full bg-green-500"></span>{{ t('admin.ops.tpsK') }}</span>
+        <span class="flex shrink-0 items-center gap-1"><span class="h-2 w-2 rounded-full bg-accent-500"></span>QPS</span>
+        <span class="flex shrink-0 items-center gap-1"><span class="h-2 w-2 rounded-full bg-success-500"></span>{{ t('admin.ops.tpsK') }}</span>
         <template v-if="!props.fullscreen">
           <button
             type="button"

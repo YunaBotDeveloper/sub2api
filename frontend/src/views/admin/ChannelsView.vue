@@ -107,7 +107,7 @@
               </button>
               <button
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20 dark:hover:text-danger-400"
               >
                 <Icon name="trash" size="sm" />
                 <span class="text-xs">{{ t('common.delete', 'Delete') }}</span>
@@ -177,7 +177,7 @@
           <div v-show="activeTab === 'basic'" class="space-y-5">
             <!-- Name -->
             <div>
-              <label class="input-label">{{ t('admin.channels.form.name', 'Name') }} <span class="text-red-500">*</span></label>
+              <label class="input-label">{{ t('admin.channels.form.name', 'Name') }} <span class="text-danger-500">*</span></label>
               <input
                 v-model="form.name"
                 type="text"
@@ -281,7 +281,7 @@
             <!-- Groups -->
             <div>
               <label class="input-label text-xs">
-                {{ t('admin.channels.form.groups', 'Associated Groups') }} <span class="text-red-500">*</span>
+                {{ t('admin.channels.form.groups', 'Associated Groups') }} <span class="text-danger-500">*</span>
                 <span v-if="section.group_ids.length > 0" class="ml-1 font-normal text-gray-400">
                   ({{ t('admin.channels.form.selectedCount', { count: section.group_ids.length }) }})
                 </span>
@@ -331,7 +331,7 @@
                   <label class="text-xs font-medium text-gray-700 dark:text-gray-300">
                     {{ t('admin.channels.form.webSearchEmulation') }}
                   </label>
-                  <p class="mt-0.5 text-[11px] text-red-500 dark:text-red-400">
+                  <p class="mt-0.5 text-[11px] text-danger-500 dark:text-danger-400">
                     {{ t('admin.channels.form.webSearchEmulationHint') }}
                   </p>
                 </div>
@@ -346,7 +346,7 @@
                   <label class="text-xs font-medium text-gray-700 dark:text-gray-300">
                     {{ t('admin.channels.form.codexImageGenerationBridge') }}
                   </label>
-                  <p class="mt-0.5 text-[11px] text-amber-600 dark:text-amber-400">
+                  <p class="mt-0.5 text-[11px] text-warning-600 dark:text-warning-400">
                     {{ t('admin.channels.form.codexImageGenerationBridgeHint') }}
                   </p>
                 </div>
@@ -361,7 +361,7 @@
                   <label class="text-xs font-medium text-gray-700 dark:text-gray-300">
                     {{ t('admin.channels.form.bedrockCCCompat') }}
                   </label>
-                  <p class="mt-0.5 text-[11px] text-amber-600 dark:text-amber-400">
+                  <p class="mt-0.5 text-[11px] text-warning-600 dark:text-warning-400">
                     {{ t('admin.channels.form.bedrockCCCompatHint') }}
                   </p>
                 </div>
@@ -409,7 +409,7 @@
                   <button
                     type="button"
                     @click="removeMappingEntry(sIdx, srcModel)"
-                    class="rounded p-0.5 text-gray-400 hover:text-red-500"
+                    class="rounded p-0.5 text-gray-400 hover:text-danger-500"
                   >
                     <Icon name="trash" size="sm" />
                   </button>
@@ -489,7 +489,7 @@
                     :placeholder="t('admin.channels.form.ruleName')"
                     class="bg-transparent text-sm font-medium text-gray-700 placeholder-gray-400 outline-none dark:text-gray-300"
                   />
-                  <button type="button" @click="removeAccountStatsRule(sIdx, ruleIndex)" class="text-xs text-red-500 hover:text-red-700">
+                  <button type="button" @click="removeAccountStatsRule(sIdx, ruleIndex)" class="text-xs text-danger-500 hover:text-danger-700">
                     {{ t('common.delete') }}
                   </button>
                 </div>
@@ -524,7 +524,7 @@
                       class="inline-flex items-center gap-1 rounded-md border border-primary-300 bg-primary-50 px-2 py-0.5 text-xs dark:border-primary-700 dark:bg-primary-900/20"
                     >
                       <span :class="['font-medium', platformTextClass(section.platform)]">{{ getRuleAccountLabel(accountId) }}</span>
-                      <button type="button" @click="removeRuleAccount(rule, accountId)" class="text-gray-400 hover:text-red-500">
+                      <button type="button" @click="removeRuleAccount(rule, accountId)" class="text-gray-400 hover:text-danger-500">
                         <Icon name="x" size="xs" />
                       </button>
                     </span>

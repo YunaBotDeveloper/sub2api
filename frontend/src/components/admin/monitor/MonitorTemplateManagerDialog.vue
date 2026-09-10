@@ -101,7 +101,7 @@
             <button class="btn btn-secondary btn-sm" @click="openEditForm(tpl)">
               {{ t('common.edit') }}
             </button>
-            <button class="btn btn-secondary btn-sm text-red-600" @click="handleDelete(tpl)">
+            <button class="btn btn-secondary btn-sm text-danger-600" @click="handleDelete(tpl)">
               {{ t('common.delete') }}
             </button>
           </div>
@@ -114,7 +114,7 @@
       <div>
         <label class="input-label">
           {{ t('admin.channelMonitor.template.form.name') }}
-          <span class="text-red-500">*</span>
+          <span class="text-danger-500">*</span>
         </label>
         <input
           v-model="form.name"
@@ -128,7 +128,7 @@
       <div v-if="editing === 'new'">
         <label class="input-label">
           {{ t('admin.channelMonitor.form.provider') }}
-          <span class="text-red-500">*</span>
+          <span class="text-danger-500">*</span>
         </label>
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <button
@@ -144,7 +144,7 @@
         </div>
       </div>
 
-      <div v-if="form.provider === PROVIDER_OPENAI" class="rounded-lg border border-blue-100 bg-blue-50/50 p-3 dark:border-blue-500/20 dark:bg-blue-500/10">
+      <div v-if="form.provider === PROVIDER_OPENAI" class="rounded-lg border border-accent-100 bg-accent-50/50 p-3 dark:border-accent-500/20 dark:bg-accent-500/10">
         <label class="input-label">{{ t('admin.channelMonitor.form.apiMode') }}</label>
         <div class="grid gap-3 sm:grid-cols-2">
           <button
@@ -476,9 +476,9 @@ function tabClass(value: Provider): string {
 function modeBadgeClass(mode: BodyOverrideMode): string {
   switch (mode) {
     case 'merge':
-      return 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+      return 'bg-warning-100 text-warning-700 dark:bg-warning-500/15 dark:text-warning-300'
     case 'replace':
-      return 'bg-purple-100 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300'
+      return 'bg-gray-100 text-gray-700 dark:bg-gray-500/15 dark:text-gray-300'
     default:
       return 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
   }
@@ -516,7 +516,7 @@ function apiModeButtonClass(mode: APIMode): string {
   if (active) {
     return 'border-primary-500 bg-white text-primary-700 shadow-sm dark:border-primary-400 dark:bg-primary-500/15 dark:text-primary-300'
   }
-  return 'border-blue-100 bg-white/70 text-gray-600 hover:border-primary-300 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400'
+  return 'border-accent-100 bg-white/70 text-gray-600 hover:border-primary-300 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400'
 }
 
 function apiModeLabel(mode: APIMode): string {
@@ -527,8 +527,8 @@ function apiModeLabel(mode: APIMode): string {
 
 function apiModeBadgeClass(mode: APIMode): string {
   if (normalizeAPIMode(mode) === API_MODE_RESPONSES) {
-    return 'bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300'
+    return 'bg-accent-100 text-accent-700 dark:bg-accent-500/15 dark:text-accent-300'
   }
-  return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+  return 'bg-success-100 text-success-700 dark:bg-success-500/15 dark:text-success-300'
 }
 </script>

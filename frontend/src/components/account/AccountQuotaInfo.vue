@@ -17,8 +17,8 @@
         :class="[
           'font-medium',
           isUrgent
-            ? 'text-red-600 dark:text-red-400 animate-pulse'
-            : 'text-amber-600 dark:text-amber-400'
+            ? 'text-danger-600 dark:text-danger-400 animate-pulse'
+            : 'text-warning-600 dark:text-warning-400'
         ]"
       >
         {{ t('admin.accounts.gemini.rateLimit.limited', { time: resetCountdown }) }}
@@ -101,31 +101,31 @@ const tierBadgeClass = computed(() => {
 
   if (isCodeAssist.value) {
     const tier = (creds?.tier_id || '').toString().trim().toLowerCase()
-    if (tier === 'gcp_enterprise') return 'bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-300'
-    if (tier === 'gcp_standard') return 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300'
+    if (tier === 'gcp_enterprise') return 'bg-gray-100 text-gray-600 dark:bg-gray-900/40 dark:text-gray-300'
+    if (tier === 'gcp_standard') return 'bg-accent-100 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
     // Backward compatibility
     const upper = (creds?.tier_id || '').toString().trim().toUpperCase()
-    if (upper.includes('ULTRA') || upper.includes('ENTERPRISE')) return 'bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-300'
-    return 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300'
+    if (upper.includes('ULTRA') || upper.includes('ENTERPRISE')) return 'bg-gray-100 text-gray-600 dark:bg-gray-900/40 dark:text-gray-300'
+    return 'bg-accent-100 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
   }
 
   if (isGoogleOne.value) {
     const tier = (creds?.tier_id || '').toString().trim().toLowerCase()
-    if (tier === 'google_ai_ultra') return 'bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-300'
-    if (tier === 'google_ai_pro') return 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300'
+    if (tier === 'google_ai_ultra') return 'bg-gray-100 text-gray-600 dark:bg-gray-900/40 dark:text-gray-300'
+    if (tier === 'google_ai_pro') return 'bg-accent-100 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
     if (tier === 'google_one_free') return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
     // Backward compatibility
     const upper = (creds?.tier_id || '').toString().trim().toUpperCase()
-    if (upper === 'GOOGLE_ONE_UNLIMITED') return 'bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-300'
-    if (upper === 'AI_PREMIUM') return 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300'
+    if (upper === 'GOOGLE_ONE_UNLIMITED') return 'bg-gray-100 text-gray-600 dark:bg-gray-900/40 dark:text-gray-300'
+    if (upper === 'AI_PREMIUM') return 'bg-accent-100 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
     return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
   }
 
   // AI Studio 默认样式：蓝色
   const tier = (creds?.tier_id || '').toString().trim().toLowerCase()
-  if (tier === 'aistudio_paid') return 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300'
+  if (tier === 'aistudio_paid') return 'bg-accent-100 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
   if (tier === 'aistudio_free') return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
-  return 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300'
+  return 'bg-accent-100 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
 })
 
 // 是否限流

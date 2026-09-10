@@ -48,7 +48,7 @@
         <!-- Email list with toggles -->
         <div>
           <label class="input-label">{{ t('profile.balanceNotify.extraEmails') }}</label>
-          <p class="mb-2 text-xs text-yellow-600 dark:text-yellow-400">{{ t('profile.balanceNotify.extraEmailsHint') }}</p>
+          <p class="mb-2 text-xs text-warning-600 dark:text-warning-400">{{ t('profile.balanceNotify.extraEmailsHint') }}</p>
 
           <!-- Saved email entries -->
           <div v-if="emailEntries.length > 0" class="space-y-2 mb-3">
@@ -87,11 +87,11 @@
                     <button @click="sendCodeForSaved(entry.email)" :disabled="sendingSavedCode" class="text-xs text-primary-600 hover:text-primary-700">
                       {{ t('profile.balanceNotify.verify') }}
                     </button>
-                    <span class="text-xs text-yellow-500">{{ t('profile.balanceNotify.unverified') }}</span>
+                    <span class="text-xs text-warning-500">{{ t('profile.balanceNotify.unverified') }}</span>
                   </template>
                 </template>
-                <span v-else class="text-xs text-green-500">{{ t('profile.balanceNotify.verified') }}</span>
-                <button @click="handleRemoveEmail(entry.email)" class="text-red-500 hover:text-red-700 text-xs">
+                <span v-else class="text-xs text-success-500">{{ t('profile.balanceNotify.verified') }}</span>
+                <button @click="handleRemoveEmail(entry.email)" class="text-danger-500 hover:text-danger-700 text-xs">
                   {{ t('profile.balanceNotify.removeEmail') }}
                 </button>
               </div>
@@ -101,13 +101,13 @@
           <!-- Pending (unverified) emails in verification flow -->
           <div v-if="pendingEmails.length > 0" class="space-y-2 mb-3">
             <div v-for="(pe, idx) in pendingEmails" :key="pe.email"
-              class="flex items-center gap-2 px-3 py-2 bg-yellow-50 dark:bg-yellow-900/10 rounded-lg border border-yellow-200 dark:border-yellow-800">
+              class="flex items-center gap-2 px-3 py-2 bg-warning-50 dark:bg-warning-900/10 rounded-lg border border-warning-200 dark:border-warning-800">
               <span class="flex-1 text-sm text-gray-700 dark:text-gray-300">{{ pe.email }}</span>
               <div v-if="!pe.codeSent" class="flex items-center gap-1">
                 <button @click="sendCodeFor(idx)" :disabled="pe.sending" class="text-xs text-primary-600 hover:text-primary-700">
                   {{ t('profile.balanceNotify.sendCode') }}
                 </button>
-                <button @click="pendingEmails.splice(idx, 1)" class="text-xs text-red-500 hover:text-red-700 ml-1">
+                <button @click="pendingEmails.splice(idx, 1)" class="text-xs text-danger-500 hover:text-danger-700 ml-1">
                   {{ t('profile.balanceNotify.removeEmail') }}
                 </button>
               </div>

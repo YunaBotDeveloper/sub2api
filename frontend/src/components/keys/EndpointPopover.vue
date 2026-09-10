@@ -80,11 +80,11 @@ onBeforeUnmount(() => {
 
       <div class="group/endpoint relative flex items-center gap-1.5">
         <div
-          class="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 w-max max-w-[24rem] -translate-x-1/2 translate-y-1 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-left opacity-0 shadow-[0_14px_36px_-20px_rgba(15,23,42,0.35)] ring-1 ring-slate-200/80 transition-all duration-150 group-hover/endpoint:translate-y-0 group-hover/endpoint:opacity-100 group-focus-within/endpoint:translate-y-0 group-focus-within/endpoint:opacity-100 dark:border-slate-700 dark:bg-slate-900 dark:ring-slate-700/70"
+          class="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 w-max max-w-[24rem] -translate-x-1/2 translate-y-1 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-left opacity-0 shadow-[0_14px_36px_-20px_rgba(15,23,42,0.35)] ring-1 ring-gray-200/80 transition-all duration-150 group-hover/endpoint:translate-y-0 group-hover/endpoint:opacity-100 group-focus-within/endpoint:translate-y-0 group-focus-within/endpoint:opacity-100 dark:border-gray-700 dark:bg-gray-900 dark:ring-gray-700/70"
         >
           <p
             v-if="item.description"
-            class="max-w-[24rem] break-words text-xs leading-5 text-slate-600 dark:text-slate-200"
+            class="max-w-[24rem] break-words text-xs leading-5 text-gray-600 dark:text-gray-200"
           >
             {{ item.description }}
           </p>
@@ -95,7 +95,7 @@ onBeforeUnmount(() => {
             <span class="h-1.5 w-1.5 rounded-full bg-primary-500 dark:bg-primary-300"></span>
             {{ tooltipHint(item.endpoint) }}
           </p>
-          <div class="absolute left-1/2 top-full h-3 w-3 -translate-x-1/2 -translate-y-1/2 rotate-45 border-b border-r border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900"></div>
+          <div class="absolute left-1/2 top-full h-3 w-3 -translate-x-1/2 -translate-y-1/2 rotate-45 border-b border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900"></div>
         </div>
 
         <code
@@ -111,7 +111,7 @@ onBeforeUnmount(() => {
           type="button"
           class="rounded p-0.5 transition-colors"
           :class="copiedEndpoint === item.endpoint
-            ? 'text-emerald-500 dark:text-emerald-400'
+            ? 'text-success-500 dark:text-success-400'
             : 'text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400'"
           :aria-label="tooltipHint(item.endpoint)"
           @click="copy(item.endpoint)"
@@ -128,7 +128,7 @@ onBeforeUnmount(() => {
           :href="speedTestUrl(item.endpoint)"
           target="_blank"
           rel="noopener noreferrer"
-          class="rounded p-0.5 text-gray-400 transition-colors hover:text-amber-500 dark:text-gray-500 dark:hover:text-amber-400"
+          class="rounded p-0.5 text-gray-400 transition-colors hover:text-warning-500 dark:text-gray-500 dark:hover:text-warning-400"
           :title="t('keys.endpoints.speedTest')"
         >
           <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

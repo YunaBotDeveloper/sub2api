@@ -39,7 +39,7 @@
             <div class="card p-5">
               <p class="text-xs font-medium text-gray-400 dark:text-gray-500">{{ t('payment.rechargeAccount') }}</p>
               <p class="mt-1 text-base font-semibold text-gray-900 dark:text-white">{{ user?.username || '' }}</p>
-              <p class="mt-0.5 text-sm font-medium text-green-600 dark:text-green-400">{{ t('payment.currentBalance') }}: {{ user?.balance?.toFixed(2) || '0.00' }}</p>
+              <p class="mt-0.5 text-sm font-medium text-success-600 dark:text-success-400">{{ t('payment.currentBalance') }}: {{ user?.balance?.toFixed(2) || '0.00' }}</p>
             </div>
             <div v-if="enabledMethods.length === 0" class="card py-16 text-center">
               <p class="text-gray-500 dark:text-gray-400">{{ t('payment.notAvailable') }}</p>
@@ -54,9 +54,9 @@
                 :max="inputMaxAmount"
                 :currency-options="currencyOptions"
               />
-              <p v-if="exchangeRateError" class="mt-2 text-xs text-amber-600 dark:text-amber-300">{{ exchangeRateError }}</p>
+              <p v-if="exchangeRateError" class="mt-2 text-xs text-warning-600 dark:text-warning-300">{{ exchangeRateError }}</p>
               <p v-else-if="conversionHint" class="mt-2 text-xs text-gray-500 dark:text-gray-400">{{ conversionHint }}</p>
-              <p v-if="amountError" class="mt-2 text-xs text-amber-600 dark:text-amber-300">{{ amountError }}</p>
+              <p v-if="amountError" class="mt-2 text-xs text-warning-600 dark:text-warning-300">{{ amountError }}</p>
             </div>
             <div v-if="enabledMethods.length >= 1" class="card p-6">
               <PaymentMethodSelector
@@ -134,7 +134,7 @@
                   </div>
                   <div v-if="planHasPeakRate(selectedPlan)">
                     <span class="text-xs text-gray-400 dark:text-gray-500">{{ t('payment.planCard.peakRate') }}</span>
-                    <div class="text-sm font-semibold text-amber-700 dark:text-amber-300">
+                    <div class="text-sm font-semibold text-warning-700 dark:text-warning-300">
                       {{ planPeakRateLabel(selectedPlan) }}
                     </div>
                   </div>
@@ -237,8 +237,8 @@
     <!-- Renewal Plan Selection Modal -->
     <Teleport to="body">
       <Transition name="modal">
-        <div v-if="showRenewalModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" @click.self="closeRenewalModal">
-          <div class="relative w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-dark-700 dark:bg-dark-900">
+        <div v-if="showRenewalModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" @click.self="closeRenewalModal">
+          <div class="relative w-full max-w-lg rounded-lg border border-gray-200 bg-white p-6 shadow-2xl dark:border-dark-700 dark:bg-dark-900">
             <!-- Close button -->
             <button class="absolute right-4 top-4 rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700 dark:hover:text-gray-200" @click="closeRenewalModal">
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -254,7 +254,7 @@
     <!-- Image Preview Overlay -->
     <Teleport to="body">
       <Transition name="modal">
-        <div v-if="previewImage" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm" @click="previewImage = ''">
+        <div v-if="previewImage" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/70" @click="previewImage = ''">
           <img :src="previewImage" alt="" class="max-h-[85vh] max-w-[90vw] rounded-xl object-contain shadow-2xl" />
         </div>
       </Transition>

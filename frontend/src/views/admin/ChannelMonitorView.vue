@@ -2,10 +2,10 @@
   <AppLayout>
     <div class="w-full min-w-0 space-y-6 pb-8">
       <header
-        class="page-header mb-0 rounded-3xl bg-white p-5 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700 sm:p-6"
+        class="page-header mb-0 rounded-lg bg-white p-5 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700 sm:p-6"
       >
         <h1 class="page-title flex items-center gap-2 text-xl font-black text-gray-900 dark:text-white">
-          <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-blue-500 dark:bg-blue-900/30 dark:text-blue-400">
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-accent-50 text-accent-500 dark:bg-accent-900/30 dark:text-accent-400">
             <Icon name="chart" size="sm" />
           </span>
           {{ t('admin.channelMonitor.title') }}
@@ -69,7 +69,7 @@
             <div class="flex items-center gap-1.5">
               <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
               <HelpTooltip v-if="row.api_key_decrypt_failed" :content="t('admin.channelMonitor.apiKeyDecryptFailed')">
-                <Icon name="exclamationTriangle" size="sm" class="text-red-500" />
+                <Icon name="exclamationTriangle" size="sm" class="text-danger-500" />
               </HelpTooltip>
             </div>
           </template>

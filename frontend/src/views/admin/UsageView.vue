@@ -122,7 +122,7 @@
           </template>
         </UsageFilters>
 
-        <div v-show="activeTab === 'usage'" class="overflow-hidden rounded-b-2xl">
+        <div v-show="activeTab === 'usage'" class="overflow-hidden rounded-b-lg">
           <UsageTable
             flat
             :data="usageLogs"
@@ -137,7 +137,7 @@
           />
           <Pagination v-if="pagination.total > 0" :page="pagination.page" :total="pagination.total" :page-size="pagination.page_size" @update:page="handlePageChange" @update:pageSize="handlePageSizeChange" />
         </div>
-        <div v-show="activeTab === 'errors'" class="overflow-hidden rounded-b-2xl">
+        <div v-show="activeTab === 'errors'" class="overflow-hidden rounded-b-lg">
           <OpsErrorLogTable
             flat
             :rows="errRows" :total="errTotal" :loading="errLoading"
@@ -152,7 +152,7 @@
             @ipGeoBatchFailed="handleIpGeoBatchFailed" />
         </div>
         <!-- 懒挂载：首次切到该 tab 才请求排行数据，之后随筛选自动刷新 -->
-        <div v-if="rankingMounted" v-show="activeTab === 'ranking'" class="overflow-hidden rounded-b-2xl">
+        <div v-if="rankingMounted" v-show="activeTab === 'ranking'" class="overflow-hidden rounded-b-lg">
           <UserTokenRanking
             ref="rankingRef"
             :start-date="startDate"

@@ -24,7 +24,7 @@
             <span class="text-gray-900 dark:text-white">{{ row.key_name || '-' }}</span>
             <span
               v-if="row.key_deleted"
-              class="ml-1 inline-flex items-center rounded px-1 py-px text-[10px] font-medium leading-tight bg-rose-100 text-rose-600 ring-1 ring-inset ring-rose-200 dark:bg-rose-500/20 dark:text-rose-400 dark:ring-rose-500/30"
+              class="ml-1 inline-flex items-center rounded px-1 py-px text-[10px] font-medium leading-tight bg-danger-100 text-danger-600 ring-1 ring-inset ring-danger-200 dark:bg-danger-500/20 dark:text-danger-400 dark:ring-danger-500/30"
             >{{ t('usage.errors.keyDeleted') }}</span>
           </div>
         </template>
@@ -60,7 +60,7 @@
         <template #cell-group="{ row }">
           <span
             v-if="row.group_name"
-            class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200"
+            class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200"
           >{{ row.group_name }}</span>
           <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
         </template>

@@ -141,22 +141,22 @@
               :class="[
                 'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium',
                 value === 'anthropic'
-                  ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                  ? 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400'
                   : value === 'openai'
-                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                    ? 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400'
                     : value === 'antigravity'
-                      ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                      ? 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
                       : value === 'grok'
-                        ? 'bg-zinc-200 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-100'
+                        ? 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100'
                         : value === 'kimi'
-                          ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400'
+                          ? 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
                           : value === 'zhipu'
-                            ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+                            ? 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400'
                             : value === 'deepseek'
-                              ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400'
+                              ? 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400'
                               : value === 'minimax'
-                                ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'
-                                : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+                                ? 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400'
+                                : 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400',
               ]"
             >
               <PlatformIcon :platform="value" size="xs" />
@@ -171,7 +171,7 @@
                 :class="[
                   'inline-block rounded-full px-2 py-0.5 text-xs font-medium',
                   row.subscription_type === 'subscription'
-                    ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400'
+                    ? 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
                     : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
                 ]"
               >
@@ -280,7 +280,7 @@
                   t("admin.groups.accountsAvailable")
                 }}</span>
                 <span
-                  class="ml-1 font-medium text-emerald-600 dark:text-emerald-400"
+                  class="ml-1 font-medium text-success-600 dark:text-success-400"
                   >{{ row.active_account_count || 0 }}</span
                 >
                 <span
@@ -293,7 +293,7 @@
                   t("admin.groups.accountsRateLimited")
                 }}</span>
                 <span
-                  class="ml-1 font-medium text-amber-600 dark:text-amber-400"
+                  class="ml-1 font-medium text-warning-600 dark:text-warning-400"
                   >{{ row.rate_limited_account_count }}</span
                 >
                 <span
@@ -411,7 +411,7 @@
                 v-if="!authStore.isSimpleMode && row.platform === 'composite'"
                 data-testid="group-composite-routes"
                 @click="handleCompositeRoutes(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-cyan-600 dark:hover:bg-dark-700 dark:hover:text-cyan-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-accent-600 dark:hover:bg-dark-700 dark:hover:text-accent-400"
               >
                 <Icon name="swap" size="sm" />
                 <span class="text-xs">{{
@@ -422,7 +422,7 @@
                 v-if="!authStore.isSimpleMode"
                 data-testid="group-rate-multipliers"
                 @click="handleRateMultipliers(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-purple-600 dark:hover:bg-dark-700 dark:hover:text-purple-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700 dark:hover:text-gray-400"
               >
                 <Icon name="dollar" size="sm" />
                 <span class="text-xs">{{
@@ -433,7 +433,7 @@
                 v-if="!authStore.isSimpleMode"
                 data-testid="group-rpm-overrides"
                 @click="handleRPMOverrides(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-orange-600 dark:hover:bg-dark-700 dark:hover:text-orange-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-warning-600 dark:hover:bg-dark-700 dark:hover:text-warning-400"
               >
                 <Icon name="bolt" size="sm" />
                 <span class="text-xs">{{
@@ -442,7 +442,7 @@
               </button>
               <button
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20 dark:hover:text-danger-400"
               >
                 <Icon name="trash" size="sm" />
                 <span class="text-xs">{{ t("common.delete") }}</span>
@@ -891,7 +891,7 @@
               </div>
               <p
                 v-if="createAllowlistCustomErrorKey"
-                class="mt-1 text-xs text-red-500"
+                class="mt-1 text-xs text-danger-500"
               >
                 {{ t(createAllowlistCustomErrorKey) }}
               </p>
@@ -917,7 +917,7 @@
               <input
                 v-model="createForm.allow_image_generation"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-gray-300 text-accent-600 focus:ring-accent-500"
               />
               {{ t(imagePricingI18nKey(createForm.platform, "allowImageGeneration")) }}
             </label>
@@ -925,7 +925,7 @@
               <input
                 v-model="createForm.image_rate_independent"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-gray-300 text-accent-600 focus:ring-accent-500"
               />
               {{ t(imagePricingI18nKey(createForm.platform, "independentMultiplier")) }}
             </label>
@@ -1004,7 +1004,7 @@
               <input
                 v-model="createForm.allow_batch_image_generation"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-gray-300 text-accent-600 focus:ring-accent-500"
               />
               {{ t("admin.groups.imagePricing.allowBatchImageGeneration") }}
             </label>
@@ -1069,7 +1069,7 @@
               <input
                 v-model="createForm.video_rate_independent"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-gray-300 text-accent-600 focus:ring-accent-500"
               />
               {{ t(videoPricingI18nKey("independentMultiplier")) }}
             </label>
@@ -1189,7 +1189,7 @@
               <input
                 v-model="createForm.peak_rate_enabled"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-gray-300 text-accent-600 focus:ring-accent-500"
               />
               <span>{{ t("admin.groups.peakRate.enable") }}</span>
             </label>
@@ -1235,7 +1235,7 @@
             <input
               v-model="createForm.profit_control_enabled"
               type="checkbox"
-              class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              class="rounded border-gray-300 text-accent-600 focus:ring-accent-500"
             />
             <span>{{ t("admin.groups.profitControl.enable") }}</span>
           </label>
@@ -1628,7 +1628,7 @@
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
                 createForm.disable_openai_fast
-                  ? 'bg-red-500'
+                  ? 'bg-danger-500'
                   : 'bg-gray-300 dark:bg-dark-600'
               "
             >
@@ -1663,7 +1663,7 @@
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
                 createForm.force_openai_ultrafast
-                  ? 'bg-violet-500'
+                  ? 'bg-gray-500'
                   : 'bg-gray-300 dark:bg-dark-600'
               "
             >
@@ -1736,7 +1736,7 @@
                 class="border-b border-gray-100 bg-gray-50/80 px-4 py-3 dark:border-dark-700 dark:bg-dark-700/50"
               >
                 <div class="flex items-center gap-2">
-                  <div class="h-2 w-2 rounded-full bg-blue-500"></div>
+                  <div class="h-2 w-2 rounded-full bg-accent-500"></div>
                   <label
                     class="text-sm font-medium text-gray-900 dark:text-white"
                     >{{
@@ -1841,7 +1841,7 @@
                   <div
                     v-for="row in createForm.exact_model_mappings"
                     :key="getCreateMessagesDispatchRowKey(row)"
-                    class="group relative rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-primary-300 hover:shadow-md dark:border-dark-600 dark:bg-dark-700 dark:hover:border-primary-700"
+                    class="group relative rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-primary-300 dark:border-dark-600 dark:bg-dark-700 dark:hover:border-primary-700"
                   >
                     <div class="flex items-center gap-4">
                       <div
@@ -1890,7 +1890,7 @@
                       <button
                         type="button"
                         @click="removeCreateMessagesDispatchMapping(row)"
-                        class="mt-6 flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                        class="mt-6 flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-danger-50 hover:text-danger-500 dark:hover:bg-danger-900/20 dark:hover:text-danger-400"
                         :title="
                           t('admin.groups.openaiMessages.removeExactMapping')
                         "
@@ -2136,7 +2136,7 @@
                 <button
                   type="button"
                   @click="removeCreateRoutingRule(rule)"
-                  class="mt-5 p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                  class="mt-5 p-1.5 text-gray-400 hover:text-danger-500 transition-colors"
                   :title="t('admin.groups.modelRouting.removeRule')"
                 >
                   <Icon name="trash" size="sm" />
@@ -2620,7 +2620,7 @@
               </div>
               <p
                 v-if="editAllowlistCustomErrorKey"
-                class="mt-1 text-xs text-red-500"
+                class="mt-1 text-xs text-danger-500"
               >
                 {{ t(editAllowlistCustomErrorKey) }}
               </p>
@@ -2646,7 +2646,7 @@
               <input
                 v-model="editForm.allow_image_generation"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-gray-300 text-accent-600 focus:ring-accent-500"
               />
               {{ t(imagePricingI18nKey(editForm.platform, "allowImageGeneration")) }}
             </label>
@@ -2654,7 +2654,7 @@
               <input
                 v-model="editForm.image_rate_independent"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-gray-300 text-accent-600 focus:ring-accent-500"
               />
               {{ t(imagePricingI18nKey(editForm.platform, "independentMultiplier")) }}
             </label>
@@ -2733,7 +2733,7 @@
               <input
                 v-model="editForm.allow_batch_image_generation"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-gray-300 text-accent-600 focus:ring-accent-500"
               />
               {{ t("admin.groups.imagePricing.allowBatchImageGeneration") }}
             </label>
@@ -2798,7 +2798,7 @@
               <input
                 v-model="editForm.video_rate_independent"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-gray-300 text-accent-600 focus:ring-accent-500"
               />
               {{ t(videoPricingI18nKey("independentMultiplier")) }}
             </label>
@@ -2918,7 +2918,7 @@
               <input
                 v-model="editForm.peak_rate_enabled"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-gray-300 text-accent-600 focus:ring-accent-500"
               />
               <span>{{ t("admin.groups.peakRate.enable") }}</span>
             </label>
@@ -2964,7 +2964,7 @@
             <input
               v-model="editForm.profit_control_enabled"
               type="checkbox"
-              class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              class="rounded border-gray-300 text-accent-600 focus:ring-accent-500"
             />
             <span>{{ t("admin.groups.profitControl.enable") }}</span>
           </label>
@@ -3367,7 +3367,7 @@
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
                 editForm.disable_openai_fast
-                  ? 'bg-red-500'
+                  ? 'bg-danger-500'
                   : 'bg-gray-300 dark:bg-dark-600'
               "
             >
@@ -3402,7 +3402,7 @@
               class="relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
               :class="
                 editForm.force_openai_ultrafast
-                  ? 'bg-violet-500'
+                  ? 'bg-gray-500'
                   : 'bg-gray-300 dark:bg-dark-600'
               "
             >
@@ -3474,7 +3474,7 @@
                 class="border-b border-gray-100 bg-gray-50/80 px-4 py-3 dark:border-dark-700 dark:bg-dark-700/50"
               >
                 <div class="flex items-center gap-2">
-                  <div class="h-2 w-2 rounded-full bg-blue-500"></div>
+                  <div class="h-2 w-2 rounded-full bg-accent-500"></div>
                   <label
                     class="text-sm font-medium text-gray-900 dark:text-white"
                     >{{
@@ -3579,7 +3579,7 @@
                   <div
                     v-for="row in editForm.exact_model_mappings"
                     :key="getEditMessagesDispatchRowKey(row)"
-                    class="group relative rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-primary-300 hover:shadow-md dark:border-dark-600 dark:bg-dark-700 dark:hover:border-primary-700"
+                    class="group relative rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-primary-300 dark:border-dark-600 dark:bg-dark-700 dark:hover:border-primary-700"
                   >
                     <div class="flex items-center gap-4">
                       <div
@@ -3628,7 +3628,7 @@
                       <button
                         type="button"
                         @click="removeEditMessagesDispatchMapping(row)"
-                        class="mt-6 flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                        class="mt-6 flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-danger-50 hover:text-danger-500 dark:hover:bg-danger-900/20 dark:hover:text-danger-400"
                         :title="
                           t('admin.groups.openaiMessages.removeExactMapping')
                         "
@@ -3874,7 +3874,7 @@
                 <button
                   type="button"
                   @click="removeEditRoutingRule(rule)"
-                  class="mt-5 p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                  class="mt-5 p-1.5 text-gray-400 hover:text-danger-500 transition-colors"
                   :title="t('admin.groups.modelRouting.removeRule')"
                 >
                   <Icon name="trash" size="sm" />
@@ -3980,7 +3980,7 @@
           <div
             v-for="group in sortableGroups"
             :key="group.id"
-            class="flex cursor-grab items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-shadow hover:shadow-md active:cursor-grabbing dark:border-dark-600 dark:bg-dark-700"
+            class="flex cursor-grab items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-shadow active:cursor-grabbing dark:border-dark-600 dark:bg-dark-700"
           >
             <div class="text-gray-400">
               <Icon name="menu" size="md" />
@@ -3994,22 +3994,22 @@
                   :class="[
                     'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium',
                     group.platform === 'anthropic'
-                      ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                      ? 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400'
                       : group.platform === 'openai'
-                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                        ? 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400'
                         : group.platform === 'antigravity'
-                          ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                          ? 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
                           : group.platform === 'grok'
-                            ? 'bg-zinc-200 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-100'
+                            ? 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100'
                             : group.platform === 'kimi'
-                              ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400'
+                              ? 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
                               : group.platform === 'zhipu'
-                                ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+                                ? 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400'
                                 : group.platform === 'deepseek'
-                                  ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400'
+                                  ? 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400'
                                   : group.platform === 'minimax'
-                                    ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'
-                                    : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+                                    ? 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400'
+                                    : 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400',
                   ]"
                 >
                   {{ t("admin.groups.platforms." + group.platform) }}
@@ -4179,7 +4179,7 @@
                         </button>
                         <button
                           type="button"
-                          class="rounded p-1.5 text-gray-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                          class="rounded p-1.5 text-gray-500 hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20 dark:hover:text-danger-400"
                           :title="t('common.delete')"
                           @click="deleteCompositeRoute(route)"
                         >
@@ -5835,10 +5835,10 @@ const getQuotaUsageClass = (
   }
   const ratio = used / limit;
   if (ratio >= 1) {
-    return "font-semibold text-red-600 dark:text-red-400";
+    return "font-semibold text-danger-600 dark:text-danger-400";
   }
   if (ratio >= 0.8) {
-    return "font-semibold text-amber-600 dark:text-amber-400";
+    return "font-semibold text-warning-600 dark:text-warning-400";
   }
   return "font-medium text-gray-700 dark:text-gray-300";
 };

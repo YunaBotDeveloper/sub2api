@@ -74,10 +74,10 @@ withDefaults(defineProps<Props>(), {
 
 function capacityClass(used: number, max: number): string {
   if (max > 0 && used >= max) {
-    return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+    return 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400'
   }
   if (used > 0) {
-    return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+    return 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400'
   }
   return 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
 }

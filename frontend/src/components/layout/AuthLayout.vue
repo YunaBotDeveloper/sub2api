@@ -2,7 +2,7 @@
   <div class="relative flex min-h-screen items-center justify-center overflow-hidden p-4">
     <!-- Background -->
     <div
-      class="absolute inset-0 bg-gradient-to-br from-gray-50 via-primary-50/30 to-gray-100 dark:from-dark-950 dark:via-dark-900 dark:to-dark-950"
+      class="absolute inset-0 bg-gray-50 dark:bg-dark-950"
     ></div>
 
     <!-- Decorative Elements -->
@@ -31,7 +31,7 @@
         <!-- Custom Logo or Default Logo -->
         <template v-if="settingsLoaded">
           <div
-            class="mb-4 inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl shadow-lg shadow-primary-500/30"
+            class="mb-4 inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg shadow-lg"
           >
             <img :src="siteLogo || '/logo.svg'" alt="Logo" class="h-full w-full object-contain" />
           </div>
@@ -45,7 +45,7 @@
       </div>
 
       <!-- Card Container -->
-      <div class="card-glass rounded-2xl p-8 shadow-glass">
+      <div class="card-glass rounded-lg p-8 shadow-glass">
         <slot />
       </div>
 
@@ -83,6 +83,6 @@ onMounted(() => {
 
 <style scoped>
 .text-gradient {
-  @apply bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent;
+  @apply bg-primary-600 bg-clip-text text-transparent;
 }
 </style>

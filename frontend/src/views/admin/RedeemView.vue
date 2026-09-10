@@ -95,7 +95,7 @@
                 :class="[
                   'flex items-center transition-colors',
                   copiedCode === value
-                    ? 'text-green-500'
+                    ? 'text-success-500'
                     : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                 ]"
                 :title="copiedCode === value ? t('admin.redeem.copied') : t('keys.copyToClipboard')"
@@ -173,7 +173,7 @@
               :class="[
                 'text-sm',
                 row.status === 'expired'
-                  ? 'text-red-600 dark:text-red-400'
+                  ? 'text-danger-600 dark:text-danger-400'
                   : 'text-gray-500 dark:text-dark-400'
               ]"
             >
@@ -186,7 +186,7 @@
               <button
                 v-if="row.status === 'unused'"
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20 dark:hover:text-danger-400"
               >
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -306,8 +306,8 @@
               />
             </div>
             <!-- 邀请码类型：显示提示信息 -->
-            <div v-if="generateForm.type === 'invitation'" class="rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
-              <p class="text-sm text-blue-700 dark:text-blue-300">
+            <div v-if="generateForm.type === 'invitation'" class="rounded-lg bg-accent-50 p-3 dark:bg-accent-900/20">
+              <p class="text-sm text-accent-700 dark:text-accent-300">
                 {{ t('admin.redeem.invitationHint') }}
               </p>
             </div>
@@ -534,10 +534,10 @@
           >
             <div class="flex items-center gap-3">
               <div
-                class="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30"
+                class="flex h-10 w-10 items-center justify-center rounded-full bg-success-100 dark:bg-success-900/30"
               >
                 <svg
-                  class="h-5 w-5 text-green-600 dark:text-green-400"
+                  class="h-5 w-5 text-success-600 dark:text-success-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"

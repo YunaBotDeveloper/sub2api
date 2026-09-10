@@ -391,7 +391,7 @@ function cancelDelete() {
 </script>
 
 <template>
-  <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
+  <div class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
     <div class="mb-4 flex flex-wrap items-start justify-between gap-3 sm:gap-4">
       <div>
         <h3 class="text-sm font-bold text-gray-900 dark:text-white">{{ t('admin.ops.alertRules.title') }}</h3>
@@ -514,7 +514,7 @@ function cancelDelete() {
       @close="showEditor = false"
     >
       <div class="space-y-4">
-        <div v-if="!editorValidation.valid" class="rounded-xl bg-red-50 p-4 text-xs text-red-700 dark:bg-red-900/30 dark:text-red-300">
+        <div v-if="!editorValidation.valid" class="rounded-xl bg-danger-50 p-4 text-xs text-danger-700 dark:bg-danger-900/30 dark:text-danger-300">
           <div class="font-bold">{{ t('admin.ops.alertRules.validation.title') }}</div>
           <ul class="mt-1 list-disc pl-5">
             <li v-for="e in editorValidation.errors" :key="e">{{ e }}</li>
@@ -557,7 +557,7 @@ function cancelDelete() {
           <div class="md:col-span-2">
             <label class="input-label">
               {{ t('admin.ops.alertRules.form.groupId') }}
-              <span v-if="isGroupMetricSelected" class="ml-1 text-red-500">*</span>
+              <span v-if="isGroupMetricSelected" class="ml-1 text-danger-500">*</span>
             </label>
             <Select
               v-model="draftGroupId"

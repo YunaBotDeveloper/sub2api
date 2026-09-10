@@ -55,7 +55,7 @@
         <button type="button" class="btn btn-ghost btn-sm" @click="resetFilters">{{ t('common.reset') }}</button>
       </div>
     </form>
-    <div v-if="error" role="alert" class="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/30 dark:text-red-300">{{ error }}</div>
+    <div v-if="error" role="alert" class="mt-4 rounded-lg bg-danger-50 px-4 py-3 text-sm text-danger-700 dark:bg-danger-950/30 dark:text-danger-300">{{ error }}</div>
     <div class="mt-5 overflow-x-auto rounded-xl border border-gray-200 dark:border-dark-700/60">
       <table class="min-w-[1120px] w-full text-left text-sm">
         <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500 dark:bg-dark-900/70 dark:text-dark-400">
@@ -93,7 +93,7 @@
             <td class="max-w-xs px-3 py-3"><p class="line-clamp-2 break-words text-gray-600 dark:text-dark-300">{{ event.snapshot.redacted_preview || '—' }}</p></td>
             <td class="whitespace-nowrap px-3 py-3 text-right">
               <button type="button" class="btn btn-ghost btn-sm" @click="$emit('view', event.id)">{{ t('common.view') }}</button>
-              <button type="button" class="btn btn-ghost btn-sm text-red-600" @click="$emit('delete', event.id)">{{ t('common.delete') }}</button>
+              <button type="button" class="btn btn-ghost btn-sm text-danger-600" @click="$emit('delete', event.id)">{{ t('common.delete') }}</button>
             </td>
           </tr>
         </tbody>
@@ -184,9 +184,9 @@ function formatDate(value: string): string {
   return new Intl.DateTimeFormat(locale.value, { dateStyle: 'short', timeStyle: 'medium' }).format(new Date(value))
 }
 function decisionClass(decision: string): string {
-  if (decision === 'critical') return 'bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300'
-  if (decision === 'flag') return 'bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300'
-  return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+  if (decision === 'critical') return 'bg-danger-100 text-danger-700 dark:bg-danger-950/50 dark:text-danger-300'
+  if (decision === 'flag') return 'bg-warning-100 text-warning-700 dark:bg-warning-950/50 dark:text-warning-300'
+  return 'bg-success-100 text-success-700 dark:bg-success-950/50 dark:text-success-300'
 }
 const DECISIONS = new Set(['pass', 'flag', 'critical'])
 const RISK_LEVELS = new Set(['low', 'medium', 'high', 'critical'])

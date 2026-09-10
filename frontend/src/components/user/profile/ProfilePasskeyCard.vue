@@ -24,7 +24,7 @@
       <div v-if="!enabled" class="mb-5 text-sm text-gray-500 dark:text-gray-400">
         {{ t('profile.passkey.featureDisabled') }}
       </div>
-      <div v-if="enabled && !supported" class="mb-5 text-sm text-amber-600 dark:text-amber-400">
+      <div v-if="enabled && !supported" class="mb-5 text-sm text-warning-600 dark:text-warning-400">
         {{ t('profile.passkey.unsupported') }}
       </div>
       <div>
@@ -94,7 +94,7 @@
                 </p>
                 <span
                   v-if="credential.backup"
-                  class="rounded-full bg-green-50 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                  class="rounded-full bg-success-50 px-2 py-0.5 text-xs text-success-700 dark:bg-success-900/30 dark:text-success-300"
                 >
                   {{ t('profile.passkey.synced') }}
                 </span>
@@ -117,7 +117,7 @@
               </button>
               <button
                 type="button"
-                class="btn btn-ghost btn-sm text-red-600 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/30"
+                class="btn btn-ghost btn-sm text-danger-600 hover:bg-danger-50 dark:text-danger-300 dark:hover:bg-danger-950/30"
                 :disabled="busy"
                 @click="deletePasskey(credential)"
               >

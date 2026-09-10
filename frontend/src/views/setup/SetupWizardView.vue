@@ -1,12 +1,12 @@
 <template>
   <div
-    class="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4 dark:from-dark-900 dark:to-dark-800"
+    class="flex min-h-screen items-center justify-center bg-gray-50 p-4 dark:bg-dark-900"
   >
     <div class="w-full max-w-2xl">
       <!-- Logo & Title -->
       <div class="mb-8 text-center">
         <div
-          class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg"
+          class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-lg bg-primary-500 shadow-lg"
         >
           <Icon name="cog" size="xl" class="text-white" />
         </div>
@@ -58,7 +58,7 @@
       </div>
 
       <!-- Step Content -->
-      <div class="rounded-2xl bg-white p-8 shadow-xl dark:bg-dark-800">
+      <div class="rounded-lg bg-white p-8 shadow-xl dark:bg-dark-800">
         <!-- Step 1: Database -->
         <div v-if="currentStep === 0" class="space-y-6">
           <div class="mb-6 text-center">
@@ -173,7 +173,7 @@
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
             </svg>
-            <Icon v-else-if="dbConnected" name="check" size="md" class="mr-2 text-green-500" :stroke-width="2" />
+            <Icon v-else-if="dbConnected" name="check" size="md" class="mr-2 text-success-500" :stroke-width="2" />
             {{
               testingDb
                 ? t('setup.status.testing')
@@ -287,7 +287,7 @@
               v-else-if="redisConnected"
               name="check"
               size="md"
-              class="mr-2 text-green-500"
+              class="mr-2 text-success-500"
               :stroke-width="2"
             />
             {{
@@ -392,23 +392,23 @@
         <!-- Error Message -->
         <div
           v-if="errorMessage"
-          class="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800/50 dark:bg-red-900/20"
+          class="mt-6 rounded-xl border border-danger-200 bg-danger-50 p-4 dark:border-danger-800/50 dark:bg-danger-900/20"
         >
           <div class="flex items-start gap-3">
-            <Icon name="exclamationCircle" size="md" class="flex-shrink-0 text-red-500" />
-            <p class="text-sm text-red-700 dark:text-red-400">{{ errorMessage }}</p>
+            <Icon name="exclamationCircle" size="md" class="flex-shrink-0 text-danger-500" />
+            <p class="text-sm text-danger-700 dark:text-danger-400">{{ errorMessage }}</p>
           </div>
         </div>
 
         <!-- Success Message -->
         <div
           v-if="installSuccess"
-          class="mt-6 rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-800/50 dark:bg-green-900/20"
+          class="mt-6 rounded-xl border border-success-200 bg-success-50 p-4 dark:border-success-800/50 dark:bg-success-900/20"
         >
           <div class="flex items-start gap-3">
             <svg
               v-if="!serviceReady"
-              class="h-5 w-5 flex-shrink-0 animate-spin text-green-500"
+              class="h-5 w-5 flex-shrink-0 animate-spin text-success-500"
               fill="none"
               viewBox="0 0 24 24"
             >
@@ -426,12 +426,12 @@
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
             </svg>
-            <Icon v-else name="checkCircle" size="md" class="flex-shrink-0 text-green-500" />
+            <Icon v-else name="checkCircle" size="md" class="flex-shrink-0 text-success-500" />
             <div>
-              <p class="text-sm font-medium text-green-700 dark:text-green-400">
+              <p class="text-sm font-medium text-success-700 dark:text-success-400">
                 {{ t('setup.status.completed') }}
               </p>
-              <p class="mt-1 text-sm text-green-600 dark:text-green-500">
+              <p class="mt-1 text-sm text-success-600 dark:text-success-500">
                 {{
                   serviceReady
                     ? t('setup.status.redirecting')

@@ -132,16 +132,16 @@
         <!-- Loading Skeleton -->
         <div v-if="showLoading" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="rounded-2xl border border-gray-200 bg-white p-8 dark:border-dark-700 dark:bg-dark-900">
+            <div class="rounded-lg border border-gray-200 bg-white p-8 dark:border-dark-700 dark:bg-dark-900">
               <div class="skeleton h-5 w-24 mb-6"></div>
               <div class="flex justify-center"><div class="skeleton w-44 h-44 rounded-full"></div></div>
             </div>
-            <div class="rounded-2xl border border-gray-200 bg-white p-8 dark:border-dark-700 dark:bg-dark-900">
+            <div class="rounded-lg border border-gray-200 bg-white p-8 dark:border-dark-700 dark:bg-dark-900">
               <div class="skeleton h-5 w-24 mb-6"></div>
               <div class="flex justify-center"><div class="skeleton w-44 h-44 rounded-full"></div></div>
             </div>
           </div>
-          <div class="rounded-2xl border border-gray-200 bg-white p-8 dark:border-dark-700 dark:bg-dark-900">
+          <div class="rounded-lg border border-gray-200 bg-white p-8 dark:border-dark-700 dark:bg-dark-900">
             <div class="skeleton h-5 w-32 mb-6"></div>
             <div class="space-y-4">
               <div class="skeleton h-4 w-full"></div>
@@ -156,10 +156,10 @@
         <div v-else-if="resultData" class="space-y-6">
           <!-- Status Badge -->
           <div v-if="statusInfo" class="fade-up flex items-center justify-center mb-2">
-            <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gray-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-dark-700 dark:bg-dark-900/90">
+            <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gray-200 bg-white/90 shadow-sm dark:border-dark-700 dark:bg-dark-900/90">
               <span
                 class="w-2.5 h-2.5 rounded-full pulse-dot"
-                :class="statusInfo.isActive ? 'bg-emerald-500' : 'bg-rose-500'"
+                :class="statusInfo.isActive ? 'bg-success-500' : 'bg-danger-500'"
               ></span>
               <span class="text-sm font-medium text-gray-900 dark:text-white">{{ statusInfo.label }}</span>
               <span class="text-xs text-gray-400 dark:text-dark-500">|</span>
@@ -172,7 +172,7 @@
             <div
               v-for="(ring, i) in ringItems"
               :key="i"
-              class="fade-up rounded-2xl border border-gray-200 bg-white/90 p-8 backdrop-blur-sm transition-all duration-300 hover:shadow-lg dark:border-dark-700 dark:bg-dark-900/90"
+              class="fade-up rounded-lg border border-gray-200 bg-white/90 p-8 transition-all duration-300 dark:border-dark-700 dark:bg-dark-900/90"
               :class="`fade-up-delay-${Math.min(i + 1, 4)}`"
             >
               <div class="flex items-center justify-between mb-6">
@@ -239,7 +239,7 @@
           <!-- Detail Card -->
           <div
             v-if="detailRows.length > 0"
-            class="fade-up fade-up-delay-3 rounded-2xl border border-gray-200 bg-white/90 backdrop-blur-sm overflow-hidden dark:border-dark-700 dark:bg-dark-900/90"
+            class="fade-up fade-up-delay-3 rounded-lg border border-gray-200 bg-white/90 overflow-hidden dark:border-dark-700 dark:bg-dark-900/90"
           >
             <div class="px-8 py-5 border-b border-gray-200 dark:border-dark-700">
               <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-dark-400">{{ t('keyUsage.detailInfo') }}</h3>
@@ -272,7 +272,7 @@
           <!-- Usage Stats Card -->
           <div
             v-if="usageStatCells.length > 0"
-            class="fade-up fade-up-delay-3 rounded-2xl border border-gray-200 bg-white/90 backdrop-blur-sm overflow-hidden dark:border-dark-700 dark:bg-dark-900/90"
+            class="fade-up fade-up-delay-3 rounded-lg border border-gray-200 bg-white/90 overflow-hidden dark:border-dark-700 dark:bg-dark-900/90"
           >
             <div class="px-8 py-5 border-b border-gray-200 dark:border-dark-700">
               <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-dark-400">{{ t('keyUsage.tokenStats') }}</h3>
@@ -292,7 +292,7 @@
           <!-- Daily Usage Table -->
           <div
             v-if="showDailyUsage"
-            class="fade-up fade-up-delay-4 rounded-2xl border border-gray-200 bg-white/90 backdrop-blur-sm overflow-hidden dark:border-dark-700 dark:bg-dark-900/90"
+            class="fade-up fade-up-delay-4 rounded-lg border border-gray-200 bg-white/90 overflow-hidden dark:border-dark-700 dark:bg-dark-900/90"
           >
             <div class="flex flex-col gap-3 px-8 py-5 border-b border-gray-200 dark:border-dark-700 sm:flex-row sm:items-center sm:justify-between">
               <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-dark-400">{{ t('keyUsage.dailyDetail') }}</h3>
@@ -348,7 +348,7 @@
           <!-- Model Stats Table -->
           <div
             v-if="modelStats.length > 0"
-            class="fade-up fade-up-delay-4 rounded-2xl border border-gray-200 bg-white/90 backdrop-blur-sm overflow-hidden dark:border-dark-700 dark:bg-dark-900/90"
+            class="fade-up fade-up-delay-4 rounded-lg border border-gray-200 bg-white/90 overflow-hidden dark:border-dark-700 dark:bg-dark-900/90"
           >
             <div class="px-8 py-5 border-b border-gray-200 dark:border-dark-700">
               <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-dark-400">{{ t('keyUsage.modelStats') }}</h3>
@@ -672,9 +672,9 @@ interface DetailRow {
 }
 
 function getUsageColor(pct: number): string {
-  if (pct > 90) return 'text-rose-500'
-  if (pct > 70) return 'text-amber-500'
-  return 'text-emerald-500'
+  if (pct > 90) return 'text-danger-500'
+  if (pct > 70) return 'text-warning-500'
+  return 'text-success-500'
 }
 
 const detailRows = computed<DetailRow[]>(() => {
@@ -689,11 +689,11 @@ const detailRows = computed<DetailRow[]>(() => {
 
   if (data.mode === 'quota_limited') {
     if (data.quota) {
-      const remainColor = data.quota.remaining <= 0 ? 'text-rose-500'
-        : data.quota.remaining < data.quota.limit * 0.1 ? 'text-amber-500'
-        : 'text-emerald-500'
+      const remainColor = data.quota.remaining <= 0 ? 'text-danger-500'
+        : data.quota.remaining < data.quota.limit * 0.1 ? 'text-warning-500'
+        : 'text-success-500'
       rows.push({
-        iconBg: 'bg-emerald-500/10', iconColor: 'text-emerald-500', iconSvg: ICON_SHIELD,
+        iconBg: 'bg-success-500/10', iconColor: 'text-success-500', iconSvg: ICON_SHIELD,
         label: t('keyUsage.remainingQuota'), value: usd(data.quota.remaining), valueClass: remainColor,
       })
     }
@@ -704,7 +704,7 @@ const detailRows = computed<DetailRow[]>(() => {
         expiryStr += daysLeft > 0 ? ` ${t('keyUsage.daysLeft', { days: daysLeft })}` : daysLeft === 0 ? ` ${t('keyUsage.todayExpires')}` : ''
       }
       rows.push({
-        iconBg: 'bg-amber-500/10', iconColor: 'text-amber-500', iconSvg: ICON_CALENDAR,
+        iconBg: 'bg-warning-500/10', iconColor: 'text-warning-500', iconSvg: ICON_CALENDAR,
         label: t('keyUsage.expiresAt'), value: expiryStr, valueClass: '',
       })
     }
@@ -727,7 +727,7 @@ const detailRows = computed<DetailRow[]>(() => {
     }
   } else {
     rows.push({
-      iconBg: 'bg-emerald-500/10', iconColor: 'text-emerald-500', iconSvg: ICON_CHECK,
+      iconBg: 'bg-success-500/10', iconColor: 'text-success-500', iconSvg: ICON_CHECK,
       label: t('keyUsage.subscriptionType'), value: data.planName || t('keyUsage.walletBalance'), valueClass: '',
     })
 
@@ -743,30 +743,30 @@ const detailRows = computed<DetailRow[]>(() => {
       if (sub.weekly_limit_usd > 0) {
         const pct = (sub.weekly_usage_usd / sub.weekly_limit_usd) * 100
         rows.push({
-          iconBg: 'bg-indigo-500/10', iconColor: 'text-indigo-500', iconSvg: ICON_DOLLAR,
+          iconBg: 'bg-accent-500/10', iconColor: 'text-accent-500', iconSvg: ICON_DOLLAR,
           label: `${t('keyUsage.usedQuota')} (${locale.value === 'zh' ? '周' : 'W'})`, value: `${usd(sub.weekly_usage_usd)} / ${usd(sub.weekly_limit_usd)}`, valueClass: getUsageColor(pct),
         })
       }
       if (sub.monthly_limit_usd > 0) {
         const pct = (sub.monthly_usage_usd / sub.monthly_limit_usd) * 100
         rows.push({
-          iconBg: 'bg-emerald-500/10', iconColor: 'text-emerald-500', iconSvg: ICON_DOLLAR,
+          iconBg: 'bg-success-500/10', iconColor: 'text-success-500', iconSvg: ICON_DOLLAR,
           label: `${t('keyUsage.usedQuota')} (${locale.value === 'zh' ? '月' : 'M'})`, value: `${usd(sub.monthly_usage_usd)} / ${usd(sub.monthly_limit_usd)}`, valueClass: getUsageColor(pct),
         })
       }
       if (sub.expires_at) {
         rows.push({
-          iconBg: 'bg-amber-500/10', iconColor: 'text-amber-500', iconSvg: ICON_CALENDAR,
+          iconBg: 'bg-warning-500/10', iconColor: 'text-warning-500', iconSvg: ICON_CALENDAR,
           label: t('keyUsage.subscriptionExpires'), value: formatDate(sub.expires_at), valueClass: '',
         })
       }
     }
 
     const remainColor = data.remaining != null
-      ? (data.remaining <= 0 ? 'text-rose-500' : data.remaining < 10 ? 'text-amber-500' : 'text-emerald-500')
+      ? (data.remaining <= 0 ? 'text-danger-500' : data.remaining < 10 ? 'text-warning-500' : 'text-success-500')
       : ''
     rows.push({
-      iconBg: 'bg-emerald-500/10', iconColor: 'text-emerald-500', iconSvg: ICON_SHIELD,
+      iconBg: 'bg-success-500/10', iconColor: 'text-success-500', iconSvg: ICON_SHIELD,
       label: t('keyUsage.remainingQuota'), value: data.remaining != null ? usd(data.remaining) : '-', valueClass: remainColor,
     })
   }

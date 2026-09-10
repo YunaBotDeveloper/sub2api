@@ -281,7 +281,7 @@
               <button
                 @click="handleTestConnection(row)"
                 :disabled="testingProxyIds.has(row.id)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-emerald-50 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-success-50 hover:text-success-600 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-success-900/20 dark:hover:text-success-400"
               >
                 <svg
                   v-if="testingProxyIds.has(row.id)"
@@ -309,7 +309,7 @@
               <button
                 @click="handleQualityCheck(row)"
                 :disabled="qualityCheckingProxyIds.has(row.id)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-accent-50 hover:text-accent-600 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-accent-900/20 dark:hover:text-accent-400"
               >
                 <svg
                   v-if="qualityCheckingProxyIds.has(row.id)"
@@ -343,7 +343,7 @@
               </button>
               <button
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20 dark:hover:text-danger-400"
               >
                 <Icon name="trash" size="sm" />
                 <span class="text-xs">{{ t('common.delete') }}</span>
@@ -569,9 +569,9 @@
                 name="exclamationCircle"
                 size="sm"
                 :stroke-width="2"
-                class="text-amber-500"
+                class="text-warning-500"
               />
-              <span class="text-amber-600 dark:text-amber-400">
+              <span class="text-warning-600 dark:text-warning-400">
                 {{ t('admin.proxies.invalidCount', { count: batchParseResult.invalid }) }}
               </span>
             </div>

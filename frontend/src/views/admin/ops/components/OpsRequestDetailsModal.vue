@@ -148,8 +148,8 @@ function openErrorDetail(errorId: number | null | undefined) {
 }
 
 const kindBadgeClass = (kind: string) => {
-  if (kind === 'error') return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-  return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+  if (kind === 'error') return 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300'
+  return 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-300'
 }
 </script>
 
@@ -173,7 +173,7 @@ const kindBadgeClass = (kind: string) => {
         <!-- Loading -->
         <div v-if="loading" class="flex flex-1 items-center justify-center py-16">
           <div class="flex flex-col items-center gap-3">
-            <svg class="h-8 w-8 animate-spin text-blue-500" fill="none" viewBox="0 0 24 24">
+            <svg class="h-8 w-8 animate-spin text-accent-500" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path
                 class="opacity-75"
@@ -221,7 +221,7 @@ const kindBadgeClass = (kind: string) => {
                   </div>
                   <button
                     v-if="row.kind === 'error' && row.error_id"
-                    class="w-full rounded-lg bg-red-50 px-3 py-1.5 text-xs font-bold text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-300 dark:hover:bg-red-900/30"
+                    class="w-full rounded-lg bg-danger-50 px-3 py-1.5 text-xs font-bold text-danger-600 hover:bg-danger-100 dark:bg-danger-900/20 dark:text-danger-300 dark:hover:bg-danger-900/30"
                     @click="openErrorDetail(row.error_id)"
                   >
                     {{ t('admin.ops.requestDetails.viewError') }}
@@ -296,7 +296,7 @@ const kindBadgeClass = (kind: string) => {
                   <td class="whitespace-nowrap px-4 py-3 text-right">
                     <button
                       v-if="row.kind === 'error' && row.error_id"
-                      class="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-bold text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-300 dark:hover:bg-red-900/30"
+                      class="rounded-lg bg-danger-50 px-3 py-1.5 text-xs font-bold text-danger-600 hover:bg-danger-100 dark:bg-danger-900/20 dark:text-danger-300 dark:hover:bg-danger-900/30"
                       @click="openErrorDetail(row.error_id)"
                     >
                       {{ t('admin.ops.requestDetails.viewError') }}

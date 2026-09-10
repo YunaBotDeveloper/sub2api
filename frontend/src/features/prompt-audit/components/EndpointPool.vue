@@ -47,7 +47,7 @@
             <div class="min-w-0">
               <div class="flex min-w-0 items-center gap-2">
                 <p class="truncate font-semibold text-gray-950 dark:text-white">{{ endpoint.name }}</p>
-                <span class="h-1.5 w-1.5 shrink-0 rounded-full" :class="endpoint.enabled ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-dark-500'" aria-hidden="true" />
+                <span class="h-1.5 w-1.5 shrink-0 rounded-full" :class="endpoint.enabled ? 'bg-success-500' : 'bg-gray-300 dark:bg-dark-500'" aria-hidden="true" />
               </div>
               <p class="mt-0.5 truncate font-mono text-[11px] text-gray-500 dark:text-dark-400" :title="endpoint.base_url">{{ endpoint.base_url }}</p>
             </div>
@@ -68,14 +68,14 @@
 
           <div class="min-w-0">
             <p class="mb-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400 xl:hidden">{{ t('admin.promptAudit.pool.credential') }}</p>
-            <div class="flex items-center gap-1.5 text-xs font-medium" :class="credentialInvalid(endpoint) ? 'text-red-600 dark:text-red-300' : hasCredential(endpoint) ? 'text-emerald-700 dark:text-emerald-300' : 'text-gray-500 dark:text-dark-400'">
-              <span class="h-1.5 w-1.5 rounded-full" :class="credentialInvalid(endpoint) ? 'bg-red-500' : hasCredential(endpoint) ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-dark-500'" aria-hidden="true" />
+            <div class="flex items-center gap-1.5 text-xs font-medium" :class="credentialInvalid(endpoint) ? 'text-danger-600 dark:text-danger-300' : hasCredential(endpoint) ? 'text-success-700 dark:text-success-300' : 'text-gray-500 dark:text-dark-400'">
+              <span class="h-1.5 w-1.5 rounded-full" :class="credentialInvalid(endpoint) ? 'bg-danger-500' : hasCredential(endpoint) ? 'bg-success-500' : 'bg-gray-300 dark:bg-dark-500'" aria-hidden="true" />
               {{ credentialInvalid(endpoint) ? t('admin.promptAudit.pool.invalid') : hasCredential(endpoint) ? t('admin.promptAudit.pool.configured') : t('admin.promptAudit.pool.missing') }}
             </div>
             <p v-if="probingIds.includes(endpoint.id)" class="mt-1.5 text-xs text-primary-600 dark:text-primary-300">
               {{ t('admin.promptAudit.pool.probeProgress') }}
             </p>
-            <p v-if="probeResults[endpoint.id]" class="mt-1.5 line-clamp-2 text-xs leading-5" :class="probeResults[endpoint.id].ok ? 'text-emerald-600 dark:text-emerald-300' : 'text-red-600 dark:text-red-300'">
+            <p v-if="probeResults[endpoint.id]" class="mt-1.5 line-clamp-2 text-xs leading-5" :class="probeResults[endpoint.id].ok ? 'text-success-600 dark:text-success-300' : 'text-danger-600 dark:text-danger-300'">
               {{ t('admin.promptAudit.pool.probeResult', { status: probeResults[endpoint.id].status, http: probeResults[endpoint.id].http_status || '—', latency: probeResults[endpoint.id].latency_ms }) }}
               · {{ probeResults[endpoint.id].message }}
             </p>
@@ -86,7 +86,7 @@
               {{ probingIds.includes(endpoint.id) ? t('admin.promptAudit.pool.probing') : t('admin.promptAudit.pool.probe') }}
             </button>
             <button type="button" class="btn btn-ghost btn-sm" @click="openEdit(endpoint)">{{ t('common.edit') }}</button>
-            <button type="button" class="btn btn-ghost btn-sm text-red-600 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/30" @click="removeEndpoint(endpoint)">{{ t('common.delete') }}</button>
+            <button type="button" class="btn btn-ghost btn-sm text-danger-600 hover:bg-danger-50 dark:text-danger-300 dark:hover:bg-danger-950/30" @click="removeEndpoint(endpoint)">{{ t('common.delete') }}</button>
           </div>
         </article>
       </div>
@@ -111,7 +111,7 @@
           <input v-model="editing.token" class="input w-full" type="password" autocomplete="new-password" :placeholder="editing.has_token ? (editing.token_status === 'invalid' ? t('admin.promptAudit.pool.reenterSecret') : t('admin.promptAudit.pool.keepSecret')) : ''" :aria-label="t('admin.promptAudit.pool.apiKey')" />
           <span class="block text-xs text-gray-500 dark:text-dark-400">{{ t('admin.promptAudit.pool.secretHint') }}</span>
         </label>
-        <label v-if="editing.has_token" class="flex items-center gap-2 text-sm text-red-600 dark:text-red-300 sm:col-span-2">
+        <label v-if="editing.has_token" class="flex items-center gap-2 text-sm text-danger-600 dark:text-danger-300 sm:col-span-2">
           <input v-model="editing.clear_token" type="checkbox" :aria-label="t('admin.promptAudit.pool.clearSecret')" />
           {{ t('admin.promptAudit.pool.clearSecret') }}
         </label>

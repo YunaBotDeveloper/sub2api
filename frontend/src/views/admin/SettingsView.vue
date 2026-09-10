@@ -61,15 +61,15 @@
             <div class="space-y-4 p-6">
               <!-- Security Warning -->
               <div
-                class="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20"
+                class="rounded-lg border border-warning-200 bg-warning-50 p-4 dark:border-warning-800 dark:bg-warning-900/20"
               >
                 <div class="flex items-start">
                   <Icon
                     name="exclamationTriangle"
                     size="md"
-                    class="mt-0.5 flex-shrink-0 text-amber-500"
+                    class="mt-0.5 flex-shrink-0 text-warning-500"
                   />
-                  <p class="ml-3 text-sm text-amber-700 dark:text-amber-300">
+                  <p class="ml-3 text-sm text-warning-700 dark:text-warning-300">
                     {{ t("admin.settings.adminApiKey.securityWarning") }}
                   </p>
                 </div>
@@ -160,7 +160,7 @@
                       type="button"
                       @click="deleteAdminApiKey"
                       :disabled="adminApiKeyOperating"
-                      class="btn btn-secondary btn-sm text-red-600 hover:text-red-700 dark:text-red-400"
+                      class="btn btn-secondary btn-sm text-danger-600 hover:text-danger-700 dark:text-danger-400"
                     >
                       {{ t("admin.settings.adminApiKey.delete") }}
                     </button>
@@ -170,16 +170,16 @@
                 <!-- Newly Generated Key Display -->
                 <div
                   v-if="newAdminApiKey"
-                  class="space-y-3 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20"
+                  class="space-y-3 rounded-lg border border-success-200 bg-success-50 p-4 dark:border-success-800 dark:bg-success-900/20"
                 >
                   <p
-                    class="text-sm font-medium text-green-700 dark:text-green-300"
+                    class="text-sm font-medium text-success-700 dark:text-success-300"
                   >
                     {{ t("admin.settings.adminApiKey.keyWarning") }}
                   </p>
                   <div class="flex items-center gap-2">
                     <code
-                      class="flex-1 select-all break-all rounded border border-green-300 bg-white px-3 py-2 font-mono text-sm dark:border-green-700 dark:bg-dark-800"
+                      class="flex-1 select-all break-all rounded border border-success-300 bg-white px-3 py-2 font-mono text-sm dark:border-success-700 dark:bg-dark-800"
                     >
                       {{ newAdminApiKey }}
                     </code>
@@ -191,7 +191,7 @@
                       {{ t("admin.settings.adminApiKey.copyKey") }}
                     </button>
                   </div>
-                  <p class="text-xs text-green-600 dark:text-green-400">
+                  <p class="text-xs text-success-600 dark:text-success-400">
                     {{ t("admin.settings.adminApiKey.usage") }}
                   </p>
                 </div>
@@ -725,7 +725,7 @@
                             1,
                           )
                         "
-                        class="btn btn-ghost btn-xs text-red-500 hover:text-red-700"
+                        class="btn btn-ghost btn-xs text-danger-500 hover:text-danger-700"
                       >
                         <svg
                           class="h-4 w-4"
@@ -932,7 +932,7 @@
                       <button
                         type="button"
                         @click="rule.model_whitelist!.splice(index, 1)"
-                        class="shrink-0 rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                        class="shrink-0 rounded p-1 text-danger-400 transition-colors hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20"
                       >
                         <svg
                           class="h-4 w-4"
@@ -1109,7 +1109,7 @@
                   <button
                     type="button"
                     @click="removeOpenAIFastPolicyRule(ruleIndex)"
-                    class="rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                    class="rounded p-1 text-danger-400 transition-colors hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20"
                     :title="t('admin.settings.openaiFastPolicy.removeRule')"
                   >
                     <svg
@@ -1309,7 +1309,7 @@
                       @click="
                         removeOpenAIFastPolicyModelPattern(rule, patternIdx)
                       "
-                      class="shrink-0 rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                      class="shrink-0 rounded p-1 text-danger-400 transition-colors hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20"
                     >
                       <svg
                         class="h-4 w-4"
@@ -1632,7 +1632,7 @@
                   <!-- Warning when encryption key not configured -->
                   <p
                     v-if="!form.totp_encryption_key_configured"
-                    class="mt-2 text-sm text-amber-600 dark:text-amber-400"
+                    class="mt-2 text-sm text-warning-600 dark:text-warning-400"
                   >
                     {{ t("admin.settings.registration.totpKeyNotConfigured") }}
                   </p>
@@ -1667,8 +1667,8 @@
                   class="mt-3 rounded-lg border px-3 py-2 text-sm"
                   :class="
                     form.passkey_configured
-                      ? 'border-green-200 bg-green-50 text-green-800 dark:border-green-900 dark:bg-green-950/40 dark:text-green-300'
-                      : 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300'
+                      ? 'border-success-200 bg-success-50 text-success-800 dark:border-success-900 dark:bg-success-950/40 dark:text-success-300'
+                      : 'border-warning-200 bg-warning-50 text-warning-800 dark:border-warning-900 dark:bg-warning-950/40 dark:text-warning-300'
                   "
                   data-testid="passkey-config-status"
                 >
@@ -1874,15 +1874,15 @@
               <template v-else>
                 <!-- 计数维度说明：按账号计数，反代部署无误伤 -->
                 <div
-                  class="rounded-lg border border-sky-200 bg-sky-50 p-4 dark:border-sky-800 dark:bg-sky-900/20"
+                  class="rounded-lg border border-accent-200 bg-accent-50 p-4 dark:border-accent-800 dark:bg-accent-900/20"
                 >
                   <div class="flex items-start">
                     <Icon
                       name="infoCircle"
                       size="md"
-                      class="mt-0.5 flex-shrink-0 text-sky-500"
+                      class="mt-0.5 flex-shrink-0 text-accent-500"
                     />
-                    <p class="ml-3 text-sm text-sky-700 dark:text-sky-300">
+                    <p class="ml-3 text-sm text-accent-700 dark:text-accent-300">
                       {{ t("admin.settings.panelRateLimit.proxySafeNote") }}
                     </p>
                   </div>
@@ -3044,7 +3044,7 @@
                     (form.wechat_connect_mp_enabled ||
                       form.wechat_connect_mobile_enabled)
                   "
-                  class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/10 dark:text-amber-300"
+                  class="rounded-lg border border-warning-200 bg-warning-50 px-4 py-3 text-sm text-warning-700 dark:border-warning-900/40 dark:bg-warning-900/10 dark:text-warning-300"
                 >
                   {{
                     localText(
@@ -3325,7 +3325,7 @@
                         <p class="text-sm text-gray-500 dark:text-gray-400">
                           {{ t("admin.settings.dingtalk.syncCorpEmailHint") }}
                         </p>
-                        <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                        <p class="text-xs text-warning-600 dark:text-warning-400 mt-1">
                           {{ t("admin.settings.dingtalk.syncCorpEmailPermissionHint") }}
                         </p>
                       </div>
@@ -3371,7 +3371,7 @@
                         <p class="text-sm text-gray-500 dark:text-gray-400">
                           {{ t("admin.settings.dingtalk.syncDeptHint") }}
                         </p>
-                        <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                        <p class="text-xs text-warning-600 dark:text-warning-400 mt-1">
                           {{ t("admin.settings.dingtalk.syncDeptPermissionHint") }}
                         </p>
                       </div>
@@ -4020,7 +4020,7 @@
                     <div class="flex items-end">
                       <button
                         type="button"
-                        class="btn btn-secondary default-sub-delete-btn w-full text-red-600 hover:text-red-700 dark:text-red-400"
+                        class="btn btn-secondary default-sub-delete-btn w-full text-danger-600 hover:text-danger-700 dark:text-danger-400"
                         @click="removeDefaultSubscription(index)"
                       >
                         {{ t("common.delete") }}
@@ -4039,7 +4039,7 @@
                   <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     {{ t("admin.settings.defaults.defaultPlatformQuotasHint") }}
                   </p>
-                  <p class="mt-0.5 text-xs text-amber-600 dark:text-amber-400">
+                  <p class="mt-0.5 text-xs text-warning-600 dark:text-warning-400">
                     {{ t("admin.settings.defaults.platformQuotaNotice") }}
                   </p>
                 </div>
@@ -4354,7 +4354,7 @@
                         <div class="flex items-end">
                           <button
                             type="button"
-                            class="btn btn-secondary w-full text-red-600 hover:text-red-700 dark:text-red-400"
+                            class="btn btn-secondary w-full text-danger-600 hover:text-danger-700 dark:text-danger-400"
                             @click="
                               removeAuthSourceDefaultSubscription(
                                 authSource.source,
@@ -4578,7 +4578,7 @@
                     </label>
                     <button
                       type="button"
-                      class="btn btn-secondary btn-sm shrink-0 text-red-600 hover:text-red-700 dark:text-red-400"
+                      class="btn btn-secondary btn-sm shrink-0 text-danger-600 hover:text-danger-700 dark:text-danger-400"
                       @click="removeCodexFingerprintRow(i)"
                     >
                       {{ t("admin.settings.gatewayForwarding.codexRemoveRow") }}
@@ -4589,7 +4589,7 @@
                   </button>
                   <p
                     v-if="codexFingerprintNoRequired"
-                    class="mt-2 text-xs text-amber-600 dark:text-amber-500"
+                    class="mt-2 text-xs text-warning-600 dark:text-warning-500"
                   >
                     {{ t("admin.settings.gatewayForwarding.codexFingerprintNoRequiredWarn") }}
                   </p>
@@ -4653,7 +4653,7 @@
                     />
                     <button
                       type="button"
-                      class="btn btn-secondary btn-sm shrink-0 text-red-600 hover:text-red-700 dark:text-red-400"
+                      class="btn btn-secondary btn-sm shrink-0 text-danger-600 hover:text-danger-700 dark:text-danger-400"
                       @click="removeCodexBlacklistRow(i)"
                     >
                       {{ t("admin.settings.gatewayForwarding.codexRemoveRow") }}
@@ -4722,7 +4722,7 @@
                     </label>
                     <button
                       type="button"
-                      class="btn btn-secondary btn-sm shrink-0 text-red-600 hover:text-red-700 dark:text-red-400"
+                      class="btn btn-secondary btn-sm shrink-0 text-danger-600 hover:text-danger-700 dark:text-danger-400"
                       @click="removeCodexWhitelistRow(i)"
                     >
                       {{ t("admin.settings.gatewayForwarding.codexRemoveRow") }}
@@ -4959,7 +4959,7 @@
                       )
                     }}
                   </p>
-                  <p class="mt-0.5 text-xs text-amber-600 dark:text-amber-400">
+                  <p class="mt-0.5 text-xs text-warning-600 dark:text-warning-400">
                     {{
                       t(
                         "admin.settings.scheduling.accountSchedulingThresholdsDisabledHint",
@@ -5467,7 +5467,7 @@
                         <Toggle v-model="block.enabled" />
                         <button
                           type="button"
-                          class="btn btn-secondary btn-sm px-2 text-red-600 hover:text-red-700 dark:text-red-400"
+                          class="btn btn-secondary btn-sm px-2 text-danger-600 hover:text-danger-700 dark:text-danger-400"
                           @click="removeClaudeOAuthSystemPromptBlock(index)"
                         >
                           <Icon name="trash" size="xs" />
@@ -5880,7 +5880,7 @@
                           !expandedProviders[pIdx] &&
                           provider.api_key_configured
                         "
-                        class="text-xs text-green-500"
+                        class="text-xs text-success-500"
                       >
                         {{
                           t(
@@ -5891,7 +5891,7 @@
                     </div>
                     <button
                       type="button"
-                      class="text-red-500 hover:text-red-700 text-xs"
+                      class="text-danger-500 hover:text-danger-700 text-xs"
                       @click.stop="removeWebSearchProvider(pIdx)"
                     >
                       {{
@@ -6076,10 +6076,10 @@
                           class="h-full rounded-full transition-all"
                           :class="
                             quotaPercentage(provider) > 90
-                              ? 'bg-red-500'
+                              ? 'bg-danger-500'
                               : quotaPercentage(provider) > 70
-                                ? 'bg-yellow-500'
-                                : 'bg-green-500'
+                                ? 'bg-warning-500'
+                                : 'bg-success-500'
                           "
                           :style="{
                             width:
@@ -6195,7 +6195,7 @@
                   <a
                     :href="r.url"
                     target="_blank"
-                    class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+                    class="text-sm font-medium text-accent-600 hover:underline dark:text-accent-400"
                     >{{ r.title }}</a
                   >
                   <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
@@ -6263,7 +6263,7 @@
             <div class="space-y-6 p-6">
               <!-- Backend Mode -->
               <div
-                class="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20"
+                class="flex items-center justify-between rounded-lg border border-warning-200 bg-warning-50 p-4 dark:border-warning-800 dark:bg-warning-900/20"
               >
                 <div>
                   <h3 class="text-sm font-medium text-gray-900 dark:text-white">
@@ -6408,7 +6408,7 @@
                       </span>
                       <button
                         type="button"
-                        class="rounded p-1 text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                        class="rounded p-1 text-danger-400 hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20"
                         @click="removeEndpoint(index)"
                       >
                         <svg
@@ -6580,7 +6580,7 @@
                   {{ t("admin.settings.site.homeContentHint") }}
                 </p>
                 <!-- iframe CSP Warning -->
-                <p class="mt-2 text-xs text-amber-600 dark:text-amber-400">
+                <p class="mt-2 text-xs text-warning-600 dark:text-warning-400">
                   {{ t("admin.settings.site.homeContentIframeWarning") }}
                 </p>
               </div>
@@ -6690,7 +6690,7 @@
                     <!-- Delete -->
                     <button
                       type="button"
-                      class="rounded p-1 text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                      class="rounded p-1 text-danger-400 hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20"
                       :title="t('admin.settings.customMenu.remove')"
                       @click="removeMenuItem(index)"
                     >
@@ -6765,17 +6765,17 @@
 
                   <!-- Token passthrough (security sensitive, full width) -->
                   <div
-                    class="rounded-md border border-amber-300 bg-amber-50 p-3 dark:border-amber-700/60 dark:bg-amber-900/20 sm:col-span-2"
+                    class="rounded-md border border-warning-300 bg-warning-50 p-3 dark:border-warning-700/60 dark:bg-warning-900/20 sm:col-span-2"
                   >
                     <div class="flex items-start justify-between gap-3">
                       <div class="min-w-0">
                         <label
-                          class="block text-xs font-medium text-amber-800 dark:text-amber-300"
+                          class="block text-xs font-medium text-warning-800 dark:text-warning-300"
                         >
                           {{ t("admin.settings.customMenu.passToken") }}
                         </label>
                         <p
-                          class="mt-1 text-xs text-amber-700 dark:text-amber-400"
+                          class="mt-1 text-xs text-warning-700 dark:text-warning-400"
                         >
                           {{ t("admin.settings.customMenu.passTokenHint") }}
                         </p>
@@ -6885,9 +6885,9 @@
                 class="rounded-md border p-3 text-sm"
                 :class="
                   customPageIframeState === 'lockdown'
-                    ? 'border-red-300 bg-red-50 text-red-800 dark:border-red-700/60 dark:bg-red-900/20 dark:text-red-300'
+                    ? 'border-danger-300 bg-danger-50 text-danger-800 dark:border-danger-700/60 dark:bg-danger-900/20 dark:text-danger-300'
                     : customPageIframeState === 'allowlist'
-                      ? 'border-emerald-300 bg-emerald-50 text-emerald-800 dark:border-emerald-700/60 dark:bg-emerald-900/20 dark:text-emerald-300'
+                      ? 'border-success-300 bg-success-50 text-success-800 dark:border-success-700/60 dark:bg-success-900/20 dark:text-success-300'
                       : 'border-gray-200 bg-gray-50 text-gray-700 dark:border-dark-600 dark:bg-dark-700/40 dark:text-gray-300'
                 "
                 data-testid="custom-page-iframe-state"
@@ -6946,7 +6946,7 @@
                   class="input font-mono text-sm"
                   :class="
                     customPageIframeInvalidEntry !== null
-                      ? 'border-red-400 dark:border-red-600'
+                      ? 'border-danger-400 dark:border-danger-600'
                       : ''
                   "
                   :placeholder="
@@ -6956,7 +6956,7 @@
                 ></textarea>
                 <p
                   v-if="customPageIframeInvalidEntry !== null"
-                  class="mt-1 text-xs text-red-600 dark:text-red-400"
+                  class="mt-1 text-xs text-danger-600 dark:text-danger-400"
                   data-testid="custom-page-iframe-error"
                 >
                   {{
@@ -7117,7 +7117,7 @@
                       </div>
                       <button
                         type="button"
-                        class="rounded-md p-2 text-red-400 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-red-900/20"
+                        class="rounded-md p-2 text-danger-400 transition hover:bg-danger-50 hover:text-danger-600 disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-danger-900/20"
                         :disabled="
                           form.login_agreement_enabled &&
                           form.login_agreement_documents.length <= 1
@@ -7256,7 +7256,7 @@
               <div v-if="form.channel_monitor_mode === 'v1'">
                 <label class="input-label">
                   {{ t('admin.settings.features.channelMonitor.defaultInterval') }}
-                  <span class="text-red-500">*</span>
+                  <span class="text-danger-500">*</span>
                 </label>
                 <input
                   v-model.number="form.channel_monitor_default_interval_seconds"
@@ -7463,7 +7463,7 @@
             <div v-if="form.cyber_session_block_enabled">
               <label class="input-label">
                 {{ t('admin.settings.features.riskControl.cyberSessionBlockTTL') }}
-                <span class="text-red-500">*</span>
+                <span class="text-danger-500">*</span>
               </label>
               <input
                 v-model.number="form.cyber_session_block_ttl_seconds"
@@ -7677,7 +7677,7 @@
                             </button>
                             <button
                               type="button"
-                              class="text-red-600 hover:underline"
+                              class="text-danger-600 hover:underline"
                               @click="askResetAffiliateUser(entry)"
                             >
                               {{ t('common.delete') }}
@@ -7742,7 +7742,7 @@
                   </div>
                   <button
                     type="button"
-                    class="text-lg leading-none text-gray-400 hover:text-red-600"
+                    class="text-lg leading-none text-gray-400 hover:text-danger-600"
                     :title="t('admin.settings.features.affiliate.modal.changeUser')"
                     @click="clearSelectedAffiliateUser"
                   >
@@ -8191,7 +8191,7 @@
                   <div>
                     <label class="input-label"
                       >{{ t("admin.settings.payment.orderTimeout") }}
-                      <span class="text-red-500">*</span></label
+                      <span class="text-danger-500">*</span></label
                     ><input
                       v-model.number="form.payment_order_timeout_minutes"
                       type="number"
@@ -13122,7 +13122,7 @@ watch(
 
 /* ============ 系统设置 Tab 导航 ============ */
 .settings-tabs-shell {
-  @apply sticky z-20 -mx-1 rounded-2xl border border-white/80 bg-white/90 p-1.5 backdrop-blur-xl;
+  @apply sticky z-20 -mx-1 rounded-lg border border-white/80 bg-white/90 p-1.5;
   top: 4.75rem;
   box-shadow:
     0 12px 28px rgb(15 23 42 / 0.07),

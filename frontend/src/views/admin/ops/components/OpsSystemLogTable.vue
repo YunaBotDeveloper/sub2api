@@ -100,10 +100,10 @@ const filterLevelOptions = computed(() => [
 
 const levelBadgeClass = (level: string) => {
   const v = String(level || '').toLowerCase()
-  if (v === 'error' || v === 'fatal') return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-  if (v === 'warn' || v === 'warning') return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
-  if (v === 'debug') return 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
-  return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+  if (v === 'error' || v === 'fatal') return 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300'
+  if (v === 'warn' || v === 'warning') return 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300'
+  if (v === 'debug') return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
+  return 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300'
 }
 
 const formatTime = (value: string) => {
@@ -384,7 +384,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
+  <section class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
     <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
       <div>
         <h3 class="text-sm font-bold text-gray-900 dark:text-white">{{ t('admin.ops.systemLogs.title') }}</h3>
@@ -393,8 +393,8 @@ onMounted(async () => {
       <div class="flex flex-wrap items-center gap-2 text-xs">
         <span class="rounded-md bg-gray-100 px-2 py-1 text-gray-700 dark:bg-dark-700 dark:text-gray-200">{{ t('admin.ops.systemLogs.queue') }} {{ health.queue_depth }}/{{ health.queue_capacity }}</span>
         <span class="rounded-md bg-gray-100 px-2 py-1 text-gray-700 dark:bg-dark-700 dark:text-gray-200">{{ t('admin.ops.systemLogs.written') }} {{ health.written_count }}</span>
-        <span class="rounded-md bg-amber-100 px-2 py-1 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">{{ t('admin.ops.systemLogs.dropped') }} {{ health.dropped_count }}</span>
-        <span class="rounded-md bg-red-100 px-2 py-1 text-red-700 dark:bg-red-900/30 dark:text-red-300">{{ t('admin.ops.systemLogs.failed') }} {{ health.write_failed_count }}</span>
+        <span class="rounded-md bg-warning-100 px-2 py-1 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300">{{ t('admin.ops.systemLogs.dropped') }} {{ health.dropped_count }}</span>
+        <span class="rounded-md bg-danger-100 px-2 py-1 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300">{{ t('admin.ops.systemLogs.failed') }} {{ health.write_failed_count }}</span>
       </div>
     </div>
 
@@ -453,7 +453,7 @@ onMounted(async () => {
         </div>
       </div>
       <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">{{ t('admin.ops.systemLogs.persistAccessLogsHint') }}</p>
-      <p v-if="health.last_error" class="mt-2 text-xs text-red-600 dark:text-red-400">{{ t('admin.ops.systemLogs.latestWriteError') }} {{ health.last_error }}</p>
+      <p v-if="health.last_error" class="mt-2 text-xs text-danger-600 dark:text-danger-400">{{ t('admin.ops.systemLogs.latestWriteError') }} {{ health.last_error }}</p>
     </div>
 
     <div class="mb-4 grid grid-cols-1 gap-3 md:grid-cols-5">

@@ -309,7 +309,7 @@
                 <li>{{ t('admin.backup.r2Guide.step2.line3') }}</li>
                 <li>{{ t('admin.backup.r2Guide.step2.line4') }}</li>
               </ol>
-              <div class="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+              <div class="mt-2 rounded-lg bg-warning-50 p-3 text-xs text-warning-700 dark:bg-warning-900/20 dark:text-warning-300">
                 {{ t('admin.backup.r2Guide.step2.warning') }}
               </div>
             </div>
@@ -343,7 +343,7 @@
             </div>
 
             <!-- Free tier note -->
-            <div class="rounded-lg bg-green-50 p-3 text-xs text-green-700 dark:bg-green-900/20 dark:text-green-300">
+            <div class="rounded-lg bg-success-50 p-3 text-xs text-success-700 dark:bg-success-900/20 dark:text-success-300">
               {{ t('admin.backup.r2Guide.freeTier') }}
             </div>
 
@@ -825,11 +825,11 @@ async function removeBackup(id: string) {
 function statusClass(status: string): string {
   switch (status) {
     case 'completed':
-      return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+      return 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-300'
     case 'running':
-      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+      return 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300'
     case 'failed':
-      return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+      return 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300'
     default:
       return 'bg-gray-100 text-gray-700 dark:bg-dark-800 dark:text-gray-300'
   }

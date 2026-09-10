@@ -331,18 +331,18 @@ watch(historyRange, () => {
 
 function severityBadgeClass(severity: string | undefined): string {
   const s = String(severity || '').trim().toLowerCase()
-  if (s === 'p0' || s === 'critical') return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-  if (s === 'p1' || s === 'warning') return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
-  if (s === 'p2' || s === 'info') return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+  if (s === 'p0' || s === 'critical') return 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300'
+  if (s === 'p1' || s === 'warning') return 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300'
+  if (s === 'p2' || s === 'info') return 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300'
   if (s === 'p3') return 'bg-gray-100 text-gray-700 dark:bg-dark-700 dark:text-gray-300'
   return 'bg-gray-100 text-gray-700 dark:bg-dark-700 dark:text-gray-300'
 }
 
 function statusBadgeClass(status: string | undefined): string {
   const s = String(status || '').trim().toLowerCase()
-  if (s === 'firing') return 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-500/30'
-  if (s === 'resolved') return 'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-900/30 dark:text-green-300 dark:ring-green-500/30'
-  if (s === 'manual_resolved') return 'bg-slate-50 text-slate-700 ring-slate-600/20 dark:bg-slate-900/30 dark:text-slate-300 dark:ring-slate-500/30'
+  if (s === 'firing') return 'bg-danger-50 text-danger-700 ring-danger-600/20 dark:bg-danger-900/30 dark:text-danger-300 dark:ring-danger-500/30'
+  if (s === 'resolved') return 'bg-success-50 text-success-700 ring-success-600/20 dark:bg-success-900/30 dark:text-success-300 dark:ring-success-500/30'
+  if (s === 'manual_resolved') return 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-900/30 dark:text-gray-300 dark:ring-gray-500/30'
   return 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-900/30 dark:text-gray-300 dark:ring-gray-500/30'
 }
 
@@ -359,7 +359,7 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
 </script>
 
 <template>
-  <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
+  <div class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
     <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
       <div>
         <h3 class="text-sm font-bold text-gray-900 dark:text-white">{{ t('admin.ops.alertEvents.title') }}</h3>
@@ -427,7 +427,7 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
                   v-if="row.email_sent"
                   name="checkCircle"
                   size="xs"
-                  class="text-green-600 dark:text-green-400"
+                  class="text-success-600 dark:text-success-400"
                 />
                 <Icon
                   v-else
@@ -518,7 +518,7 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
                     v-if="row.email_sent"
                     name="checkCircle"
                     size="sm"
-                    class="text-green-600 dark:text-green-400"
+                    class="text-success-600 dark:text-success-400"
                   />
                   <Icon
                     v-else

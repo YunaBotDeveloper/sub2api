@@ -18,7 +18,7 @@
         </RouterLink>
         <RouterLink
           to="/login"
-          class="inline-flex flex-shrink-0 items-center justify-center rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-primary-600/20 transition hover:bg-primary-700"
+          class="inline-flex flex-shrink-0 items-center justify-center rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-700"
         >
           {{ t('home.login') }}
         </RouterLink>
@@ -32,7 +32,7 @@
 
       <section
         v-else-if="loadError"
-        class="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200"
+        class="rounded-lg border border-danger-200 bg-danger-50 p-6 text-danger-700 dark:border-danger-500/30 dark:bg-danger-500/10 dark:text-danger-200"
       >
         <h1 class="text-lg font-semibold">{{ t('legal.loadFailed') }}</h1>
         <p class="mt-2 text-sm">{{ t('legal.retryLater') }}</p>

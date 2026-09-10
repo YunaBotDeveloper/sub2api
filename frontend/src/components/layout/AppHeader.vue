@@ -77,7 +77,7 @@
           </span>
           <span
             v-if="frozenBalance > 0"
-            class="rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-200"
+            class="rounded-full bg-warning-100 px-1.5 py-0.5 text-xs font-medium text-warning-700 dark:bg-warning-900/40 dark:text-warning-200"
           >
             {{ balanceFrozenLabel }}
           </span>
@@ -90,7 +90,7 @@
             </div>
             <div class="mt-2 flex items-center justify-between">
               <span class="text-gray-500 dark:text-dark-400">{{ balanceFrozenText }}</span>
-              <span class="font-medium text-amber-700 dark:text-amber-200">{{ formatHeaderMoney(frozenBalance) }}</span>
+              <span class="font-medium text-warning-700 dark:text-warning-200">{{ formatHeaderMoney(frozenBalance) }}</span>
             </div>
             <div class="mt-2 border-t border-gray-100 pt-2 dark:border-dark-700">
               <div class="flex items-center justify-between">
@@ -108,7 +108,7 @@
             class="flex items-center gap-2 rounded-xl p-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-dark-800"
             :aria-label="t('common.userMenu')"
           >
-            <div class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-sm font-medium text-white shadow-sm">
+            <div class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-primary-500 text-sm font-medium text-white shadow-sm">
               <img
                 v-if="avatarUrl"
                 :src="avatarUrl"
@@ -147,7 +147,7 @@
                 <div class="text-sm font-semibold text-primary-600 dark:text-primary-400">
                   {{ formatHeaderMoney(availableBalance) }}
                 </div>
-                <div v-if="frozenBalance > 0" class="mt-1 text-xs text-amber-600 dark:text-amber-300">
+                <div v-if="frozenBalance > 0" class="mt-1 text-xs text-warning-600 dark:text-warning-300">
                   {{ balanceFrozenText }} {{ formatHeaderMoney(frozenBalance) }}
                 </div>
               </div>
@@ -223,7 +223,7 @@
               <div class="border-t border-gray-100 py-1 dark:border-dark-700">
                 <button
                   @click="handleLogout"
-                  class="dropdown-item w-full text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                  class="dropdown-item w-full text-danger-600 hover:bg-danger-50 dark:text-danger-400 dark:hover:bg-danger-900/20"
                 >
                   <svg
                     class="h-4 w-4"

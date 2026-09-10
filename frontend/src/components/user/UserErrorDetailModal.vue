@@ -9,7 +9,7 @@
     </div>
 
     <!-- Error state -->
-    <div v-else-if="loadError" class="py-8 text-center text-sm text-red-500">
+    <div v-else-if="loadError" class="py-8 text-center text-sm text-danger-500">
       {{ t('usage.errors.detail.loadFailed') }}
     </div>
 

@@ -112,10 +112,10 @@ watch(
 // Label background colors
 const labelClass = computed(() => {
   const colors = {
-    indigo: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
-    emerald: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
-    purple: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
-    amber: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+    indigo: 'bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300',
+    emerald: 'bg-success-100 text-success-700 dark:bg-success-900/40 dark:text-success-300',
+    purple: 'bg-gray-100 text-gray-700 dark:bg-gray-900/40 dark:text-gray-300',
+    amber: 'bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-300'
   }
   return colors[props.color]
 })
@@ -132,18 +132,18 @@ const labelSizeClass = computed(() =>
 const barClass = computed(() => {
   if (props.remainingCapacity) {
     if (props.utilization <= 20) {
-      return 'bg-red-500'
+      return 'bg-danger-500'
     } else if (props.utilization <= 50) {
-      return 'bg-amber-500'
+      return 'bg-warning-500'
     }
-    return 'bg-green-500'
+    return 'bg-success-500'
   }
   if (props.utilization >= 90) {
-    return 'bg-red-500'
+    return 'bg-danger-500'
   } else if (props.utilization >= 75) {
-    return 'bg-amber-500'
+    return 'bg-warning-500'
   } else {
-    return 'bg-green-500'
+    return 'bg-success-500'
   }
 })
 
@@ -151,16 +151,16 @@ const barClass = computed(() => {
 const textClass = computed(() => {
   if (props.remainingCapacity) {
     if (props.utilization <= 20) {
-      return 'text-red-600 dark:text-red-400'
+      return 'text-danger-600 dark:text-danger-400'
     } else if (props.utilization <= 50) {
-      return 'text-amber-600 dark:text-amber-400'
+      return 'text-warning-600 dark:text-warning-400'
     }
     return 'text-gray-600 dark:text-gray-400'
   }
   if (props.utilization >= 90) {
-    return 'text-red-600 dark:text-red-400'
+    return 'text-danger-600 dark:text-danger-400'
   } else if (props.utilization >= 75) {
-    return 'text-amber-600 dark:text-amber-400'
+    return 'text-warning-600 dark:text-warning-400'
   } else {
     return 'text-gray-600 dark:text-gray-400'
   }

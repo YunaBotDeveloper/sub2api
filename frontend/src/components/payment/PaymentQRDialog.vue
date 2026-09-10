@@ -4,7 +4,7 @@
     <div v-if="!success" class="flex flex-col items-center space-y-4">
       <!-- QR Code mode -->
       <template v-if="qrUrl">
-        <div class="rounded-2xl bg-white p-4 shadow-sm dark:bg-dark-800">
+        <div class="rounded-lg bg-white p-4 shadow-sm dark:bg-dark-800">
           <canvas ref="qrCanvas" class="mx-auto"></canvas>
         </div>
         <p v-if="scanHint" class="text-center text-sm text-gray-500 dark:text-gray-400">
@@ -23,7 +23,7 @@
       </template>
       <!-- Countdown -->
       <div v-if="expired" class="text-center">
-        <p class="text-lg font-medium text-red-500">{{ t('payment.qr.expired') }}</p>
+        <p class="text-lg font-medium text-danger-500">{{ t('payment.qr.expired') }}</p>
       </div>
       <div v-else class="text-center">
         <p class="text-sm text-gray-500 dark:text-gray-400">{{ qrUrl ? t('payment.qr.expiresIn') : '' }}</p>
@@ -33,8 +33,8 @@
     </div>
     <!-- Success State -->
     <div v-else class="flex flex-col items-center space-y-4 py-4">
-      <div class="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-        <Icon name="check" size="lg" class="text-green-500" />
+      <div class="flex h-16 w-16 items-center justify-center rounded-full bg-success-100 dark:bg-success-900/30">
+        <Icon name="check" size="lg" class="text-success-500" />
       </div>
       <p class="text-lg font-bold text-gray-900 dark:text-white">{{ t('payment.result.success') }}</p>
       <div v-if="paidOrder" class="w-full rounded-xl bg-gray-50 p-4 dark:bg-dark-800">

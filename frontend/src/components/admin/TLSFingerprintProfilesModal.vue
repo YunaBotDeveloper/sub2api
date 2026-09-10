@@ -70,7 +70,7 @@
                 <Icon
                   :name="profile.enable_grease ? 'check' : 'lock'"
                   size="sm"
-                  :class="profile.enable_grease ? 'text-green-500' : 'text-gray-400'"
+                  :class="profile.enable_grease ? 'text-success-500' : 'text-gray-400'"
                 />
               </td>
               <td class="px-3 py-2">
@@ -99,7 +99,7 @@
                   </button>
                   <button
                     @click="handleDelete(profile)"
-                    class="p-1 text-gray-500 hover:text-red-600 dark:hover:text-red-400"
+                    class="p-1 text-gray-500 hover:text-danger-600 dark:hover:text-danger-400"
                     :title="t('common.delete')"
                   >
                     <Icon name="trash" size="sm" />
