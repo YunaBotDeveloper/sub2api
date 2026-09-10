@@ -5,10 +5,17 @@ import { dirname, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const currentDir = dirname(fileURLToPath(import.meta.url));
-const groupsViewSource = readFileSync(
-  resolve(currentDir, "../GroupsView.vue"),
-  "utf8",
-);
+// GroupsView 已按 section 拆分（openspec Phase 3），断言覆盖父视图 + groups/ 子组件
+const groupsViewSource = [
+  "../GroupsView.vue",
+  "../groups/GroupCreateModal.vue",
+  "../groups/GroupEditModal.vue",
+  "../groups/GroupSortOrderModal.vue",
+  "../groups/GroupCompositeRoutesModal.vue",
+  "../groups/useGroupsView.ts",
+]
+  .map((file) => readFileSync(resolve(currentDir, file), "utf8"))
+  .join("\n");
 
 describe("groups model allowlist layout", () => {
   it("keeps the toolbar outside of the scrolling list content", () => {
