@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"io"
 	"net/http"
-	"strings"
 	"testing"
 
 	"github.com/klauspost/compress/zstd"
@@ -18,24 +17,6 @@ func newCompressionTestRequest(t *testing.T, body []byte) *http.Request {
 	req, err := http.NewRequest(http.MethodPost, "https://chatgpt.com/backend-api/codex/responses", bytes.NewReader(body))
 	require.NoError(t, err)
 	return req
-}
-
-// decodeRecordedUpstreamBody 与 testutil.DecodeUpstreamRequestBody 同义，供本包内读取
-// req.Body 的上游 mock 使用。不能直接复用 testutil：该包 import service，会成环。
-func decodeRecordedUpstreamBody(contentEncoding string, wire []byte) []byte {
-	if !strings.EqualFold(strings.TrimSpace(contentEncoding), "zstd") || len(wire) == 0 {
-		return wire
-	}
-	dec, err := zstd.NewReader(bytes.NewReader(wire))
-	if err != nil {
-		return wire
-	}
-	defer dec.Close()
-	plain, err := io.ReadAll(dec)
-	if err != nil {
-		return wire
-	}
-	return plain
 }
 
 func decodeZstd(t *testing.T, r io.Reader) []byte {
