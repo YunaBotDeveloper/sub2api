@@ -608,6 +608,9 @@ func (s *OpenAIGatewayService) buildUpstreamRequestOpenAIPassthrough(
 	// DeepSeek / Kimi 原生 Responses 端点为无状态实现（见 normalizeDeepSeekResponsesRequestBody）。
 	body = normalizeDeepSeekResponsesRequestBody(account, body)
 
+	// 账号绑定时区，理由见 applyCodexEnvironmentContextTimezone 与 buildUpstreamRequest。
+	body = applyCodexEnvironmentContextTimezone(account, body, time.Now())
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, targetURL, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
@@ -727,6 +730,9 @@ func (s *OpenAIGatewayService) buildUpstreamRequestOpenAIPassthrough(
 	applyOpenAICodexBetaFeatures(c, account, req.Header)
 	setOpenAICodexRoutingHintFromBody(req.Header, account, body)
 	logOpenAIRoutingDiagnosticsFromBody(ctx, account, "http_passthrough", req.Header, body, "not_applicable")
+
+	// 压缩必须是最后一步，理由见 applyCodexRequestCompression 与 buildUpstreamRequest。
+	applyCodexRequestCompression(req, account, body)
 
 	return req, nil
 }
@@ -1920,6 +1926,8 @@ func (s *OpenAIGatewayService) handleStreamingResponsePassthrough(
 	// flushPending 表示已写入但未到 SSE 空行边界的脏状态；defer 兜底函数退出前的残留，断连后不再 Flush。
 	flushPending := false
 	pendingSSEEventType := ""
+	// 每次上游尝试一份：记录本次流内是否出现过真实输出，用于识别零输出的 response.incomplete。
+	emptyIncomplete := &codexEmptyIncompleteTracker{}
 	flushPendingOutput := func() {
 		if clientDisconnected || !flushPending {
 			return
@@ -2025,6 +2033,14 @@ func (s *OpenAIGatewayService) handleStreamingResponsePassthrough(
 				}
 			}
 			eventType := effectiveOpenAISSEEventType(dataBytes, rawEventType)
+			// 零输出的 response.incomplete 就地改写成 response.failed，交给既有失败分支处理。
+			// line 与 trimmedData 必须同步更新：本循环把 line 作为写回客户端的原文。
+			if rewrittenType, rewritten := rewriteCodexEmptyIncompleteTerminal(emptyIncomplete, account, eventType, dataBytes); rewrittenType != eventType {
+				eventType = rewrittenType
+				dataBytes = rewritten
+				trimmedData = strings.TrimSpace(string(rewritten))
+				line = "data: " + string(rewritten)
+			}
 			if codexFailureTerminal && sawBareError && !sawResponseFailed && eventType != "response.failed" {
 				suppressCurrentEvent = true
 			}
@@ -2341,6 +2357,15 @@ func (s *OpenAIGatewayService) handleNonStreamingResponsePassthrough(
 func (s *OpenAIGatewayService) handlePassthroughSSEToJSON(resp *http.Response, c *gin.Context, account *Account, body []byte, originalModel string, mappedModel string) (*openaiNonStreamingResultPassthrough, error) {
 	bodyText := string(body)
 	terminalType, terminalPayload, terminalOK := extractOpenAISSETerminalEvent(bodyText)
+	// 零输出的 response.incomplete 在这里同样改写成 response.failed，非流式路径才能
+	// 走下面既有的换号分支，而不是把一个空回复当成功交付。
+	if terminalOK {
+		if rewrittenType, rewritten := rewriteCodexEmptyIncompleteTerminal(
+			&codexEmptyIncompleteTracker{}, account, terminalType, terminalPayload,
+		); rewrittenType != terminalType {
+			terminalType, terminalPayload = rewrittenType, rewritten
+		}
+	}
 	if terminalOK && (terminalType == "response.failed" || terminalType == "error") {
 		msg := extractOpenAISSEErrorMessage(terminalPayload)
 		if msg == "" {

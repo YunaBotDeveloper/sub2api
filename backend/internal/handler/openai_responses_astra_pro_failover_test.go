@@ -12,6 +12,7 @@ import (
 
 	middleware2 "github.com/Wei-Shaw/sub2api/internal/server/middleware"
 	"github.com/Wei-Shaw/sub2api/internal/service"
+	"github.com/Wei-Shaw/sub2api/internal/testutil"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 	"github.com/tidwall/gjson"
@@ -54,7 +55,9 @@ func newAstraProCapturedUpstream(answers ...*http.Response) *astraProCapturedUps
 func (u *astraProCapturedUpstream) Do(req *http.Request, _ string, accountID int64, _ int) (*http.Response, error) {
 	u.mu.Lock()
 	defer u.mu.Unlock()
-	body, _ := io.ReadAll(req.Body)
+	// Codex 出站体走 zstd（service/openai_codex_request_compression.go），断言按明文进行。
+	wire, _ := io.ReadAll(req.Body)
+	body := testutil.DecodeUpstreamRequestBody(req.Header.Get("Content-Encoding"), wire)
 	u.urls = append(u.urls, req.URL.String())
 	u.accountIDs = append(u.accountIDs, accountID)
 	u.bodies = append(u.bodies, body)

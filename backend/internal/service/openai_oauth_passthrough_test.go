@@ -69,10 +69,13 @@ func (u *httpUpstreamRecorder) Do(req *http.Request, proxyURL string, accountID 
 	u.lastProxyURL = proxyURL
 	if req != nil && req.Body != nil {
 		b, _ := io.ReadAll(req.Body)
-		u.lastBody = b
-		u.bodies = append(u.bodies, append([]byte(nil), b...))
 		_ = req.Body.Close()
 		req.Body = io.NopCloser(bytes.NewReader(b))
+		// Codex 出站体走 zstd（openai_codex_request_compression.go）。断言一律针对明文，
+		// 故在此解码；req.Body 仍还原成线上字节，需要检查编码本身的用例不受影响。
+		plain := decodeRecordedUpstreamBody(req.Header.Get("Content-Encoding"), b)
+		u.lastBody = plain
+		u.bodies = append(u.bodies, append([]byte(nil), plain...))
 	}
 	u.requests = append(u.requests, req)
 	if u.err != nil {
