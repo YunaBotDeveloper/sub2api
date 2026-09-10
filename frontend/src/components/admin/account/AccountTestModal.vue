@@ -281,6 +281,7 @@
       </div>
 
       <!-- Image Lightbox -->
+      <!-- design-system: raw overlay kept — full-screen image lightbox, not a titled dialog -->
       <Teleport to="body">
         <Transition name="fade">
           <div

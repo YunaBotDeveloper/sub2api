@@ -155,6 +155,7 @@
                   <Icon name="copy" size="sm" />
                 </button>
                 <!-- 右键展开格式选择菜单 -->
+                <!-- design-system: raw overlay kept — anchored context menu, not a dialog -->
                 <div
                   v-if="copyMenuProxyId === row.id"
                   class="absolute left-0 top-full z-50 mt-1 w-auto min-w-[180px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-500 dark:bg-dark-700"
@@ -896,33 +897,18 @@
         </div>
 
         <div class="max-h-80 overflow-auto rounded-lg border border-gray-200 dark:border-dark-600">
-          <table class="min-w-full divide-y divide-gray-200 text-sm dark:divide-dark-700">
-            <thead class="bg-gray-50 text-xs uppercase text-gray-500 dark:bg-dark-800 dark:text-dark-400">
-              <tr>
-                <th class="whitespace-nowrap px-3 py-2 text-left">{{ t('admin.proxies.qualityTableTarget') }}</th>
-                <th class="whitespace-nowrap px-3 py-2 text-left">{{ t('admin.proxies.qualityTableStatus') }}</th>
-                <th class="whitespace-nowrap px-3 py-2 text-left">HTTP</th>
-                <th class="whitespace-nowrap px-3 py-2 text-left">{{ t('admin.proxies.qualityTableLatency') }}</th>
-                <th class="px-3 py-2 text-left">{{ t('admin.proxies.qualityTableMessage') }}</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200 bg-white dark:divide-dark-700 dark:bg-dark-900">
-              <tr v-for="item in qualityReport.items" :key="item.target">
-                <td class="whitespace-nowrap px-3 py-2 text-gray-900 dark:text-white">{{ qualityTargetLabel(item.target) }}</td>
-                <td class="whitespace-nowrap px-3 py-2">
-                  <span class="badge whitespace-nowrap" :class="qualityStatusClass(item.status)">{{ qualityStatusLabel(item.status) }}</span>
-                </td>
-                <td class="whitespace-nowrap px-3 py-2 text-gray-600 dark:text-gray-300">{{ item.http_status ?? '-' }}</td>
-                <td class="whitespace-nowrap px-3 py-2 text-gray-600 dark:text-gray-300">
-                  {{ typeof item.latency_ms === 'number' ? `${item.latency_ms}ms` : '-' }}
-                </td>
-                <td class="px-3 py-2 text-gray-600 dark:text-gray-300">
-                  <span>{{ item.message || '-' }}</span>
-                  <span v-if="item.cf_ray" class="ml-1 text-xs text-gray-400">(cf-ray: {{ item.cf_ray }})</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <DataTable :columns="qualityReportColumns" :data="qualityReport.items" row-key="target">
+            <template #cell-target="{ value }">
+              <span class="text-gray-900 dark:text-white">{{ qualityTargetLabel(value) }}</span>
+            </template>
+            <template #cell-status="{ value }">
+              <span class="badge whitespace-nowrap" :class="qualityStatusClass(value)">{{ qualityStatusLabel(value) }}</span>
+            </template>
+            <template #cell-message="{ row }">
+              <span>{{ row.message || '-' }}</span>
+              <span v-if="row.cf_ray" class="ml-1 text-meta text-fg-subtle">(cf-ray: {{ row.cf_ray }})</span>
+            </template>
+          </DataTable>
         </div>
       </div>
       <template #footer>
@@ -941,34 +927,23 @@
       width="normal"
       @close="closeAccountsModal"
     >
-      <div v-if="accountsLoading" class="flex items-center justify-center py-8 text-sm text-gray-500">
-        <Icon name="refresh" size="md" class="mr-2 animate-spin" />
-        {{ t('common.loading') }}
-      </div>
-      <div v-else-if="proxyAccounts.length === 0" class="py-6 text-center text-sm text-gray-500">
-        {{ t('admin.proxies.accountsEmpty') }}
-      </div>
-      <div v-else class="max-h-80 overflow-auto">
-        <table class="min-w-full divide-y divide-gray-200 text-sm dark:divide-dark-700">
-          <thead class="bg-gray-50 text-xs uppercase text-gray-500 dark:bg-dark-800 dark:text-dark-400">
-            <tr>
-              <th class="px-4 py-2 text-left">{{ t('admin.proxies.accountName') }}</th>
-              <th class="px-4 py-2 text-left">{{ t('admin.accounts.columns.platformType') }}</th>
-              <th class="px-4 py-2 text-left">{{ t('admin.proxies.accountNotes') }}</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200 bg-white dark:divide-dark-700 dark:bg-dark-900">
-            <tr v-for="account in proxyAccounts" :key="account.id">
-              <td class="px-4 py-2 font-medium text-gray-900 dark:text-white">{{ account.name }}</td>
-              <td class="px-4 py-2">
-                <PlatformTypeBadge :platform="account.platform" :type="account.type" />
-              </td>
-              <td class="px-4 py-2 text-gray-600 dark:text-gray-300">
-                {{ account.notes || '-' }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="max-h-80 overflow-auto">
+        <DataTable
+          :columns="accountColumns"
+          :data="proxyAccounts"
+          row-key="id"
+          :loading="accountsLoading"
+        >
+          <template #cell-name="{ value }">
+            <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+          </template>
+          <template #cell-platform="{ row }">
+            <PlatformTypeBadge :platform="row.platform" :type="row.type" />
+          </template>
+          <template #empty>
+            <span class="text-body text-fg-muted">{{ t('admin.proxies.accountsEmpty') }}</span>
+          </template>
+        </DataTable>
       </div>
       <template #footer>
         <div class="flex justify-end">
@@ -1025,6 +1000,24 @@ const columns = computed<Column[]>(() => [
   { key: 'created_at', label: t('admin.proxies.columns.createdAt'), sortable: true },
   { key: 'status', label: t('admin.proxies.columns.status'), sortable: true },
   { key: 'actions', label: t('admin.proxies.columns.actions'), sortable: false }
+])
+
+const qualityReportColumns = computed<Column[]>(() => [
+  { key: 'target', label: t('admin.proxies.qualityTableTarget') },
+  { key: 'status', label: t('admin.proxies.qualityTableStatus') },
+  { key: 'http_status', label: 'HTTP', formatter: (value) => String(value ?? '-') },
+  {
+    key: 'latency_ms',
+    label: t('admin.proxies.qualityTableLatency'),
+    formatter: (value) => (typeof value === 'number' ? `${value}ms` : '-')
+  },
+  { key: 'message', label: t('admin.proxies.qualityTableMessage') }
+])
+
+const accountColumns = computed<Column[]>(() => [
+  { key: 'name', label: t('admin.proxies.accountName') },
+  { key: 'platform', label: t('admin.accounts.columns.platformType') },
+  { key: 'notes', label: t('admin.proxies.accountNotes'), formatter: (value) => value || '-' }
 ])
 
 // Filter options

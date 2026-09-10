@@ -29,6 +29,7 @@ describe('TotpLoginModal', () => {
         tempToken: 'temp-token',
         userEmailMasked: 'u***@example.com',
       },
+      global: { stubs: { Teleport: true } },
     })
 
     ;(wrapper.vm as unknown as { setError: (message: string) => void }).setError('Invalid code')

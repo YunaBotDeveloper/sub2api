@@ -57,94 +57,71 @@
     </div>
   </div>
 
-  <Teleport to="body">
-    <Transition name="agreement-fade">
-      <div
-        v-if="dialogVisible"
-        class="fixed inset-0 z-[140] flex items-center justify-center overflow-y-auto bg-gray-950/60 p-4"
-      >
-        <div class="w-full max-w-[600px] overflow-hidden rounded-lg bg-white shadow-2xl ring-1 ring-black/10 dark:bg-dark-900 dark:ring-white/10">
-          <div class="border-b border-gray-100 bg-white px-6 py-6 dark:border-dark-800 dark:bg-dark-900">
-            <div class="flex items-start gap-4">
-              <span class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-700 ring-1 ring-primary-100 dark:bg-primary-500/10 dark:text-primary-300 dark:ring-primary-500/20">
-                <Icon name="shield" size="md" />
-              </span>
-              <div class="min-w-0 flex-1">
-                <div class="flex flex-wrap items-center gap-2">
-                  <h2 class="text-xl font-bold tracking-normal text-gray-950 dark:text-white">
-                    {{ t('legal.loginAgreementPrompt.dialogTitle') }}
-                  </h2>
-                  <span
-                    v-if="updatedAt"
-                    class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600 dark:bg-dark-800 dark:text-dark-300"
-                  >
-                    {{ updatedAt }}
-                  </span>
-                </div>
-                <p class="mt-2 text-sm leading-6 text-gray-600 dark:text-dark-300">
-                  {{
-                    t('legal.loginAgreementPrompt.dialogDescription', {
-                      date: updatedAt || t('legal.loginAgreementPrompt.recently'),
-                    })
-                  }}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="max-h-[58vh] overflow-y-auto px-6 py-5">
-            <div class="mb-3 flex items-center justify-between gap-3">
-              <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ t('legal.loginAgreementPrompt.relatedDocuments') }}</p>
-            </div>
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <RouterLink
-                v-for="(doc, index) in documents"
-                :key="doc.id || doc.title"
-                :to="documentRoute(doc)"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="group flex min-h-[72px] w-full items-center gap-3 rounded-xl border border-gray-200 bg-gray-50/70 px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-primary-200 hover:bg-white dark:border-dark-700 dark:bg-dark-800/70 dark:hover:border-primary-500/30 dark:hover:bg-dark-800"
-              >
-                <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-white text-gray-700 ring-1 ring-gray-200 transition group-hover:bg-primary-50 group-hover:text-primary-700 group-hover:ring-primary-100 dark:bg-dark-900 dark:text-dark-200 dark:ring-dark-700 dark:group-hover:bg-primary-500/10 dark:group-hover:text-primary-200 dark:group-hover:ring-primary-500/20">
-                  <Icon :name="documentIcon(index, doc.title)" size="sm" />
-                </span>
-                <span class="min-w-0 flex-1">
-                  <span class="block truncate text-sm font-semibold text-gray-950 dark:text-white">{{ doc.title }}</span>
-                </span>
-                <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-gray-400 transition group-hover:bg-primary-50 group-hover:text-primary-600 dark:group-hover:bg-primary-500/10 dark:group-hover:text-primary-300">
-                  <Icon name="externalLink" size="sm" />
-                </span>
-              </RouterLink>
-            </div>
-          </div>
-
-          <div class="border-t border-gray-100 bg-gray-50/80 px-6 py-4 dark:border-dark-800 dark:bg-dark-950/60">
-            <div class="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                class="rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-200 dark:hover:bg-dark-700"
-                @click="emit('reject')"
-              >
-                {{ t('legal.loginAgreementPrompt.reject') }}
-              </button>
-              <button
-                type="button"
-                class="rounded-xl bg-primary-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-700"
-                @click="emit('accept')"
-              >
-                {{ t('legal.loginAgreementPrompt.accept') }}
-              </button>
-            </div>
-          </div>
-        </div>
+  <!-- 用户必须明确接受或拒绝：不提供关闭按钮，也不响应 Escape -->
+  <BaseDialog
+    :show="dialogVisible"
+    :title="t('legal.loginAgreementPrompt.dialogTitle')"
+    :z-index="140"
+    :show-close-button="false"
+    :close-on-escape="false"
+    @close="emit('reject')"
+  >
+    <div class="flex items-start gap-3">
+      <Icon name="shield" size="md" class="mt-0.5 flex-shrink-0 text-accent" />
+      <div class="min-w-0 flex-1">
+        <span
+          v-if="updatedAt"
+          class="badge badge-gray"
+        >
+          {{ updatedAt }}
+        </span>
+        <p class="mt-2 text-body leading-6 text-fg-muted">
+          {{
+            t('legal.loginAgreementPrompt.dialogDescription', {
+              date: updatedAt || t('legal.loginAgreementPrompt.recently'),
+            })
+          }}
+        </p>
       </div>
-    </Transition>
-  </Teleport>
+    </div>
+
+    <p class="mb-3 mt-5 text-label font-semibold text-fg">{{ t('legal.loginAgreementPrompt.relatedDocuments') }}</p>
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <RouterLink
+        v-for="(doc, index) in documents"
+        :key="doc.id || doc.title"
+        :to="documentRoute(doc)"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group flex min-h-[72px] w-full items-center gap-3 rounded-lg border border-border bg-surface-sunken px-4 py-3 text-left transition hover:border-border-strong hover:bg-surface"
+      >
+        <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-fg-muted transition group-hover:text-accent">
+          <Icon :name="documentIcon(index, doc.title)" size="sm" />
+        </span>
+        <span class="min-w-0 flex-1">
+          <span class="block truncate text-body font-semibold text-fg">{{ doc.title }}</span>
+        </span>
+        <Icon name="externalLink" size="sm" class="flex-shrink-0 text-fg-subtle transition group-hover:text-accent" />
+      </RouterLink>
+    </div>
+
+    <template #footer>
+      <div class="grid w-full grid-cols-2 gap-3">
+        <button type="button" class="btn btn-secondary" @click="emit('reject')">
+          {{ t('legal.loginAgreementPrompt.reject') }}
+        </button>
+        <button type="button" class="btn btn-primary" @click="emit('accept')">
+          {{ t('legal.loginAgreementPrompt.accept') }}
+        </button>
+      </div>
+    </template>
+  </BaseDialog>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import BaseDialog from '@/components/common/BaseDialog.vue'
 import Icon from '@/components/icons/Icon.vue'
 import type { LoginAgreementDocument } from '@/types'
 
@@ -214,26 +191,3 @@ function documentIcon(index: number, title: string): 'document' | 'shield' | 'gl
   return 'document'
 }
 </script>
-
-<style scoped>
-.agreement-fade-enter-active,
-.agreement-fade-leave-active {
-  transition: opacity 0.18s ease;
-}
-
-.agreement-fade-enter-from,
-.agreement-fade-leave-to {
-  opacity: 0;
-}
-
-.agreement-fade-enter-active > div,
-.agreement-fade-leave-active > div {
-  transition: transform 0.18s ease, opacity 0.18s ease;
-}
-
-.agreement-fade-enter-from > div,
-.agreement-fade-leave-to > div {
-  opacity: 0;
-  transform: translateY(8px) scale(0.98);
-}
-</style>

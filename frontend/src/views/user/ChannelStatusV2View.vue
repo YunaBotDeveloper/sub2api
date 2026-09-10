@@ -287,50 +287,38 @@
           </nav>
         </div>
         <div class="min-h-0 max-h-[min(52vh,520px)] overflow-auto p-4 sm:p-5">
-          <div v-if="activeTab === 'models'" class="table-container border-0">
-            <table class="table monitor-table min-w-[720px]">
-              <thead>
-                <tr>
-                  <th>{{ t('channelMonitorV2.table.platformModel') }}</th>
-                  <th>{{ t('channelMonitorV2.metrics.successRate') }}</th>
-                  <th>{{ t('channelMonitorV2.metrics.ttftP50') }}</th>
-                  <th v-if="showThroughput">{{ t('channelMonitorV2.metrics.tps') }}</th>
-                  <th>{{ t('channelMonitorV2.metrics.cacheRate') }}</th>
-                  <th v-if="showThroughput">{{ t('channelMonitorV2.metrics.rpm') }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="row in modelRows"
-                  :key="`${row.platform}:${row.model}`"
-                  class="cursor-pointer"
-                  @click="drillModel(row)"
-                >
-                  <td>
-                    <div class="flex items-center gap-2">
-                      <span :class="statusDot(row.health)" aria-hidden="true"></span>
-                      <div>
-                        <span class="block text-xs text-gray-500 dark:text-dark-400">{{ row.platform }}</span>
-                        <strong class="font-semibold text-gray-900 dark:text-white">
-                          {{ row.model === '__other__' ? t('channelMonitorV2.otherModels') : row.model }}
-                        </strong>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="block">{{ formatPercent(1 - row.metrics.error_rate) }}</span>
-                    <small class="text-xs text-gray-400">{{ t('channelMonitorV2.metrics.errorRateValue', { value: formatPercent(row.metrics.error_rate) }) }}</small>
-                  </td>
-                  <td>
-                    <span class="block">{{ formatMs(row.metrics.ttft.p50_ms) }}</span>
-                    <small class="text-xs text-gray-400">{{ latencyDetail(row.metrics.ttft) }}</small>
-                  </td>
-                  <td v-if="showThroughput" :title="exactTps(row.metrics.tpm)">{{ formatTps(row.metrics.tpm) }}</td>
-                  <td>{{ formatPercent(row.metrics.cache_rate) }}</td>
-                  <td v-if="showThroughput">{{ formatRate(row.metrics.rpm) }}</td>
-                </tr>
-              </tbody>
-            </table>
+          <div v-if="activeTab === 'models'">
+            <DataTable
+              v-if="modelRows.length"
+              :columns="modelColumns"
+              :data="modelRows"
+              :row-key="(row: MonitorModelRow) => `${row.platform}:${row.model}`"
+              clickable-rows
+              @row-click="drillModel"
+            >
+              <template #cell-model="{ row }">
+                <div class="flex items-center gap-2">
+                  <span :class="statusDot(row.health)" aria-hidden="true"></span>
+                  <div>
+                    <span class="block text-meta text-fg-muted">{{ row.platform }}</span>
+                    <strong class="font-semibold text-fg">
+                      {{ row.model === '__other__' ? t('channelMonitorV2.otherModels') : row.model }}
+                    </strong>
+                  </div>
+                </div>
+              </template>
+              <template #cell-success="{ row }">
+                <span class="block">{{ formatPercent(1 - row.metrics.error_rate) }}</span>
+                <small class="text-meta text-fg-subtle">{{ t('channelMonitorV2.metrics.errorRateValue', { value: formatPercent(row.metrics.error_rate) }) }}</small>
+              </template>
+              <template #cell-ttft="{ row }">
+                <span class="block">{{ formatMs(row.metrics.ttft.p50_ms) }}</span>
+                <small class="text-meta text-fg-subtle">{{ latencyDetail(row.metrics.ttft) }}</small>
+              </template>
+              <template #cell-tps="{ row }">
+                <span :title="exactTps(row.metrics.tpm)">{{ formatTps(row.metrics.tpm) }}</span>
+              </template>
+            </DataTable>
           </div>
 
           <div v-else-if="activeTab === 'errors'" class="space-y-3">
@@ -384,54 +372,37 @@
             </div>
           </div>
 
-          <div v-else class="table-container border-0">
-            <table class="table monitor-table min-w-[640px]">
-              <thead>
-                <tr>
-                  <th class="w-16">{{ t('channelMonitorV2.table.rank') }}</th>
-                  <th>{{ t('channelMonitorV2.table.user') }}</th>
-                  <th>{{ t('channelMonitorV2.metrics.successRate') }}</th>
-                  <th>{{ t('channelMonitorV2.metrics.ttftP50') }}</th>
-                  <th v-if="showThroughput">{{ t('channelMonitorV2.metrics.tps') }}</th>
-                  <th>{{ t('channelMonitorV2.metrics.cacheRate') }}</th>
-                  <th v-if="showThroughput">{{ t('channelMonitorV2.metrics.rpm') }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="row in userRows"
-                  :key="row.user_id || row.display_label"
-                  :class="row.is_self
-                    ? 'bg-primary-50 ring-1 ring-inset ring-primary-200/80 dark:bg-primary-900/25 dark:ring-primary-700/50'
-                    : ''"
-                >
-                  <td><MonitorRankBadge :rank="row.rank" /></td>
-                  <td>
-                    <strong
-                      class="font-semibold"
-                      :class="row.is_self ? 'text-primary-700 dark:text-primary-300' : 'text-gray-900 dark:text-white'"
-                    >
-                      {{ row.display_label }}
-                      <span
-                        v-if="row.is_self"
-                        class="badge badge-primary ml-2 !px-1.5 !py-0 text-[10px]"
-                      >{{ t('channelMonitorV2.currentUser') }}</span>
-                    </strong>
-                  </td>
-                  <td>
-                    <span class="block">{{ formatPercent(1 - row.metrics.error_rate) }}</span>
-                    <small class="text-xs text-gray-400">{{ t('channelMonitorV2.metrics.errorRateValue', { value: formatPercent(row.metrics.error_rate) }) }}</small>
-                  </td>
-                  <td>
-                    <span class="block">{{ formatMs(row.metrics.ttft.p50_ms) }}</span>
-                    <small class="text-xs text-gray-400">{{ latencyDetail(row.metrics.ttft) }}</small>
-                  </td>
-                  <td v-if="showThroughput" :title="exactTps(row.metrics.tpm)">{{ formatTps(row.metrics.tpm) }}</td>
-                  <td>{{ formatPercent(row.metrics.cache_rate) }}</td>
-                  <td v-if="showThroughput">{{ formatRate(row.metrics.rpm) }}</td>
-                </tr>
-              </tbody>
-            </table>
+          <div v-else>
+            <DataTable
+              v-if="userRows.length"
+              :columns="userColumns"
+              :data="userRows"
+              :row-key="(row: MonitorUserRow) => row.user_id || row.display_label"
+            >
+              <template #cell-rank="{ row }">
+                <MonitorRankBadge :rank="row.rank" />
+              </template>
+              <template #cell-user="{ row }">
+                <strong class="font-semibold" :class="row.is_self ? 'text-accent' : 'text-fg'">
+                  {{ row.display_label }}
+                  <span
+                    v-if="row.is_self"
+                    class="badge badge-primary ml-2 !px-1.5 !py-0 text-[10px]"
+                  >{{ t('channelMonitorV2.currentUser') }}</span>
+                </strong>
+              </template>
+              <template #cell-success="{ row }">
+                <span class="block">{{ formatPercent(1 - row.metrics.error_rate) }}</span>
+                <small class="text-meta text-fg-subtle">{{ t('channelMonitorV2.metrics.errorRateValue', { value: formatPercent(row.metrics.error_rate) }) }}</small>
+              </template>
+              <template #cell-ttft="{ row }">
+                <span class="block">{{ formatMs(row.metrics.ttft.p50_ms) }}</span>
+                <small class="text-meta text-fg-subtle">{{ latencyDetail(row.metrics.ttft) }}</small>
+              </template>
+              <template #cell-tps="{ row }">
+                <span :title="exactTps(row.metrics.tpm)">{{ formatTps(row.metrics.tpm) }}</span>
+              </template>
+            </DataTable>
           </div>
 
           <div v-if="tabLoading" class="empty-state py-10 text-sm text-gray-400">{{ t('common.loading') }}</div>
@@ -463,6 +434,8 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
+import DataTable from '@/components/common/DataTable.vue'
+import type { Column } from '@/components/common/types'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import Select from '@/components/common/Select.vue'
 import FilterMultiSelect from '@/features/channel-monitor-v2/FilterMultiSelect.vue'
@@ -532,6 +505,24 @@ const tabs = computed(() => {
   }
   return items
 })
+/** Shared metric columns; tps/rpm only when throughput is visible. */
+const metricColumns = computed<Column[]>(() => [
+  { key: 'success', label: t('channelMonitorV2.metrics.successRate') },
+  { key: 'ttft', label: t('channelMonitorV2.metrics.ttftP50') },
+  ...(showThroughput.value ? [{ key: 'tps', label: t('channelMonitorV2.metrics.tps') }] : []),
+  { key: 'cache', label: t('channelMonitorV2.metrics.cacheRate'), formatter: (_v, row) => formatPercent(row.metrics.cache_rate) },
+  ...(showThroughput.value ? [{ key: 'rpm', label: t('channelMonitorV2.metrics.rpm'), formatter: (_v: unknown, row: MonitorModelRow | MonitorUserRow) => formatRate(row.metrics.rpm) }] : []),
+])
+const modelColumns = computed<Column[]>(() => [
+  { key: 'model', label: t('channelMonitorV2.table.platformModel') },
+  ...metricColumns.value,
+])
+const userColumns = computed<Column[]>(() => [
+  { key: 'rank', label: t('channelMonitorV2.table.rank'), class: 'w-16' },
+  { key: 'user', label: t('channelMonitorV2.table.user') },
+  ...metricColumns.value,
+])
+
 const matrixGroupOptions = computed(() => [
   { value: 'platform' as MonitorMatrixGroupBy, label: t('channelMonitorV2.groupBy.platform') },
   { value: 'platform_group' as MonitorMatrixGroupBy, label: t('channelMonitorV2.groupBy.platformGroup') },

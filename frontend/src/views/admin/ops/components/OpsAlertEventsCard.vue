@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { useMediaQuery } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import Select from '@/components/common/Select.vue'
 import BaseDialog from '@/components/common/BaseDialog.vue'
+import DataTable from '@/components/common/DataTable.vue'
+import type { Column } from '@/components/common/types'
 import Icon from '@/components/icons/Icon.vue'
 import { opsAPI, type AlertEventsQuery } from '@/api/admin/ops'
 import type { AlertEvent } from '../types'
@@ -12,9 +13,6 @@ import { formatDateTime } from '../utils/opsFormatters'
 
 const { t } = useI18n()
 const appStore = useAppStore()
-
-// 与 DataTable 一致：< 768px 切换为卡片视图，避免宽表在移动端被截断。
-const isDesktopViewport = useMediaQuery('(min-width: 768px)')
 
 const PAGE_SIZE = 10
 
@@ -356,6 +354,23 @@ function formatStatusLabel(status: string | undefined): string {
 }
 
 const empty = computed(() => events.value.length === 0 && !loading.value)
+
+const columns = computed<Column[]>(() => [
+  { key: 'fired_at', label: t('admin.ops.alertEvents.table.time') },
+  { key: 'severity', label: t('admin.ops.alertEvents.table.severity') },
+  { key: 'platform', label: t('admin.ops.alertEvents.table.platform') },
+  { key: 'rule_id', label: t('admin.ops.alertEvents.table.ruleId'), class: 'font-mono' },
+  { key: 'title', label: t('admin.ops.alertEvents.table.title') },
+  { key: 'duration', label: t('admin.ops.alertEvents.table.duration') },
+  { key: 'dimensions', label: t('admin.ops.alertEvents.table.dimensions') },
+  { key: 'email_sent', label: t('admin.ops.alertEvents.table.email'), class: 'text-right' }
+])
+
+const historyColumns = computed<Column[]>(() => [
+  { key: 'fired_at', label: t('admin.ops.alertEvents.table.time') },
+  { key: 'status', label: t('admin.ops.alertEvents.table.status') },
+  { key: 'metric_value', label: t('admin.ops.alertEvents.table.metric') }
+])
 </script>
 
 <template>
@@ -398,142 +413,61 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
 
     <div v-else class="overflow-hidden rounded-xl border border-gray-200 dark:border-dark-700">
       <div class="max-h-[600px] overflow-y-auto" @scroll="onScroll">
-        <div v-if="!isDesktopViewport" class="divide-y divide-gray-100 dark:divide-dark-800">
-          <div
-            v-for="row in events"
-            :key="row.id"
-            class="cursor-pointer space-y-2 p-4 hover:bg-gray-50 dark:hover:bg-dark-700/50"
-            @click="openDetail(row)"
-          >
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="rounded-full px-2 py-1 text-[10px] font-bold" :class="severityBadgeClass(String(row.severity || ''))">
+        <DataTable :columns="columns" :data="events" row-key="id" clickable-rows :sticky-first-column="false" @rowClick="openDetail">
+          <template #cell-fired_at="{ row }">
+            {{ formatDateTime(row.fired_at || row.created_at) }}
+          </template>
+          <template #cell-severity="{ row }">
+            <div class="flex items-center gap-2">
+              <span class="rounded-full px-2 py-1 text-meta font-bold" :class="severityBadgeClass(String(row.severity || ''))">
                 {{ row.severity || '-' }}
               </span>
-              <span class="inline-flex items-center rounded-full px-2 py-1 text-[10px] font-bold ring-1 ring-inset" :class="statusBadgeClass(row.status)">
+              <span class="inline-flex items-center rounded-full px-2 py-1 text-meta font-bold ring-1 ring-inset" :class="statusBadgeClass(row.status)">
                 {{ formatStatusLabel(row.status) }}
               </span>
-              <span class="ml-auto text-[11px] text-gray-500 dark:text-gray-400">
-                {{ formatDateTime(row.fired_at || row.created_at) }}
-              </span>
             </div>
-            <div class="text-xs font-semibold text-gray-900 dark:text-white">{{ row.title || '-' }}</div>
-            <div v-if="row.description" class="line-clamp-2 text-[11px] text-gray-500 dark:text-gray-400">
-              {{ row.description }}
+          </template>
+          <template #cell-platform="{ row }">
+            {{ getDimensionString(row, 'platform') || '-' }}
+          </template>
+          <template #cell-rule_id="{ row }">#{{ row.rule_id }}</template>
+          <template #cell-title="{ row }">
+            <div class="min-w-[260px] max-w-[360px] whitespace-normal" :title="row.title || ''">
+              <div class="truncate text-label font-semibold text-fg">{{ row.title || '-' }}</div>
+              <div v-if="row.description" class="mt-0.5 line-clamp-2 text-meta text-fg-muted">
+                {{ row.description }}
+              </div>
             </div>
-            <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-gray-500 dark:text-gray-400">
-              <span><span class="font-mono">#{{ row.rule_id }}</span> · {{ formatDurationLabel(row) }}</span>
-              <span class="inline-flex items-center gap-1">
-                <Icon
-                  v-if="row.email_sent"
-                  name="checkCircle"
-                  size="xs"
-                  class="text-success-600 dark:text-success-400"
-                />
-                <Icon
-                  v-else
-                  name="ban"
-                  size="xs"
-                  class="text-gray-400 dark:text-gray-500"
-                />
+          </template>
+          <template #cell-duration="{ row }">
+            {{ formatDurationLabel(row) }}
+          </template>
+          <template #cell-dimensions="{ row }">
+            <span class="text-meta text-fg-muted">{{ formatDimensionsSummary(row) }}</span>
+          </template>
+          <template #cell-email_sent="{ row }">
+            <span
+              class="inline-flex items-center justify-end gap-1.5"
+              :title="row.email_sent ? t('admin.ops.alertEvents.table.emailSent') : t('admin.ops.alertEvents.table.emailIgnored')"
+            >
+              <Icon
+                v-if="row.email_sent"
+                name="checkCircle"
+                size="sm"
+                class="text-success-600 dark:text-success-400"
+              />
+              <Icon
+                v-else
+                name="ban"
+                size="sm"
+                class="text-gray-400 dark:text-gray-500"
+              />
+              <span class="text-meta font-bold text-fg-muted">
                 {{ row.email_sent ? t('admin.ops.alertEvents.table.emailSent') : t('admin.ops.alertEvents.table.emailIgnored') }}
               </span>
-            </div>
-            <div class="text-[11px] text-gray-400 dark:text-gray-500">{{ formatDimensionsSummary(row) }}</div>
-          </div>
-        </div>
-        <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
-          <thead class="sticky top-0 z-10 bg-gray-50 dark:bg-dark-900">
-            <tr>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                {{ t('admin.ops.alertEvents.table.time') }}
-              </th>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                {{ t('admin.ops.alertEvents.table.severity') }}
-              </th>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                {{ t('admin.ops.alertEvents.table.platform') }}
-              </th>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                {{ t('admin.ops.alertEvents.table.ruleId') }}
-              </th>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                {{ t('admin.ops.alertEvents.table.title') }}
-              </th>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                {{ t('admin.ops.alertEvents.table.duration') }}
-              </th>
-              <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                {{ t('admin.ops.alertEvents.table.dimensions') }}
-              </th>
-              <th class="px-4 py-3 text-right text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                {{ t('admin.ops.alertEvents.table.email') }}
-              </th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200 bg-white dark:divide-dark-700 dark:bg-dark-800">
-            <tr
-              v-for="row in events"
-              :key="row.id"
-              class="cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-700/50"
-              @click="openDetail(row)"
-              :title="row.title || ''"
-            >
-              <td class="whitespace-nowrap px-4 py-3 text-xs text-gray-600 dark:text-gray-300">
-                {{ formatDateTime(row.fired_at || row.created_at) }}
-              </td>
-              <td class="whitespace-nowrap px-4 py-3">
-                <div class="flex items-center gap-2">
-                  <span class="rounded-full px-2 py-1 text-[10px] font-bold" :class="severityBadgeClass(String(row.severity || ''))">
-                    {{ row.severity || '-' }}
-                  </span>
-                  <span class="inline-flex items-center rounded-full px-2 py-1 text-[10px] font-bold ring-1 ring-inset" :class="statusBadgeClass(row.status)">
-                    {{ formatStatusLabel(row.status) }}
-                  </span>
-                </div>
-              </td>
-              <td class="whitespace-nowrap px-4 py-3 text-xs text-gray-600 dark:text-gray-300">
-                {{ getDimensionString(row, 'platform') || '-' }}
-              </td>
-              <td class="whitespace-nowrap px-4 py-3 text-xs text-gray-600 dark:text-gray-300">
-                <span class="font-mono">#{{ row.rule_id }}</span>
-              </td>
-              <td class="min-w-[260px] px-4 py-3 text-xs text-gray-700 dark:text-gray-200">
-                <div class="font-semibold truncate max-w-[360px]">{{ row.title || '-' }}</div>
-                <div v-if="row.description" class="mt-0.5 line-clamp-2 text-[11px] text-gray-500 dark:text-gray-400">
-                  {{ row.description }}
-                </div>
-              </td>
-              <td class="whitespace-nowrap px-4 py-3 text-xs text-gray-600 dark:text-gray-300">
-                {{ formatDurationLabel(row) }}
-              </td>
-              <td class="whitespace-nowrap px-4 py-3 text-[11px] text-gray-500 dark:text-gray-400">
-                {{ formatDimensionsSummary(row) }}
-              </td>
-              <td class="whitespace-nowrap px-4 py-3 text-right text-xs">
-                <span
-                  class="inline-flex items-center justify-end gap-1.5"
-                  :title="row.email_sent ? t('admin.ops.alertEvents.table.emailSent') : t('admin.ops.alertEvents.table.emailIgnored')"
-                >
-                  <Icon
-                    v-if="row.email_sent"
-                    name="checkCircle"
-                    size="sm"
-                    class="text-success-600 dark:text-success-400"
-                  />
-                  <Icon
-                    v-else
-                    name="ban"
-                    size="sm"
-                    class="text-gray-400 dark:text-gray-500"
-                  />
-                  <span class="text-[11px] font-bold text-gray-600 dark:text-gray-300">
-                    {{ row.email_sent ? t('admin.ops.alertEvents.table.emailSent') : t('admin.ops.alertEvents.table.emailIgnored') }}
-                  </span>
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            </span>
+          </template>
+        </DataTable>
         <div v-if="loadingMore" class="flex items-center justify-center gap-2 py-3 text-xs text-gray-500 dark:text-gray-400">
           <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -660,32 +594,23 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
           <div v-else-if="history.length === 0" class="py-6 text-center text-xs text-gray-500 dark:text-gray-400">
             {{ t('admin.ops.alertEvents.detail.historyEmpty') }}
           </div>
-          <div v-else class="overflow-hidden rounded-lg border border-gray-100 dark:border-dark-700">
-            <table class="min-w-full divide-y divide-gray-100 dark:divide-dark-700">
-              <thead class="bg-gray-50 dark:bg-dark-900">
-                <tr>
-                  <th class="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('admin.ops.alertEvents.table.time') }}</th>
-                  <th class="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('admin.ops.alertEvents.table.status') }}</th>
-                  <th class="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('admin.ops.alertEvents.table.metric') }}</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-100 dark:divide-dark-700">
-                <tr v-for="it in history" :key="it.id" class="hover:bg-gray-50 dark:hover:bg-dark-700/50">
-                  <td class="px-3 py-2 text-xs text-gray-600 dark:text-gray-300">{{ formatDateTime(it.fired_at || it.created_at) }}</td>
-                  <td class="px-3 py-2 text-xs">
-                    <span class="inline-flex items-center rounded-full px-2 py-1 text-[10px] font-bold ring-1 ring-inset" :class="statusBadgeClass(it.status)">
-                      {{ formatStatusLabel(it.status) }}
-                    </span>
-                  </td>
-                  <td class="px-3 py-2 text-xs text-gray-600 dark:text-gray-300">
-                    <span v-if="typeof it.metric_value === 'number' && typeof it.threshold_value === 'number'">
-                      {{ it.metric_value.toFixed(2) }} / {{ it.threshold_value.toFixed(2) }}
-                    </span>
-                    <span v-else>-</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <div v-else class="overflow-hidden rounded-lg border border-border">
+            <DataTable :columns="historyColumns" :data="history" row-key="id" :sticky-first-column="false">
+              <template #cell-fired_at="{ row }">
+                {{ formatDateTime(row.fired_at || row.created_at) }}
+              </template>
+              <template #cell-status="{ row }">
+                <span class="inline-flex items-center rounded-full px-2 py-1 text-meta font-bold ring-1 ring-inset" :class="statusBadgeClass(row.status)">
+                  {{ formatStatusLabel(row.status) }}
+                </span>
+              </template>
+              <template #cell-metric_value="{ row }">
+                <span v-if="typeof row.metric_value === 'number' && typeof row.threshold_value === 'number'">
+                  {{ row.metric_value.toFixed(2) }} / {{ row.threshold_value.toFixed(2) }}
+                </span>
+                <span v-else>-</span>
+              </template>
+            </DataTable>
           </div>
         </div>
       </div>

@@ -106,32 +106,15 @@
 
         <div class="card p-6">
           <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('affiliate.invitees.title') }}</h3>
-          <div v-if="detail.invitees.length === 0" class="mt-4 rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500 dark:border-dark-700 dark:text-dark-400">
-            {{ t('affiliate.invitees.empty') }}
-          </div>
-          <div v-else class="mt-4 overflow-x-auto">
-            <table class="w-full min-w-[560px] text-left text-sm">
-              <thead>
-                <tr class="border-b border-gray-200 text-gray-500 dark:border-dark-700 dark:text-dark-400">
-                  <th class="px-3 py-2 font-medium">{{ t('affiliate.invitees.columns.email') }}</th>
-                  <th class="px-3 py-2 font-medium">{{ t('affiliate.invitees.columns.username') }}</th>
-                  <th class="px-3 py-2 font-medium text-right">{{ t('affiliate.invitees.columns.rebate') }}</th>
-                  <th class="px-3 py-2 font-medium">{{ t('affiliate.invitees.columns.joinedAt') }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="item in detail.invitees"
-                  :key="item.user_id"
-                  class="border-b border-gray-100 last:border-b-0 dark:border-dark-800"
-                >
-                  <td class="px-3 py-3 text-gray-900 dark:text-white">{{ item.email || '-' }}</td>
-                  <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ item.username || '-' }}</td>
-                  <td class="px-3 py-3 text-right font-medium text-success-600 dark:text-success-400">{{ formatCurrency(item.total_rebate) }}</td>
-                  <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ formatDateTime(item.created_at) || '-' }}</td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="mt-4">
+            <DataTable :columns="inviteeColumns" :data="detail.invitees" row-key="user_id">
+              <template #cell-total_rebate="{ row }">
+                <span class="font-medium text-success">{{ formatCurrency(row.total_rebate) }}</span>
+              </template>
+              <template #empty>
+                <p class="text-body text-fg-muted">{{ t('affiliate.invitees.empty') }}</p>
+              </template>
+            </DataTable>
           </div>
         </div>
       </template>
@@ -143,6 +126,8 @@
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppLayout from '@/components/layout/AppLayout.vue'
+import DataTable from '@/components/common/DataTable.vue'
+import type { Column } from '@/components/common/types'
 import Icon from '@/components/icons/Icon.vue'
 import userAPI from '@/api/user'
 import type { UserAffiliateDetail } from '@/types'
@@ -174,6 +159,13 @@ const formattedRebateRate = computed(() => {
   const rounded = Math.round(v * 100) / 100
   return Number.isInteger(rounded) ? String(rounded) : rounded.toString()
 })
+
+const inviteeColumns = computed<Column[]>(() => [
+  { key: 'email', label: t('affiliate.invitees.columns.email'), formatter: (v) => v || '-' },
+  { key: 'username', label: t('affiliate.invitees.columns.username'), formatter: (v) => v || '-' },
+  { key: 'total_rebate', label: t('affiliate.invitees.columns.rebate'), class: 'text-right' },
+  { key: 'created_at', label: t('affiliate.invitees.columns.joinedAt'), formatter: (v) => formatDateTime(v) || '-' }
+])
 
 function formatCount(value: number): string {
   return value.toLocaleString()
