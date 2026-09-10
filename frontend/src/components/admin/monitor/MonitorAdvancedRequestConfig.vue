@@ -28,7 +28,7 @@
           <button
             type="button"
             class="flex-none rounded p-1 text-gray-400 hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-500/10 dark:hover:text-danger-400"
-            :title="t('common.delete')"
+            :title="t('common.delete')" :aria-label="t('common.delete')"
             @click="removeRow(i)"
           >
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

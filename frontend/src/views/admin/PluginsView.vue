@@ -44,7 +44,7 @@
             type="button"
             class="btn btn-secondary"
             :disabled="loading"
-            :title="t('common.refresh')"
+            :title="t('common.refresh')" :aria-label="t('common.refresh')"
             @click="loadPlugins"
           >
             <Icon name="refresh" size="sm" />

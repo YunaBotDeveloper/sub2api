@@ -36,7 +36,7 @@
     <button
       type="button"
       class="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400"
-      :title="t('usage.ipGeo.refreshTitle')"
+      :title="t('usage.ipGeo.refreshTitle')" :aria-label="t('usage.ipGeo.refreshTitle')"
       @click="handleRefresh"
     >
       <Icon name="refresh" size="xs" />

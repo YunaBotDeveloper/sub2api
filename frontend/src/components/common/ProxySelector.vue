@@ -124,7 +124,7 @@
               @click.stop="handleTestProxy(proxy)"
               :disabled="testingProxyIds.has(proxy.id)"
               class="test-btn"
-              :title="t('admin.proxies.testConnection')"
+              :title="t('admin.proxies.testConnection')" :aria-label="t('admin.proxies.testConnection')"
             >
               <svg
                 v-if="testingProxyIds.has(proxy.id)"

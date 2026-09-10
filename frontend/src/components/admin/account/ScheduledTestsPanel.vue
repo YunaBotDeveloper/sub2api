@@ -204,14 +204,14 @@
                 <button
                   @click="startEdit(plan)"
                   class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-accent-50 hover:text-accent-500 dark:hover:bg-accent-900/20"
-                  :title="t('admin.scheduledTests.editPlan')"
+                  :title="t('admin.scheduledTests.editPlan')" :aria-label="t('admin.scheduledTests.editPlan')"
                 >
                   <Icon name="edit" size="sm" :stroke-width="2" />
                 </button>
                 <button
                   @click="confirmDeletePlan(plan)"
                   class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-danger-50 hover:text-danger-500 dark:hover:bg-danger-900/20"
-                  :title="t('admin.scheduledTests.deletePlan')"
+                  :title="t('admin.scheduledTests.deletePlan')" :aria-label="t('admin.scheduledTests.deletePlan')"
                 >
                   <Icon name="trash" size="sm" :stroke-width="2" />
                 </button>

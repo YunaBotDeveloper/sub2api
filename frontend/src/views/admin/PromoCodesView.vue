@@ -26,7 +26,7 @@
               @click="loadCodes"
               :disabled="loading"
               class="btn btn-secondary"
-              :title="t('common.refresh')"
+              :title="t('common.refresh')" :aria-label="t('common.refresh')"
             >
               <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
             </button>
@@ -59,7 +59,7 @@
                     ? 'text-success-500'
                     : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                 ]"
-                :title="copiedCode === value ? t('admin.promo.copied') : t('keys.copyToClipboard')"
+                :title="copiedCode === value ? t('admin.promo.copied') : t('keys.copyToClipboard')" :aria-label="copiedCode === value ? t('admin.promo.copied') : t('keys.copyToClipboard')"
               >
                 <Icon v-if="copiedCode !== value" name="copy" size="sm" :stroke-width="2" />
                 <svg v-else class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,28 +114,28 @@
               <button
                 @click="copyRegisterLink(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-success-50 hover:text-success-600 dark:hover:bg-success-900/20 dark:hover:text-success-400"
-                :title="t('admin.promo.copyRegisterLink')"
+                :title="t('admin.promo.copyRegisterLink')" :aria-label="t('admin.promo.copyRegisterLink')"
               >
                 <Icon name="link" size="sm" />
               </button>
               <button
                 @click="handleViewUsages(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-accent-50 hover:text-accent-600 dark:hover:bg-accent-900/20 dark:hover:text-accent-400"
-                :title="t('admin.promo.viewUsages')"
+                :title="t('admin.promo.viewUsages')" :aria-label="t('admin.promo.viewUsages')"
               >
                 <Icon name="eye" size="sm" />
               </button>
               <button
                 @click="handleEdit(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-dark-600 dark:hover:text-gray-300"
-                :title="t('common.edit')"
+                :title="t('common.edit')" :aria-label="t('common.edit')"
               >
                 <Icon name="edit" size="sm" />
               </button>
               <button
                 @click="handleDelete(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20 dark:hover:text-danger-400"
-                :title="t('common.delete')"
+                :title="t('common.delete')" :aria-label="t('common.delete')"
               >
                 <Icon name="trash" size="sm" />
               </button>

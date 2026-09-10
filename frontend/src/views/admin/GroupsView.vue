@@ -53,7 +53,7 @@
               @click="loadGroups"
               :disabled="loading"
               class="btn btn-secondary"
-              :title="t('common.refresh')"
+              :title="t('common.refresh')" :aria-label="t('common.refresh')"
             >
               <Icon
                 name="refresh"

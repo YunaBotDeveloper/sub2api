@@ -42,7 +42,7 @@
               @click="loadProxies"
               :disabled="loading"
               class="btn btn-secondary"
-              :title="t('common.refresh')"
+              :title="t('common.refresh')" :aria-label="t('common.refresh')"
             >
               <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
             </button>
@@ -148,7 +148,7 @@
                 <button
                   type="button"
                   class="rounded p-0.5 text-gray-400 hover:text-primary-600 dark:hover:text-primary-400"
-                  :title="t('admin.proxies.copyProxyUrl')"
+                  :title="t('admin.proxies.copyProxyUrl')" :aria-label="t('admin.proxies.copyProxyUrl')"
                   @click.stop="copyProxyUrl(row)"
                   @contextmenu.prevent="toggleCopyMenu(row.id)"
                 >

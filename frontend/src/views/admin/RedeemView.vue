@@ -32,7 +32,7 @@
               @click="loadCodes"
               :disabled="loading"
               class="btn btn-secondary"
-              :title="t('common.refresh')"
+              :title="t('common.refresh')" :aria-label="t('common.refresh')"
             >
               <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
             </button>
@@ -98,7 +98,7 @@
                     ? 'text-success-500'
                     : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                 ]"
-                :title="copiedCode === value ? t('admin.redeem.copied') : t('keys.copyToClipboard')"
+                :title="copiedCode === value ? t('admin.redeem.copied') : t('keys.copyToClipboard')" :aria-label="copiedCode === value ? t('admin.redeem.copied') : t('keys.copyToClipboard')"
               >
                 <Icon v-if="copiedCode !== value" name="copy" size="sm" :stroke-width="2" />
                 <svg v-else class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

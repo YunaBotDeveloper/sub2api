@@ -66,93 +66,77 @@
 
 
   <!-- Row 3: Per-platform breakdown -->
-  <div v-if="!isSimple && platformCards.length > 0" class="card p-4">
-    <div class="mb-3 flex items-center justify-between">
-      <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ t('dashboard.platformBreakdown') }}</h3>
-      <span class="text-xs text-gray-500 dark:text-gray-400">
+  <section v-if="!isSimple && platformCards.length > 0" class="card">
+    <div class="card-header flex items-center justify-between gap-3">
+      <h2 class="text-h2 font-semibold text-fg">{{ t('dashboard.platformBreakdown') }}</h2>
+      <span class="text-meta text-fg-muted">
         {{ t('dashboard.platformCount', { count: sortedPlatforms.length }) }}
       </span>
     </div>
-    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="card-body grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
       <div
         v-for="item in platformCards"
         :key="item.platform"
         :class="[
-          'rounded-lg border p-3',
-          item.isOther
-            ? 'border-dashed border-gray-300 bg-gray-50 dark:border-dark-500 dark:bg-dark-700/30'
-            : 'border-gray-200 dark:border-dark-600'
+          'rounded-lg border p-4',
+          item.isOther ? 'border-dashed border-border-strong bg-surface-sunken' : 'border-border'
         ]"
       >
-        <div class="flex items-center justify-between">
-          <span class="text-sm font-semibold text-gray-900 dark:text-white">
+        <div class="flex items-baseline justify-between gap-3">
+          <span class="truncate text-h3 font-semibold text-fg">
             {{ item.isOther ? t('dashboard.platformOther') : platformLabel(item.platform) }}
           </span>
-          <span class="font-mono text-sm text-gray-600 dark:text-gray-400" :title="t('dashboard.actual')">
+          <span class="shrink-0 font-mono tabular-nums text-body text-fg" :title="t('dashboard.actual')">
             ${{ formatCost(item.total_actual_cost) }}
           </span>
         </div>
-        <div class="mt-2 space-y-1 text-xs">
-          <div class="flex items-center justify-between">
-            <span class="text-gray-500 dark:text-gray-400">{{ t('dashboard.todayCost') }}</span>
-            <span class="font-mono text-gray-900 dark:text-white">${{ formatCost(item.today_actual_cost) }}</span>
+        <dl class="mt-3 space-y-1 text-label">
+          <div class="flex items-center justify-between gap-3">
+            <dt class="text-fg-muted">{{ t('dashboard.todayCost') }}</dt>
+            <dd class="font-mono tabular-nums text-fg">${{ formatCost(item.today_actual_cost) }}</dd>
           </div>
-          <div class="flex items-center justify-between">
-            <span class="text-gray-500 dark:text-gray-400">{{ t('dashboard.requests') }}</span>
-            <span class="font-mono text-gray-700 dark:text-gray-300">
+          <div class="flex items-center justify-between gap-3">
+            <dt class="text-fg-muted">{{ t('dashboard.requests') }}</dt>
+            <dd class="font-mono tabular-nums text-fg">
               {{ item.total_requests > 0 ? formatNumber(item.total_requests) : '-' }}
-            </span>
+            </dd>
           </div>
-          <div class="flex items-center justify-between">
-            <span class="text-gray-500 dark:text-gray-400">{{ t('dashboard.tokens') }}</span>
-            <span class="font-mono text-gray-700 dark:text-gray-300">
+          <div class="flex items-center justify-between gap-3">
+            <dt class="text-fg-muted">{{ t('dashboard.tokens') }}</dt>
+            <dd class="font-mono tabular-nums text-fg">
               {{ item.total_tokens > 0 ? formatTokens(item.total_tokens) : '-' }}
-            </span>
+            </dd>
           </div>
-        </div>
+        </dl>
 
         <!-- Quota 区：仅当 quota 配置存在、非 __other__ 且至少有一个窗口配了 limit 时显示 -->
-        <div v-if="hasAnyLimit(item.quota) && !item.isOther" class="mt-3 space-y-1.5 border-t border-gray-200 pt-2 dark:border-dark-700">
-          <p class="text-[10px] uppercase tracking-wide text-gray-400">
+        <div v-if="!item.isOther && quotaWindows(item.quota).length > 0" class="mt-3 space-y-2 border-t border-border pt-3">
+          <p class="text-meta font-medium uppercase tracking-wider text-fg-subtle">
             {{ t('dashboard.platformQuota.title') }}
           </p>
-          <template v-for="w in (['daily', 'weekly', 'monthly'] as const)" :key="w">
-            <div v-if="quotaVal(item.quota, `${w}_limit_usd`) != null" class="space-y-0.5">
-              <!-- limit=0：完全禁用 -->
-              <template v-if="(quotaVal(item.quota, `${w}_limit_usd`) as number) === 0">
-                <div class="flex items-center justify-between text-xs">
-                  <span class="text-gray-600 dark:text-gray-300">{{ t(`dashboard.platformQuota.${w}`) }}</span>
-                  <span class="font-mono text-danger-500">{{ t('dashboard.platformQuota.disabled') }}</span>
-                </div>
-                <div class="h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-700">
-                  <div class="h-full w-full rounded-full bg-danger-500" />
-                </div>
-              </template>
-              <!-- limit>0：正常用量进度条 -->
-              <template v-else>
-                <div class="flex items-center justify-between text-xs">
-                  <span class="text-gray-600 dark:text-gray-300">{{ t(`dashboard.platformQuota.${w}`) }}</span>
-                  <span class="font-mono text-gray-700 dark:text-gray-200">
-                    ${{ formatUsd((quotaVal(item.quota, `${w}_usage_usd`) as number) ?? 0) }} / ${{ formatUsd(quotaVal(item.quota, `${w}_limit_usd`) as number) }}
-                  </span>
-                </div>
-                <div class="h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-700">
-                  <div
-                    class="h-full rounded-full transition-all"
-                    :class="quotaBarClass(calcPercent((quotaVal(item.quota, `${w}_usage_usd`) as number) ?? 0, quotaVal(item.quota, `${w}_limit_usd`) as number))"
-                    :style="{ width: calcPercent((quotaVal(item.quota, `${w}_usage_usd`) as number) ?? 0, quotaVal(item.quota, `${w}_limit_usd`) as number) + '%' }"
-                  />
-                </div>
-                <p v-if="quotaVal(item.quota, `${w}_window_resets_at`)" class="text-[10px] text-gray-400">
-                  {{ t('dashboard.platformQuota.resetsAt', { time: formatResetTime(quotaVal(item.quota, `${w}_window_resets_at`) as string) }) }}
-                </p>
-              </template>
+          <div v-for="w in quotaWindows(item.quota)" :key="w.key" class="space-y-1">
+            <div class="flex items-center justify-between gap-3 text-label">
+              <span class="text-fg-muted">{{ t(`dashboard.platformQuota.${w.key}`) }}</span>
+              <!-- limit=0：完全禁用，用文字表达而不是单独一条红色进度条 -->
+              <span v-if="w.limit === 0" class="font-medium text-danger">{{ t('dashboard.platformQuota.disabled') }}</span>
+              <span v-else :class="['font-mono tabular-nums', w.percent >= 95 ? 'text-danger' : 'text-fg']">
+                ${{ formatUsd(w.usage) }} / ${{ formatUsd(w.limit) }}
+              </span>
             </div>
-          </template>
+            <!-- limit>0：正常用量进度条 -->
+            <template v-if="w.limit > 0">
+              <div class="progress" role="progressbar" :aria-valuenow="w.percent" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar" :class="quotaBarClass(w.percent)" :style="{ width: w.percent + '%' }" />
+              </div>
+              <p v-if="w.resetsAt" class="text-meta text-fg-subtle">
+                {{ t('dashboard.platformQuota.resetsAt', { time: formatResetTime(w.resetsAt) }) }}
+              </p>
+            </template>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -266,15 +250,17 @@ const platformCards = computed<FusedPlatformCard[]>(() => {
 // Quota helpers
 
 type QuotaWindow = 'daily' | 'weekly' | 'monthly'
-type QuotaField = `${QuotaWindow}_limit_usd` | `${QuotaWindow}_usage_usd` | `${QuotaWindow}_window_resets_at`
+const QUOTA_WINDOWS: QuotaWindow[] = ['daily', 'weekly', 'monthly']
 
-function quotaVal(q: PlatformQuotaItem | undefined, key: QuotaField): PlatformQuotaItem[QuotaField] {
-  return q?.[key]
-}
-
-function hasAnyLimit(q: PlatformQuotaItem | undefined): boolean {
-  if (!q) return false
-  return q.daily_limit_usd != null || q.weekly_limit_usd != null || q.monthly_limit_usd != null
+// 只返回配置了 limit 的窗口（limit=0 表示禁用，仍会返回）
+function quotaWindows(q: PlatformQuotaItem | undefined) {
+  if (!q) return []
+  return QUOTA_WINDOWS.flatMap((key) => {
+    const limit = q[`${key}_limit_usd`]
+    if (limit == null) return []
+    const usage = q[`${key}_usage_usd`] ?? 0
+    return [{ key, limit, usage, percent: calcPercent(usage, limit), resetsAt: q[`${key}_window_resets_at`] }]
+  })
 }
 
 function calcPercent(usage: number, limit: number): number {
@@ -282,10 +268,11 @@ function calcPercent(usage: number, limit: number): number {
   return Math.min(100, Math.max(0, Math.round((usage / limit) * 100)))
 }
 
+// 进度条默认 accent；只有接近/超出配额时才切到 warning / danger 语义色
 function quotaBarClass(p: number): string {
-  if (p >= 95) return 'bg-danger-500'
-  if (p >= 75) return 'bg-warning-500'
-  return 'bg-success-500'
+  if (p >= 95) return 'bg-danger'
+  if (p >= 75) return 'bg-warning'
+  return ''
 }
 
 // 与 formatBalance 一致使用 Intl.NumberFormat 做半偶舍入，避免 toFixed 在不同 JS 引擎

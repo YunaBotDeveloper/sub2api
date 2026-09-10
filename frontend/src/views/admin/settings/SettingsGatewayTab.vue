@@ -907,7 +907,7 @@
               type="button"
               @click="removeOpenAIFastPolicyRule(ruleIndex)"
               class="rounded p-1 text-danger-400 transition-colors hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20"
-              :title="t('admin.settings.openaiFastPolicy.removeRule')"
+              :title="t('admin.settings.openaiFastPolicy.removeRule')" :aria-label="t('admin.settings.openaiFastPolicy.removeRule')"
             >
               <svg
                 class="h-4 w-4"
@@ -2721,6 +2721,14 @@
                           : t(
                               'admin.settings.webSearchEmulation.showApiKey',
                             )
+                      " :aria-label="
+                        apiKeyVisible[pIdx]
+                          ? t(
+                              'admin.settings.webSearchEmulation.hideApiKey',
+                            )
+                          : t(
+                              'admin.settings.webSearchEmulation.showApiKey',
+                            )
                       "
                       @click="apiKeyVisible[pIdx] = !apiKeyVisible[pIdx]"
                     >
@@ -2767,6 +2775,8 @@
                           !provider.api_key,
                       }"
                       :title="
+                        t('admin.settings.webSearchEmulation.copyApiKey')
+                      " :aria-label="
                         t('admin.settings.webSearchEmulation.copyApiKey')
                       "
                       :disabled="!provider.api_key"

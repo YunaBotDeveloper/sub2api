@@ -11,7 +11,7 @@
           <Select v-model="orderFilters.payment_type" :options="paymentTypeFilterOptions" class="w-40" @change="loadOrders" />
           <Select v-model="orderFilters.order_type" :options="orderTypeFilterOptions" class="w-36" @change="loadOrders" />
           <div class="flex flex-1 flex-wrap items-center justify-end gap-2">
-            <button @click="loadOrders" :disabled="ordersLoading" class="btn btn-secondary" :title="t('common.refresh')">
+            <button @click="loadOrders" :disabled="ordersLoading" class="btn btn-secondary" :title="t('common.refresh')" :aria-label="t('common.refresh')">
               <Icon name="refresh" size="md" :class="ordersLoading ? 'animate-spin' : ''" />
             </button>
           </div>

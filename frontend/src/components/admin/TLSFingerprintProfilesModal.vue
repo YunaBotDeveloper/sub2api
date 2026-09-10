@@ -93,14 +93,14 @@
                   <button
                     @click="handleEdit(profile)"
                     class="p-1 text-gray-500 hover:text-primary-600 dark:hover:text-primary-400"
-                    :title="t('common.edit')"
+                    :title="t('common.edit')" :aria-label="t('common.edit')"
                   >
                     <Icon name="edit" size="sm" />
                   </button>
                   <button
                     @click="handleDelete(profile)"
                     class="p-1 text-gray-500 hover:text-danger-600 dark:hover:text-danger-400"
-                    :title="t('common.delete')"
+                    :title="t('common.delete')" :aria-label="t('common.delete')"
                   >
                     <Icon name="trash" size="sm" />
                   </button>

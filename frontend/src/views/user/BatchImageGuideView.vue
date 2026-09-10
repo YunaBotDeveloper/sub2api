@@ -21,7 +21,7 @@
               <button type="button" class="btn btn-secondary" :disabled="loadingJobs" @click="resetFilters">
                 {{ t('common.reset') }}
               </button>
-              <button type="button" class="btn btn-secondary" :disabled="loadingKeys || loadingJobs" :title="t('common.refresh')" @click="refreshPage">
+              <button type="button" class="btn btn-secondary" :disabled="loadingKeys || loadingJobs" :title="t('common.refresh')" :aria-label="t('common.refresh')" @click="refreshPage">
                 <Icon name="refresh" size="md" :class="loadingKeys || loadingJobs ? 'animate-spin' : ''" />
               </button>
               <button type="button" class="btn btn-secondary" @click="showGuideModal = true">
@@ -435,7 +435,7 @@
                 type="button"
                 class="flex h-full w-full items-center justify-center text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 disabled:cursor-wait disabled:opacity-70 dark:text-gray-400 dark:hover:bg-dark-700"
                 :disabled="previewLoadingIds.has(itemPreviewKey(item))"
-                :title="previewErrorIds.has(itemPreviewKey(item)) ? t('batchImage.detail.previewReload') : t('batchImage.detail.previewLoad')"
+                :title="previewErrorIds.has(itemPreviewKey(item)) ? t('batchImage.detail.previewReload') : t('batchImage.detail.previewLoad')" :aria-label="previewErrorIds.has(itemPreviewKey(item)) ? t('batchImage.detail.previewReload') : t('batchImage.detail.previewLoad')"
                 @click="loadItemPreview(item)"
               >
                 <Icon :name="previewLoadingIds.has(itemPreviewKey(item)) ? 'refresh' : 'eye'" size="sm" :class="previewLoadingIds.has(itemPreviewKey(item)) ? 'animate-spin' : ''" />
@@ -642,7 +642,7 @@
                 class="inline-flex max-w-full items-center gap-1 rounded-md border border-gray-200 bg-gray-50 px-2 py-1 text-xs text-gray-700 dark:border-dark-700 dark:bg-dark-900 dark:text-gray-200"
               >
                 <span class="max-w-[180px] truncate">{{ ref.name }}</span>
-                <button type="button" class="text-gray-400 hover:text-danger-600" :title="t('batchImage.create.removeReferenceImage')" @click="removeReferenceImageDraft(refIndex)">
+                <button type="button" class="text-gray-400 hover:text-danger-600" :title="t('batchImage.create.removeReferenceImage')" :aria-label="t('batchImage.create.removeReferenceImage')" @click="removeReferenceImageDraft(refIndex)">
                   <Icon name="x" size="xs" />
                 </button>
               </span>
@@ -665,7 +665,7 @@
               <span v-if="row.reference_images.length" class="flex-shrink-0 text-xs text-gray-500 dark:text-gray-400">
                 {{ t('batchImage.create.referenceCount', { n: row.reference_images.length }, row.reference_images.length) }}
               </span>
-              <button type="button" class="btn-ghost btn-icon flex-shrink-0 text-danger-600 hover:bg-danger-50 dark:text-danger-400 dark:hover:bg-danger-900/20" :title="t('common.delete')" @click="removePromptRow(index)">
+              <button type="button" class="btn-ghost btn-icon flex-shrink-0 text-danger-600 hover:bg-danger-50 dark:text-danger-400 dark:hover:bg-danger-900/20" :title="t('common.delete')" :aria-label="t('common.delete')" @click="removePromptRow(index)">
                 <Icon name="trash" size="sm" />
               </button>
             </div>

@@ -16,9 +16,10 @@
     --fg: 18 22 28;
     --fg-muted: 91 102 115;
     --fg-subtle: 110 120 133;
-    --accent: 13 148 136;
+    /* teal-700：白字对比 4.9:1（teal-600 只有 3.7:1，不满足 AA） */
+    --accent: 15 118 110;
     --accent-weak: 230 245 243;
-    --accent-strong: 11 111 102;
+    --accent-strong: 17 94 89;
     --success: 21 127 75;
     --success-weak: 231 244 236;
     --success-strong: 17 102 60;

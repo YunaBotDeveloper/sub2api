@@ -132,7 +132,7 @@
                 @click="loadUsers"
                 :disabled="loading"
                 class="btn btn-secondary px-2 md:px-3"
-                :title="t('common.refresh')"
+                :title="t('common.refresh')" :aria-label="t('common.refresh')"
               >
                 <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
               </button>

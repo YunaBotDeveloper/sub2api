@@ -264,7 +264,7 @@
               type="button"
               class="shrink-0 rounded p-0.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700 dark:hover:text-gray-300"
               :class="copiedRequestId === row.request_id ? 'text-success-500 hover:text-success-500' : ''"
-              :title="copiedRequestId === row.request_id ? t('keys.copied') : t('keys.copyToClipboard')"
+              :title="copiedRequestId === row.request_id ? t('keys.copied') : t('keys.copyToClipboard')" :aria-label="copiedRequestId === row.request_id ? t('keys.copied') : t('keys.copyToClipboard')"
               @click="copyRequestId(row.request_id)"
             >
               <Icon :name="copiedRequestId === row.request_id ? 'check' : 'copy'" size="sm" class="h-3.5 w-3.5" />
@@ -282,7 +282,7 @@
               type="button"
               class="shrink-0 rounded p-0.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700 dark:hover:text-gray-300"
               :class="copiedRequestId === row.upstream_request_id ? 'text-success-500 hover:text-success-500' : ''"
-              :title="copiedRequestId === row.upstream_request_id ? t('keys.copied') : t('keys.copyToClipboard')"
+              :title="copiedRequestId === row.upstream_request_id ? t('keys.copied') : t('keys.copyToClipboard')" :aria-label="copiedRequestId === row.upstream_request_id ? t('keys.copied') : t('keys.copyToClipboard')"
               @click="copyUpstreamRequestId(row.upstream_request_id)"
             >
               <Icon :name="copiedRequestId === row.upstream_request_id ? 'check' : 'copy'" size="sm" class="h-3.5 w-3.5" />

@@ -741,7 +741,7 @@
                     <button
                       type="button"
                       class="btn btn-secondary p-2"
-                      title="Copy URL"
+                      title="Copy URL" aria-label="Copy URL"
                       @click="handleCopyUrl"
                     >
                       <svg

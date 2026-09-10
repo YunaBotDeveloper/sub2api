@@ -29,7 +29,7 @@
                 @click="clearFilterUser"
                 type="button"
                 class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                :title="t('common.clear')"
+                :title="t('common.clear')" :aria-label="t('common.clear')"
               >
                 <Icon name="x" size="sm" :stroke-width="2" />
               </button>
@@ -98,7 +98,7 @@
               @click="loadSubscriptions"
               :disabled="loading"
               class="btn btn-secondary"
-              :title="t('common.refresh')"
+              :title="t('common.refresh')" :aria-label="t('common.refresh')"
             >
               <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
             </button>
@@ -157,7 +157,7 @@
             <button
               @click="showGuideModal = true"
               class="btn btn-secondary"
-              :title="t('admin.subscriptions.guide.showGuide')"
+              :title="t('admin.subscriptions.guide.showGuide')" :aria-label="t('admin.subscriptions.guide.showGuide')"
             >
               <Icon name="questionCircle" size="md" />
             </button>

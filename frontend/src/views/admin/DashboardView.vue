@@ -74,82 +74,57 @@
 
 
         <!-- Quick Actions -->
-        <div class="card p-4">
-          <div class="mb-3 flex items-center justify-between">
-            <h2 class="text-sm font-semibold text-gray-900 dark:text-white">
+        <section class="card">
+          <div class="card-header">
+            <h2 class="text-h2 font-semibold text-fg">
               {{ t('admin.dashboard.quickActions') }}
             </h2>
           </div>
-          <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div class="grid grid-cols-1 gap-2 p-4 md:grid-cols-2">
             <button
-              v-if="canUseBatchImage"
+              v-for="action in quickActions"
+              :key="action.to"
               type="button"
-              class="group flex items-center gap-3 rounded-lg bg-gray-50 p-3 text-left transition-colors hover:bg-accent-50 dark:bg-dark-800/50 dark:hover:bg-accent-900/20"
-              @click="router.push('/batch-image')"
+              class="group flex items-center gap-3 rounded-lg border border-border p-3 text-left transition-colors hover:border-border-strong hover:bg-surface-sunken focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+              @click="router.push(action.to)"
             >
-              <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-accent-100 text-accent-600 dark:bg-accent-900/30 dark:text-accent-400">
-                <Icon name="sparkles" size="md" :stroke-width="2" />
-              </span>
+              <Icon :name="action.icon" size="md" class="shrink-0 text-fg-muted" aria-hidden="true" />
               <span class="min-w-0 flex-1">
-                <span class="block text-sm font-medium text-gray-900 dark:text-white">
-                  {{ t('admin.dashboard.batchImage') }}
+                <span class="block truncate text-body font-medium text-fg">
+                  {{ t(action.title) }}
                 </span>
-                <span class="block text-xs text-gray-500 dark:text-gray-400">
-                  {{ t('admin.dashboard.batchImageDesc') }}
-                </span>
-              </span>
-              <Icon name="chevronRight" size="sm" class="text-gray-400 group-hover:text-accent-500" />
-            </button>
-            <button
-              type="button"
-              class="group flex items-center gap-3 rounded-lg bg-gray-50 p-3 text-left transition-colors hover:bg-success-50 dark:bg-dark-800/50 dark:hover:bg-success-900/20"
-              @click="router.push('/admin/groups')"
-            >
-              <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-success-100 text-success-600 dark:bg-success-900/30 dark:text-success-400">
-                <Icon name="grid" size="md" :stroke-width="2" />
-              </span>
-              <span class="min-w-0 flex-1">
-                <span class="block text-sm font-medium text-gray-900 dark:text-white">
-                  {{ t('admin.dashboard.groupPricing') }}
-                </span>
-                <span class="block text-xs text-gray-500 dark:text-gray-400">
-                  {{ t('admin.dashboard.groupPricingDesc') }}
+                <span class="block truncate text-meta text-fg-muted">
+                  {{ t(action.desc) }}
                 </span>
               </span>
-              <Icon name="chevronRight" size="sm" class="text-gray-400 group-hover:text-success-500" />
+              <Icon name="chevronRight" size="sm" class="shrink-0 text-fg-subtle group-hover:text-fg" aria-hidden="true" />
             </button>
           </div>
-        </div>
+        </section>
 
         <!-- Charts Section -->
         <div class="space-y-6">
           <!-- Date Range Filter -->
-          <div class="card p-4">
-            <div class="flex flex-wrap items-center gap-4">
-              <div class="flex items-center gap-2">
-                <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >{{ t('admin.dashboard.timeRange') }}:</span
-                >
-                <DateRangePicker
-                  v-model:start-date="startDate"
-                  v-model:end-date="endDate"
-                  @change="onDateRangeChange"
+          <div class="card flex flex-wrap items-center gap-3 p-4">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-label font-medium text-fg-muted">{{ t('admin.dashboard.timeRange') }}</span>
+              <DateRangePicker
+                v-model:start-date="startDate"
+                v-model:end-date="endDate"
+                @change="onDateRangeChange"
+              />
+            </div>
+            <button type="button" @click="loadDashboardStats" :disabled="chartsLoading" class="btn btn-secondary btn-sm">
+              {{ t('common.refresh') }}
+            </button>
+            <div class="flex items-center gap-2 sm:ml-auto">
+              <span class="text-label font-medium text-fg-muted">{{ t('admin.dashboard.granularity') }}</span>
+              <div class="w-28">
+                <Select
+                  v-model="granularity"
+                  :options="granularityOptions"
+                  @change="loadChartData"
                 />
-              </div>
-              <button @click="loadDashboardStats" :disabled="chartsLoading" class="btn btn-secondary">
-                {{ t('common.refresh') }}
-              </button>
-              <div class="ml-auto flex items-center gap-2">
-                <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >{{ t('admin.dashboard.granularity') }}:</span
-                >
-                <div class="w-28">
-                  <Select
-                    v-model="granularity"
-                    :options="granularityOptions"
-                    @change="loadChartData"
-                  />
-                </div>
               </div>
             </div>
           </div>
@@ -174,23 +149,25 @@
           </div>
 
           <!-- User Usage Trend (Full Width) -->
-          <div class="card p-4">
-            <h3 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
-              {{ t('admin.dashboard.recentUsage') }} (Top 12)
-            </h3>
-            <div class="h-64">
-              <div v-if="userTrendLoading" class="flex h-full items-center justify-center">
-                <LoadingSpinner size="md" />
-              </div>
-              <Line v-else-if="userTrendChartData" :data="userTrendChartData" :options="lineOptions" />
-              <div
-                v-else
-                class="flex h-full items-center justify-center text-sm text-gray-500 dark:text-gray-400"
-              >
-                {{ t('admin.dashboard.noDataAvailable') }}
+          <section class="card">
+            <div class="card-header flex items-center justify-between gap-3">
+              <h2 class="text-h2 font-semibold text-fg">
+                {{ t('admin.dashboard.recentUsage') }}
+              </h2>
+              <span class="text-meta text-fg-muted">Top {{ rankingLimit }}</span>
+            </div>
+            <div class="card-body">
+              <div class="h-64">
+                <div v-if="userTrendLoading" class="flex h-full items-center justify-center">
+                  <LoadingSpinner size="md" />
+                </div>
+                <Line v-else-if="userTrendChartData" :data="userTrendChartData" :options="lineOptions" />
+                <div v-else class="flex h-full items-center justify-center text-body text-fg-muted">
+                  {{ t('admin.dashboard.noDataAvailable') }}
+                </div>
               </div>
             </div>
-          </div>
+          </section>
         </div>
       </template>
     </div>
@@ -287,6 +264,14 @@ const granularity = ref<'day' | 'hour'>('hour')
 const defaultRange = getLast24HoursRangeDates()
 const startDate = ref(defaultRange.start)
 const endDate = ref(defaultRange.end)
+
+type IconName = InstanceType<typeof Icon>['$props']['name']
+const quickActions = computed<{ to: string; icon: IconName; title: string; desc: string }[]>(() => [
+  ...(canUseBatchImage.value
+    ? [{ to: '/batch-image', icon: 'sparkles' as IconName, title: 'admin.dashboard.batchImage', desc: 'admin.dashboard.batchImageDesc' }]
+    : []),
+  { to: '/admin/groups', icon: 'grid', title: 'admin.dashboard.groupPricing', desc: 'admin.dashboard.groupPricingDesc' }
+])
 
 // Granularity options for Select component
 const granularityOptions = computed(() => [

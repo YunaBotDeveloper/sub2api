@@ -1419,6 +1419,8 @@
                       class="mt-6 flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-danger-50 hover:text-danger-500 dark:hover:bg-danger-900/20 dark:hover:text-danger-400"
                       :title="
                         t('admin.groups.openaiMessages.removeExactMapping')
+                      " :aria-label="
+                        t('admin.groups.openaiMessages.removeExactMapping')
                       "
                     >
                       <Icon name="trash" size="sm" />
@@ -1663,7 +1665,7 @@
                 type="button"
                 @click="removeCreateRoutingRule(rule)"
                 class="mt-5 p-1.5 text-gray-400 hover:text-danger-500 transition-colors"
-                :title="t('admin.groups.modelRouting.removeRule')"
+                :title="t('admin.groups.modelRouting.removeRule')" :aria-label="t('admin.groups.modelRouting.removeRule')"
               >
                 <Icon name="trash" size="sm" />
               </button>

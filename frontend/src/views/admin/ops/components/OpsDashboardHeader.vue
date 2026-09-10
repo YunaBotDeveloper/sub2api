@@ -863,7 +863,7 @@ function handleToolbarRefresh() {
     <!-- Top Toolbar -->
     <div class="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-4 dark:border-dark-700">
       <div>
-        <h1 class="flex items-center gap-2 text-xl font-black text-gray-900 dark:text-white">
+        <h2 class="flex items-center gap-2 text-xl font-black text-gray-900 dark:text-white">
           <svg class="h-6 w-6 text-accent-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               stroke-linecap="round"
@@ -873,7 +873,7 @@ function handleToolbarRefresh() {
             />
           </svg>
           {{ t('admin.ops.title') }}
-        </h1>
+        </h2>
 
         <div v-if="!props.fullscreen" class="mt-1 flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
           <span class="flex items-center gap-1.5" :title="props.loading ? t('admin.ops.loadingText') : t('admin.ops.ready')">
@@ -932,7 +932,7 @@ function handleToolbarRefresh() {
           type="button"
           class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-400 dark:hover:bg-dark-600"
           :disabled="loading"
-          :title="t('common.refresh')"
+          :title="t('common.refresh')" :aria-label="t('common.refresh')"
           @click="handleToolbarRefresh"
         >
           <svg class="h-4 w-4" :class="{ 'animate-spin': loading }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -981,7 +981,7 @@ function handleToolbarRefresh() {
           v-if="!props.fullscreen"
           type="button"
           class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
-          :title="t('admin.ops.fullscreen.enter')"
+          :title="t('admin.ops.fullscreen.enter')" :aria-label="t('admin.ops.fullscreen.enter')"
           @click="emit('enterFullscreen')"
         >
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

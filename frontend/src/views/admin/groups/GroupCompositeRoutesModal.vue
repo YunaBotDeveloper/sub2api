@@ -110,7 +110,7 @@
                       <button
                         type="button"
                         class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
-                        :title="t('common.edit')"
+                        :title="t('common.edit')" :aria-label="t('common.edit')"
                         @click="editCompositeRoute(route)"
                       >
                         <Icon name="edit" size="sm" />
@@ -118,7 +118,7 @@
                       <button
                         type="button"
                         class="rounded p-1.5 text-gray-500 hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20 dark:hover:text-danger-400"
-                        :title="t('common.delete')"
+                        :title="t('common.delete')" :aria-label="t('common.delete')"
                         @click="deleteCompositeRoute(route)"
                       >
                         <Icon name="trash" size="sm" />
