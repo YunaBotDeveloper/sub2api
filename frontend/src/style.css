@@ -2,9 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============ 设计令牌（openspec: rebuild-frontend-design-system） ============
+ * 以 RGB 三元组存储，供 tailwind.config.js 里的 rgb(var(--x) / <alpha-value>) 使用。
+ * 明暗切换只改这里，模板里不需要 dark: 前缀。
+ */
 @layer base {
+  :root {
+    --surface: 255 255 255;
+    --surface-sunken: 246 247 249;
+    --surface-raised: 255 255 255;
+    --border: 227 230 234;
+    --border-strong: 201 207 214;
+    --fg: 18 22 28;
+    --fg-muted: 91 102 115;
+    --fg-subtle: 110 120 133;
+    --accent: 13 148 136;
+    --accent-weak: 230 245 243;
+    --accent-strong: 11 111 102;
+    --success: 21 127 75;
+    --success-weak: 231 244 236;
+    --success-strong: 17 102 60;
+    --warning: 168 90 0;
+    --warning-weak: 253 241 224;
+    --warning-strong: 134 72 0;
+    --danger: 192 57 47;
+    --danger-weak: 251 234 232;
+    --danger-strong: 154 46 38;
+  }
+
+  .dark {
+    --surface: 15 19 25;
+    --surface-sunken: 10 13 18;
+    --surface-raised: 22 27 34;
+    --border: 38 45 54;
+    --border-strong: 57 66 78;
+    --fg: 230 234 239;
+    --fg-muted: 154 166 178;
+    --fg-subtle: 107 119 135;
+    --accent: 45 212 191;
+    --accent-weak: 19 46 44;
+    --accent-strong: 94 234 212;
+    --success: 52 211 153;
+    --success-weak: 16 44 34;
+    --success-strong: 110 231 183;
+    --warning: 251 191 36;
+    --warning-weak: 48 36 12;
+    --warning-strong: 252 211 77;
+    --danger: 248 113 113;
+    --danger-weak: 52 22 22;
+    --danger-strong: 252 165 165;
+  }
+
   * {
-    @apply border-gray-200 dark:border-dark-700;
+    @apply border-border;
   }
 
   html {
@@ -17,8 +67,36 @@
   }
 
   body {
-    @apply bg-gray-50 text-gray-900 dark:bg-dark-950 dark:text-gray-100;
+    @apply bg-surface-sunken text-fg text-body;
     @apply min-h-screen;
+  }
+
+  /* 数值默认等宽对齐，避免自动刷新时列宽跳动 */
+  .tabular,
+  .stat-value,
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 移动端表单控件 16px，避免 iOS 自动缩放 */
+  @media (max-width: 767px) {
+    input:not([type='checkbox']):not([type='radio']):not([type='range']),
+    select,
+    textarea {
+      font-size: 16px;
+    }
+  }
+
+  /* 全局减少动效 */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   /* 自定义滚动条 - 仅针对 Firefox，避免 Chrome 取消 webkit 的全局定制 */
@@ -30,12 +108,7 @@
 
     *:hover,
     *:focus-within {
-      scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
-    }
-
-    .dark *:hover,
-    .dark *:focus-within {
-      scrollbar-color: rgba(75, 85, 99, 0.5) transparent;
+      scrollbar-color: rgb(var(--border-strong)) transparent;
     }
   }
 
@@ -53,126 +126,104 @@
   }
 
   *:hover::-webkit-scrollbar-thumb {
-    @apply bg-gray-300/50 dark:bg-dark-600/50;
+    @apply bg-border-strong;
   }
 
   *:hover::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400 dark:bg-dark-500;
+    @apply bg-fg-subtle;
   }
 
   /* 选中文本样式 */
   ::selection {
-    @apply bg-primary-500/20 text-primary-900 dark:text-primary-100;
+    @apply bg-accent/20 text-fg;
   }
-
-
 }
 
 @layer components {
   /* ============ 按钮样式 ============ */
   .btn {
     @apply inline-flex items-center justify-center gap-2;
-    @apply rounded-xl px-4 py-2.5 text-sm font-medium;
-    @apply transition-all duration-200 ease-out;
-    @apply focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:ring-offset-2;
-    @apply disabled:transform-none disabled:cursor-not-allowed disabled:opacity-50;
-    @apply active:scale-[0.98];
+    @apply rounded border px-3.5 py-2 text-label font-medium;
+    @apply transition-colors duration-150 ease-out;
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-surface;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .btn-primary {
-    @apply bg-gradient-to-r from-primary-500 to-primary-600;
-    @apply text-white shadow-md shadow-primary-500/25;
-    @apply hover:from-primary-600 hover:to-primary-700 hover:shadow-lg hover:shadow-primary-500/30;
-    @apply dark:shadow-primary-500/20;
+    @apply border-accent bg-accent text-white;
+    @apply hover:border-accent-strong hover:bg-accent-strong;
+    @apply dark:text-surface-sunken;
   }
 
   .btn-secondary {
-    @apply bg-white dark:bg-dark-800;
-    @apply text-gray-700 dark:text-gray-200;
-    @apply border border-gray-200 dark:border-dark-600;
-    @apply shadow-sm hover:bg-gray-50 dark:hover:bg-dark-700;
-    @apply hover:border-gray-300 dark:hover:border-dark-500;
+    @apply border-border bg-surface text-fg;
+    @apply hover:border-border-strong hover:bg-surface-sunken;
   }
 
   .btn-ghost {
-    @apply bg-transparent text-gray-600 dark:text-gray-300;
-    @apply hover:bg-gray-100 dark:hover:bg-dark-800;
+    @apply border-transparent bg-transparent text-fg-muted;
+    @apply hover:bg-surface-sunken hover:text-fg;
   }
 
   .btn-danger {
-    @apply bg-gradient-to-r from-red-500 to-red-600;
-    @apply text-white shadow-md shadow-red-500/25;
-    @apply hover:from-red-600 hover:to-red-700 hover:shadow-lg hover:shadow-red-500/30;
+    @apply border-danger bg-danger text-white;
+    @apply hover:border-danger-strong hover:bg-danger-strong;
+    @apply dark:text-surface-sunken;
   }
 
   .btn-success {
-    @apply bg-gradient-to-r from-emerald-500 to-emerald-600;
-    @apply text-white shadow-md shadow-emerald-500/25;
-    @apply hover:from-emerald-600 hover:to-emerald-700 hover:shadow-lg hover:shadow-emerald-500/30;
-    @apply dark:shadow-emerald-500/20;
+    @apply border-success bg-success text-white;
+    @apply hover:border-success-strong hover:bg-success-strong;
+    @apply dark:text-surface-sunken;
   }
 
   .btn-warning {
-    @apply bg-gradient-to-r from-amber-500 to-amber-600;
-    @apply text-white shadow-md shadow-amber-500/25;
-    @apply hover:from-amber-600 hover:to-amber-700 hover:shadow-lg hover:shadow-amber-500/30;
-    @apply dark:shadow-amber-500/20;
+    @apply border-warning bg-warning text-white;
+    @apply hover:border-warning-strong hover:bg-warning-strong;
+    @apply dark:text-surface-sunken;
   }
 
+  /* 支付品牌按钮：品牌色是协议要求，保留纯色，去掉彩色阴影 */
   .btn-stripe {
-    @apply bg-[#635bff] text-white shadow-md shadow-[#635bff]/25;
-    @apply hover:bg-[#5851ea] hover:shadow-lg hover:shadow-[#635bff]/30;
-    @apply dark:bg-[#7a73ff] dark:shadow-[#7a73ff]/20;
-    @apply dark:hover:bg-[#635bff];
+    @apply border-[#635bff] bg-[#635bff] text-white hover:bg-[#5851ea];
   }
 
   .btn-airwallex {
-    @apply bg-[#14171A] text-white shadow-md shadow-emerald-500/20;
-    @apply hover:bg-[#20252a] hover:shadow-lg hover:shadow-emerald-500/25;
-    @apply dark:bg-[#7AF0C4] dark:text-gray-950 dark:shadow-emerald-500/20;
-    @apply dark:hover:bg-[#62d9ad];
+    @apply border-[#14171A] bg-[#14171A] text-white hover:bg-[#20252a];
+    @apply dark:border-[#7AF0C4] dark:bg-[#7AF0C4] dark:text-gray-950 dark:hover:bg-[#62d9ad];
   }
 
   .btn-alipay {
-    @apply bg-[#00AEEF] text-white shadow-md shadow-[#00AEEF]/25;
-    @apply hover:bg-[#009dd6] hover:shadow-lg hover:shadow-[#00AEEF]/30;
-    @apply active:bg-[#008cbe];
-    @apply dark:shadow-[#00AEEF]/20;
+    @apply border-[#00AEEF] bg-[#00AEEF] text-white hover:bg-[#009dd6] active:bg-[#008cbe];
   }
 
   .btn-wxpay {
-    @apply bg-[#2BB741] text-white shadow-md shadow-[#2BB741]/25;
-    @apply hover:bg-[#24a038] hover:shadow-lg hover:shadow-[#2BB741]/30;
-    @apply active:bg-[#1d8a2f];
-    @apply dark:shadow-[#2BB741]/20;
+    @apply border-[#2BB741] bg-[#2BB741] text-white hover:bg-[#24a038] active:bg-[#1d8a2f];
   }
 
   .btn-sm {
-    @apply rounded-lg px-3 py-1.5 text-xs;
+    @apply rounded px-2.5 py-1.5 text-meta;
   }
 
   .btn-md {
-    @apply rounded-xl px-4 py-2 text-sm;
+    @apply rounded px-3.5 py-2 text-label;
   }
 
   .btn-lg {
-    @apply rounded-2xl px-6 py-3 text-base;
+    @apply rounded-lg px-5 py-2.5 text-body;
   }
 
   .btn-icon {
-    @apply rounded-xl p-2.5;
+    @apply rounded p-2;
   }
 
   /* ============ 输入框样式 ============ */
   .input {
-    @apply w-full rounded-xl px-4 py-2.5 text-sm;
-    @apply bg-white dark:bg-dark-800;
-    @apply border border-gray-200 dark:border-dark-600;
-    @apply text-gray-900 dark:text-gray-100;
-    @apply placeholder:text-gray-400 dark:placeholder:text-dark-400;
-    @apply transition-all duration-200;
-    @apply focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30;
-    @apply disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-dark-900;
+    @apply w-full rounded border border-border bg-surface px-3 py-2 text-body text-fg;
+    @apply placeholder:text-fg-subtle;
+    @apply transition-colors duration-150;
+    @apply focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/25;
+    @apply disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-fg-muted;
   }
 
   .dark .input[type='date'],
@@ -184,19 +235,19 @@
   }
 
   .input-error {
-    @apply border-red-500 focus:border-red-500 focus:ring-red-500/30;
+    @apply border-danger focus:border-danger focus:ring-danger/25;
   }
 
   .input-label {
-    @apply mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300;
+    @apply mb-1.5 block text-label font-medium text-fg;
   }
 
   .input-hint {
-    @apply mt-1 text-xs text-gray-500 dark:text-dark-400;
+    @apply mt-1 text-meta text-fg-muted;
   }
 
   .input-error-text {
-    @apply mt-1 text-xs text-red-500;
+    @apply mt-1 text-meta text-danger;
   }
 
   /* Hide number input spinner buttons for cleaner UI */
@@ -210,53 +261,32 @@
     -moz-appearance: textfield;
   }
 
-  /* ============ 玻璃效果 ============ */
-  .glass {
-    @apply bg-white/80 backdrop-blur-xl dark:bg-dark-800/80;
-  }
-
-  .glass-card {
-    @apply bg-white/70 dark:bg-dark-800/70;
-    @apply backdrop-blur-xl;
-    @apply rounded-2xl;
-    @apply border border-white/20 dark:border-dark-700/50;
-    @apply shadow-glass;
-    @apply transition-all duration-300;
-  }
-
-  /* ============ 卡片样式 ============ */
+  /* ============ 卡片样式（边框代替阴影） ============ */
   .card {
-    @apply bg-white dark:bg-dark-800/50;
-    @apply rounded-2xl;
-    @apply border border-gray-100 dark:border-dark-700/50;
-    @apply shadow-card;
-    @apply transition-all duration-300;
+    @apply rounded-lg border border-border bg-surface-raised;
   }
 
   .card-hover {
-    @apply hover:-translate-y-0.5 hover:shadow-card-hover;
-    @apply hover:border-gray-200 dark:hover:border-dark-600;
+    @apply transition-colors duration-150 hover:border-border-strong;
   }
 
+  /* 旧玻璃效果类：统一收敛到普通卡片 */
+  .glass,
+  .glass-card,
   .card-glass {
-    @apply bg-white/70 dark:bg-dark-800/70;
-    @apply backdrop-blur-xl;
-    @apply border border-white/20 dark:border-dark-700/50;
-    @apply shadow-glass;
+    @apply rounded-lg border border-border bg-surface-raised;
   }
 
   .card-header {
-    @apply border-b border-gray-100 dark:border-dark-700;
-    @apply px-6 py-4;
+    @apply border-b border-border px-5 py-3.5;
   }
 
   .card-body {
-    @apply p-6;
+    @apply p-5;
   }
 
   .card-footer {
-    @apply border-t border-gray-100 dark:border-dark-700;
-    @apply px-6 py-4;
+    @apply border-t border-border px-5 py-3.5;
   }
 
   /* ============ 统计卡片 ============ */
@@ -266,67 +296,57 @@
   }
 
   .stat-icon {
-    @apply h-12 w-12 rounded-xl;
+    @apply h-10 w-10 rounded;
     @apply flex items-center justify-center;
-    @apply text-xl;
+    @apply bg-surface-sunken text-fg-muted;
   }
 
-  .stat-icon-primary {
-    @apply bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400;
-  }
-
-  .stat-icon-success {
-    @apply bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400;
-  }
-
-  .stat-icon-warning {
-    @apply bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400;
-  }
-
+  .stat-icon-primary,
+  .stat-icon-success,
+  .stat-icon-warning,
   .stat-icon-danger {
-    @apply bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400;
+    @apply bg-surface-sunken text-fg-muted;
   }
 
   .stat-value {
-    @apply text-2xl font-bold text-gray-900 dark:text-white truncate;
+    @apply truncate font-mono text-h1 font-semibold text-fg;
   }
 
   .stat-label {
-    @apply text-sm text-gray-500 dark:text-dark-400;
+    @apply text-label text-fg-muted;
   }
 
   .stat-trend {
-    @apply mt-1 flex items-center gap-1 text-xs font-medium;
+    @apply mt-1 flex items-center gap-1 text-meta font-medium;
   }
 
   .stat-trend-up {
-    @apply text-emerald-600 dark:text-emerald-400;
+    @apply text-success;
   }
 
   .stat-trend-down {
-    @apply text-red-600 dark:text-red-400;
+    @apply text-danger;
   }
 
   /* ============ 表格样式 ============ */
   .table-container {
-    @apply overflow-x-auto rounded-xl border border-gray-200 dark:border-dark-700;
+    @apply overflow-x-auto rounded-lg border border-border;
   }
 
   .table {
-    @apply w-full text-sm;
+    @apply w-full text-body;
   }
 
   .table th {
-    @apply px-4 py-3 text-left font-medium;
-    @apply text-gray-600 dark:text-dark-300;
-    @apply bg-gray-50 dark:bg-dark-800/50;
-    @apply border-b border-gray-200 dark:border-dark-700;
+    @apply px-4 py-2.5 text-left text-label font-medium;
+    @apply bg-surface-sunken text-fg-muted;
+    @apply border-b border-border;
   }
 
   .table td {
-    @apply px-4 py-3;
-    @apply text-gray-700 dark:text-gray-300;
-    @apply border-b border-gray-100 dark:border-dark-800;
+    @apply px-4 py-2.5;
+    @apply text-fg;
+    @apply border-b border-border;
   }
 
   .table tr:last-child td {
@@ -334,55 +354,49 @@
   }
 
   .table tbody tr {
-    @apply transition-colors duration-150;
-    @apply hover:bg-gray-50 dark:hover:bg-dark-800/30;
+    @apply transition-colors duration-100;
+    @apply hover:bg-surface-sunken;
   }
 
   /* ============ 徽章样式 ============ */
   .badge {
     @apply inline-flex items-center gap-1;
-    @apply rounded-full px-2.5 py-0.5 text-xs font-medium;
+    @apply rounded-sm px-2 py-0.5 text-meta font-medium;
   }
 
   .badge-primary {
-    @apply bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400;
+    @apply bg-accent-weak text-accent-strong;
   }
 
   .badge-success {
-    @apply bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400;
+    @apply bg-success-weak text-success-strong;
   }
 
   .badge-warning {
-    @apply bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400;
+    @apply bg-warning-weak text-warning-strong;
   }
 
   .badge-danger {
-    @apply bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400;
+    @apply bg-danger-weak text-danger-strong;
   }
 
-  .badge-gray {
-    @apply bg-gray-100 text-gray-700 dark:bg-dark-700 dark:text-dark-300;
-  }
-
+  .badge-gray,
   .badge-purple {
-    @apply bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400;
+    @apply bg-surface-sunken text-fg-muted;
   }
 
   /* ============ 下拉菜单 ============ */
   .dropdown {
     @apply absolute z-50;
-    @apply bg-white dark:bg-dark-800;
-    @apply rounded-xl;
-    @apply border border-gray-200 dark:border-dark-700;
-    @apply shadow-lg;
+    @apply rounded-lg border border-border bg-surface-raised;
+    @apply shadow-overlay;
     @apply py-1;
     @apply origin-top-right animate-scale-in;
   }
 
   .dropdown-item {
-    @apply px-4 py-2 text-sm;
-    @apply text-gray-700 dark:text-gray-300;
-    @apply hover:bg-gray-100 dark:hover:bg-dark-700;
+    @apply px-3 py-2 text-body text-fg;
+    @apply hover:bg-surface-sunken;
     @apply cursor-pointer transition-colors;
     @apply flex items-center gap-2;
   }
@@ -390,28 +404,26 @@
   /* ============ 模态框 ============ */
   .modal-overlay {
     @apply fixed inset-0 z-50;
-    @apply bg-black/50 backdrop-blur-sm;
+    @apply bg-black/50;
     @apply flex items-center justify-center p-2 sm:p-4;
   }
 
   .modal-content {
     @apply w-full;
     @apply max-h-[95vh] sm:max-h-[90vh];
-    @apply bg-white dark:bg-dark-800;
-    @apply rounded-2xl shadow-2xl;
-    @apply border border-gray-200 dark:border-dark-700;
+    @apply rounded-lg border border-border bg-surface-raised shadow-overlay;
     @apply flex flex-col;
   }
 
   .modal-header {
-    @apply border-b border-gray-200 px-4 py-3 dark:border-dark-700;
+    @apply border-b border-border px-4 py-3;
     @apply sm:px-6 sm:py-4;
     @apply flex items-center justify-between;
     @apply flex-shrink-0;
   }
 
   .modal-title {
-    @apply text-lg font-semibold text-gray-900 dark:text-white;
+    @apply text-h2 font-semibold text-fg;
   }
 
   .modal-body {
@@ -421,7 +433,7 @@
   }
 
   .modal-footer {
-    @apply border-t border-gray-200 px-4 py-3 dark:border-dark-700;
+    @apply border-t border-border px-4 py-3;
     @apply sm:px-6 sm:py-4;
     @apply flex items-center justify-end gap-3;
     @apply flex-shrink-0;
@@ -433,11 +445,11 @@
   }
 
   .modal-enter-active {
-    transition: opacity 250ms ease-out;
+    transition: opacity 150ms ease-out;
   }
 
   .modal-leave-active {
-    transition: opacity 200ms ease-in;
+    transition: opacity 120ms ease-in;
   }
 
   .modal-enter-from,
@@ -446,16 +458,16 @@
   }
 
   .modal-enter-active .modal-content {
-    transition: transform 250ms ease-out, opacity 250ms ease-out;
+    transition: transform 150ms ease-out, opacity 150ms ease-out;
   }
 
   .modal-leave-active .modal-content {
-    transition: transform 200ms ease-in, opacity 200ms ease-in;
+    transition: transform 120ms ease-in, opacity 120ms ease-in;
   }
 
   .modal-enter-from .modal-content,
   .modal-leave-to .modal-content {
-    transform: scale(0.95);
+    transform: scale(0.98);
     opacity: 0;
   }
 
@@ -463,21 +475,6 @@
   .modal-leave-from .modal-content {
     transform: scale(1);
     opacity: 1;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .modal-enter-active,
-    .modal-leave-active,
-    .modal-enter-active .modal-content,
-    .modal-leave-active .modal-content {
-      transition-duration: 1ms;
-      transition-delay: 0ms;
-    }
-
-    .modal-enter-from .modal-content,
-    .modal-leave-to .modal-content {
-      transform: none;
-    }
   }
 
   /* ============ Dialog ============ */
@@ -490,12 +487,11 @@
   .dialog-container {
     @apply flex w-full flex-col;
     @apply max-h-[90vh];
-    @apply rounded-2xl bg-white dark:bg-dark-800;
-    @apply shadow-xl;
+    @apply rounded-lg border border-border bg-surface-raised shadow-overlay;
   }
 
   .dialog-header {
-    @apply border-b border-gray-100 px-6 py-4 dark:border-dark-700;
+    @apply border-b border-border px-6 py-4;
     @apply flex items-center justify-between;
   }
 
@@ -504,8 +500,8 @@
   }
 
   .dialog-footer {
-    @apply border-t border-gray-100 px-6 py-4 dark:border-dark-700;
-    @apply bg-gray-50/60 dark:bg-dark-900/40;
+    @apply border-t border-border px-6 py-4;
+    @apply bg-surface-sunken;
     @apply flex items-center justify-end gap-3;
   }
 
@@ -513,43 +509,42 @@
   .toast {
     @apply fixed right-4 top-4 z-[100];
     @apply min-w-[320px] max-w-md;
-    @apply bg-white dark:bg-dark-800;
-    @apply rounded-xl shadow-lg;
+    @apply rounded-lg border border-border bg-surface-raised shadow-overlay;
     @apply border-l-4;
     @apply p-4;
     @apply animate-slide-in-right;
   }
 
   .toast-success {
-    @apply border-l-emerald-500;
+    @apply border-l-success;
   }
 
   .toast-error {
-    @apply border-l-red-500;
+    @apply border-l-danger;
   }
 
   .toast-warning {
-    @apply border-l-amber-500;
+    @apply border-l-warning;
   }
 
   .toast-info {
-    @apply border-l-primary-500;
+    @apply border-l-accent;
   }
 
   /* ============ 侧边栏 ============ */
   .sidebar {
     @apply fixed inset-y-0 left-0 z-40;
-    @apply w-64 bg-white dark:bg-dark-900;
-    @apply border-r border-gray-200 dark:border-dark-800;
+    @apply w-64 bg-surface;
+    @apply border-r border-border;
     @apply flex flex-col;
-    @apply transition-transform duration-300;
+    @apply transition-transform duration-200;
     transition-property: width, transform;
   }
 
   .sidebar-header {
     @apply h-16 px-6;
     @apply flex items-center gap-3;
-    @apply border-b border-gray-100 dark:border-dark-800;
+    @apply border-b border-border;
     transition:
       padding 0.2s ease,
       gap 0.2s ease;
@@ -560,21 +555,19 @@
   }
 
   .sidebar-link {
-    @apply flex items-center gap-3 rounded-xl py-2.5;
+    @apply flex items-center gap-3 rounded py-2;
     @apply overflow-hidden;
-    @apply text-sm font-medium;
-    @apply text-gray-600 dark:text-dark-300;
-    @apply transition-all duration-200;
-    @apply hover:bg-gray-100 dark:hover:bg-dark-800;
-    @apply hover:text-gray-900 dark:hover:text-white;
+    @apply text-label font-medium;
+    @apply text-fg-muted;
+    @apply transition-colors duration-150;
+    @apply hover:bg-surface-sunken hover:text-fg;
     padding-left: 1.0625rem;
     padding-right: 0.875rem;
   }
 
   .sidebar-link-active {
-    @apply bg-primary-50 dark:bg-primary-900/20;
-    @apply text-primary-600 dark:text-primary-400;
-    @apply hover:bg-primary-100 dark:hover:bg-primary-900/30;
+    @apply bg-accent-weak text-accent-strong;
+    @apply hover:bg-accent-weak hover:text-accent-strong;
   }
 
   .sidebar-section {
@@ -583,8 +576,8 @@
 
   .sidebar-section-title {
     @apply mb-2 px-3;
-    @apply text-xs font-semibold uppercase tracking-wider;
-    @apply text-gray-400 dark:text-dark-500;
+    @apply text-meta font-semibold uppercase tracking-wider;
+    @apply text-fg-subtle;
   }
 
   /* ============ 页面头部 ============ */
@@ -593,11 +586,11 @@
   }
 
   .page-title {
-    @apply text-2xl font-bold text-gray-900 dark:text-white;
+    @apply text-h1 font-semibold text-fg;
   }
 
   .page-description {
-    @apply mt-1 text-sm text-gray-500 dark:text-dark-400;
+    @apply mt-1 text-body text-fg-muted;
   }
 
   /* ============ 空状态 ============ */
@@ -607,16 +600,16 @@
   }
 
   .empty-state-icon {
-    @apply mb-4 h-16 w-16;
-    @apply text-gray-300 dark:text-dark-600;
+    @apply mb-4 h-12 w-12;
+    @apply text-fg-subtle;
   }
 
   .empty-state-title {
-    @apply mb-1 text-lg font-medium text-gray-900 dark:text-white;
+    @apply mb-1 text-h3 font-medium text-fg;
   }
 
   .empty-state-description {
-    @apply max-w-sm text-sm text-gray-500 dark:text-dark-400;
+    @apply max-w-sm text-body text-fg-muted;
   }
 
   /* ============ 加载状态 ============ */
@@ -626,58 +619,56 @@
   }
 
   .skeleton {
-    @apply animate-pulse rounded bg-gray-200 dark:bg-dark-700;
+    @apply animate-pulse rounded bg-surface-sunken;
   }
 
   /* ============ 分隔线 ============ */
   .divider {
-    @apply my-4 h-px bg-gray-200 dark:bg-dark-700;
+    @apply my-4 h-px bg-border;
   }
 
   /* ============ 标签页 ============ */
   .tabs {
     @apply flex gap-1 p-1;
-    @apply rounded-xl bg-gray-100 dark:bg-dark-800;
+    @apply rounded-lg bg-surface-sunken;
   }
 
   .tab {
-    @apply rounded-lg px-4 py-2 text-sm font-medium;
-    @apply text-gray-600 dark:text-dark-400;
-    @apply transition-all duration-200;
-    @apply hover:text-gray-900 dark:hover:text-white;
+    @apply rounded px-3 py-1.5 text-label font-medium;
+    @apply text-fg-muted;
+    @apply transition-colors duration-150;
+    @apply hover:text-fg;
   }
 
   .tab-active {
-    @apply bg-white dark:bg-dark-700;
-    @apply text-gray-900 dark:text-white;
-    @apply shadow-sm;
+    @apply border border-border bg-surface-raised text-fg;
   }
 
   /* ============ 进度条 ============ */
   .progress {
-    @apply h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-dark-700;
+    @apply h-2 overflow-hidden rounded-full bg-surface-sunken;
   }
 
   .progress-bar {
-    @apply h-full bg-gradient-to-r from-primary-500 to-primary-400;
+    @apply h-full bg-accent;
     @apply transition-all duration-300;
   }
 
   /* ============ 开关 ============ */
   .switch {
     @apply relative h-6 w-11 cursor-pointer rounded-full;
-    @apply bg-gray-300 dark:bg-dark-600;
-    @apply transition-colors duration-200;
+    @apply bg-border-strong;
+    @apply transition-colors duration-150;
   }
 
   .switch-active {
-    @apply bg-primary-500;
+    @apply bg-accent;
   }
 
   .switch-thumb {
     @apply absolute left-0.5 top-0.5 h-5 w-5 rounded-full;
-    @apply bg-white shadow-sm;
-    @apply transition-transform duration-200;
+    @apply bg-white;
+    @apply transition-transform duration-150;
   }
 
   .switch-active .switch-thumb {
@@ -686,21 +677,21 @@
 
   /* ============ 代码块 ============ */
   .code {
-    @apply font-mono text-sm;
-    @apply bg-gray-100 dark:bg-dark-800;
-    @apply rounded px-1.5 py-0.5;
-    @apply text-primary-600 dark:text-primary-400;
+    @apply font-mono text-label;
+    @apply bg-surface-sunken;
+    @apply rounded-sm px-1.5 py-0.5;
+    @apply text-accent-strong;
   }
 
   .code-block {
-    @apply font-mono text-sm;
+    @apply font-mono text-label;
     @apply bg-gray-900 text-gray-100;
-    @apply overflow-x-auto rounded-xl p-4;
+    @apply overflow-x-auto rounded-lg p-4;
   }
 
   /* ============ Tour Description ============ */
   .tour-step-description {
-    @apply space-y-3 text-sm leading-relaxed text-gray-700 dark:text-gray-200;
+    @apply space-y-3 text-body leading-relaxed text-fg;
   }
 
   .tour-step-description ul {
@@ -716,23 +707,19 @@
   }
 
   .tour-info-box {
-    @apply rounded-md border-l-4 border-blue-500 bg-blue-50 px-3 py-2 text-xs text-blue-900;
-    @apply dark:border-blue-400 dark:bg-blue-950/40 dark:text-blue-200;
+    @apply rounded border-l-4 border-accent bg-accent-weak px-3 py-2 text-meta text-accent-strong;
   }
 
   .tour-success-box {
-    @apply rounded-md border-l-4 border-emerald-500 bg-emerald-50 px-3 py-2 text-xs text-emerald-900;
-    @apply dark:border-emerald-400 dark:bg-emerald-950/40 dark:text-emerald-200;
+    @apply rounded border-l-4 border-success bg-success-weak px-3 py-2 text-meta text-success-strong;
   }
 
   .tour-warning-box {
-    @apply rounded-md border-l-4 border-amber-500 bg-amber-50 px-3 py-2 text-xs text-amber-900;
-    @apply dark:border-amber-400 dark:bg-amber-950/40 dark:text-amber-200;
+    @apply rounded border-l-4 border-warning bg-warning-weak px-3 py-2 text-meta text-warning-strong;
   }
 
   .tour-error-box {
-    @apply rounded-md border-l-4 border-red-500 bg-red-50 px-3 py-2 text-xs text-red-900;
-    @apply dark:border-red-400 dark:bg-red-950/40 dark:text-red-200;
+    @apply rounded border-l-4 border-danger bg-danger-weak px-3 py-2 text-meta text-danger-strong;
   }
 
   /* ============ 表格页面布局优化 ============ */
@@ -741,21 +728,16 @@
     overflow-x: auto;
   }
 
-  /* 表头固定时添加底部阴影，增强视觉层次 */
+  /* 表头固定时用底边框区分 */
   .table-wrapper thead.sticky {
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    box-shadow: 0 1px 0 0 rgb(var(--border));
   }
 }
 
 @layer utilities {
-  /* 文字渐变 */
+  /* 旧的文字渐变：收敛为纯色强调 */
   .text-gradient {
-    @apply bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent;
-  }
-
-  /* 玻璃效果 */
-  .glass {
-    @apply bg-white/80 backdrop-blur-xl dark:bg-dark-800/80;
+    @apply text-accent;
   }
 
   /* 隐藏滚动条 */
