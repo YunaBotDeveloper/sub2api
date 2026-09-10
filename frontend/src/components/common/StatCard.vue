@@ -1,81 +1,62 @@
 <template>
-  <div class="stat-card">
-    <div :class="['stat-icon', iconClass]">
-      <component v-if="icon" :is="icon" class="h-6 w-6" aria-hidden="true" />
-    </div>
-    <div class="min-w-0 flex-1">
-      <p class="stat-label truncate">{{ title }}</p>
-      <div class="mt-1 flex items-baseline gap-2">
-        <p class="stat-value" :title="String(formattedValue)">{{ formattedValue }}</p>
-        <span v-if="change !== undefined" :class="['stat-trend', trendClass]">
-          <Icon
-            v-if="changeType !== 'neutral'"
-            name="arrowUp"
-            size="xs"
-            :class="changeType === 'down' && 'rotate-180'"
-          />
-          {{ formattedChange }}
-        </span>
+  <div class="card p-4">
+    <div class="flex flex-col gap-1">
+      <p class="flex items-center gap-1.5 text-meta font-medium uppercase tracking-wider text-fg-subtle">
+        <Icon v-if="icon" :name="icon" size="xs" aria-hidden="true" />
+        <span class="truncate">{{ label }}</span>
+      </p>
+      <div class="min-w-0">
+        <slot name="value">
+          <p
+            :class="['stat-value', toneClass]"
+            :title="String(formattedValue)"
+          >
+            {{ formattedValue }}
+          </p>
+        </slot>
       </div>
+      <p v-if="sub || $slots.sub" class="text-meta text-fg-muted">
+        <slot name="sub">{{ sub }}</slot>
+      </p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Component } from 'vue'
 import Icon from '@/components/icons/Icon.vue'
 
-type ChangeType = 'up' | 'down' | 'neutral'
-type IconVariant = 'primary' | 'success' | 'warning' | 'danger'
+type IconName = InstanceType<typeof Icon>['$props']['name']
+type Tone = 'default' | 'success' | 'warning' | 'danger'
 
 interface Props {
-  title: string
-  value: number | string
-  icon?: Component
-  iconVariant?: IconVariant
-  change?: number
-  changeType?: ChangeType
+  label: string
+  value?: number | string
+  sub?: string
+  icon?: IconName
+  /** 数值颜色只在数值本身带有语义时使用（例如“新增”为 success，“错误”为 danger） */
+  tone?: Tone
   formatValue?: (value: number | string) => string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  changeType: 'neutral',
-  iconVariant: 'primary'
+  value: '',
+  tone: 'default'
 })
 
 const formattedValue = computed(() => {
-  if (props.formatValue) {
-    return props.formatValue(props.value)
-  }
-  if (typeof props.value === 'number') {
-    return props.value.toLocaleString()
-  }
+  if (props.formatValue) return props.formatValue(props.value)
+  if (typeof props.value === 'number') return props.value.toLocaleString()
   return props.value
 })
 
-const formattedChange = computed(() => {
-  if (props.change === undefined) return ''
-  const absChange = Math.abs(props.change)
-  return `${absChange}%`
-})
-
-const iconClass = computed(() => {
-  const classes: Record<IconVariant, string> = {
-    primary: 'stat-icon-primary',
-    success: 'stat-icon-success',
-    warning: 'stat-icon-warning',
-    danger: 'stat-icon-danger'
+const toneClass = computed(() => {
+  const classes: Record<Tone, string> = {
+    default: '',
+    success: 'text-success',
+    warning: 'text-warning',
+    danger: 'text-danger'
   }
-  return classes[props.iconVariant]
-})
-
-const trendClass = computed(() => {
-  const classes: Record<ChangeType, string> = {
-    up: 'stat-trend-up',
-    down: 'stat-trend-down',
-    neutral: 'text-gray-500 dark:text-dark-400'
-  }
-  return classes[props.changeType]
+  return classes[props.tone]
 })
 </script>
