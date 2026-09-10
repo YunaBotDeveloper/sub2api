@@ -633,6 +633,7 @@ export default {
           descriptionLabel: 'Description',
           descriptionPlaceholder: 'e.g., Supports OpenAI format requests',
           add: 'Add Endpoint',
+          remove: 'Remove endpoint',
         },
         contactInfo: 'Contact Info',
         contactInfoPlaceholder: 'e.g., QQ: 123456789',

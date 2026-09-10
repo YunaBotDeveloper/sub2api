@@ -27,8 +27,8 @@
           />
           <button
             type="button"
-            class="flex-none rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400"
-            :title="t('common.delete')"
+            class="flex-none rounded p-1 text-gray-400 hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-500/10 dark:hover:text-danger-400"
+            :title="t('common.delete')" :aria-label="t('common.delete')"
             @click="removeRow(i)"
           >
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,7 +47,7 @@
           {{ t('admin.channelMonitor.advanced.headerAddRow') }}
         </button>
       </div>
-      <p v-if="headersError" class="mt-1 text-xs text-red-500">{{ headersError }}</p>
+      <p v-if="headersError" class="mt-1 text-xs text-danger-500">{{ headersError }}</p>
       <p v-else class="mt-1 text-xs text-gray-400">
         {{ t('admin.channelMonitor.advanced.headersHint') }}
       </p>
@@ -95,7 +95,7 @@
         spellcheck="false"
         @blur="commitBody"
       />
-      <p v-if="bodyError" class="mt-1 text-xs text-red-500">{{ bodyError }}</p>
+      <p v-if="bodyError" class="mt-1 text-xs text-danger-500">{{ bodyError }}</p>
       <p v-else class="mt-1 text-xs text-gray-400">
         {{ t('admin.channelMonitor.advanced.bodyJsonHint') }}
       </p>

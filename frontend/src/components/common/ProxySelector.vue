@@ -96,7 +96,7 @@
                 <template v-if="testResults[proxy.id]">
                   <span
                     v-if="testResults[proxy.id].success"
-                    class="inline-flex flex-shrink-0 items-center gap-1 rounded bg-emerald-100 px-1.5 py-0.5 text-xs text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                    class="inline-flex flex-shrink-0 items-center gap-1 rounded bg-success-100 px-1.5 py-0.5 text-xs text-success-700 dark:bg-success-900/30 dark:text-success-400"
                   >
                     <span v-if="testResults[proxy.id].country">{{
                       testResults[proxy.id].country
@@ -107,7 +107,7 @@
                   </span>
                   <span
                     v-else
-                    class="inline-flex flex-shrink-0 items-center rounded bg-red-100 px-1.5 py-0.5 text-xs text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                    class="inline-flex flex-shrink-0 items-center rounded bg-danger-100 px-1.5 py-0.5 text-xs text-danger-700 dark:bg-danger-900/30 dark:text-danger-400"
                   >
                     {{ t('admin.proxies.testFailed') }}
                   </span>
@@ -124,7 +124,7 @@
               @click.stop="handleTestProxy(proxy)"
               :disabled="testingProxyIds.has(proxy.id)"
               class="test-btn"
-              :title="t('admin.proxies.testConnection')"
+              :title="t('admin.proxies.testConnection')" :aria-label="t('admin.proxies.testConnection')"
             >
               <svg
                 v-if="testingProxyIds.has(proxy.id)"
@@ -374,8 +374,8 @@ onUnmounted(() => {
 
 .batch-test-btn {
   @apply flex-shrink-0 rounded-lg p-1.5;
-  @apply text-gray-500 hover:text-emerald-600 dark:hover:text-emerald-400;
-  @apply hover:bg-emerald-50 dark:hover:bg-emerald-900/20;
+  @apply text-gray-500 hover:text-success-600 dark:hover:text-success-400;
+  @apply hover:bg-success-50 dark:hover:bg-success-900/20;
   @apply transition-colors disabled:cursor-not-allowed disabled:opacity-50;
 }
 
@@ -407,8 +407,8 @@ onUnmounted(() => {
 
 .test-btn {
   @apply flex-shrink-0 rounded p-1;
-  @apply text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400;
-  @apply hover:bg-emerald-50 dark:hover:bg-emerald-900/20;
+  @apply text-gray-400 hover:text-success-600 dark:hover:text-success-400;
+  @apply hover:bg-success-50 dark:hover:bg-success-900/20;
   @apply transition-colors disabled:cursor-not-allowed disabled:opacity-50;
 }
 

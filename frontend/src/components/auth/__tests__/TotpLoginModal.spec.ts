@@ -29,6 +29,7 @@ describe('TotpLoginModal', () => {
         tempToken: 'temp-token',
         userEmailMasked: 'u***@example.com',
       },
+      global: { stubs: { Teleport: true } },
     })
 
     ;(wrapper.vm as unknown as { setError: (message: string) => void }).setError('Invalid code')
@@ -36,6 +37,6 @@ describe('TotpLoginModal', () => {
 
     expect(showErrorMock).toHaveBeenCalledWith('Invalid code')
     expect(wrapper.text()).not.toContain('Invalid code')
-    expect(wrapper.find('.bg-red-50').exists()).toBe(false)
+    expect(wrapper.find('.bg-danger-50').exists()).toBe(false)
   })
 })

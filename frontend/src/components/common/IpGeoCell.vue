@@ -36,7 +36,7 @@
     <button
       type="button"
       class="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400"
-      :title="t('usage.ipGeo.refreshTitle')"
+      :title="t('usage.ipGeo.refreshTitle')" :aria-label="t('usage.ipGeo.refreshTitle')"
       @click="handleRefresh"
     >
       <Icon name="refresh" size="xs" />
@@ -46,7 +46,7 @@
   <div v-else-if="entry.status === 'error'" class="mt-0.5 text-xs">
     <button
       type="button"
-      class="text-red-600 underline decoration-dashed underline-offset-2 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+      class="text-danger-600 underline decoration-dashed underline-offset-2 hover:text-danger-700 dark:text-danger-400 dark:hover:text-danger-300"
       @click="handleFetch"
     >
       {{ t('usage.ipGeo.failed') }}

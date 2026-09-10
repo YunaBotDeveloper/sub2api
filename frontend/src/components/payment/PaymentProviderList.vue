@@ -17,7 +17,7 @@
             @click="emit('refresh')"
             :disabled="loading"
             class="btn btn-secondary btn-sm"
-            :title="t('common.refresh')"
+            :title="t('common.refresh')" :aria-label="t('common.refresh')"
           >
             <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
           </button>

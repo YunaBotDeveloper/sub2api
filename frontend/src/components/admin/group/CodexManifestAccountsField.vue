@@ -112,7 +112,7 @@
 
       <p
         v-if="showValidationError"
-        class="mt-2 text-xs text-red-600 dark:text-red-400"
+        class="mt-2 text-xs text-danger-600 dark:text-danger-400"
         role="alert"
         data-testid="codex-manifest-validation-error"
       >

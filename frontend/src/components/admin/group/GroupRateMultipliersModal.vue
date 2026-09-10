@@ -96,7 +96,7 @@
           <div class="ml-auto">
             <button
               type="button"
-              class="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
+              class="rounded-lg border border-danger-200 bg-danger-50 px-3 py-1.5 text-sm font-medium text-danger-600 transition-colors hover:bg-danger-100 dark:border-danger-800 dark:bg-danger-900/20 dark:text-danger-400 dark:hover:bg-danger-900/40"
               @click="clearAllLocal"
             >
               {{ t('admin.groups.clearAll') }}
@@ -155,7 +155,7 @@
                         :class="[
                           'inline-flex rounded-full px-2 py-0.5 text-xs font-medium',
                           entry.user_status === 'active'
-                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                            ? 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400'
                             : 'bg-gray-100 text-gray-600 dark:bg-dark-600 dark:text-gray-400'
                         ]"
                       >
@@ -180,7 +180,7 @@
                     <td class="px-2 py-2">
                       <button
                         type="button"
-                        class="rounded p-1 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                        class="rounded p-1 text-gray-400 transition-colors hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20 dark:hover:text-danger-400"
                         @click="removeLocal(entry.user_id)"
                       >
                         <Icon name="trash" size="sm" />
@@ -207,7 +207,7 @@
       <div class="flex items-center gap-3 border-t border-gray-200 pt-4 dark:border-dark-600">
         <!-- 左侧：未保存提示 + 撤销 -->
         <template v-if="isDirty">
-          <span class="text-xs text-amber-600 dark:text-amber-400">{{ t('admin.groups.unsavedChanges') }}</span>
+          <span class="text-xs text-warning-600 dark:text-warning-400">{{ t('admin.groups.unsavedChanges') }}</span>
           <button
             type="button"
             class="text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
@@ -282,10 +282,10 @@ let searchTimeout: ReturnType<typeof setTimeout>
 
 const platformColorClass = computed(() => {
   switch (props.group?.platform) {
-    case 'anthropic': return 'text-orange-700 dark:text-orange-400'
-    case 'openai': return 'text-emerald-700 dark:text-emerald-400'
-    case 'antigravity': return 'text-purple-700 dark:text-purple-400'
-    default: return 'text-blue-700 dark:text-blue-400'
+    case 'anthropic': return 'text-warning-700 dark:text-warning-400'
+    case 'openai': return 'text-success-700 dark:text-success-400'
+    case 'antigravity': return 'text-gray-700 dark:text-gray-400'
+    default: return 'text-accent-700 dark:text-accent-400'
   }
 })
 

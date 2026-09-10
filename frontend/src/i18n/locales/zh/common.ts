@@ -221,6 +221,8 @@ export default {
     signIn: '登录',
     signingIn: '登录中...',
     passkeySignIn: '使用 Passkey 登录',
+    showPassword: '显示密码',
+    hidePassword: '隐藏密码',
     passkeySigningIn: '正在等待 Passkey...',
     passkeyCancelled: '已取消 Passkey 登录。',
     passkeyFailed: 'Passkey 登录失败，请重试。',

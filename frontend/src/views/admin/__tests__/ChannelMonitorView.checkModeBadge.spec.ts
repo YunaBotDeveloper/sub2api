@@ -149,9 +149,9 @@ describe('ChannelMonitorView check-mode badge', () => {
     const cls = modeBadge!.attributes('class')
     if (mode === 'probe') {
       expect(cls).toContain('bg-gray-100')
-      expect(cls).not.toContain('bg-blue-100')
+      expect(cls).not.toContain('bg-accent-100')
     } else {
-      expect(cls).toContain('bg-blue-100')
+      expect(cls).toContain('bg-accent-100')
       expect(cls).not.toContain('bg-gray-100')
     }
     wrapper.unmount()

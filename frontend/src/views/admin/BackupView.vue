@@ -192,210 +192,172 @@
           </div>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full min-w-[800px] text-sm">
-            <thead>
-              <tr class="border-b border-gray-200 text-left text-xs uppercase tracking-wide text-gray-500 dark:border-dark-700 dark:text-gray-400">
-                <th class="py-2 pr-4">ID</th>
-                <th class="py-2 pr-4">{{ t('admin.backup.columns.status') }}</th>
-                <th class="py-2 pr-4">{{ t('admin.backup.columns.fileName') }}</th>
-                <th class="py-2 pr-4">{{ t('admin.backup.columns.size') }}</th>
-                <th class="py-2 pr-4">{{ t('admin.backup.columns.parts') }}</th>
-                <th class="py-2 pr-4">{{ t('admin.backup.columns.expiresAt') }}</th>
-                <th class="py-2 pr-4">{{ t('admin.backup.columns.triggeredBy') }}</th>
-                <th class="py-2 pr-4">{{ t('admin.backup.columns.startedAt') }}</th>
-                <th class="py-2">{{ t('admin.backup.columns.actions') }}</th>
-              </tr>
-            </thead>
+        <DataTable
+          :columns="backupColumns"
+          :data="backups"
+          row-key="id"
+          :loading="loadingBackups && backups.length === 0"
+        >
+          <template #cell-id="{ value }">
+            <span class="font-mono text-meta">{{ value }}</span>
+          </template>
+          <template #cell-status="{ row }">
+            <span class="rounded px-2 py-0.5 text-meta" :class="statusClass(row.status)">
+              {{ row.status === 'running' && row.progress
+                ? t(`admin.backup.progress.${row.progress}`)
+                : t(`admin.backup.status.${row.status}`) }}
+            </span>
+          </template>
+          <template #cell-parts="{ row }">
+            {{ row.parts?.length || (row.status === 'running' ? '-' : 1) }}
+          </template>
+          <template #cell-actions="{ row }">
+            <div class="flex flex-wrap gap-1">
+              <button
+                v-if="row.status === 'completed'"
+                type="button"
+                class="btn btn-secondary btn-xs"
+                @click="downloadBackup(row.id)"
+              >
+                {{ t('admin.backup.actions.download') }}
+              </button>
+              <button
+                v-if="row.status === 'completed'"
+                type="button"
+                class="btn btn-secondary btn-xs"
+                :disabled="restoringId === row.id"
+                @click="restoreBackup(row.id)"
+              >
+                {{ restoringId === row.id ? t('common.loading') : t('admin.backup.actions.restore') }}
+              </button>
+              <button
+                v-if="row.status !== 'running'"
+                type="button"
+                class="btn btn-danger btn-xs"
+                @click="removeBackup(row.id)"
+              >
+                {{ t('common.delete') }}
+              </button>
+            </div>
+          </template>
+          <template #empty>
+            <span class="text-body text-fg-muted">{{ t('admin.backup.empty') }}</span>
+          </template>
+        </DataTable>
+      </div>
+    </div>
+
+    <!-- Cloudflare R2 Setup Guide Modal -->
+    <BaseDialog
+      :show="showR2Guide"
+      :title="t('admin.backup.r2Guide.title')"
+      width="wide"
+      close-on-click-outside
+      @close="showR2Guide = false"
+    >
+      <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">{{ t('admin.backup.r2Guide.intro') }}</p>
+
+      <!-- Step 1 -->
+      <div class="mb-5">
+        <h3 class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+          <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">1</span>
+          {{ t('admin.backup.r2Guide.step1.title') }}
+        </h3>
+        <ol class="ml-8 list-decimal space-y-1 text-sm text-gray-600 dark:text-gray-300">
+          <li>{{ t('admin.backup.r2Guide.step1.line1') }}</li>
+          <li>{{ t('admin.backup.r2Guide.step1.line2') }}</li>
+          <li>{{ t('admin.backup.r2Guide.step1.line3') }}</li>
+        </ol>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="mb-5">
+        <h3 class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+          <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">2</span>
+          {{ t('admin.backup.r2Guide.step2.title') }}
+        </h3>
+        <ol class="ml-8 list-decimal space-y-1 text-sm text-gray-600 dark:text-gray-300">
+          <li>{{ t('admin.backup.r2Guide.step2.line1') }}</li>
+          <li>{{ t('admin.backup.r2Guide.step2.line2') }}</li>
+          <li>{{ t('admin.backup.r2Guide.step2.line3') }}</li>
+          <li>{{ t('admin.backup.r2Guide.step2.line4') }}</li>
+        </ol>
+        <div class="mt-2 rounded-lg bg-warning-50 p-3 text-xs text-warning-700 dark:bg-warning-900/20 dark:text-warning-300">
+          {{ t('admin.backup.r2Guide.step2.warning') }}
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="mb-5">
+        <h3 class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+          <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">3</span>
+          {{ t('admin.backup.r2Guide.step3.title') }}
+        </h3>
+        <p class="ml-8 text-sm text-gray-600 dark:text-gray-300">{{ t('admin.backup.r2Guide.step3.desc') }}</p>
+        <code class="ml-8 mt-1 block rounded bg-gray-100 px-3 py-2 text-xs text-gray-800 dark:bg-dark-700 dark:text-gray-200">https://&lt;{{ t('admin.backup.r2Guide.step3.accountId') }}&gt;.r2.cloudflarestorage.com</code>
+      </div>
+
+      <!-- Step 4: Fill form -->
+      <div class="mb-5">
+        <h3 class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+          <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">4</span>
+          {{ t('admin.backup.r2Guide.step4.title') }}
+        </h3>
+        <div class="ml-8 overflow-hidden rounded-lg border border-gray-200 dark:border-dark-600">
+          <!-- design-system: raw table kept — key/value guide table, not a row list -->
+          <table class="w-full text-sm">
             <tbody>
-              <tr v-for="record in backups" :key="record.id" class="border-b border-gray-100 align-top dark:border-dark-800">
-                <td class="py-3 pr-4 font-mono text-xs">{{ record.id }}</td>
-                <td class="py-3 pr-4">
-                  <span
-                    class="rounded px-2 py-0.5 text-xs"
-                    :class="statusClass(record.status)"
-                  >
-                    {{ record.status === 'running' && record.progress
-                      ? t(`admin.backup.progress.${record.progress}`)
-                      : t(`admin.backup.status.${record.status}`) }}
-                  </span>
-                </td>
-                <td class="py-3 pr-4 text-xs">{{ record.file_name }}</td>
-                <td class="py-3 pr-4 text-xs">{{ formatSize(record.size_bytes) }}</td>
-                <td class="py-3 pr-4 text-xs">{{ record.parts?.length || (record.status === 'running' ? '-' : 1) }}</td>
-                <td class="py-3 pr-4 text-xs">
-                  {{ record.expires_at ? formatDate(record.expires_at) : t('admin.backup.neverExpire') }}
-                </td>
-                <td class="py-3 pr-4 text-xs">
-                  {{ record.triggered_by === 'scheduled' ? t('admin.backup.trigger.scheduled') : t('admin.backup.trigger.manual') }}
-                </td>
-                <td class="py-3 pr-4 text-xs">{{ formatDate(record.started_at) }}</td>
-                <td class="py-3 text-xs">
-                  <div class="flex flex-wrap gap-1">
-                    <button
-                      v-if="record.status === 'completed'"
-                      type="button"
-                      class="btn btn-secondary btn-xs"
-                      @click="downloadBackup(record.id)"
-                    >
-                      {{ t('admin.backup.actions.download') }}
-                    </button>
-                    <button
-                      v-if="record.status === 'completed'"
-                      type="button"
-                      class="btn btn-secondary btn-xs"
-                      :disabled="restoringId === record.id"
-                      @click="restoreBackup(record.id)"
-                    >
-                      {{ restoringId === record.id ? t('common.loading') : t('admin.backup.actions.restore') }}
-                    </button>
-                    <button
-                      v-if="record.status !== 'running'"
-                      type="button"
-                      class="btn btn-danger btn-xs"
-                      @click="removeBackup(record.id)"
-                    >
-                      {{ t('common.delete') }}
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <tr v-if="backups.length === 0">
-                <td colspan="9" class="py-6 text-center text-sm text-gray-500 dark:text-gray-400">
-                  {{ t('admin.backup.empty') }}
-                </td>
+              <tr v-for="(row, i) in r2ConfigRows" :key="i" class="border-b border-gray-100 dark:border-dark-700 last:border-0">
+                <td class="whitespace-nowrap bg-gray-50 px-3 py-2 font-medium text-gray-700 dark:bg-dark-700 dark:text-gray-300">{{ row.field }}</td>
+                <td class="px-3 py-2 text-gray-600 dark:text-gray-400"><code class="text-xs">{{ row.value }}</code></td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
-    </div>
 
-    <!-- Cloudflare R2 Setup Guide Modal -->
-    <teleport to="body">
-      <transition name="modal">
-        <div v-if="showR2Guide" class="fixed inset-0 z-50 flex items-center justify-center p-4" @mousedown.self="showR2Guide = false">
-          <div class="fixed inset-0 bg-black/50" @click="showR2Guide = false"></div>
-          <div class="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6 shadow-2xl dark:bg-dark-800">
-            <button type="button" class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" @click="showR2Guide = false">
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
+      <!-- Free tier note -->
+      <div class="rounded-lg bg-success-50 p-3 text-xs text-success-700 dark:bg-success-900/20 dark:text-success-300">
+        {{ t('admin.backup.r2Guide.freeTier') }}
+      </div>
 
-            <h2 class="mb-4 text-lg font-bold text-gray-900 dark:text-white">{{ t('admin.backup.r2Guide.title') }}</h2>
-            <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">{{ t('admin.backup.r2Guide.intro') }}</p>
-
-            <!-- Step 1 -->
-            <div class="mb-5">
-              <h3 class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-                <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">1</span>
-                {{ t('admin.backup.r2Guide.step1.title') }}
-              </h3>
-              <ol class="ml-8 list-decimal space-y-1 text-sm text-gray-600 dark:text-gray-300">
-                <li>{{ t('admin.backup.r2Guide.step1.line1') }}</li>
-                <li>{{ t('admin.backup.r2Guide.step1.line2') }}</li>
-                <li>{{ t('admin.backup.r2Guide.step1.line3') }}</li>
-              </ol>
-            </div>
-
-            <!-- Step 2 -->
-            <div class="mb-5">
-              <h3 class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-                <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">2</span>
-                {{ t('admin.backup.r2Guide.step2.title') }}
-              </h3>
-              <ol class="ml-8 list-decimal space-y-1 text-sm text-gray-600 dark:text-gray-300">
-                <li>{{ t('admin.backup.r2Guide.step2.line1') }}</li>
-                <li>{{ t('admin.backup.r2Guide.step2.line2') }}</li>
-                <li>{{ t('admin.backup.r2Guide.step2.line3') }}</li>
-                <li>{{ t('admin.backup.r2Guide.step2.line4') }}</li>
-              </ol>
-              <div class="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
-                {{ t('admin.backup.r2Guide.step2.warning') }}
-              </div>
-            </div>
-
-            <!-- Step 3 -->
-            <div class="mb-5">
-              <h3 class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-                <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">3</span>
-                {{ t('admin.backup.r2Guide.step3.title') }}
-              </h3>
-              <p class="ml-8 text-sm text-gray-600 dark:text-gray-300">{{ t('admin.backup.r2Guide.step3.desc') }}</p>
-              <code class="ml-8 mt-1 block rounded bg-gray-100 px-3 py-2 text-xs text-gray-800 dark:bg-dark-700 dark:text-gray-200">https://&lt;{{ t('admin.backup.r2Guide.step3.accountId') }}&gt;.r2.cloudflarestorage.com</code>
-            </div>
-
-            <!-- Step 4: Fill form -->
-            <div class="mb-5">
-              <h3 class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-                <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">4</span>
-                {{ t('admin.backup.r2Guide.step4.title') }}
-              </h3>
-              <div class="ml-8 overflow-hidden rounded-lg border border-gray-200 dark:border-dark-600">
-                <table class="w-full text-sm">
-                  <tbody>
-                    <tr v-for="(row, i) in r2ConfigRows" :key="i" class="border-b border-gray-100 dark:border-dark-700 last:border-0">
-                      <td class="whitespace-nowrap bg-gray-50 px-3 py-2 font-medium text-gray-700 dark:bg-dark-700 dark:text-gray-300">{{ row.field }}</td>
-                      <td class="px-3 py-2 text-gray-600 dark:text-gray-400"><code class="text-xs">{{ row.value }}</code></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Free tier note -->
-            <div class="rounded-lg bg-green-50 p-3 text-xs text-green-700 dark:bg-green-900/20 dark:text-green-300">
-              {{ t('admin.backup.r2Guide.freeTier') }}
-            </div>
-
-            <div class="mt-4 text-right">
-              <button type="button" class="btn btn-primary btn-sm" @click="showR2Guide = false">{{ t('common.close') }}</button>
-            </div>
-          </div>
+      <template #footer>
+        <div class="flex justify-end">
+          <button type="button" class="btn btn-primary btn-sm" @click="showR2Guide = false">{{ t('common.close') }}</button>
         </div>
-      </transition>
-    </teleport>
+      </template>
+    </BaseDialog>
+
     <!-- 分卷下载链接 -->
-    <teleport to="body">
-      <transition name="modal">
+    <BaseDialog
+      :show="downloadPartsModalOpen"
+      :title="t('admin.backup.actions.downloadParts')"
+      width="normal"
+      close-on-click-outside
+      @close="closeDownloadParts"
+    >
+      <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">{{ t('admin.backup.actions.downloadPartsHint') }}</p>
+      <div class="space-y-2">
         <div
-          v-if="downloadPartsModalOpen"
-          class="fixed inset-0 z-50 flex items-center justify-center p-4"
-          @mousedown.self="closeDownloadParts"
+          v-for="part in downloadParts"
+          :key="part.index"
+          class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 px-3 py-2 dark:border-dark-600"
         >
-          <div class="fixed inset-0 bg-black/50" @click="closeDownloadParts"></div>
-          <div class="relative max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-6 shadow-2xl dark:bg-dark-800">
-            <button
-              type="button"
-              class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-              :aria-label="t('common.close')"
-              @click="closeDownloadParts"
-            >
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-            <h2 class="mb-1 text-lg font-bold text-gray-900 dark:text-white">{{ t('admin.backup.actions.downloadParts') }}</h2>
-            <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">{{ t('admin.backup.actions.downloadPartsHint') }}</p>
-            <div class="space-y-2">
-              <div
-                v-for="part in downloadParts"
-                :key="part.index"
-                class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 px-3 py-2 dark:border-dark-600"
-              >
-                <span class="text-sm text-gray-700 dark:text-gray-300">
-                  {{ t('admin.backup.actions.partLabel', { index: part.index }) }}
-                  <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">{{ formatSize(part.size_bytes) }}</span>
-                </span>
-                <a :href="part.url" class="btn btn-secondary btn-xs" rel="noopener">
-                  {{ t('admin.backup.actions.download') }}
-                </a>
-              </div>
-            </div>
-            <div class="mt-4 text-right">
-              <button type="button" class="btn btn-primary btn-sm" @click="closeDownloadParts">{{ t('common.close') }}</button>
-            </div>
-          </div>
+          <span class="text-sm text-gray-700 dark:text-gray-300">
+            {{ t('admin.backup.actions.partLabel', { index: part.index }) }}
+            <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">{{ formatSize(part.size_bytes) }}</span>
+          </span>
+          <a :href="part.url" class="btn btn-secondary btn-xs" rel="noopener">
+            {{ t('admin.backup.actions.download') }}
+          </a>
         </div>
-      </transition>
-    </teleport>
+      </div>
+      <template #footer>
+        <div class="flex justify-end">
+          <button type="button" class="btn btn-primary btn-sm" @click="closeDownloadParts">{{ t('common.close') }}</button>
+        </div>
+      </template>
+    </BaseDialog>
     <TotpStepUpDialog :controller="backupStepUp" />
 </template>
 
@@ -413,6 +375,9 @@ import type {
 } from '@/api/admin/backup'
 import { useStepUp, isStepUpBlocked, isStepUpCancelled, stepUpBlockReason } from '@/composables/useStepUp'
 import TotpStepUpDialog from '@/components/auth/TotpStepUpDialog.vue'
+import BaseDialog from '@/components/common/BaseDialog.vue'
+import DataTable from '@/components/common/DataTable.vue'
+import type { Column } from '@/components/common/types'
 
 const { t } = useI18n()
 const appStore = useAppStore()
@@ -480,6 +445,26 @@ const restoringId = ref('')
 const manualExpireDays = ref(14)
 const downloadParts = ref<BackupDownloadPart[]>([])
 const downloadPartsModalOpen = ref(false)
+
+const backupColumns = computed<Column[]>(() => [
+  { key: 'id', label: 'ID' },
+  { key: 'status', label: t('admin.backup.columns.status') },
+  { key: 'file_name', label: t('admin.backup.columns.fileName') },
+  { key: 'size_bytes', label: t('admin.backup.columns.size'), formatter: (value) => formatSize(value) },
+  { key: 'parts', label: t('admin.backup.columns.parts') },
+  {
+    key: 'expires_at',
+    label: t('admin.backup.columns.expiresAt'),
+    formatter: (value) => (value ? formatDate(value) : t('admin.backup.neverExpire')),
+  },
+  {
+    key: 'triggered_by',
+    label: t('admin.backup.columns.triggeredBy'),
+    formatter: (value) => (value === 'scheduled' ? t('admin.backup.trigger.scheduled') : t('admin.backup.trigger.manual')),
+  },
+  { key: 'started_at', label: t('admin.backup.columns.startedAt'), formatter: (value) => formatDate(value) },
+  { key: 'actions', label: t('admin.backup.columns.actions') },
+])
 
 // Polling
 const pollingTimer = ref<ReturnType<typeof setInterval> | null>(null)
@@ -825,11 +810,11 @@ async function removeBackup(id: string) {
 function statusClass(status: string): string {
   switch (status) {
     case 'completed':
-      return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+      return 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-300'
     case 'running':
-      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+      return 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300'
     case 'failed':
-      return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+      return 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300'
     default:
       return 'bg-gray-100 text-gray-700 dark:bg-dark-800 dark:text-gray-300'
   }
@@ -872,14 +857,3 @@ onBeforeUnmount(() => {
   document.removeEventListener('visibilitychange', handleVisibilityChange)
 })
 </script>
-
-<style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.2s ease;
-}
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-</style>

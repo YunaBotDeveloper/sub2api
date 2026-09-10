@@ -62,10 +62,10 @@
         </div>
       </div>
 
-      <p v-if="hasInvalidValue" class="text-sm text-red-600 dark:text-red-400">
+      <p v-if="hasInvalidValue" class="text-sm text-danger-600 dark:text-danger-400">
         {{ t('admin.users.bulkLimits.nonNegativeInteger') }}
       </p>
-      <p v-if="selectionTooLarge" class="text-sm text-red-600 dark:text-red-400">
+      <p v-if="selectionTooLarge" class="text-sm text-danger-600 dark:text-danger-400">
         {{ t('admin.users.bulkLimits.selectionLimit', { max: MAX_BATCH_USER_IDS }) }}
       </p>
     </form>

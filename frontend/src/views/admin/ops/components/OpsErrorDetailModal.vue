@@ -125,9 +125,9 @@
 
       </div>
 
-      <div v-if="rootCauseMessage" class="rounded-xl bg-amber-50 p-6 dark:bg-amber-900/10">
-        <h3 class="text-sm font-black uppercase tracking-wider text-amber-900 dark:text-amber-200">{{ t('admin.ops.errorDetail.rootCause') }}</h3>
-        <div class="mt-3 break-words text-sm font-medium text-amber-900 dark:text-amber-100">{{ rootCauseMessage }}</div>
+      <div v-if="rootCauseMessage" class="rounded-xl bg-warning-50 p-6 dark:bg-warning-900/10">
+        <h3 class="text-sm font-black uppercase tracking-wider text-warning-900 dark:text-warning-200">{{ t('admin.ops.errorDetail.rootCause') }}</h3>
+        <div class="mt-3 break-words text-sm font-medium text-warning-900 dark:text-warning-100">{{ rootCauseMessage }}</div>
       </div>
 
       <div class="rounded-xl bg-gray-50 p-6 dark:bg-dark-900">
@@ -424,9 +424,9 @@ watch(
 )
 
 function statusBadgeClass(code: number): string {
-  if (code >= 500) return 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-400 dark:ring-red-500/30'
-  if (code === 429) return 'bg-purple-50 text-purple-700 ring-purple-600/20 dark:bg-purple-900/30 dark:text-purple-400 dark:ring-purple-500/30'
-  if (code >= 400) return 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-400 dark:ring-amber-500/30'
+  if (code >= 500) return 'bg-danger-50 text-danger-700 ring-danger-600/20 dark:bg-danger-900/30 dark:text-danger-400 dark:ring-danger-500/30'
+  if (code === 429) return 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-900/30 dark:text-gray-400 dark:ring-gray-500/30'
+  if (code >= 400) return 'bg-warning-50 text-warning-700 ring-warning-600/20 dark:bg-warning-900/30 dark:text-warning-400 dark:ring-warning-500/30'
   return 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-900/30 dark:text-gray-400 dark:ring-gray-500/30'
 }
 

@@ -27,13 +27,13 @@
       <span
         v-for="b in balanceRows"
         :key="b.currency"
-        :class="['font-medium', b.balance <= 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-300']"
+        :class="['font-medium', b.balance <= 0 ? 'text-danger-600 dark:text-danger-400' : 'text-gray-600 dark:text-gray-300']"
       >
         {{ b.balance.toFixed(2) }} {{ b.currency }}
       </span>
     </div>
 
-    <div v-if="!snapshot.success" class="truncate text-[10px] text-red-600 dark:text-red-400" :title="snapshot.error" data-testid="monitor-quota-error">
+    <div v-if="!snapshot.success" class="truncate text-[10px] text-danger-600 dark:text-danger-400" :title="snapshot.error" data-testid="monitor-quota-error">
       {{ truncatedError }}
     </div>
   </div>

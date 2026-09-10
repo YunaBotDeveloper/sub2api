@@ -8,7 +8,7 @@
       <template v-else>
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">{{ t('admin.riskControl.title') }}</h1>
+            <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">{{ t('admin.riskControl.title') }}</h2>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.description') }}</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
@@ -123,7 +123,7 @@
                     <div class="grid grid-cols-4 gap-2 text-right text-xs text-gray-500 dark:text-gray-400 sm:min-w-[280px]">
                       <div>
                         <p>{{ t('admin.riskControl.preBlockKeyActiveShort') }}</p>
-                        <p class="mt-1 text-sm font-semibold text-sky-700 dark:text-sky-300">{{ formatNumber(item.active) }}</p>
+                        <p class="mt-1 text-sm font-semibold text-accent-700 dark:text-accent-300">{{ formatNumber(item.active) }}</p>
                       </div>
                       <div>
                         <p>{{ t('admin.riskControl.preBlockKeyTotalShort') }}</p>
@@ -140,7 +140,7 @@
                     </div>
                   </div>
                   <div class="mt-3 h-1.5 overflow-hidden rounded-full bg-white dark:bg-dark-900">
-                    <div class="h-full rounded-full bg-sky-500" :style="{ width: preBlockAPIKeyLoadWidth(item.total) }"></div>
+                    <div class="h-full rounded-full bg-accent-500" :style="{ width: preBlockAPIKeyLoadWidth(item.total) }"></div>
                   </div>
                 </div>
               </div>
@@ -187,9 +187,9 @@
                   <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.activeWorkers') }}</p>
                   <p class="mt-2 text-2xl font-semibold text-gray-900 dark:text-white">{{ status?.active_workers ?? 0 }}</p>
                 </div>
-                <div class="rounded-lg bg-emerald-50 p-4 dark:bg-emerald-900/10">
+                <div class="rounded-lg bg-success-50 p-4 dark:bg-success-900/10">
                   <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.idleWorkers') }}</p>
-                  <p class="mt-2 text-2xl font-semibold text-emerald-700 dark:text-emerald-300">{{ status?.idle_workers ?? configForm.worker_count }}</p>
+                  <p class="mt-2 text-2xl font-semibold text-success-700 dark:text-success-300">{{ status?.idle_workers ?? configForm.worker_count }}</p>
                 </div>
                 <div class="rounded-lg bg-gray-50 p-4 dark:bg-dark-700/50">
                   <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.processed') }}</p>
@@ -273,93 +273,66 @@
             </div>
           </div>
 
-          <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
-              <thead class="bg-gray-50 dark:bg-dark-800">
-                <tr>
-                  <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.table.time') }}</th>
-                  <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.table.group') }}</th>
-                  <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.table.user') }}</th>
-                  <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.table.apiKey') }}</th>
-                  <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.table.endpoint') }}</th>
-                  <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.table.result') }}</th>
-                  <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.table.highest') }}</th>
-                  <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.table.actionMeta') }}</th>
-                  <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.table.latency') }}</th>
-                  <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.table.input') }}</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-100 bg-white dark:divide-dark-800 dark:bg-dark-800">
-                <tr v-if="logsLoading">
-                  <td colspan="10" class="px-5 py-12 text-center text-sm text-gray-500 dark:text-gray-400">{{ t('common.loading') }}</td>
-                </tr>
-                <tr v-else-if="logs.length === 0">
-                  <td colspan="10" class="px-5 py-12 text-center text-sm text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.emptyLogs') }}</td>
-                </tr>
-                <template v-else>
-                  <tr v-for="row in logs" :key="row.id" class="hover:bg-gray-50 dark:hover:bg-dark-700/60">
-                    <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-700 dark:text-gray-300">{{ formatDateTime(row.created_at) }}</td>
-                    <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-700 dark:text-gray-300">{{ row.group_name || '-' }}</td>
-                    <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                      <div>{{ row.user_email || '-' }}</div>
-                      <div v-if="row.user_id" class="text-xs text-gray-400">UID {{ row.user_id }}</div>
-                    </td>
-                    <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-700 dark:text-gray-300">{{ row.api_key_name || '-' }}</td>
-                    <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                      <div>{{ row.endpoint || '-' }}</div>
-                      <div class="text-xs text-gray-400">{{ row.provider || '-' }} / {{ row.model || '-' }}</div>
-                    </td>
-                    <td class="whitespace-nowrap px-5 py-4">
-                      <span class="inline-flex rounded-md px-2 py-1 text-xs font-medium" :class="resultBadgeClass(row)">
-                        {{ resultLabel(row) }}
-                      </span>
-                    </td>
-                    <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                      <div>{{ row.highest_category || '-' }}</div>
-                      <div class="text-xs text-gray-400">{{ percent(row.highest_score) }}</div>
-                      <div v-if="row.matched_keyword" class="mt-0.5 text-xs font-medium text-red-600 dark:text-red-300" :title="t('admin.riskControl.matchedKeyword') + ': ' + row.matched_keyword">
-                        {{ t('admin.riskControl.matchedKeyword') }}: {{ row.matched_keyword }}
-                      </div>
-                    </td>
-                    <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                      <div>{{ violationCountText(row) }}</div>
-                      <div class="text-xs text-gray-400">
-                        {{ row.email_sent ? t('admin.riskControl.emailSent') : t('admin.riskControl.emailNotSent') }}
-                        <span v-if="row.auto_banned"> / {{ t('admin.riskControl.autoBanned') }}</span>
-                      </div>
-                      <button
-                        v-if="canUnbanRow(row)"
-                        type="button"
-                        class="mt-2 inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-emerald-900/60 dark:bg-emerald-900/20 dark:text-emerald-300 dark:hover:bg-emerald-900/30"
-                        :disabled="unbanningUserID === row.user_id"
-                        @click="unbanUser(row)"
-                      >
-                        <Icon name="checkCircle" size="xs" :class="unbanningUserID === row.user_id ? 'animate-spin' : ''" />
-                        {{ unbanningUserID === row.user_id ? t('common.processing') : t('admin.riskControl.unbanUser') }}
-                      </button>
-                    </td>
-                    <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                      <div>{{ latencyText(row.upstream_latency_ms) }}</div>
-                      <div v-if="row.queue_delay_ms !== null && row.queue_delay_ms !== undefined" class="text-xs text-gray-400">
-                        {{ t('admin.riskControl.queueDelay', { ms: row.queue_delay_ms }) }}
-                      </div>
-                    </td>
-                    <td class="w-[320px] max-w-sm px-5 py-4 text-sm text-gray-700 dark:text-gray-300">
-                      <button
-                        type="button"
-                        class="group flex w-full min-w-0 items-center gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-gray-100 dark:hover:bg-dark-700"
-                        :title="inputSummaryText(row)"
-                        @click="openInputDetail(row)"
-                      >
-                        <span class="min-w-0 flex-1 truncate">{{ inputSummaryText(row) }}</span>
-                        <Icon name="eye" size="xs" class="flex-shrink-0 text-gray-300 transition-colors group-hover:text-primary-500 dark:text-gray-500" />
-                      </button>
-                    </td>
-                  </tr>
-                </template>
-              </tbody>
-            </table>
-          </div>
+          <DataTable :columns="logColumns" :data="logs" row-key="id" :loading="logsLoading">
+            <template #cell-created_at="{ value }">{{ formatDateTime(value) }}</template>
+            <template #cell-user="{ row }">
+              <div>{{ row.user_email || '-' }}</div>
+              <div v-if="row.user_id" class="text-meta text-fg-subtle">UID {{ row.user_id }}</div>
+            </template>
+            <template #cell-endpoint="{ row }">
+              <div>{{ row.endpoint || '-' }}</div>
+              <div class="text-meta text-fg-subtle">{{ row.provider || '-' }} / {{ row.model || '-' }}</div>
+            </template>
+            <template #cell-result="{ row }">
+              <span class="inline-flex rounded-md px-2 py-1 text-xs font-medium" :class="resultBadgeClass(row)">
+                {{ resultLabel(row) }}
+              </span>
+            </template>
+            <template #cell-highest="{ row }">
+              <div>{{ row.highest_category || '-' }}</div>
+              <div class="text-meta text-fg-subtle">{{ percent(row.highest_score) }}</div>
+              <div v-if="row.matched_keyword" class="mt-0.5 text-xs font-medium text-danger-600 dark:text-danger-300" :title="t('admin.riskControl.matchedKeyword') + ': ' + row.matched_keyword">
+                {{ t('admin.riskControl.matchedKeyword') }}: {{ row.matched_keyword }}
+              </div>
+            </template>
+            <template #cell-action="{ row }">
+              <div>{{ violationCountText(row) }}</div>
+              <div class="text-meta text-fg-subtle">
+                {{ row.email_sent ? t('admin.riskControl.emailSent') : t('admin.riskControl.emailNotSent') }}
+                <span v-if="row.auto_banned"> / {{ t('admin.riskControl.autoBanned') }}</span>
+              </div>
+              <button
+                v-if="canUnbanRow(row)"
+                type="button"
+                class="mt-2 inline-flex items-center gap-1 rounded-md border border-success-200 bg-success-50 px-2 py-1 text-xs font-medium text-success-700 transition-colors hover:bg-success-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-success-900/60 dark:bg-success-900/20 dark:text-success-300 dark:hover:bg-success-900/30"
+                :disabled="unbanningUserID === row.user_id"
+                @click="unbanUser(row)"
+              >
+                <Icon name="checkCircle" size="xs" :class="unbanningUserID === row.user_id ? 'animate-spin' : ''" />
+                {{ unbanningUserID === row.user_id ? t('common.processing') : t('admin.riskControl.unbanUser') }}
+              </button>
+            </template>
+            <template #cell-latency="{ row }">
+              <div>{{ latencyText(row.upstream_latency_ms) }}</div>
+              <div v-if="row.queue_delay_ms !== null && row.queue_delay_ms !== undefined" class="text-meta text-fg-subtle">
+                {{ t('admin.riskControl.queueDelay', { ms: row.queue_delay_ms }) }}
+              </div>
+            </template>
+            <template #cell-input="{ row }">
+              <button
+                type="button"
+                class="group flex w-full min-w-0 items-center gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-gray-100 dark:hover:bg-dark-700"
+                :title="inputSummaryText(row)"
+                @click="openInputDetail(row)"
+              >
+                <span class="min-w-0 flex-1 truncate">{{ inputSummaryText(row) }}</span>
+                <Icon name="eye" size="xs" class="flex-shrink-0 text-gray-300 transition-colors group-hover:text-primary-500 dark:text-gray-500" />
+              </button>
+            </template>
+            <template #empty>
+              <span class="text-body text-fg-muted">{{ t('admin.riskControl.emptyLogs') }}</span>
+            </template>
+          </DataTable>
 
           <Pagination
             v-if="pagination.total > 0"
@@ -495,7 +468,7 @@
                       <button
                         type="button"
                         class="rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
-                        :class="configForm.api_keys_mode === 'replace' ? 'bg-amber-500 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700'"
+                        :class="configForm.api_keys_mode === 'replace' ? 'bg-warning-500 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700'"
                         :disabled="configForm.clear_api_key"
                         @click="setAPIKeysMode('replace')"
                       >
@@ -517,13 +490,13 @@
                     <span v-if="configForm.api_key_configured" class="inline-flex rounded-md bg-gray-100 px-2 py-1 dark:bg-dark-700">
                       {{ t('admin.riskControl.storedApiKeyCount', { count: configForm.api_key_count }) }}
                     </span>
-                    <span v-if="configForm.clear_api_key" class="inline-flex rounded-md bg-red-50 px-2 py-1 text-red-700 dark:bg-red-900/20 dark:text-red-300">
+                    <span v-if="configForm.clear_api_key" class="inline-flex rounded-md bg-danger-50 px-2 py-1 text-danger-700 dark:bg-danger-900/20 dark:text-danger-300">
                       {{ t('admin.riskControl.apiKeyWillClear') }}
                     </span>
-                    <span v-else-if="pendingDeletedApiKeyCount > 0" class="inline-flex rounded-md bg-amber-50 px-2 py-1 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+                    <span v-else-if="pendingDeletedApiKeyCount > 0" class="inline-flex rounded-md bg-warning-50 px-2 py-1 text-warning-700 dark:bg-warning-900/20 dark:text-warning-300">
                       {{ t('admin.riskControl.apiKeyPendingDeleteCount', { count: pendingDeletedApiKeyCount }) }}
                     </span>
-                    <span v-if="configForm.api_keys_mode === 'replace'" class="inline-flex rounded-md bg-amber-50 px-2 py-1 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+                    <span v-if="configForm.api_keys_mode === 'replace'" class="inline-flex rounded-md bg-warning-50 px-2 py-1 text-warning-700 dark:bg-warning-900/20 dark:text-warning-300">
                       {{ t('admin.riskControl.apiKeysReplaceWarning') }}
                     </span>
                   </div>
@@ -610,7 +583,7 @@
                         v-for="(row, index) in visibleApiKeyRows"
                         :key="apiKeyRowKey(row, index)"
                         class="rounded-lg border bg-white p-2.5 shadow-sm dark:bg-dark-800"
-                        :class="isStoredApiKeyPendingDelete(row) ? 'border-amber-200 opacity-70 dark:border-amber-800/60' : 'border-gray-100 dark:border-dark-700'"
+                        :class="isStoredApiKeyPendingDelete(row) ? 'border-warning-200 opacity-70 dark:border-warning-800/60' : 'border-gray-100 dark:border-dark-700'"
                       >
                         <div class="flex items-start justify-between gap-2">
                           <div class="min-w-0">
@@ -618,7 +591,7 @@
                               <span class="truncate font-mono text-sm font-semibold text-gray-900 dark:text-white">{{ row.masked || '-' }}</span>
                               <span
                                 class="inline-flex rounded-md px-1.5 py-0.5 text-[11px] font-medium"
-                                :class="row.configured ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' : 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'"
+                                :class="row.configured ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' : 'bg-gray-50 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300'"
                               >
                                 {{ isStoredApiKeyPendingDelete(row) ? t('admin.riskControl.apiKeyPendingDelete') : row.configured ? t('admin.riskControl.apiKeyConfigured') : t('admin.riskControl.apiKeyTemporary') }}
                               </span>
@@ -634,14 +607,14 @@
                               v-if="row.configured && !configForm.clear_api_key"
                               type="button"
                               class="inline-flex h-7 w-7 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-dark-700 dark:hover:text-gray-200"
-                              :title="isStoredApiKeyPendingDelete(row) ? t('admin.riskControl.undoDeleteApiKey') : t('admin.riskControl.deleteApiKey')"
+                              :title="isStoredApiKeyPendingDelete(row) ? t('admin.riskControl.undoDeleteApiKey') : t('admin.riskControl.deleteApiKey')" :aria-label="isStoredApiKeyPendingDelete(row) ? t('admin.riskControl.undoDeleteApiKey') : t('admin.riskControl.deleteApiKey')"
                               @click="toggleDeleteStoredApiKey(row)"
                             >
                               <Icon :name="isStoredApiKeyPendingDelete(row) ? 'refresh' : 'trash'" size="xs" />
                             </button>
                           </div>
                         </div>
-                        <p v-if="row.last_error" class="mt-1.5 rounded-md bg-amber-50 px-2 py-1.5 text-xs leading-5 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+                        <p v-if="row.last_error" class="mt-1.5 rounded-md bg-warning-50 px-2 py-1.5 text-xs leading-5 text-warning-700 dark:bg-warning-900/20 dark:text-warning-300">
                           {{ row.last_error }}
                         </p>
                       </div>
@@ -670,7 +643,7 @@
                           {{ t('admin.riskControl.auditTestHighest', { category: moderationTestResult.highest_category || '-', score: percent(moderationTestResult.highest_score) }) }}
                         </p>
                       </div>
-                      <span class="inline-flex rounded-full px-2 py-1 text-xs font-medium" :class="moderationTestResult.flagged ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300'">
+                      <span class="inline-flex rounded-full px-2 py-1 text-xs font-medium" :class="moderationTestResult.flagged ? 'bg-danger-50 text-danger-700 dark:bg-danger-900/20 dark:text-danger-300' : 'bg-success-50 text-success-700 dark:bg-success-900/20 dark:text-success-300'">
                         {{ moderationTestResult.flagged ? t('admin.riskControl.auditTestFlagged') : t('admin.riskControl.auditTestPassed') }}
                       </span>
                     </div>
@@ -680,7 +653,7 @@
                         <span class="font-semibold text-gray-900 dark:text-white">{{ percent(moderationTestResult.composite_score) }}</span>
                       </div>
                       <div class="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-dark-700">
-                        <div class="h-full rounded-full" :class="moderationTestResult.flagged ? 'bg-red-500' : 'bg-emerald-500'" :style="{ width: percentWidth(moderationTestResult.composite_score) }"></div>
+                        <div class="h-full rounded-full" :class="moderationTestResult.flagged ? 'bg-danger-500' : 'bg-success-500'" :style="{ width: percentWidth(moderationTestResult.composite_score) }"></div>
                       </div>
                     </div>
                     <div class="mt-3 max-h-52 space-y-2 overflow-y-auto pr-1">
@@ -690,7 +663,7 @@
                           <span class="font-mono text-gray-500 dark:text-gray-400">{{ percent(score.score) }} / {{ percent(score.threshold) }}</span>
                         </div>
                         <div class="h-1.5 overflow-hidden rounded-full bg-gray-100 dark:bg-dark-700">
-                          <div class="h-full rounded-full" :class="score.hit ? 'bg-red-500' : 'bg-primary-500'" :style="{ width: percentWidth(score.score) }"></div>
+                          <div class="h-full rounded-full" :class="score.hit ? 'bg-danger-500' : 'bg-primary-500'" :style="{ width: percentWidth(score.score) }"></div>
                         </div>
                       </div>
                     </div>
@@ -836,7 +809,7 @@
                   </div>
                   <button
                     type="button"
-                    class="btn btn-secondary inline-flex items-center justify-center gap-2 text-red-600 hover:text-red-700 dark:text-red-300"
+                    class="btn btn-secondary inline-flex items-center justify-center gap-2 text-danger-600 hover:text-danger-700 dark:text-danger-300"
                     :disabled="hashActionLoading || (status?.flagged_hash_count ?? 0) === 0"
                     @click="clearFlaggedHashes"
                   >
@@ -1086,9 +1059,9 @@
                 {{ inputDetailRow.highest_category || '-' }} / {{ percent(inputDetailRow.highest_score) }}
               </p>
             </div>
-            <div v-if="inputDetailRow.matched_keyword" class="rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-900/60 dark:bg-red-900/20">
-              <p class="text-xs font-medium text-red-500 dark:text-red-300">{{ t('admin.riskControl.matchedKeyword') }}</p>
-              <p class="mt-1 truncate text-sm font-semibold text-red-700 dark:text-red-200" :title="inputDetailRow.matched_keyword">{{ inputDetailRow.matched_keyword }}</p>
+            <div v-if="inputDetailRow.matched_keyword" class="rounded-lg border border-danger-100 bg-danger-50 p-4 dark:border-danger-900/60 dark:bg-danger-900/20">
+              <p class="text-xs font-medium text-danger-500 dark:text-danger-300">{{ t('admin.riskControl.matchedKeyword') }}</p>
+              <p class="mt-1 truncate text-sm font-semibold text-danger-700 dark:text-danger-200" :title="inputDetailRow.matched_keyword">{{ inputDetailRow.matched_keyword }}</p>
             </div>
           </div>
 
@@ -1100,7 +1073,7 @@
                   {{ inputDetailRow.endpoint || '-' }} · {{ inputDetailRow.provider || '-' }} / {{ inputDetailRow.model || '-' }}
                 </p>
               </div>
-              <span v-if="inputDetailRow.group_name" class="inline-flex rounded-md bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-700 dark:bg-sky-900/20 dark:text-sky-300">
+              <span v-if="inputDetailRow.group_name" class="inline-flex rounded-md bg-accent-50 px-2.5 py-1 text-xs font-medium text-accent-700 dark:bg-accent-900/20 dark:text-accent-300">
                 {{ inputDetailRow.group_name }}
               </span>
             </div>
@@ -1123,6 +1096,8 @@ import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import BaseDialog from '@/components/common/BaseDialog.vue'
+import DataTable from '@/components/common/DataTable.vue'
+import type { Column } from '@/components/common/types'
 import Icon from '@/components/icons/Icon.vue'
 import Select from '@/components/common/Select.vue'
 import Toggle from '@/components/common/Toggle.vue'
@@ -1148,7 +1123,7 @@ import { useAppStore } from '@/stores/app'
 import { extractApiErrorMessage } from '@/utils/apiError'
 import { formatDateTime as formatDateTimeValue } from '@/utils/format'
 
-type SettingsTab = 'basic' | 'scope' | 'runtime' | 'response' | 'riskThresholds' | 'retention' | 'keywords'
+type SettingsTab ='basic' | 'scope' | 'runtime' | 'response' | 'riskThresholds' | 'retention' | 'keywords'
 type WorkerSlotState = 'active' | 'idle' | 'disabled'
 type APIKeysWriteMode = 'append' | 'replace'
 type OverviewIcon = 'shield' | 'key' | 'users' | 'document'
@@ -1213,6 +1188,18 @@ const flaggedHashInput = ref('')
 const groups = ref<AdminGroup[]>([])
 const proxies = ref<Proxy[]>([])
 const logs = ref<ContentModerationLog[]>([])
+const logColumns = computed<Column[]>(() => [
+  { key: 'created_at', label: t('admin.riskControl.table.time') },
+  { key: 'group_name', label: t('admin.riskControl.table.group'), formatter: (value) => value || '-' },
+  { key: 'user', label: t('admin.riskControl.table.user') },
+  { key: 'api_key_name', label: t('admin.riskControl.table.apiKey'), formatter: (value) => value || '-' },
+  { key: 'endpoint', label: t('admin.riskControl.table.endpoint') },
+  { key: 'result', label: t('admin.riskControl.table.result') },
+  { key: 'highest', label: t('admin.riskControl.table.highest') },
+  { key: 'action', label: t('admin.riskControl.table.actionMeta') },
+  { key: 'latency', label: t('admin.riskControl.table.latency') },
+  { key: 'input', label: t('admin.riskControl.table.input'), class: 'w-[320px] max-w-sm' },
+])
 const status = ref<ContentModerationRuntimeStatus | null>(null)
 const testedApiKeyStatuses = ref<ContentModerationAPIKeyStatus[]>([])
 const pendingDeleteApiKeyHashes = ref<string[]>([])
@@ -1348,9 +1335,9 @@ const keywordNoticeTones = {
   },
   warning: {
     icon: 'exclamationTriangle' as const,
-    toneClass: 'border-amber-200 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-900/20',
-    iconClass: 'mt-0.5 flex-shrink-0 text-amber-500 dark:text-amber-300',
-    titleClass: 'text-amber-700 dark:text-amber-200',
+    toneClass: 'border-warning-200 bg-warning-50 dark:border-warning-900/40 dark:bg-warning-900/20',
+    iconClass: 'mt-0.5 flex-shrink-0 text-warning-500 dark:text-warning-300',
+    titleClass: 'text-warning-700 dark:text-warning-200',
   },
 }
 
@@ -1529,7 +1516,7 @@ const overviewItems = computed<OverviewItem[]>(() => [
     meta: modeLabel(configForm.mode),
     icon: 'shield',
     iconClass: configForm.enabled
-      ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-300'
+      ? 'bg-success-50 text-success-600 dark:bg-success-900/20 dark:text-success-300'
       : 'bg-gray-100 text-gray-500 dark:bg-dark-700 dark:text-gray-400',
     badge: runtimeBadgeText.value,
     badgeClass: runtimeBadgeClass.value,
@@ -1540,7 +1527,7 @@ const overviewItems = computed<OverviewItem[]>(() => [
     value: configForm.api_key_configured ? t('admin.riskControl.apiKeyCount', { count: configForm.api_key_count }) : t('admin.riskControl.notConfigured'),
     meta: configForm.api_key_configured ? apiKeyHealthSummary.value || configForm.model || '-' : configForm.model || '-',
     icon: 'key',
-    iconClass: 'bg-sky-50 text-sky-600 dark:bg-sky-900/20 dark:text-sky-300',
+    iconClass: 'bg-accent-50 text-accent-600 dark:bg-accent-900/20 dark:text-accent-300',
   },
   {
     key: 'scope',
@@ -1548,7 +1535,7 @@ const overviewItems = computed<OverviewItem[]>(() => [
     value: configForm.all_groups ? t('admin.riskControl.allGroups') : selectedGroupCount.value,
     meta: modelFilterSummary.value,
     icon: 'users',
-    iconClass: 'bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-300',
+    iconClass: 'bg-gray-50 text-gray-600 dark:bg-gray-900/20 dark:text-gray-300',
   },
   {
     key: 'logs',
@@ -1556,7 +1543,7 @@ const overviewItems = computed<OverviewItem[]>(() => [
     value: formatNumber(pagination.total),
     meta: t('admin.riskControl.overview.currentFilter'),
     icon: 'document',
-    iconClass: 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-300',
+    iconClass: 'bg-warning-50 text-warning-600 dark:bg-warning-900/20 dark:text-warning-300',
   },
 ])
 
@@ -1607,8 +1594,8 @@ const preBlockMetricItems = computed(() => [
     label: t('admin.riskControl.preBlockActive'),
     value: formatNumber(status.value?.pre_block_active ?? 0),
     meta: t('admin.riskControl.preBlockActiveHint'),
-    class: 'bg-sky-50 dark:bg-sky-900/10',
-    valueClass: 'text-sky-700 dark:text-sky-300',
+    class: 'bg-accent-50 dark:bg-accent-900/10',
+    valueClass: 'text-accent-700 dark:text-accent-300',
   },
   {
     key: 'checked',
@@ -1623,32 +1610,32 @@ const preBlockMetricItems = computed(() => [
     label: t('admin.riskControl.preBlockAllowed'),
     value: formatNumber(status.value?.pre_block_allowed ?? 0),
     meta: t('admin.riskControl.preBlockAllowedHint'),
-    class: 'bg-emerald-50 dark:bg-emerald-900/10',
-    valueClass: 'text-emerald-700 dark:text-emerald-300',
+    class: 'bg-success-50 dark:bg-success-900/10',
+    valueClass: 'text-success-700 dark:text-success-300',
   },
   {
     key: 'blocked',
     label: t('admin.riskControl.preBlockBlocked'),
     value: formatNumber(status.value?.pre_block_blocked ?? 0),
     meta: t('admin.riskControl.preBlockBlockedHint'),
-    class: 'bg-rose-50 dark:bg-rose-900/10',
-    valueClass: 'text-rose-700 dark:text-rose-300',
+    class: 'bg-danger-50 dark:bg-danger-900/10',
+    valueClass: 'text-danger-700 dark:text-danger-300',
   },
   {
     key: 'errors',
     label: t('admin.riskControl.preBlockErrors'),
     value: formatNumber(status.value?.pre_block_errors ?? 0),
     meta: t('admin.riskControl.preBlockErrorsHint'),
-    class: 'bg-amber-50 dark:bg-amber-900/10',
-    valueClass: 'text-amber-700 dark:text-amber-300',
+    class: 'bg-warning-50 dark:bg-warning-900/10',
+    valueClass: 'text-warning-700 dark:text-warning-300',
   },
   {
     key: 'latency',
     label: t('admin.riskControl.preBlockAvgLatency'),
     value: `${formatNumber(status.value?.pre_block_avg_latency_ms ?? 0)} ms`,
     meta: t('admin.riskControl.preBlockAvgLatencyHint'),
-    class: 'bg-violet-50 dark:bg-violet-900/10',
-    valueClass: 'text-violet-700 dark:text-violet-300',
+    class: 'bg-gray-50 dark:bg-gray-900/10',
+    valueClass: 'text-gray-700 dark:text-gray-300',
   },
 ])
 
@@ -1695,7 +1682,7 @@ const runtimeBadgeClass = computed(() => {
   if (!status.value?.risk_control_enabled || !configForm.enabled || configForm.mode === 'off') {
     return 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
   }
-  return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300'
+  return 'bg-success-50 text-success-700 dark:bg-success-900/20 dark:text-success-300'
 })
 
 function applyConfig(config: ContentModerationConfig) {
@@ -2140,25 +2127,25 @@ function resultLabel(row: ContentModerationLog): string {
 }
 
 function resultBadgeClass(row: ContentModerationLog): string {
-  if (row.action === 'block' || row.action === 'keyword_block' || row.action === 'cyber_policy') return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-  if (row.action === 'error' || row.error) return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
-  if (row.flagged) return 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300'
-  return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+  if (row.action === 'block' || row.action === 'keyword_block' || row.action === 'cyber_policy') return 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300'
+  if (row.action === 'error' || row.error) return 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300'
+  if (row.flagged) return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300'
+  return 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-300'
 }
 
 function workerSlotClass(state: WorkerSlotState): string {
   if (state === 'active') {
-    return 'border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-900/60 dark:bg-sky-900/20 dark:text-sky-300'
+    return 'border-accent-200 bg-accent-50 text-accent-700 dark:border-accent-900/60 dark:bg-accent-900/20 dark:text-accent-300'
   }
   if (state === 'idle') {
-    return 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-900/20 dark:text-emerald-300'
+    return 'border-success-200 bg-success-50 text-success-700 dark:border-success-900/60 dark:bg-success-900/20 dark:text-success-300'
   }
   return 'border-gray-100 bg-white text-gray-400 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-500'
 }
 
 function workerDotClass(state: WorkerSlotState): string {
-  if (state === 'active') return 'bg-sky-500'
-  if (state === 'idle') return 'bg-emerald-500'
+  if (state === 'active') return 'bg-accent-500'
+  if (state === 'idle') return 'bg-success-500'
   return 'bg-gray-300 dark:bg-dark-500'
 }
 
@@ -2193,9 +2180,9 @@ function apiKeyStatusLabel(statusValue: ContentModerationAPIKeyStatus['status'])
 
 function apiKeyStatusBadgeClass(statusValue: ContentModerationAPIKeyStatus['status']): string {
   const classes: Record<ContentModerationAPIKeyStatus['status'], string> = {
-    ok: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300',
-    error: 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300',
-    frozen: 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300',
+    ok: 'bg-success-50 text-success-700 dark:bg-success-900/20 dark:text-success-300',
+    error: 'bg-warning-50 text-warning-700 dark:bg-warning-900/20 dark:text-warning-300',
+    frozen: 'bg-danger-50 text-danger-700 dark:bg-danger-900/20 dark:text-danger-300',
     unknown: 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300',
   }
   return classes[statusValue] ?? classes.unknown
@@ -2203,9 +2190,9 @@ function apiKeyStatusBadgeClass(statusValue: ContentModerationAPIKeyStatus['stat
 
 function apiKeyStatusDotClass(statusValue: ContentModerationAPIKeyStatus['status']): string {
   const classes: Record<ContentModerationAPIKeyStatus['status'], string> = {
-    ok: 'bg-emerald-500',
-    error: 'bg-amber-500',
-    frozen: 'bg-red-500',
+    ok: 'bg-success-500',
+    error: 'bg-warning-500',
+    frozen: 'bg-danger-500',
     unknown: 'bg-gray-400',
   }
   return classes[statusValue] ?? classes.unknown

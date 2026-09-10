@@ -36,7 +36,7 @@
         type="button"
         class="h-8 w-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-dark-700 transition-colors disabled:opacity-50"
         :disabled="loading"
-        :title="t('common.refresh')"
+        :title="t('common.refresh')" :aria-label="t('common.refresh')"
         @click="emit('refresh')"
       >
         <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
@@ -96,20 +96,20 @@ const overallLabel = computed(() => t(`channelStatus.overall.${props.overallStat
 const overallChipClass = computed(() => {
   switch (props.overallStatus) {
     case 'operational':
-      return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+      return 'bg-success-100 text-success-700 dark:bg-success-500/15 dark:text-success-300'
     case 'degraded':
     default:
-      return 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+      return 'bg-warning-100 text-warning-700 dark:bg-warning-500/15 dark:text-warning-300'
   }
 })
 
 const overallDotClass = computed(() => {
   switch (props.overallStatus) {
     case 'operational':
-      return 'bg-emerald-500 animate-pulse'
+      return 'bg-success-500 animate-pulse'
     case 'degraded':
     default:
-      return 'bg-amber-500 animate-pulse'
+      return 'bg-warning-500 animate-pulse'
   }
 })
 

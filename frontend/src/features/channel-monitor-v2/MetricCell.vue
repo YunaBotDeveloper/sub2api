@@ -1,6 +1,6 @@
 <template>
   <div
-    class="stat-card !min-h-[6.5rem] !rounded-3xl !border-0 !p-4 shadow-sm ring-1 ring-gray-900/5 dark:!bg-dark-800 dark:ring-dark-700"
+    class="stat-card !min-h-[6.5rem] !rounded-lg !border-0 !p-4 shadow-sm ring-1 ring-gray-900/5 dark:!bg-dark-800 dark:ring-dark-700"
     :title="title || undefined"
   >
     <div
@@ -65,16 +65,16 @@ const resolvedState = computed(() => (missingValue.value ? undefined : props.sta
 
 const stateClass = computed(() => {
   if (!resolvedState.value) return missingValue.value ? 'text-gray-500 dark:text-dark-400' : 'text-gray-900 dark:text-white'
-  if (resolvedState.value === 'healthy') return 'text-emerald-600 dark:text-emerald-400'
-  if (resolvedState.value === 'warning') return 'text-amber-600 dark:text-amber-400'
-  if (resolvedState.value === 'critical') return 'text-red-600 dark:text-red-400'
+  if (resolvedState.value === 'healthy') return 'text-success-600 dark:text-success-400'
+  if (resolvedState.value === 'warning') return 'text-warning-600 dark:text-warning-400'
+  if (resolvedState.value === 'critical') return 'text-danger-600 dark:text-danger-400'
   return 'text-gray-500 dark:text-dark-400'
 })
 
 const dotClass = computed(() => {
-  if (resolvedState.value === 'healthy') return 'bg-emerald-500'
-  if (resolvedState.value === 'warning') return 'bg-amber-500'
-  if (resolvedState.value === 'critical') return 'bg-red-500'
+  if (resolvedState.value === 'healthy') return 'bg-success-500'
+  if (resolvedState.value === 'warning') return 'bg-warning-500'
+  if (resolvedState.value === 'critical') return 'bg-danger-500'
   return 'bg-gray-300 dark:bg-dark-600'
 })
 </script>
