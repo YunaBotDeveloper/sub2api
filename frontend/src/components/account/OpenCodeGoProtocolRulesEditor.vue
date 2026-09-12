@@ -41,7 +41,7 @@
         </select>
         <button
           type="button"
-          class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+          class="rounded-lg p-2 text-danger-500 transition-colors hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20"
           :aria-label="t('admin.accounts.opencodeGo.protocolRules.remove')"
           @click="removeRow(index)"
         >
