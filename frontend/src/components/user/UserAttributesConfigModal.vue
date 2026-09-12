@@ -71,14 +71,14 @@
             <button
               @click="openEditModal(attr)"
               class="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
-              :title="t('common.edit')"
+              :title="t('common.edit')" :aria-label="t('common.edit')"
             >
               <Icon name="edit" size="sm" />
             </button>
             <button
               @click="confirmDelete(attr)"
-              class="rounded-lg p-1.5 text-gray-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
-              :title="t('common.delete')"
+              class="rounded-lg p-1.5 text-gray-500 hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20 dark:hover:text-danger-400"
+              :title="t('common.delete')" :aria-label="t('common.delete')"
             >
               <Icon name="trash" size="sm" />
             </button>
@@ -161,7 +161,7 @@
           <button
             type="button"
             @click="removeOption(index)"
-            class="rounded-lg p-1.5 text-gray-500 hover:bg-red-50 hover:text-red-600"
+            class="rounded-lg p-1.5 text-gray-500 hover:bg-danger-50 hover:text-danger-600"
           >
             <Icon name="x" size="sm" :stroke-width="2" />
           </button>

@@ -74,8 +74,8 @@ describe('Ops request latency details', () => {
     expect(wrapper.text()).not.toContain('12000 ms')
     expect(wrapper.text()).not.toContain('9000 ms')
     expect(wrapper.text()).not.toContain('5000 ms')
-    if (desktop) expect(wrapper.findAll('tbody tr')[2].findAll('td')[4].text()).toBe('-')
-    else expect(wrapper.text()).toContain('admin.ops.ttftLabel: -')
+    // DataTable 在窄屏也是同一张表（横向滚动），不再有独立的卡片布局。
+    expect(wrapper.findAll('tbody tr')[2].findAll('td')[4].text()).toBe('-')
     wrapper.unmount()
   })
 

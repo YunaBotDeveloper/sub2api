@@ -640,6 +640,7 @@ export default {
           descriptionLabel: '介绍',
           descriptionPlaceholder: '如：支持 OpenAI 格式请求',
           add: '添加端点',
+          remove: '删除端点',
         },
         contactInfo: '客服联系方式',
         contactInfoPlaceholder: '例如：QQ: 123456789',

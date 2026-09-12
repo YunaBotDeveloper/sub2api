@@ -24,7 +24,7 @@
       <div v-if="!enabled" class="mb-5 text-sm text-gray-500 dark:text-gray-400">
         {{ t('profile.passkey.featureDisabled') }}
       </div>
-      <div v-if="enabled && !supported" class="mb-5 text-sm text-amber-600 dark:text-amber-400">
+      <div v-if="enabled && !supported" class="mb-5 text-sm text-warning-600 dark:text-warning-400">
         {{ t('profile.passkey.unsupported') }}
       </div>
       <div>
@@ -94,7 +94,7 @@
                 </p>
                 <span
                   v-if="credential.backup"
-                  class="rounded-full bg-green-50 px-2 py-0.5 text-xs text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                  class="rounded-full bg-success-50 px-2 py-0.5 text-xs text-success-700 dark:bg-success-900/30 dark:text-success-300"
                 >
                   {{ t('profile.passkey.synced') }}
                 </span>
@@ -117,7 +117,7 @@
               </button>
               <button
                 type="button"
-                class="btn btn-ghost btn-sm text-red-600 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/30"
+                class="btn btn-ghost btn-sm text-danger-600 hover:bg-danger-50 dark:text-danger-300 dark:hover:bg-danger-950/30"
                 :disabled="busy"
                 @click="deletePasskey(credential)"
               >
@@ -130,49 +130,45 @@
     </div>
 
     <!-- 删除确认：吊销凭据需验证当前密码，防止被窃会话静默移除 Passkey -->
-    <div v-if="deleteTarget" class="fixed inset-0 z-50 overflow-y-auto">
-      <div class="flex min-h-full items-center justify-center p-4">
-        <div class="fixed inset-0 bg-black/50 transition-opacity" @click="closeDeleteDialog"></div>
-        <div
-          class="relative w-full max-w-md transform rounded-xl bg-white p-6 shadow-xl transition-all dark:bg-dark-800"
-        >
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-            {{ t('profile.passkey.deleteTitle') }}
-          </h3>
-          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-            {{ t('profile.passkey.deleteConfirm', { name: deleteTarget.name }) }}
-          </p>
-          <form class="mt-4 space-y-4" @submit.prevent="confirmDelete">
-            <div>
-              <label for="passkey-delete-password" class="input-label">{{
-                t('profile.currentPassword')
-              }}</label>
-              <input
-                id="passkey-delete-password"
-                v-model="deletePassword"
-                type="password"
-                autocomplete="current-password"
-                class="input"
-                :placeholder="t('profile.passkey.passwordPlaceholder')"
-                autofocus
-              />
-            </div>
-            <div class="flex justify-end gap-3">
-              <button type="button" class="btn btn-secondary" :disabled="busy" @click="closeDeleteDialog">
-                {{ t('common.cancel') }}
-              </button>
-              <button
-                type="submit"
-                class="btn btn-danger"
-                :disabled="busy || deletePassword.length === 0"
-              >
-                {{ busy ? t('common.processing') : t('common.delete') }}
-              </button>
-            </div>
-          </form>
+    <BaseDialog
+      :show="deleteTarget !== null"
+      :title="t('profile.passkey.deleteTitle')"
+      width="narrow"
+      close-on-click-outside
+      @close="closeDeleteDialog"
+    >
+      <p class="text-body text-fg-muted">
+        {{ t('profile.passkey.deleteConfirm', { name: deleteTarget?.name ?? '' }) }}
+      </p>
+      <form class="mt-4 space-y-4" @submit.prevent="confirmDelete">
+        <div>
+          <label for="passkey-delete-password" class="input-label">{{
+            t('profile.currentPassword')
+          }}</label>
+          <input
+            id="passkey-delete-password"
+            v-model="deletePassword"
+            type="password"
+            autocomplete="current-password"
+            class="input"
+            :placeholder="t('profile.passkey.passwordPlaceholder')"
+            autofocus
+          />
         </div>
-      </div>
-    </div>
+        <div class="flex justify-end gap-3">
+          <button type="button" class="btn btn-secondary" :disabled="busy" @click="closeDeleteDialog">
+            {{ t('common.cancel') }}
+          </button>
+          <button
+            type="submit"
+            class="btn btn-danger"
+            :disabled="busy || deletePassword.length === 0"
+          >
+            {{ busy ? t('common.processing') : t('common.delete') }}
+          </button>
+        </div>
+      </form>
+    </BaseDialog>
   </div>
 </template>
 
@@ -181,6 +177,7 @@ import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { passkeyAPI, type PasskeyCredentialSummary } from '@/api'
 import { Icon } from '@/components/icons'
+import BaseDialog from '@/components/common/BaseDialog.vue'
 import { useAppStore } from '@/stores/app'
 
 const props = defineProps<{ enabled: boolean }>()

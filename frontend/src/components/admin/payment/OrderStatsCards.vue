@@ -3,8 +3,8 @@
     <!-- Today Revenue -->
     <div class="card p-4">
       <div class="flex items-center gap-3">
-        <div class="rounded-lg bg-green-100 p-2 dark:bg-green-900/30">
-          <Icon name="dollar" size="md" class="text-green-600 dark:text-green-400" :stroke-width="2" />
+        <div class="rounded-lg bg-success-100 p-2 dark:bg-success-900/30">
+          <Icon name="dollar" size="md" class="text-success-600 dark:text-success-400" :stroke-width="2" />
         </div>
         <div>
           <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('payment.admin.todayRevenue') }}</p>
@@ -21,8 +21,8 @@
     <!-- Total Revenue -->
     <div class="card p-4">
       <div class="flex items-center gap-3">
-        <div class="rounded-lg bg-blue-100 p-2 dark:bg-blue-900/30">
-          <Icon name="creditCard" size="md" class="text-blue-600 dark:text-blue-400" :stroke-width="2" />
+        <div class="rounded-lg bg-accent-100 p-2 dark:bg-accent-900/30">
+          <Icon name="creditCard" size="md" class="text-accent-600 dark:text-accent-400" :stroke-width="2" />
         </div>
         <div>
           <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('payment.admin.totalRevenue') }}</p>
@@ -39,8 +39,8 @@
     <!-- Today Orders -->
     <div class="card p-4">
       <div class="flex items-center gap-3">
-        <div class="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/30">
-          <Icon name="chart" size="md" class="text-purple-600 dark:text-purple-400" :stroke-width="2" />
+        <div class="rounded-lg bg-gray-100 p-2 dark:bg-gray-900/30">
+          <Icon name="chart" size="md" class="text-gray-600 dark:text-gray-400" :stroke-width="2" />
         </div>
         <div>
           <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('payment.admin.todayOrders') }}</p>
@@ -52,8 +52,8 @@
     <!-- Average Amount -->
     <div class="card p-4">
       <div class="flex items-center gap-3">
-        <div class="rounded-lg bg-amber-100 p-2 dark:bg-amber-900/30">
-          <Icon name="chart" size="md" class="text-amber-600 dark:text-amber-400" :stroke-width="2" />
+        <div class="rounded-lg bg-warning-100 p-2 dark:bg-warning-900/30">
+          <Icon name="chart" size="md" class="text-warning-600 dark:text-warning-400" :stroke-width="2" />
         </div>
         <div>
           <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('payment.admin.avgAmount') }}</p>

@@ -180,7 +180,7 @@
               <!-- Auto Recover Badge -->
               <span
                 v-if="plan.auto_recover"
-                class="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400"
+                class="inline-flex items-center rounded-full bg-success-100 px-2 py-0.5 text-xs font-medium text-success-700 dark:bg-success-500/20 dark:text-success-400"
               >
                 {{ t('admin.scheduledTests.autoRecover') }}
               </span>
@@ -203,15 +203,15 @@
               <div class="flex items-center gap-1" @click.stop>
                 <button
                   @click="startEdit(plan)"
-                  class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-500 dark:hover:bg-blue-900/20"
-                  :title="t('admin.scheduledTests.editPlan')"
+                  class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-accent-50 hover:text-accent-500 dark:hover:bg-accent-900/20"
+                  :title="t('admin.scheduledTests.editPlan')" :aria-label="t('admin.scheduledTests.editPlan')"
                 >
                   <Icon name="edit" size="sm" :stroke-width="2" />
                 </button>
                 <button
                   @click="confirmDeletePlan(plan)"
-                  class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
-                  :title="t('admin.scheduledTests.deletePlan')"
+                  class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-danger-50 hover:text-danger-500 dark:hover:bg-danger-900/20"
+                  :title="t('admin.scheduledTests.deletePlan')" :aria-label="t('admin.scheduledTests.deletePlan')"
                 >
                   <Icon name="trash" size="sm" :stroke-width="2" />
                 </button>
@@ -232,7 +232,7 @@
           <!-- Edit Form -->
           <div
             v-if="editingPlanId === plan.id"
-            class="border-t border-blue-100 bg-blue-50/50 px-4 py-3 dark:border-blue-900 dark:bg-blue-900/10"
+            class="border-t border-accent-100 bg-accent-50/50 px-4 py-3 dark:border-accent-900 dark:bg-accent-900/10"
             @click.stop
           >
             <div class="mb-2 text-xs font-medium text-gray-600 dark:text-gray-400">
@@ -373,10 +373,10 @@
                       :class="[
                         'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
                         result.status === 'success'
-                          ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400'
+                          ? 'bg-success-100 text-success-700 dark:bg-success-500/20 dark:text-success-400'
                           : result.status === 'running'
-                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400'
-                            : 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400'
+                            ? 'bg-accent-100 text-accent-700 dark:bg-accent-500/20 dark:text-accent-400'
+                            : 'bg-danger-100 text-danger-700 dark:bg-danger-500/20 dark:text-danger-400'
                       ]"
                     >
                       {{
@@ -403,7 +403,7 @@
                 <!-- Response / Error (collapsible) -->
                 <div v-if="result.error_message" class="mt-2">
                   <div
-                    class="cursor-pointer text-xs font-medium text-red-600 dark:text-red-400"
+                    class="cursor-pointer text-xs font-medium text-danger-600 dark:text-danger-400"
                     @click="toggleResultDetail(result.id)"
                   >
                     {{ t('admin.scheduledTests.errorMessage') }}
@@ -418,7 +418,7 @@
                   </div>
                   <pre
                     v-if="expandedResultIds.has(result.id)"
-                    class="mt-1 max-h-32 overflow-auto whitespace-pre-wrap rounded bg-red-50 p-2 text-xs text-red-700 dark:bg-red-900/20 dark:text-red-300"
+                    class="mt-1 max-h-32 overflow-auto whitespace-pre-wrap rounded bg-danger-50 p-2 text-xs text-danger-700 dark:bg-danger-900/20 dark:text-danger-300"
                   >{{ result.error_message }}</pre>
                 </div>
                 <div v-else-if="result.response_text" class="mt-2">

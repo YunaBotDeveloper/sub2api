@@ -11,14 +11,14 @@
         <div>
           <label class="input-label">
             {{ t('admin.settings.payment.providerName') }}
-            <span class="text-red-500">*</span>
+            <span class="text-danger-500">*</span>
           </label>
           <input v-model="form.name" type="text" class="input" required />
         </div>
         <div>
           <label class="input-label">
             {{ t('admin.settings.payment.providerKey') }}
-            <span class="text-red-500">*</span>
+            <span class="text-danger-500">*</span>
           </label>
           <Select
             v-model="form.provider_key"
@@ -80,7 +80,7 @@
             <label class="input-label">
               {{ field.label }}
               <span v-if="field.optional" class="text-xs text-gray-400">({{ t('common.optional') }})</span>
-              <span v-else class="text-red-500"> *</span>
+              <span v-else class="text-danger-500"> *</span>
             </label>
             <textarea
               v-if="field.sensitive && field.key.toLowerCase().includes('key') && field.key !== 'pkey'"
@@ -137,14 +137,14 @@
         <!-- Callback URLs (each = editable URL + fixed path) -->
         <div v-if="callbackPaths" class="mt-4 space-y-3">
           <div v-if="callbackPaths.notifyUrl">
-            <label class="input-label">{{ t('admin.settings.payment.field_notifyUrl') }} <span class="text-red-500">*</span></label>
+            <label class="input-label">{{ t('admin.settings.payment.field_notifyUrl') }} <span class="text-danger-500">*</span></label>
             <div class="flex">
               <input v-model="notifyBaseUrl" type="text" class="input min-w-0 flex-1 !rounded-r-none !border-r-0" :placeholder="defaultBaseUrl" />
               <span class="inline-flex items-center whitespace-nowrap rounded-r-lg border border-gray-300 bg-gray-50 px-3 text-xs text-gray-500 dark:border-dark-600 dark:bg-dark-700 dark:text-gray-400">{{ callbackPaths.notifyUrl }}</span>
             </div>
           </div>
           <div v-if="callbackPaths.returnUrl">
-            <label class="input-label">{{ t('admin.settings.payment.field_returnUrl') }} <span class="text-red-500">*</span></label>
+            <label class="input-label">{{ t('admin.settings.payment.field_returnUrl') }} <span class="text-danger-500">*</span></label>
             <div class="flex">
               <input v-model="returnBaseUrl" type="text" class="input min-w-0 flex-1 !rounded-r-none !border-r-0" :placeholder="defaultBaseUrl" />
               <span class="inline-flex items-center whitespace-nowrap rounded-r-lg border border-gray-300 bg-gray-50 px-3 text-xs text-gray-500 dark:border-dark-600 dark:bg-dark-700 dark:text-gray-400">{{ callbackPaths.returnUrl }}</span>
@@ -153,11 +153,11 @@
         </div>
 
         <!-- 服务商 Webhook 提示 -->
-        <div v-if="providerWebhookUrl" class="mt-3 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800/50 dark:bg-blue-900/20">
-          <p class="text-xs text-blue-700 dark:text-blue-300">
+        <div v-if="providerWebhookUrl" class="mt-3 rounded-lg border border-accent-200 bg-accent-50 p-3 dark:border-accent-800/50 dark:bg-accent-900/20">
+          <p class="text-xs text-accent-700 dark:text-accent-300">
             {{ t(providerWebhookHint) }}
           </p>
-          <code class="mt-1 block break-all rounded bg-blue-100 px-2 py-1 text-xs text-blue-800 dark:bg-blue-900/40 dark:text-blue-200">
+          <code class="mt-1 block break-all rounded bg-accent-100 px-2 py-1 text-xs text-accent-800 dark:bg-accent-900/40 dark:text-accent-200">
             {{ providerWebhookUrl }}
           </code>
         </div>

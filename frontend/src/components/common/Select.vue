@@ -521,7 +521,7 @@ onUnmounted(() => {
 }
 
 .select-trigger-error {
-  @apply border-red-500 focus:border-red-500 focus:ring-red-500/30;
+  @apply border-danger-500 focus:border-danger-500 focus:ring-danger-500/30;
 }
 
 .select-trigger-disabled {

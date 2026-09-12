@@ -16,7 +16,7 @@
 
       <button
         type="button"
-        class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium text-blue-600 transition-colors hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+        class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium text-accent-600 transition-colors hover:bg-accent-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-accent-400 dark:hover:bg-accent-900/30"
         :disabled="loading || resetting"
         :title="countButtonTitle"
         @click="handleQuery()"
@@ -40,7 +40,7 @@
 
       <button
         type="button"
-        class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium text-orange-600 transition-colors hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-orange-400 dark:hover:bg-orange-900/30"
+        class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium text-warning-600 transition-colors hover:bg-warning-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-warning-400 dark:hover:bg-warning-900/30"
         :disabled="resetting || loading || !canReset"
         :title="resetButtonTitle"
         @click="openResetConfirm"
@@ -82,7 +82,7 @@
       </span>
       <span
         v-if="autoResetState.error_code"
-        class="max-w-full truncate text-red-600 dark:text-red-400"
+        class="max-w-full truncate text-danger-600 dark:text-danger-400"
         :title="autoResetState.error_code"
       >
         {{ autoResetState.error_code }}
@@ -132,20 +132,20 @@
     <!-- Error / success feedback -->
     <div
       v-if="error"
-      class="text-[10px] text-red-600 dark:text-red-400"
+      class="text-[10px] text-danger-600 dark:text-danger-400"
       :title="error"
     >
       {{ truncatedError }}
     </div>
     <div
       v-else-if="resetWarning"
-      class="text-[10px] text-amber-600 dark:text-amber-400"
+      class="text-[10px] text-warning-600 dark:text-warning-400"
     >
       {{ resetWarning }}
     </div>
     <div
       v-else-if="resetMessage"
-      class="text-[10px] text-emerald-600 dark:text-emerald-400"
+      class="text-[10px] text-success-600 dark:text-success-400"
     >
       {{ resetMessage }}
     </div>
@@ -221,14 +221,14 @@ const autoResetStateLabel = computed(() => {
 const autoResetStateClass = computed(() => {
   switch (autoResetState.value?.status) {
     case 'available':
-      return 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+      return 'bg-accent-50 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300'
     case 'success':
-      return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+      return 'bg-success-50 text-success-700 dark:bg-success-900/30 dark:text-success-300'
     case 'no_credit':
     case 'failed':
-      return 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+      return 'bg-danger-50 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300'
     case 'resetting':
-      return 'bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300'
+      return 'bg-warning-50 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300'
     default:
       return 'bg-gray-100 text-gray-600 dark:bg-dark-800 dark:text-gray-300'
   }

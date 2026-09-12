@@ -69,19 +69,19 @@
 
       <div
         v-if="order.refund_amount"
-        class="rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-900/20"
+        class="rounded-lg border border-danger-200 bg-danger-50 p-3 dark:border-danger-800 dark:bg-danger-900/20"
       >
-        <h4 class="mb-2 text-sm font-semibold text-red-700 dark:text-red-400">
+        <h4 class="mb-2 text-sm font-semibold text-danger-700 dark:text-danger-400">
           {{ t('payment.admin.refundInfo') }}
         </h4>
         <div class="grid grid-cols-2 gap-2 text-sm">
           <div>
-            <span class="text-red-600 dark:text-red-400">{{ t('payment.admin.refundAmount') }}:</span>
-            <span class="ml-1 font-medium text-red-700 dark:text-red-300">{{ creditedAmountSymbol }}{{ order.refund_amount.toFixed(2) }}</span>
+            <span class="text-danger-600 dark:text-danger-400">{{ t('payment.admin.refundAmount') }}:</span>
+            <span class="ml-1 font-medium text-danger-700 dark:text-danger-300">{{ creditedAmountSymbol }}{{ order.refund_amount.toFixed(2) }}</span>
           </div>
           <div v-if="order.refund_reason" class="col-span-2">
-            <span class="text-red-600 dark:text-red-400">{{ t('payment.admin.refundReason') }}:</span>
-            <span class="ml-1 text-red-700 dark:text-red-300">{{ order.refund_reason }}</span>
+            <span class="text-danger-600 dark:text-danger-400">{{ t('payment.admin.refundReason') }}:</span>
+            <span class="ml-1 text-danger-700 dark:text-danger-300">{{ order.refund_reason }}</span>
           </div>
         </div>
       </div>
@@ -90,7 +90,7 @@
         <button
           v-if="order.status === 'PENDING'"
           @click="emit('cancel', order)"
-          class="btn btn-sm rounded-md bg-yellow-50 px-3 py-1.5 text-sm text-yellow-600 hover:bg-yellow-100 dark:bg-yellow-900/20 dark:text-yellow-400 dark:hover:bg-yellow-900/30"
+          class="btn btn-sm rounded-md bg-warning-50 px-3 py-1.5 text-sm text-warning-600 hover:bg-warning-100 dark:bg-warning-900/20 dark:text-warning-400 dark:hover:bg-warning-900/30"
         >
           {{ t('payment.orders.cancel') }}
         </button>

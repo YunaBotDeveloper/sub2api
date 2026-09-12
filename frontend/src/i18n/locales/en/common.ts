@@ -223,6 +223,8 @@ export default {
     signIn: 'Sign In',
     signingIn: 'Signing in...',
     passkeySignIn: 'Sign in with a passkey',
+    showPassword: 'Show password',
+    hidePassword: 'Hide password',
     passkeySigningIn: 'Waiting for passkey...',
     passkeyCancelled: 'Passkey sign-in was cancelled.',
     passkeyFailed: 'Passkey sign-in failed. Please try again.',

@@ -92,7 +92,7 @@ function methodLabel(method: PaymentMethodOption): string {
 function methodSelectedClass(type: string): string {
   switch (type) {
     case SEPAY_BANK_TRANSFER:
-      return 'border-[#0A66C2] bg-blue-50 text-gray-900 shadow-sm dark:bg-blue-950 dark:text-gray-100'
+      return 'border-accent-600 bg-accent-50 text-gray-900 shadow-sm dark:bg-accent-950 dark:text-gray-100'
     default:
       return 'border-primary-500 bg-primary-50 text-gray-900 shadow-sm dark:bg-primary-950 dark:text-gray-100'
   }

@@ -1,20 +1,18 @@
 <template>
   <div class="space-y-6">
     <!-- Date Range Filter -->
-    <div class="card p-4">
-      <div class="flex flex-wrap items-center gap-4">
-        <div class="flex items-center gap-2">
-          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('dashboard.timeRange') }}:</span>
-          <DateRangePicker :start-date="startDate" :end-date="endDate" @update:startDate="$emit('update:startDate', $event)" @update:endDate="$emit('update:endDate', $event)" @change="$emit('dateRangeChange', $event)" />
-        </div>
-        <button @click="$emit('refresh')" :disabled="loading" class="btn btn-secondary">
-          {{ t('common.refresh') }}
-        </button>
-        <div class="ml-auto flex items-center gap-2">
-          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('dashboard.granularity') }}:</span>
-          <div class="w-28">
-            <Select :model-value="granularity" :options="[{value:'day', label:t('dashboard.day')}, {value:'hour', label:t('dashboard.hour')}]" @update:model-value="$emit('update:granularity', $event)" @change="$emit('granularityChange')" />
-          </div>
+    <div class="card flex flex-wrap items-center gap-3 p-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-label font-medium text-fg-muted">{{ t('dashboard.timeRange') }}</span>
+        <DateRangePicker :start-date="startDate" :end-date="endDate" @update:startDate="$emit('update:startDate', $event)" @update:endDate="$emit('update:endDate', $event)" @change="$emit('dateRangeChange', $event)" />
+      </div>
+      <button type="button" @click="$emit('refresh')" :disabled="loading" class="btn btn-secondary btn-sm">
+        {{ t('common.refresh') }}
+      </button>
+      <div class="flex items-center gap-2 sm:ml-auto">
+        <span class="text-label font-medium text-fg-muted">{{ t('dashboard.granularity') }}</span>
+        <div class="w-28">
+          <Select :model-value="granularity" :options="[{value:'day', label:t('dashboard.day')}, {value:'hour', label:t('dashboard.hour')}]" @update:model-value="$emit('update:granularity', $event)" @change="$emit('granularityChange')" />
         </div>
       </div>
     </div>
@@ -22,40 +20,42 @@
     <!-- Charts Grid -->
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <!-- Model Distribution Chart -->
-      <div class="card relative overflow-hidden p-4">
-        <div v-if="loading" class="absolute inset-0 z-10 flex items-center justify-center bg-white/50 backdrop-blur-sm dark:bg-dark-800/50">
+      <section class="card relative overflow-hidden">
+        <div v-if="loading" class="absolute inset-0 z-10 flex items-center justify-center bg-surface-raised/70">
           <LoadingSpinner size="md" />
         </div>
-        <h3 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">{{ t('dashboard.modelDistribution') }}</h3>
-        <div class="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
+        <div class="card-header">
+          <h3 class="text-h3 font-semibold text-fg">{{ t('dashboard.modelDistribution') }}</h3>
+        </div>
+        <div class="card-body flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-6">
           <div class="h-48 w-48 shrink-0">
             <Doughnut v-if="modelData" :data="modelData" :options="doughnutOptions" />
-            <div v-else class="flex h-full items-center justify-center text-sm text-gray-500 dark:text-gray-400">{{ t('dashboard.noDataAvailable') }}</div>
+            <div v-else class="flex h-full items-center justify-center text-body text-fg-muted">{{ t('dashboard.noDataAvailable') }}</div>
           </div>
           <div class="max-h-48 w-full min-w-0 flex-1 overflow-auto">
-            <table class="w-full text-xs">
+            <table class="w-full">
               <thead>
-                <tr class="text-gray-500 dark:text-gray-400">
-                  <th class="pb-2 text-left">{{ t('dashboard.model') }}</th>
-                  <th class="pb-2 text-right">{{ t('dashboard.requests') }}</th>
-                  <th class="pb-2 text-right">{{ t('dashboard.tokens') }}</th>
-                  <th class="pb-2 text-right">{{ t('dashboard.actual') }}</th>
-                  <th class="pb-2 text-right">{{ t('dashboard.standard') }}</th>
+                <tr class="text-label font-medium text-fg-muted">
+                  <th class="pb-2 text-left font-medium">{{ t('dashboard.model') }}</th>
+                  <th class="pb-2 text-right font-medium">{{ t('dashboard.requests') }}</th>
+                  <th class="pb-2 text-right font-medium">{{ t('dashboard.tokens') }}</th>
+                  <th class="pb-2 text-right font-medium">{{ t('dashboard.actual') }}</th>
+                  <th class="pb-2 text-right font-medium">{{ t('dashboard.standard') }}</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr v-for="model in models" :key="model.model" class="border-t border-gray-100 dark:border-dark-700">
-                  <td class="max-w-[100px] truncate py-1.5 font-medium text-gray-900 dark:text-white" :title="model.model">{{ model.model }}</td>
-                  <td class="py-1.5 text-right text-gray-600 dark:text-gray-400">{{ formatNumber(model.requests) }}</td>
-                  <td class="py-1.5 text-right text-gray-600 dark:text-gray-400">{{ formatTokens(model.total_tokens) }}</td>
-                  <td class="py-1.5 text-right text-green-600 dark:text-green-400">${{ formatCost(model.actual_cost) }}</td>
-                  <td class="py-1.5 text-right text-gray-400 dark:text-gray-500">${{ formatCost(model.cost) }}</td>
+              <tbody class="text-body">
+                <tr v-for="model in models" :key="model.model" class="border-t border-border">
+                  <td class="max-w-[100px] truncate py-1.5 font-medium text-fg" :title="model.model">{{ model.model }}</td>
+                  <td class="py-1.5 text-right font-mono tabular-nums text-fg-muted">{{ formatNumber(model.requests) }}</td>
+                  <td class="py-1.5 text-right font-mono tabular-nums text-fg-muted">{{ formatTokens(model.total_tokens) }}</td>
+                  <td class="py-1.5 text-right font-mono tabular-nums text-fg">${{ formatCost(model.actual_cost) }}</td>
+                  <td class="py-1.5 text-right font-mono tabular-nums text-fg-subtle">${{ formatCost(model.cost) }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
-      </div>
+      </section>
 
       <!-- Token Usage Trend Chart -->
       <TokenUsageTrend :trend-data="trend" :loading="loading" />
