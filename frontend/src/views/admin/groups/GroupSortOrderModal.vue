@@ -47,7 +47,9 @@
                                 ? 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400'
                                 : group.platform === 'minimax'
                                   ? 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400'
-                                  : 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400',
+                                  : group.platform === 'opencode_go'
+                                    ? 'bg-warning-100 text-warning-800 dark:bg-warning-900/30 dark:text-warning-300'
+                                    : 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400',
                 ]"
               >
                 {{ t("admin.groups.platforms." + group.platform) }}

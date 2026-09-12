@@ -101,6 +101,7 @@
           <!-- Pending (unverified) emails in verification flow -->
           <div v-if="pendingEmails.length > 0" class="space-y-2 mb-3">
             <div v-for="(pe, idx) in pendingEmails" :key="pe.email"
+              data-test="pending-email-row"
               class="flex items-center gap-2 px-3 py-2 bg-warning-50 dark:bg-warning-900/10 rounded-lg border border-warning-200 dark:border-warning-800">
               <span class="flex-1 text-sm text-gray-700 dark:text-gray-300">{{ pe.email }}</span>
               <div v-if="!pe.codeSent" class="flex items-center gap-1">
@@ -305,7 +306,7 @@ async function verifyPending(idx: number) {
   try {
     await userAPI.verifyNotifyEmail(pe.email, pe.code)
     if (pe.timer) clearInterval(pe.timer)
-    pendingEmails.value.splice(idx, 1)
+    pendingEmails.value = pendingEmails.value.filter(entry => entry !== pe)
     appStore.showSuccess(t('profile.balanceNotify.verifySuccess'))
     const updated = await userAPI.getProfile()
     authStore.user = updated

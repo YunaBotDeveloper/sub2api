@@ -981,6 +981,7 @@
                     | 'all'
                     | 'priority'
                     | 'flex'
+                    | 'missing'
                 "
                 :options="openaiFastPolicyTierOptions"
               />

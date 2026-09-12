@@ -168,6 +168,36 @@
   <div class="card">
     <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
       <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+        {{ t('admin.settings.features.siteBillingMode.title') }}
+      </h2>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        {{ t('admin.settings.features.siteBillingMode.description') }}
+      </p>
+    </div>
+    <div class="space-y-5 p-6">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div class="min-w-0">
+          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            {{ t('admin.settings.features.siteBillingMode.label') }}
+          </label>
+          <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+            {{ siteBillingModeHint }}
+          </p>
+        </div>
+        <div class="w-full shrink-0 sm:w-56">
+          <Select
+            :modelValue="siteBillingMode"
+            :options="siteBillingModeOptions"
+            @update:modelValue="siteBillingMode = $event as SiteBillingMode"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
         {{ t('admin.settings.features.modelPlaza.title') }}
       </h2>
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -715,6 +745,8 @@
 <script setup lang="ts">
 import { useSettingsViewContext } from "./context";
 import Toggle from "@/components/common/Toggle.vue";
+import Select from "@/components/common/Select.vue";
+import type { SiteBillingMode } from "@/utils/siteBillingMode";
 
 // 纯移动拆分：所有状态与方法来自 SettingsView 提供的上下文（openspec: rebuild-frontend-design-system Phase 3）
 const ctx = useSettingsViewContext();
@@ -734,6 +766,9 @@ const {
   openAffiliateBatchModal,
   openAffiliateModal,
   selectAffiliateUser,
+  siteBillingMode,
+  siteBillingModeHint,
+  siteBillingModeOptions,
   submitAffiliateBatchModal,
   submitAffiliateModal,
   t,

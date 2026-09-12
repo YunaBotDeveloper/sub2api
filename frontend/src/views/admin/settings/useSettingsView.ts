@@ -1,6 +1,14 @@
 // 由 SettingsView.vue 的 <script setup> 纯移动而来（openspec: rebuild-frontend-design-system Phase 3）。
 // 所有状态、计算属性与方法在此定义，通过 provide/inject 供各 Tab 组件使用。
 import { ref, reactive, computed, onMounted, watch } from "vue";
+import type { SelectOption } from "@/components/common/Select.vue";
+import {
+  SITE_BILLING_MODES,
+  SITE_BILLING_MODE_I18N_KEYS,
+  billingModeToSettings,
+  resolveSiteBillingMode,
+  type SiteBillingMode,
+} from "@/utils/siteBillingMode";
 import { useI18n } from "vue-i18n";
 import { adminAPI } from "@/api";
 import {
@@ -994,6 +1002,7 @@ export function useSettingsView() {
       visibility: "user" | "admin";
       sort_order: number;
       pass_token: boolean;
+      hide_open_button?: boolean;
     }>,
     custom_endpoints: [] as Array<{
       name: string;
@@ -1191,6 +1200,8 @@ export function useSettingsView() {
     channel_monitor_hide_user_ranking: false,
     // Available Channels feature switch
     available_channels_enabled: false,
+    // Subscription feature switch (user sidebar "My Subscriptions" entry)
+    subscription_enabled: true,
     // Model Plaza feature switches + description
     model_plaza_enabled: false,
     model_plaza_require_auth: false,
@@ -1941,6 +1952,7 @@ export function useSettingsView() {
       url: "",
       visibility: "user",
       sort_order: form.custom_menu_items.length,
+      hide_open_button: false,
       // 安全默认：不向内嵌页面透传访问令牌
       pass_token: false,
     });
@@ -2364,6 +2376,28 @@ export function useSettingsView() {
   ) {
     authSourceDefaults[source].subscriptions.splice(index, 1);
   }
+
+  // 站点类型：由 subscription_enabled 与 payment_balance_disabled 两个开关派生的单选，
+  // 保存时同时写回两者，避免出现「既无充值也无订阅」的组合。
+  const siteBillingModeOptions = computed<SelectOption[]>(() =>
+    SITE_BILLING_MODES.map((mode) => ({
+      value: mode,
+      label: t(
+        `admin.settings.features.siteBillingMode.options.${SITE_BILLING_MODE_I18N_KEYS[mode]}`,
+      ),
+    })),
+  );
+  const siteBillingMode = computed<SiteBillingMode>({
+    get: () => resolveSiteBillingMode(form),
+    set: (mode) => {
+      Object.assign(form, billingModeToSettings(mode));
+    },
+  });
+  const siteBillingModeHint = computed(() =>
+    t(
+      `admin.settings.features.siteBillingMode.hints.${SITE_BILLING_MODE_I18N_KEYS[siteBillingMode.value]}`,
+    ),
+  );
 
   function findDuplicateDefaultSubscription(
     subscriptions: DefaultSubscriptionSetting[],
@@ -2858,6 +2892,8 @@ export function useSettingsView() {
         channel_monitor_hide_user_ranking: Boolean(form.channel_monitor_hide_user_ranking),
         // Available Channels feature switch
         available_channels_enabled: form.available_channels_enabled,
+        // Subscription feature switch
+        subscription_enabled: form.subscription_enabled,
         // Model Plaza feature switches + description
         model_plaza_enabled: form.model_plaza_enabled,
         model_plaza_require_auth: form.model_plaza_require_auth,
@@ -3518,6 +3554,7 @@ export function useSettingsView() {
       label: t("admin.settings.openaiFastPolicy.tierUltrafast"),
     },
     { value: "flex", label: t("admin.settings.openaiFastPolicy.tierFlex") },
+    { value: "missing", label: t("admin.settings.openaiFastPolicy.tierMissing") },
   ]);
 
   const openaiFastPolicyActionOptions = computed(() => [
@@ -4399,6 +4436,9 @@ export function useSettingsView() {
     addAuthSourceDefaultSubscription,
     removeAuthSourceDefaultSubscription,
     findDuplicateDefaultSubscription,
+    siteBillingMode,
+    siteBillingModeOptions,
+    siteBillingModeHint,
     saveSettings,
     testSmtpConnection,
     sendTestEmail,

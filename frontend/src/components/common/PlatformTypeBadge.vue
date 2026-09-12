@@ -69,6 +69,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { AccountPlatform, AccountType } from '@/types'
 import { platformLabel as sharedPlatformLabel } from '@/utils/platformColors'
+import { normalizePlanType, openAIPlanTypeLabel } from '@/utils/planType'
 import GrokFreeIcon from './GrokFreeIcon.vue'
 import PlatformIcon from './PlatformIcon.vue'
 import Icon from '@/components/icons/Icon.vue'
@@ -113,12 +114,16 @@ const typeLabel = computed(() => {
   }
 })
 
-const normalizedPlanType = computed(() =>
-  (props.planType || '').trim().toLowerCase().replace(/[\s_-]+/g, '')
-)
+const normalizedPlanType = computed(() => normalizePlanType(props.planType))
 
 const planLabel = computed(() => {
   if (!normalizedPlanType.value) return ''
+  // ChatGPT 档位命名（Pro 5x / Pro 20x、Business Standard / Business Premium）只适用于
+  // OpenAI：Antigravity 与 Grok 各自的 pro/team 沿用下面的通用标签。
+  if (props.platform === 'openai') {
+    const label = openAIPlanTypeLabel(props.planType)
+    if (label) return label
+  }
   switch (normalizedPlanType.value) {
     case 'plus':
       return 'Plus'
@@ -254,11 +259,16 @@ const planBadgeClass = computed(() => {
   if (normalizedPlanType.value === 'plus') {
     return 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300'
   }
-  if (normalizedPlanType.value === 'team') {
-    return 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300'
+  // 三档必须互相可分：plus=accent、team=primary、pro=warning，free/basic 留给 gray。
+  if (normalizedPlanType.value === 'team' || normalizedPlanType.value === 'selfservebusinessprolite') {
+    return 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
   }
-  if (normalizedPlanType.value === 'pro' || normalizedPlanType.value === 'chatgptpro') {
-    return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300'
+  if (
+    normalizedPlanType.value === 'pro' ||
+    normalizedPlanType.value === 'chatgptpro' ||
+    normalizedPlanType.value === 'prolite'
+  ) {
+    return 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300'
   }
   return typeClass.value
 })

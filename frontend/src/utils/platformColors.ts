@@ -15,6 +15,7 @@ export type Platform =
   | 'zhipu'
   | 'deepseek'
   | 'minimax'
+  | 'opencode_go'
   | 'composite'
 
 // ── Badge (bg + text + border, for inline badges with border) ───────
@@ -28,6 +29,7 @@ const BADGE: Record<Platform, string> = {
   zhipu: 'bg-accent-500/10 text-accent-600 border-accent-500/30 dark:text-accent-400',
   deepseek: 'bg-accent-500/10 text-accent-600 border-accent-500/30 dark:text-accent-400',
   minimax: 'bg-danger-500/10 text-danger-600 border-danger-500/30 dark:text-danger-400',
+  opencode_go: 'bg-warning-500/10 text-warning-700 border-warning-500/30 dark:text-warning-300',
   composite: 'bg-accent-500/10 text-accent-700 border-accent-500/30 dark:text-accent-300',
 }
 const BADGE_DEFAULT = 'bg-gray-500/10 text-gray-600 border-gray-500/30 dark:text-gray-400'
@@ -43,6 +45,7 @@ const BADGE_LIGHT: Record<Platform, string> = {
   zhipu: 'bg-accent-500/10 text-accent-600 dark:bg-accent-500/10 dark:text-accent-300',
   deepseek: 'bg-accent-500/10 text-accent-600 dark:bg-accent-500/10 dark:text-accent-300',
   minimax: 'bg-danger-500/10 text-danger-600 dark:bg-danger-500/10 dark:text-danger-300',
+  opencode_go: 'bg-warning-500/10 text-warning-700 dark:bg-warning-500/10 dark:text-warning-300',
   composite: 'bg-accent-500/10 text-accent-700 dark:bg-accent-500/10 dark:text-accent-300',
 }
 
@@ -57,6 +60,7 @@ const BORDER: Record<Platform, string> = {
   zhipu: 'border-accent-500/20 dark:border-accent-500/20',
   deepseek: 'border-accent-500/20 dark:border-accent-500/20',
   minimax: 'border-danger-500/20 dark:border-danger-500/20',
+  opencode_go: 'border-warning-500/20 dark:border-warning-500/20',
   composite: 'border-accent-500/20 dark:border-accent-500/20',
 }
 const BORDER_DEFAULT = 'border-gray-200 dark:border-dark-700'
@@ -72,6 +76,7 @@ const BORDER_STRONG: Record<Platform, string> = {
   zhipu: 'border-accent-500/35 dark:border-accent-500/30',
   deepseek: 'border-accent-500/35 dark:border-accent-500/30',
   minimax: 'border-danger-500/35 dark:border-danger-500/30',
+  opencode_go: 'border-warning-500/35 dark:border-warning-500/30',
   composite: 'border-accent-500/35 dark:border-accent-500/30',
 }
 const BORDER_STRONG_DEFAULT = 'border-gray-300 dark:border-dark-600'
@@ -88,6 +93,7 @@ const ACCENT: Record<Platform, string> = {
   zhipu: '#6366f1', // accent-500
   deepseek: '#14b8a6', // accent-500
   minimax: '#f43f5e', // danger-500
+  opencode_go: '#f59e0b', // warning-500
   composite: '#06b6d4', // accent-500
 }
 const ACCENT_DEFAULT = '#14b8a6' // primary-500 (teal)
@@ -103,6 +109,7 @@ const ACCENT_BAR: Record<Platform, string> = {
   zhipu: ' bg-accent-400',
   deepseek: ' bg-accent-400',
   minimax: ' bg-danger-400',
+  opencode_go: ' bg-warning-400',
   composite: ' bg-gray-500',
 }
 const ACCENT_BAR_DEFAULT = ' bg-primary-400'
@@ -118,6 +125,7 @@ const TEXT: Record<Platform, string> = {
   zhipu: 'text-accent-600 dark:text-accent-400',
   deepseek: 'text-accent-600 dark:text-accent-400',
   minimax: 'text-danger-600 dark:text-danger-400',
+  opencode_go: 'text-warning-700 dark:text-warning-300',
   composite: 'text-accent-700 dark:text-accent-300',
 }
 const TEXT_DEFAULT = 'text-primary-600 dark:text-primary-400'
@@ -133,6 +141,7 @@ const ICON: Record<Platform, string> = {
   zhipu: 'text-accent-500 dark:text-accent-400',
   deepseek: 'text-accent-500 dark:text-accent-400',
   minimax: 'text-danger-500 dark:text-danger-400',
+  opencode_go: 'text-warning-500 dark:text-warning-300',
   composite: 'text-accent-600 dark:text-accent-300',
 }
 const ICON_DEFAULT = 'text-primary-500 dark:text-primary-400'
@@ -148,6 +157,7 @@ const BUTTON: Record<Platform, string> = {
   zhipu: 'bg-accent-500 text-white hover:bg-accent-600 active:bg-accent-700 dark:bg-accent-500/80 dark:hover:bg-accent-500',
   deepseek: 'bg-accent-500 text-white hover:bg-accent-600 active:bg-accent-700 dark:bg-accent-500/80 dark:hover:bg-accent-500',
   minimax: 'bg-danger-500 text-white hover:bg-danger-600 active:bg-danger-700 dark:bg-danger-500/80 dark:hover:bg-danger-500',
+  opencode_go: 'bg-warning-500 text-white hover:bg-warning-600 active:bg-warning-700 dark:bg-warning-500/80 dark:hover:bg-warning-500',
   composite: 'bg-accent-700 text-white hover:bg-accent-800 active:bg-accent-900 dark:bg-accent-600 dark:hover:bg-accent-500',
 }
 const BUTTON_DEFAULT = 'bg-primary-500 text-white hover:bg-primary-600 dark:bg-primary-600 dark:hover:bg-primary-500'
@@ -163,6 +173,7 @@ const DISCOUNT: Record<Platform, string> = {
   zhipu: 'bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300',
   deepseek: 'bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300',
   minimax: 'bg-danger-100 text-danger-700 dark:bg-danger-900/40 dark:text-danger-300',
+  opencode_go: 'bg-warning-100 text-warning-800 dark:bg-warning-900/40 dark:text-warning-300',
   composite: 'bg-accent-100 text-accent-800 dark:bg-accent-900/40 dark:text-accent-300',
 }
 const DISCOUNT_DEFAULT = 'bg-danger-100 text-danger-700 dark:bg-danger-900/40 dark:text-danger-300'
@@ -178,6 +189,7 @@ const GRADIENT: Record<Platform, string> = {
   zhipu: 'bg-accent-500',
   deepseek: 'bg-accent-500',
   minimax: 'bg-danger-500',
+  opencode_go: 'bg-warning-500',
   composite: 'bg-gray-600',
 }
 const GRADIENT_DEFAULT = 'bg-primary-500'
@@ -193,6 +205,7 @@ const GRADIENT_TEXT: Record<Platform, string> = {
   zhipu: 'text-accent-100',
   deepseek: 'text-accent-100',
   minimax: 'text-danger-100',
+  opencode_go: 'text-warning-100',
   composite: 'text-accent-100',
 }
 const GRADIENT_TEXT_DEFAULT = 'text-primary-100'
@@ -207,6 +220,7 @@ const GRADIENT_SUBTEXT: Record<Platform, string> = {
   zhipu: 'text-accent-200',
   deepseek: 'text-accent-200',
   minimax: 'text-danger-200',
+  opencode_go: 'text-warning-200',
   composite: 'text-accent-200',
 }
 const GRADIENT_SUBTEXT_DEFAULT = 'text-primary-200'
@@ -224,6 +238,7 @@ function isPlatform(p: string): p is Platform {
     p === 'zhipu' ||
     p === 'deepseek' ||
     p === 'minimax' ||
+    p === 'opencode_go' ||
     p === 'composite'
   )
 }
@@ -291,6 +306,7 @@ export function platformLabel(p: string): string {
     case 'zhipu': return 'Zhipu GLM'
     case 'deepseek': return 'DeepSeek'
     case 'minimax': return 'MiniMax'
+    case 'opencode_go': return 'OpenCode'
     case 'composite': return 'Composite'
     default: return p || 'API'
   }

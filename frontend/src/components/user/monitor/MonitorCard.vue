@@ -101,6 +101,7 @@ const PROVIDER_TINT: Record<string, string> = {
   kimi: 'text-gray-600 dark:text-gray-300',
   zhipu: 'text-accent-600 dark:text-accent-300',
   deepseek: 'text-accent-600 dark:text-accent-300',
+  opencode_go: 'text-warning-700 dark:text-warning-300',
 }
 
 const props = defineProps<{

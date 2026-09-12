@@ -45,6 +45,14 @@ const pageSize = ref(10)
 
 const close = () => emit('update:modelValue', false)
 
+const showTTFT = computed(() => props.preset.sort === 'ttft_desc')
+const latencyLabel = computed(() => t(showTTFT.value ? 'admin.ops.ttftLabel' : 'admin.ops.requestDetails.table.duration'))
+
+function formatLatency(row: OpsRequestDetail): string {
+  const value = showTTFT.value ? row.first_token_ms : row.duration_ms
+  return typeof value === 'number' ? `${value} ms` : '-'
+}
+
 const rangeLabel = computed(() => {
   const minutes = parseTimeRangeMinutes(props.timeRange)
   if (minutes >= 60) return t('admin.ops.requestDetails.rangeHours', { n: Math.round(minutes / 60) })
@@ -155,7 +163,7 @@ const columns = computed<Column[]>(() => [
   { key: 'kind', label: t('admin.ops.requestDetails.table.kind') },
   { key: 'platform', label: t('admin.ops.requestDetails.table.platform'), formatter: (v) => String(v || 'unknown').toUpperCase() },
   { key: 'model', label: t('admin.ops.requestDetails.table.model') },
-  { key: 'duration_ms', label: t('admin.ops.requestDetails.table.duration'), formatter: (v) => (typeof v === 'number' ? `${v} ms` : '-') },
+  { key: 'duration_ms', label: latencyLabel.value, formatter: (_v, row) => formatLatency(row as OpsRequestDetail) },
   { key: 'status_code', label: t('admin.ops.requestDetails.table.status'), formatter: (v) => String(v ?? '-') },
   { key: 'request_id', label: t('admin.ops.requestDetails.table.requestId') },
   { key: 'actions', label: t('admin.ops.requestDetails.table.actions'), class: 'text-right' }

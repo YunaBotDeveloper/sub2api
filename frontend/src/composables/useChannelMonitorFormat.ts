@@ -22,6 +22,7 @@ import {
   PROVIDER_ZHIPU,
   PROVIDER_DEEPSEEK,
   PROVIDER_MINIMAX,
+  PROVIDER_OPENCODE_GO,
   PROVIDERS,
   STATUS_OPERATIONAL,
   STATUS_DEGRADED,
@@ -117,6 +118,8 @@ export function useChannelMonitorFormat() {
         return 'bg-accent-100 text-accent-700 dark:bg-accent-500/15 dark:text-accent-300'
       case PROVIDER_MINIMAX:
         return 'bg-danger-100 text-danger-700 dark:bg-danger-500/15 dark:text-danger-300'
+      case PROVIDER_OPENCODE_GO:
+        return 'bg-warning-100 text-warning-800 dark:bg-warning-500/15 dark:text-warning-300'
       default:
         return NEUTRAL_BADGE
     }
@@ -181,6 +184,10 @@ export function useChannelMonitorFormat() {
         return active
           ? 'border-danger-500 bg-danger-50 text-danger-700 dark:bg-danger-500/15 dark:text-danger-300 dark:border-danger-400'
           : 'border-gray-200 bg-white text-gray-600 hover:border-danger-300 hover:text-danger-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-danger-500/50'
+      case PROVIDER_OPENCODE_GO:
+        return active
+          ? 'border-warning-500 bg-warning-50 text-warning-800 dark:bg-warning-500/15 dark:text-warning-300 dark:border-warning-400'
+          : 'border-gray-200 bg-white text-gray-600 hover:border-warning-300 hover:text-warning-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-warning-500/50'
       default:
         return active
           ? 'border-gray-400 bg-gray-50 text-gray-700 dark:border-dark-500 dark:bg-dark-700 dark:text-gray-200'
@@ -267,6 +274,8 @@ export function providerGradient(provider: string): string {
       return ' bg-accent-50 dark:bg-accent-500/10'
     case PROVIDER_MINIMAX:
       return ' bg-danger-50 dark:bg-danger-500/10'
+    case PROVIDER_OPENCODE_GO:
+      return ' bg-warning-50 dark:bg-warning-500/10'
     default:
       return ' bg-gray-100 dark:bg-dark-700'
   }
