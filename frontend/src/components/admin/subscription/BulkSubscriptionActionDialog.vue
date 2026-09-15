@@ -68,16 +68,16 @@
           </p>
         </template>
 
-        <p v-else class="rounded-lg bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+        <p v-else class="rounded-lg bg-warning-50 p-3 text-sm text-warning-800 dark:bg-warning-900/20 dark:text-warning-200">
           {{ t(`admin.subscriptions.bulk.${currentAction}Hint`) }}
         </p>
       </fieldset>
 
-      <p v-if="validationError && !parametersLocked" role="alert" class="text-sm text-red-600 dark:text-red-400">
+      <p v-if="validationError && !parametersLocked" role="alert" class="text-sm text-danger-600 dark:text-danger-400">
         {{ validationError }}
       </p>
 
-      <div v-if="requestError" role="alert" class="space-y-2 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300">
+      <div v-if="requestError" role="alert" class="space-y-2 rounded-lg bg-danger-50 p-3 text-sm text-danger-700 dark:bg-danger-900/20 dark:text-danger-300">
         <p>{{ requestError }}</p>
         <p v-if="pendingOperation">{{ t('admin.subscriptions.bulk.retryHint') }}</p>
       </div>
@@ -87,7 +87,7 @@
           {{ t('admin.subscriptions.bulk.result', { success: result.success_count, failed: result.failed_count }) }}
         </p>
         <ul v-if="failedResults.length" class="max-h-48 space-y-2 overflow-y-auto">
-          <li v-for="item in failedResults" :key="item.subscription_id" class="rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300">
+          <li v-for="item in failedResults" :key="item.subscription_id" class="rounded-lg bg-danger-50 p-3 text-sm text-danger-700 dark:bg-danger-900/20 dark:text-danger-300">
             <p class="break-all font-medium">{{ failedTargetLabel(item.subscription_id) }}</p>
             <p class="mt-1 break-words">{{ item.error || t('admin.subscriptions.bulk.itemFailed') }}</p>
           </li>
