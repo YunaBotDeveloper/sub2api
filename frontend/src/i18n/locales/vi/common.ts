@@ -168,6 +168,7 @@ export default {
     apiKeys: 'API Keys',
     batchImage: 'Tạo ảnh hàng loạt',
     imageStudio: 'Image Studio',
+    playground: 'Playground',
     usage: 'Sử dụng',
     redeem: 'Đổi mã',
     affiliate: 'Hoa hồng giới thiệu',

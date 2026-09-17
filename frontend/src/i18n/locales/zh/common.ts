@@ -168,6 +168,7 @@ export default {
     apiKeys: 'API 密钥',
     batchImage: '批量生图',
     imageStudio: '图片工作室',
+    playground: '操练场',
     usage: '使用记录',
     redeem: '兑换',
     affiliate: '邀请返利',
