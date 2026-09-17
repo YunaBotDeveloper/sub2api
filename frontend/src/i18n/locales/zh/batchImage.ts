@@ -3,7 +3,7 @@ export default {
     columns: {
       taskName: '任务名称',
       model: '模型',
-      apiKey: '提交密钥',
+      apiKey: 'API Key',
       result: '结果',
       cost: '费用',
       downloadStatus: '下载状态',
@@ -118,7 +118,7 @@ export default {
       estimatedOutputValue: '{images} 张 / {prompts} 条',
       promptAdded: '已添加 {count} 条',
       promptPlaceholder: '粘贴 prompt，添加后进入下方列表',
-      customIdPlaceholder: 'Custom ID 可选',
+      customIdPlaceholder: 'Custom ID（可选）',
       outputCountPerPrompt: '每条生成张数',
       outputCountOption: '{n} 张',
       referenceImage: '参考图',

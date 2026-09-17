@@ -477,7 +477,7 @@ export default {
       searchGroups: '搜索分组...',
       fuzzySearch: '模糊搜索',
       apiKeyGroupFilter: 'API Key 分组',
-      apiKeyGroupExclusive: '专用分组',
+      apiKeyGroupExclusive: '专属分组',
       apiKeyGroupPublic: '公开分组',
       apiKeyGroupSubscription: '订阅分组',
       apiKeyGroupDisabled: '已禁用分组',
@@ -517,7 +517,7 @@ export default {
         groups: '分组',
         subscriptions: '订阅分组',
         balance: '余额',
-        balancePlatformQuota: '余额(平台配额)',
+        balancePlatformQuota: '余额 (平台配额)',
         usage: '用量',
         usageAnthropic: '用量 (Claude)',
         usageOpenAI: '用量 (OpenAI)',
@@ -813,7 +813,7 @@ export default {
         rpmOverrideHint: '该用户在此分组的 RPM 上限；留空 = 使用分组默认；0 = 不限制',
         rateDefault: '默认',
         rpmDefault: '默认',
-        exclusive: '独占',
+        exclusive: '专属',
         type: '类型',
         priority: '优先级',
         apiKeys: 'API 密钥数',
@@ -910,7 +910,7 @@ export default {
         exampleContent:
           '公开分组费率 0.8，您可以创建一个费率 0.7 的专属分组，手动分配给 VIP 用户，让他们享受更优惠的价格。'
       },
-      rateMultiplierHint: '1.0 = 标准费率，0.5 = 半价，2.0 = 双倍',
+      rateMultiplierHint: '该分组的费用倍数（如 1.5 = 基础费用的 150%）',
       platforms: {
         all: '全部平台',
         anthropic: 'Anthropic',
@@ -1074,7 +1074,7 @@ export default {
       },
       profitControl: {
         enable: '启用利润控制',
-        enabledHint: '调度时仅允许"账号倍率 ≤ 请求实际下游倍率 ×（1 − 最低毛利率 − 安全缓冲）"的账号进入候选池；账号倍率可手工维护或由探测同步，既有排序、粘性与熔断在合格账号间照常工作。图片/视频调度暂不参与。',
+        enabledHint: '调度时仅允许「账号倍率 ≤ 请求实际下游倍率 ×（1 − 最低毛利率 − 安全缓冲）」的账号进入候选池；账号倍率可手工维护或由探测同步，既有排序、粘性与熔断在合格账号间照常工作。图片/视频调度暂不参与。',
         disabledHint: '关闭后调度不做利润过滤，账号倍率高于下游倍率的账号也会被选中，可能产生亏损请求。',
         minMargin: '最低毛利率（%）',
         minMarginHint: '百分比输入，如 30 表示 30%；后端按小数存储',
