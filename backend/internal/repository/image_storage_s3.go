@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"strings"
 	"time"
 
@@ -22,7 +23,28 @@ type S3ImageStorage struct {
 	presignExpiry time.Duration
 }
 
-var _ service.ImageStorage = (*S3ImageStorage)(nil)
+var _ service.ImageObjectStore = (*S3ImageStorage)(nil)
+
+// Open 读取对象，调用方负责关闭 body。
+func (s *S3ImageStorage) Open(ctx context.Context, key string) (io.ReadCloser, string, error) {
+	out, err := s.client.GetObject(ctx, &s3.GetObjectInput{Bucket: &s.bucket, Key: &key})
+	if err != nil {
+		return nil, "", fmt.Errorf("S3 GetObject: %w", err)
+	}
+	contentType := ""
+	if out.ContentType != nil {
+		contentType = *out.ContentType
+	}
+	return out.Body, contentType, nil
+}
+
+// Delete 删除对象；S3 对不存在的 key 同样返回成功。
+func (s *S3ImageStorage) Delete(ctx context.Context, key string) error {
+	if _, err := s.client.DeleteObject(ctx, &s3.DeleteObjectInput{Bucket: &s.bucket, Key: &key}); err != nil {
+		return fmt.Errorf("S3 DeleteObject: %w", err)
+	}
+	return nil
+}
 
 // NewS3ImageStorage 依据配置构造 S3 图片存储（调用方应先确认 cfg.Active()）。
 func NewS3ImageStorage(ctx context.Context, cfg *config.ImageStorageConfig) (*S3ImageStorage, error) {

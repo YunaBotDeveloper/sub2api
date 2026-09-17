@@ -72,6 +72,18 @@ func RegisterUserRoutes(
 			}
 		}
 
+		// Image Studio：会话鉴权的交互式生图，任务经网关按所选 Key 回放计费
+		imageStudio := authenticated.Group("/image-studio")
+		{
+			imageStudio.POST("/jobs", h.ImageStudio.CreateJob)
+			imageStudio.GET("/jobs", h.ImageStudio.ListJobs)
+			imageStudio.GET("/jobs/:id", h.ImageStudio.GetJob)
+			imageStudio.DELETE("/jobs/:id", h.ImageStudio.DeleteJob)
+			imageStudio.GET("/assets", h.ImageStudio.ListAssets)
+			imageStudio.GET("/assets/:id/file", h.ImageStudio.AssetFile)
+			imageStudio.DELETE("/assets/:id", h.ImageStudio.DeleteAsset)
+		}
+
 		// API Key管理
 		keys := authenticated.Group("/keys")
 		{
