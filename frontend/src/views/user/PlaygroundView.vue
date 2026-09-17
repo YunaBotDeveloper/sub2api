@@ -45,7 +45,7 @@
           <div
             v-for="(message, index) in messages"
             :key="index"
-            :class="['rounded-md p-3 text-body', message.role === 'user' ? 'ml-8 bg-surface-muted' : 'mr-8 border border-border']"
+            :class="['rounded-md p-3 text-body', message.role === 'user' ? 'ml-8 bg-surface-sunken' : 'mr-8 border border-border']"
           >
             <div class="mb-1 flex items-center justify-between text-meta text-fg-subtle">
               <span>{{ t(`playground.role.${message.role}`) }}</span>
@@ -59,7 +59,12 @@
                 <Icon name="copy" size="xs" />
               </button>
             </div>
-            <p class="whitespace-pre-wrap break-words text-fg">{{ message.content || (sending ? '…' : '') }}</p>
+            <div
+              v-if="message.role === 'assistant' && message.content"
+              class="markdown-body prose prose-sm max-w-none break-words text-fg dark:prose-invert"
+              v-html="renderMarkdown(message.content)"
+            />
+            <p v-else class="whitespace-pre-wrap break-words text-fg">{{ message.content || (sending ? '…' : '') }}</p>
           </div>
         </div>
 
@@ -84,6 +89,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Select from '@/components/common/Select.vue'
 import Icon from '@/components/icons/Icon.vue'
@@ -93,6 +100,7 @@ import { useClipboard } from '@/composables/useClipboard'
 import { extractApiErrorMessage } from '@/utils/apiError'
 import type { ApiKey } from '@/types'
 import { readChatDeltas, responseError } from './playgroundStream'
+import '@/styles/announcement-markdown.css'
 
 interface ChatMessage {
   role: 'user' | 'assistant'
@@ -191,6 +199,11 @@ async function send() {
     sending.value = false
     controller.value = undefined
   }
+}
+
+// Model output is untrusted: always sanitize the rendered HTML.
+function renderMarkdown(content: string) {
+  return DOMPurify.sanitize(marked.parse(content, { breaks: true, gfm: true, async: false }))
 }
 
 function scrollToBottom() {
