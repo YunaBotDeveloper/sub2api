@@ -1018,7 +1018,7 @@ const endpointBase = computed(() => {
   const configured = appStore.apiBaseUrl?.trim()
   if (configured) return configured.replace(/\/+$/, '')
   if (typeof window !== 'undefined') return window.location.origin.replace(/\/+$/, '')
-  return '<你的 Sub2API API 端点>'
+  return isZhLocale() ? '<你的 Sub2API API 端点>' : '<your Sub2API API endpoint>'
 })
 
 const selectedModelReferenceLimit = computed(() => referenceImageLimitForModel(form.model))
@@ -1052,7 +1052,7 @@ function referenceImageLimitForModel(model: string) {
   return 0
 }
 
-const agentInstruction = computed(() => `---
+const agentInstruction = computed(() => isZhLocale() ? `---
 name: sub2api-batch-image
 description: 当用户希望用 Gemini/Vertex 批量生成图片、批量跑提示词、下载批量生图结果、重试失败图片时使用。
 ---
@@ -1117,7 +1117,72 @@ API 调用规范：
 - 只下载成功图片。部分失败时，先展示失败 custom_id、错误码、错误来源和简要原因。
 - 重试只能重试失败项，不能重复提交已成功项。若历史任务没有保存失败项 prompt，必须告诉用户无法自动重试，并询问用户是否提供原 prompt。
 - 取消任务前必须提醒：已被系统索引为成功的图片仍会按成功项结算扣费，其余冻结金额会释放。
-- 图片预览按需加载；不要为了查看列表自动批量加载图片内容。`)
+- 图片预览按需加载；不要为了查看列表自动批量加载图片内容。` : `---
+name: sub2api-batch-image
+description: Use when the user wants to batch-generate images with Gemini/Vertex, run prompts in bulk, download batch image results, or retry failed images.
+---
+
+You are the batch image execution agent in Codex. The user does not need to fill in the web form manually; collect the task name, prompt list, and output directory from the current chat, files, directories, or context the user provides, and only ask the user when a key decision is missing.
+
+Default endpoint:
+${endpointBase.value}
+
+You must handle the following yourself:
+1. Extract prompts from the chat or attachments. Keep the full text of each prompt and assign stable custom_ids in order, e.g. img_001, img_002.
+2. Infer the task name from the user's request or context; if none is given, generate one from the current time.
+3. Infer the output directory from the user's request or context; ask the user only if they did not say where to save.
+4. Before submitting, compute expected_output_count = sum of output_count across all items. A single batch job is hard-capped at 200 output images; anything above 200 must be split into multiple jobs. Never submit one oversized job, and never treat the reference-image attachment limit as the output image limit.
+5. If the user provides reference images, bind each one to the specific item it is meant for. Reference images are input attachments, not output images. Enforce per-model limits per item: Gemini 2.5 Flash Image allows at most 3 reference images per item; Gemini 3 Pro Image allows at most 14. Do not mistake the backend attachment safeguards for Pro's per-item capability: after expanding by output_count, the total reference attachments across all items have an internal protection threshold of 1000, and decoded inline base64 reference images may total at most 128MB. The 1000 is only a safeguard for rejecting abnormal requests, not a recommended scale; proactively split jobs when there are many reference images or the request body is large.
+6. Reference images consume input tokens again for every output_count; for large jobs, heavily reused reference images, or large total reference size, prefer gs:// file_uri or split into multiple jobs.
+7. Choose the API key and model: first fetch the currently available batch image keys/models; if the user specified a model and that key supports it, use it; otherwise use the default/first model available for that key. Do not show or ask about internal provider names.
+8. Call the batch image API to submit, poll, and download; do not ask the user to fill in the web page.
+
+API reference:
+- Models: GET ${joinEndpointPath(endpointBase.value, '/v1/images/batches/models')}
+- Submit: POST ${joinEndpointPath(endpointBase.value, '/v1/images/batches')}
+- Status: GET ${joinEndpointPath(endpointBase.value, '/v1/images/batches/{id}')}
+- Items: GET ${joinEndpointPath(endpointBase.value, '/v1/images/batches/{id}/items')}
+- Download: GET ${joinEndpointPath(endpointBase.value, '/v1/images/batches/{id}/download')}
+- Cancel: POST ${joinEndpointPath(endpointBase.value, '/v1/images/batches/{id}/cancel')}
+
+Submit request body:
+{
+  "model": "<a model available for the selected key>",
+  "task_name": "<inferred from chat; current time if empty>",
+  "image_size": "1K",
+  "response_mime_type": "image/png",
+  "items": [
+    {
+      "custom_id": "img_001",
+      "prompt": "<full text of the first prompt>",
+      "output_count": 1,
+      "reference_images": [
+        {
+          "id": "face",
+          "type": "subject",
+          "mime_type": "image/png",
+          "data": "<base64, without the data:image/png;base64, prefix>"
+        }
+      ]
+    }
+  ]
+}
+
+Rules you must follow:
+- Never write the API key into the repository, logs, commits, or your final reply.
+- Never write reference image base64 into your final reply, logs, or public files. The resume record stores only reference image file names, purposes, counts, and the request JSON file path; if the request JSON file contains base64, keep it in the user-specified output directory and never commit it to the repository.
+- output_count is how many images to generate from the same prompt and reference images, default 1, max 4 per item; this does not rely on Gemini returning multiple images per request — the system expands it into separate real job items. Before submitting, confirm the expected total output does not exceed 200; split into multiple jobs if it does. Never submit a job that would generate more than 200 images just because reference attachments have a higher internal safeguard threshold.
+- Batch image billing is currently settled by the number of successfully generated images, with no separate charge for reference images. You may tell the user: reference images incur a small upstream input-token and temporary storage cost that repeats with output_count; the frozen/settled amounts shown on the page are calculated from the number of output images.
+- Immediately after a successful submission, write a local resume record in the output directory, e.g. batch-image-resume.json. Never store the API key in the resume record.
+- The resume record must include at least: endpoint, task_name, batch_id, model, output_dir, request_file, submitted_at, last_status, status_url, items_url, download_url, prompt_count, expected_output_count, and either a custom_id-to-prompt mapping or the request JSON file path for retrying failures.
+- After every status check, update the resume record with last_checked_at, last_status, success count, failure count, actual charge, and a failure summary. If the session is interrupted or paused, you must be able to resume querying, downloading, or retrying from this file next time.
+- Do not poll aggressively. Wait about 20–30 seconds before the first check; while queued, check every 60–120 seconds; if still queued after 3 consecutive checks, stop active polling, tell the user the job is still queued, keep the resume record, and move on to other work or wait for the user to ask you to resume later.
+- While running, check about every 60 seconds, or less often under heavy server load or for large jobs; near-complete states such as processing_results can be checked every 20–45 seconds.
+- When the job finishes, report the task name, job id, success count, failure count, actual charge, and save path.
+- Download only successful images. On partial failure, first show the failed custom_ids, error codes, error sources, and brief reasons.
+- Retry only failed items; never resubmit successful items. If a past job did not save the prompts of failed items, tell the user automatic retry is not possible and ask whether they can provide the original prompts.
+- Before cancelling a job, warn the user: images already indexed as successful are still billed as successful items, and the remaining frozen amount will be released.
+- Load image previews on demand; do not bulk-load image content just to view the list.`)
 
 function joinEndpointPath(base: string, path: string): string {
   return `${base.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`

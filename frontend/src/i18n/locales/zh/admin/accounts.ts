@@ -1,7 +1,7 @@
 export default {
     accounts: {
       title: '账号管理',
-      description: '管理 AI 平台账号和 Cookie',
+      description: '管理 AI 平台账号和凭据',
       createAccount: '添加账号',
       autoRefresh: '自动刷新',
       enableAutoRefresh: '启用自动刷新',
@@ -73,7 +73,7 @@ export default {
       crsWillUpdate: '将更新 {count} 个已有账号。',
       crsSelectedCount: '已选择 {count} 个新账号',
       crsUpdateBehaviorNote:
-        '已有账号仅同步 CRS 返回的字段，缺失字段保持原值；凭据按键合并，不会清空未下发的键；未勾选"同步代理"时保留原有代理。',
+        '已有账号仅同步 CRS 返回的字段，缺失字段保持原值；凭据按键合并，不会清空未下发的键；未勾选「同步代理」时保留原有代理。',
       crsBack: '返回',
       editAccount: '编辑账号',
       deleteAccount: '删除账号',
@@ -212,7 +212,7 @@ export default {
         batchCompleted: '已完成 {count} 个账号的倍率探测',
         batchPartial: '倍率探测部分完成：成功 {success} 个，失败 {failed} 个'
       },
-      allPrivacyModes: '全部Privacy状态',
+      allPrivacyModes: '全部隐私状态',
       privacyUnset: '未设置',
       privacyTrainingOff: '已关闭训练数据共享',
       privacyCfBlocked: '被 Cloudflare 拦截，训练可能仍开启',
@@ -511,9 +511,9 @@ export default {
         resetTooltipReady: '消耗 1 次重置次数以立即恢复当前窗口',
         resetTooltipNeedQuery: '先点击「次数」加载剩余重置次数',
         resetTooltipNoCredits: '没有可用的重置次数',
-        resetTooltipShadow: 'Spark 影子账号不能重置次数;请在母账号上重置',
+        resetTooltipShadow: 'Spark 影子账号不能重置次数；请在母账号上重置',
         expiresAt: '到期 {time}',
-        expiresAtFull: '重置次数到期时间: {time}',
+        expiresAtFull: '重置次数到期时间：{time}',
         expandExpirations: '展开其余 {count} 张重置次数到期时间',
         collapseExpirations: '收起重置次数到期时间',
         expirationDetails: '重置次数到期明细',
@@ -616,7 +616,7 @@ export default {
       revertProxySuccess: '已成功切回原代理',
       revertProxyFailed: '切回原代理失败',
       createSparkShadow: '创建 Spark 影子账号',
-      createSparkShadowConfirm: '为「{name}」创建链接型 Spark 影子账号?影子共享母账号凭据、仅服务 spark 模型。',
+      createSparkShadowConfirm: '为「{name}」创建链接型 Spark 影子账号？影子共享母账号凭据、仅服务 spark 模型。',
       createSparkShadowSuccess: 'Spark 影子账号已创建',
       createSparkShadowFailed: '创建 Spark 影子账号失败',
       duplicateAccount: '复制账号',
@@ -628,7 +628,7 @@ export default {
       testFailed: '账号测试失败',
       failedToLoad: '加载账号列表失败',
       failedToDelete: '删除账号失败',
-      failedToRefresh: '刷新 Cookie 失败',
+      failedToRefresh: '刷新令牌失败',
       // Create/Edit Account Modal
       platform: '平台',
       accountName: '账号名称',
@@ -781,7 +781,7 @@ export default {
       },
       grok: {
         baseUrlHint: 'Grok OAuth 账号会转发到官方 xAI API Base URL。',
-        apiKeyHint: 'Grok 订阅支持使用 OAuth refresh token；API Key 账号不在本次范围内。',
+        apiKeyHint: 'Grok 订阅支持使用 OAuth refresh token；该账号类型不支持 API Key。',
         // 账号连通性测试弹窗
         testMode: '测试模式',
         testModeHint:
@@ -875,7 +875,7 @@ export default {
       clearAllModels: '清除所有模型',
       customModelName: '自定义模型名称',
       enterCustomModelName: '输入自定义模型名称',
-      addModel: '填入',
+      addModel: '添加',
       modelExists: '该模型已存在',
       modelCount: '{count} 个模型',
       poolMode: '池模式',
@@ -911,7 +911,7 @@ export default {
         importJsonApply: '解析并填入',
         importJsonCancel: '取消',
         importJsonHint: '粘贴扁平 JSON 对象（请求头名 → 值），解析后将整体替换当前列表。',
-        importJsonInvalid: 'JSON 格式不正确：需要"请求头名 → 字符串值"的扁平对象',
+        importJsonInvalid: 'JSON 格式不正确：需要「请求头名 → 字符串值」的扁平对象',
         copyJson: '复制为 JSON',
         emptyValueHint: '值留空的行不会参与覆盖，仅作为待填写的占位。',
         bulkDisableHint: '保存后将关闭所选账号的请求头覆写并清空已有配置。',

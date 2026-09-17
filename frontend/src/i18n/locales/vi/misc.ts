@@ -1,0 +1,578 @@
+export default {
+
+  // Subscription Progress (Header component)
+  subscriptionProgress: {
+    title: 'Gói đăng ký của tôi',
+    viewDetails: 'Xem chi tiết gói đăng ký',
+    activeCount: '{count} gói đăng ký đang hoạt động',
+    daily: 'Hằng ngày',
+    weekly: 'Hằng tuần',
+    monthly: 'Hằng tháng',
+    daysRemaining: 'Còn {days} ngày',
+    expired: 'Đã hết hạn',
+    expiresToday: 'Hết hạn hôm nay',
+    expiresTomorrow: 'Hết hạn ngày mai',
+    viewAll: 'Xem tất cả gói đăng ký',
+    noSubscriptions: 'Không có gói đăng ký nào đang hoạt động',
+    unlimited: 'Không giới hạn'
+  },
+
+  // Version Badge
+  version: {
+    currentVersion: 'Phiên bản hiện tại',
+    latestVersion: 'Phiên bản mới nhất',
+    upToDate: 'Bạn đang dùng phiên bản mới nhất.',
+    updateAvailable: 'Đã có phiên bản mới!',
+    releaseNotes: 'Ghi chú phát hành',
+    noReleaseNotes: 'Không có ghi chú phát hành',
+    viewUpdate: 'Xem bản cập nhật',
+    viewRelease: 'Xem bản phát hành',
+    viewChangelog: 'Xem nhật ký thay đổi',
+    refresh: 'Làm mới',
+    sourceMode: 'Bản build từ mã nguồn',
+    sourceModeHint: 'Bản build từ mã nguồn, dùng git pull để cập nhật',
+    updateNow: 'Cập nhật ngay',
+    updating: 'Đang cập nhật...',
+    updateComplete: 'Cập nhật hoàn tất',
+    updateFailed: 'Cập nhật thất bại',
+    restartRequired: 'Vui lòng khởi động lại dịch vụ để áp dụng bản cập nhật',
+    restartNow: 'Khởi động lại ngay',
+    restarting: 'Đang khởi động lại...',
+    retry: 'Thử lại',
+    rollback: 'Khôi phục phiên bản',
+    rollbackSelectVersion: 'Chọn phiên bản để khôi phục (3 phiên bản gần nhất)',
+    rollbackConfirm: 'Khôi phục về {version}',
+    rollbackWarning:
+      'Khôi phục sẽ tải phiên bản đã chọn và thay thế tệp thực thi hiện tại. Sau đó cần khởi động lại dịch vụ.',
+    rollingBack: 'Đang khôi phục...',
+    rollbackComplete: 'Khôi phục hoàn tất',
+    rollbackFailed: 'Khôi phục thất bại',
+    manualRollbackCommand: 'Khôi phục thủ công',
+    copyCommand: 'Sao chép',
+    copied: 'Đã sao chép',
+    noRollbackVersions: 'Không có phiên bản nào để khôi phục',
+    loadVersionsFailed: 'Tải danh sách phiên bản thất bại',
+    rollbackSourceHint: 'Không hỗ trợ khôi phục trực tuyến cho bản build từ mã nguồn',
+    deployScript: 'Script',
+    deployDocker: 'Docker',
+    dockerEditCompose: 'Sửa tag image trong docker-compose.yml',
+    dockerRecreate: 'Tạo lại container'
+  },
+
+  // Recharge / Subscription Page
+  purchase: {
+    title: 'Nạp tiền / Đăng ký',
+    description: 'Nạp số dư hoặc mua gói đăng ký qua trang nhúng',
+    rechargeDescription: 'Nạp số dư qua trang nhúng',
+    subscriptionDescription: 'Mua gói đăng ký qua trang nhúng',
+    openInNewTab: 'Mở trong tab mới',
+    notEnabledTitle: 'Tính năng chưa được bật',
+    notEnabledDesc: 'Quản trị viên chưa bật mục nạp tiền/đăng ký. Vui lòng liên hệ quản trị viên.',
+    notConfiguredTitle: 'Chưa cấu hình URL nạp tiền / đăng ký',
+    notConfiguredDesc:
+      'Quản trị viên đã bật mục này nhưng chưa cấu hình URL nạp tiền/đăng ký. Vui lòng liên hệ quản trị viên.'
+  },
+
+  // Custom Page (iframe embed)
+  customPage: {
+    title: 'Trang tùy chỉnh',
+    openInNewTab: 'Mở trong tab mới',
+    notFoundTitle: 'Không tìm thấy trang',
+    notFoundDesc: 'Trang tùy chỉnh này không tồn tại hoặc đã bị xóa.',
+    notConfiguredTitle: 'Chưa cấu hình URL trang',
+    notConfiguredDesc: 'URL của trang tùy chỉnh này chưa được cấu hình đúng.',
+    tableOfContents: 'Mục lục',
+    copyCode: 'Sao chép',
+    copiedCode: 'Đã sao chép',
+    copyCodeFailed: 'Thất bại'
+  },
+
+  // Announcements Page
+  announcements: {
+    title: 'Thông báo',
+    description: 'Xem thông báo hệ thống',
+    unreadOnly: 'Chỉ hiện chưa đọc',
+    markRead: 'Đánh dấu đã đọc',
+    markAllRead: 'Đánh dấu tất cả đã đọc',
+    viewAll: 'Xem tất cả thông báo',
+    markedAsRead: 'Đã đánh dấu là đã đọc',
+    allMarkedAsRead: 'Đã đánh dấu tất cả thông báo là đã đọc',
+    newCount: '{count} thông báo mới | {count} thông báo mới',
+    readAt: 'Đọc lúc',
+    read: 'Đã đọc',
+    unread: 'Chưa đọc',
+    startsAt: 'Bắt đầu lúc',
+    endsAt: 'Kết thúc lúc',
+    empty: 'Không có thông báo',
+    emptyUnread: 'Không có thông báo chưa đọc',
+    total: 'thông báo',
+    emptyDescription: 'Hiện không có thông báo hệ thống nào',
+    readStatus: 'Bạn đã đọc thông báo này',
+    markReadHint: 'Nhấn "Đánh dấu đã đọc" để đánh dấu thông báo này'
+  },
+
+  // User Subscriptions Page
+  userSubscriptions: {
+    title: 'Gói đăng ký của tôi',
+    description: 'Xem các gói đăng ký và mức sử dụng của bạn',
+    noActiveSubscriptions: 'Không có gói đăng ký đang hoạt động',
+    noActiveSubscriptionsDesc:
+      'Bạn chưa có gói đăng ký nào đang hoạt động. Hãy liên hệ quản trị viên để được cấp.',
+    failedToLoad: 'Tải gói đăng ký thất bại',
+    status: {
+      active: 'Đang hoạt động',
+      expired: 'Đã hết hạn',
+      revoked: 'Đã thu hồi'
+    },
+    usage: 'Mức sử dụng',
+    expires: 'Hết hạn',
+    noExpiration: 'Không hết hạn',
+    unlimited: 'Không giới hạn',
+    unlimitedDesc: 'Gói đăng ký này không giới hạn mức sử dụng',
+    daily: 'Hằng ngày',
+    weekly: 'Hằng tuần',
+    monthly: 'Hằng tháng',
+    daysRemaining: 'Còn {days} ngày',
+    expiresOn: 'Hết hạn vào {date}',
+    resetIn: 'Đặt lại sau {time}',
+    quotaEndsIn: 'Hạn mức kết thúc sau {time}',
+    windowNotActive: 'Chờ lần sử dụng đầu tiên',
+    usageOf: '{used} / {limit}'
+  },
+
+  // Onboarding Tour
+  onboarding: {
+    restartTour: 'Bắt đầu lại hướng dẫn',
+    dontShowAgain: 'Không hiện lại',
+    dontShowAgainTitle: 'Đóng vĩnh viễn hướng dẫn',
+    confirmDontShow: 'Bạn có chắc không muốn xem lại hướng dẫn?\n\nBạn có thể bắt đầu lại bất cứ lúc nào từ menu người dùng ở góc trên bên phải.',
+    confirmExit: 'Bạn có chắc muốn thoát hướng dẫn? Bạn có thể bắt đầu lại bất cứ lúc nào từ menu ở góc trên bên phải.',
+    interactiveHint: 'Nhấn Enter hoặc bấm để tiếp tục',
+    navigation: {
+      flipPage: 'Lật trang',
+      exit: 'Thoát'
+    },
+    // Admin tour steps
+    admin: {
+      welcome: {
+        title: 'Chào mừng đến với {siteName}',
+        description: '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">{siteName} là nền tảng cổng dịch vụ AI mạnh mẽ, giúp bạn dễ dàng quản lý và phân phối dịch vụ AI.</p><p style="margin-bottom: 12px;"><b>Tính năng chính:</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li><b>Quản lý nhóm</b> - Tạo các cấp dịch vụ (VIP, Dùng thử miễn phí, v.v.)</li><li><b>Kho tài khoản</b> - Kết nối nhiều tài khoản dịch vụ AI thượng nguồn</li><li><b>Phân phối khóa</b> - Tạo API Key riêng cho từng người dùng</li><li><b>Kiểm soát tính phí</b> - Quản lý tỷ lệ và hạn mức linh hoạt</li></ul><p style="color: rgb(var(--accent-strong)); font-weight: 600;">Hãy hoàn tất thiết lập ban đầu trong 3 phút →</p></div>',
+        nextBtn: 'Bắt đầu thiết lập ',
+        prevBtn: 'Bỏ qua'
+      },
+      groupManage: {
+        title: 'Bước 1: Quản lý nhóm',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;"><b>Nhóm là gì?</b></p><p style="margin-bottom: 12px;">Nhóm là khái niệm cốt lõi của {siteName}, giống như một "gói dịch vụ":</p><ul style="margin-left: 20px; margin-bottom: 12px; font-size: 13px;"><li>Mỗi nhóm có thể chứa nhiều tài khoản thượng nguồn</li><li>Mỗi nhóm có hệ số tính phí riêng</li><li>Có thể đặt là công khai hoặc độc quyền</li></ul><p style="margin-top: 12px; padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px;"><b>Ví dụ:</b> Bạn có thể tạo nhóm "VIP Cao cấp" (tỷ lệ cao) và "Dùng thử miễn phí" (tỷ lệ thấp)</p><p style="margin-top: 16px; color: rgb(var(--accent-strong)); font-weight: 600;">Nhấn "Quản lý nhóm" ở thanh bên trái</p></div>'
+      },
+      createGroup: {
+        title: 'Tạo nhóm mới',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Hãy tạo nhóm đầu tiên của bạn.</p><p style="padding: 8px 12px; background: rgb(var(--accent-weak)); border: 1px solid rgb(var(--accent) / 0.4); border-radius: 2px; font-size: 13px; margin-bottom: 12px;"><b>Mẹo:</b> Nên tạo một nhóm thử nghiệm trước để làm quen với quy trình</p><p style="color: rgb(var(--accent-strong)); font-weight: 600;">Nhấn nút "Tạo nhóm"</p></div>'
+      },
+      groupName: {
+        title: '1. Tên nhóm',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Đặt cho nhóm một cái tên dễ nhận biết.</p><div style="padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px; margin-bottom: 12px;"><b>Gợi ý đặt tên:</b><ul style="margin: 8px 0 0 16px;"><li>"Nhóm thử nghiệm" - Dùng để thử nghiệm</li><li>"VIP Cao cấp" - Dịch vụ chất lượng cao</li><li>"Dùng thử miễn phí" - Bản dùng thử</li></ul></div><p style="font-size: 13px; color: rgb(var(--fg-muted));">Nhấn "Tiếp" khi xong</p></div>',
+        nextBtn: 'Tiếp'
+      },
+      groupPlatform: {
+        title: '2. Chọn nền tảng',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Chọn nền tảng AI mà nhóm này hỗ trợ.</p><div style="padding: 8px 12px; background: rgb(var(--accent-weak)); border: 1px solid rgb(var(--accent) / 0.4); border-radius: 2px; font-size: 13px; margin-bottom: 12px;"><b>Hướng dẫn nền tảng:</b><ul style="margin: 8px 0 0 16px;"><li><b>Anthropic</b> - Mô hình Claude</li><li><b>OpenAI</b> - Mô hình GPT</li><li><b>Google</b> - Mô hình Gemini</li></ul></div><p style="font-size: 13px; color: rgb(var(--fg-muted));">Mỗi nhóm chỉ có thể có một nền tảng</p></div>',
+        nextBtn: 'Tiếp'
+      },
+      groupMultiplier: {
+        title: '3. Hệ số tính phí',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Đặt hệ số tính phí để kiểm soát mức thu của người dùng.</p><div style="padding: 8px 12px; background: rgb(var(--warning-weak)); border: 1px solid rgb(var(--warning) / 0.4); border-radius: 2px; font-size: 13px; margin-bottom: 12px;"><b>Quy tắc tính phí:</b><ul style="margin: 8px 0 0 16px;"><li><b>1.0</b> - Giá gốc (giá vốn)</li><li><b>1.5</b> - Người dùng tiêu $1, bị tính $1.5</li><li><b>2.0</b> - Người dùng tiêu $1, bị tính $2</li><li><b>0.8</b> - Chế độ trợ giá (chịu lỗ)</li></ul></div><p style="font-size: 13px; color: rgb(var(--fg-muted));">Nên đặt nhóm thử nghiệm là 1.0</p></div>',
+        nextBtn: 'Tiếp'
+      },
+      groupExclusive: {
+        title: '4. Nhóm độc quyền (Tùy chọn)',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Kiểm soát khả năng hiển thị và quyền truy cập của nhóm.</p><div style="padding: 8px 12px; background: rgb(var(--accent-weak)); border: 1px solid rgb(var(--accent) / 0.4); border-radius: 2px; font-size: 13px; margin-bottom: 12px;"><b>Hướng dẫn quyền:</b><ul style="margin: 8px 0 0 16px;"><li><b>Tắt</b> - Nhóm công khai, mọi người dùng đều thấy</li><li><b>Bật</b> - Nhóm độc quyền, chỉ dành cho người dùng được chỉ định</li></ul></div><p style="padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px;"><b>Trường hợp sử dụng:</b> Độc quyền VIP, thử nghiệm nội bộ, khách hàng đặc biệt</p></div>',
+        nextBtn: 'Tiếp'
+      },
+      groupSubmit: {
+        title: 'Lưu nhóm',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Xác nhận thông tin và nhấn tạo để lưu nhóm.</p><p style="padding: 8px 12px; background: rgb(var(--warning-weak)); border: 1px solid rgb(var(--warning) / 0.4); border-radius: 2px; font-size: 13px; margin-bottom: 12px;"><b>Lưu ý:</b> Không thể đổi loại nền tảng sau khi tạo, nhưng các cài đặt khác có thể sửa bất cứ lúc nào</p><p style="padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px;"><b>Bước tiếp theo:</b> Sau khi tạo, chúng ta sẽ thêm tài khoản thượng nguồn vào nhóm này</p><p style="margin-top: 12px; color: rgb(var(--accent-strong)); font-weight: 600;">Nhấn nút "Tạo"</p></div>'
+      },
+      accountManage: {
+        title: 'Bước 2: Thêm tài khoản',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;"><b>Tuyệt! Đã tạo nhóm thành công </b></p><p style="margin-bottom: 12px;">Giờ hãy thêm tài khoản dịch vụ AI thượng nguồn để bắt đầu cung cấp dịch vụ thực tế.</p><div style="padding: 8px 12px; background: rgb(var(--accent-weak)); border: 1px solid rgb(var(--accent) / 0.4); border-radius: 2px; font-size: 13px; margin-bottom: 12px;"><b>Mục đích của tài khoản:</b><ul style="margin: 8px 0 0 16px;"><li>Kết nối tới dịch vụ AI thượng nguồn (Claude, GPT, v.v.)</li><li>Một nhóm có thể chứa nhiều tài khoản (cân bằng tải)</li><li>Hỗ trợ phương thức OAuth và Session Key</li></ul></div><p style="margin-top: 16px; color: rgb(var(--accent-strong)); font-weight: 600;">Nhấn "Quản lý tài khoản" ở thanh bên trái</p></div>'
+      },
+      createAccount: {
+        title: 'Thêm tài khoản mới',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Nhấn nút để bắt đầu thêm tài khoản thượng nguồn đầu tiên.</p><p style="padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px;"><b>Mẹo:</b> Nên dùng phương thức OAuth - an toàn hơn và không cần trích xuất khóa thủ công</p><p style="margin-top: 12px; color: rgb(var(--accent-strong)); font-weight: 600;">Nhấn nút "Thêm tài khoản"</p></div>'
+      },
+      accountName: {
+        title: '1. Tên tài khoản',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Đặt cho tài khoản một cái tên dễ nhận biết.</p><p style="padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px;"><b>Gợi ý đặt tên:</b> "Claude Chính", "GPT Dự phòng 1", "Tài khoản thử nghiệm", v.v.</p></div>',
+        nextBtn: 'Tiếp'
+      },
+      accountPlatform: {
+        title: '2. Chọn nền tảng',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Chọn nền tảng nhà cung cấp dịch vụ cho tài khoản này.</p><p style="padding: 8px 12px; background: rgb(var(--warning-weak)); border: 1px solid rgb(var(--warning) / 0.4); border-radius: 2px; font-size: 13px;"><b>Quan trọng:</b> Nền tảng phải khớp với nhóm bạn vừa tạo</p></div>',
+        nextBtn: 'Tiếp'
+      },
+      accountType: {
+        title: '3. Phương thức ủy quyền',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Chọn phương thức ủy quyền cho tài khoản.</p><div style="padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px; margin-bottom: 12px;"><b>Khuyên dùng: Phương thức OAuth</b><ul style="margin: 8px 0 0 16px;"><li>Không cần trích xuất khóa thủ công</li><li>An toàn hơn, hỗ trợ tự động làm mới</li><li>Dùng được với Claude Code, ChatGPT OAuth</li></ul></div><div style="padding: 8px 12px; background: rgb(var(--accent-weak)); border: 1px solid rgb(var(--accent) / 0.4); border-radius: 2px; font-size: 13px;"><b>Phương thức Session Key</b><ul style="margin: 8px 0 0 16px;"><li>Cần trích xuất thủ công từ trình duyệt</li><li>Có thể cần cập nhật định kỳ</li><li>Dành cho nền tảng không hỗ trợ OAuth</li></ul></div></div>',
+        nextBtn: 'Tiếp'
+      },
+      accountPriority: {
+        title: '4. Độ ưu tiên (Tùy chọn)',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Đặt độ ưu tiên gọi của tài khoản.</p><div style="padding: 8px 12px; background: rgb(var(--accent-weak)); border: 1px solid rgb(var(--accent) / 0.4); border-radius: 2px; font-size: 13px; margin-bottom: 12px;"><b>Quy tắc ưu tiên:</b><ul style="margin: 8px 0 0 16px;"><li>Số càng nhỏ = ưu tiên càng cao</li><li>Hệ thống dùng tài khoản có giá trị thấp trước</li><li>Cùng độ ưu tiên = chọn ngẫu nhiên</li></ul></div><p style="padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px;"><b>Trường hợp sử dụng:</b> Đặt tài khoản chính giá trị thấp, tài khoản dự phòng giá trị cao</p></div>',
+        nextBtn: 'Tiếp'
+      },
+      accountGroups: {
+        title: '5. Gán nhóm',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;"><b>Bước quan trọng!</b> Gán tài khoản vào nhóm bạn vừa tạo.</p><div style="padding: 8px 12px; background: rgb(var(--danger-weak)); border: 1px solid rgb(var(--danger) / 0.4); border-radius: 2px; font-size: 13px; margin-bottom: 12px;"><b>Lưu ý quan trọng:</b><ul style="margin: 8px 0 0 16px;"><li>Phải chọn ít nhất một nhóm</li><li>Tài khoản chưa được gán nhóm sẽ không thể sử dụng</li><li>Một tài khoản có thể được gán vào nhiều nhóm</li></ul></div><p style="padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px;"><b>Mẹo:</b> Chọn nhóm thử nghiệm bạn vừa tạo</p></div>',
+        nextBtn: 'Tiếp'
+      },
+      accountSubmit: {
+        title: 'Lưu tài khoản',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Xác nhận thông tin và nhấn lưu.</p><div style="padding: 8px 12px; background: rgb(var(--accent-weak)); border: 1px solid rgb(var(--accent) / 0.4); border-radius: 2px; font-size: 13px; margin-bottom: 12px;"><b>Quy trình OAuth:</b><ul style="margin: 8px 0 0 16px;"><li>Sau khi nhấn lưu sẽ chuyển tới trang của nhà cung cấp dịch vụ</li><li>Hoàn tất đăng nhập và ủy quyền trên trang nhà cung cấp</li><li>Tự động quay lại sau khi ủy quyền thành công</li></ul></div><p style="padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px;"><b>Bước tiếp theo:</b> Sau khi thêm tài khoản, chúng ta sẽ tạo một API Key</p><p style="margin-top: 12px; color: rgb(var(--accent-strong)); font-weight: 600;">Nhấn nút "Lưu"</p></div>'
+      },
+      keyManage: {
+        title: 'Bước 3: Tạo khóa',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;"><b>Chúc mừng! Đã thiết lập tài khoản xong </b></p><p style="margin-bottom: 12px;">Bước cuối: tạo một API Key để kiểm tra dịch vụ có hoạt động bình thường không.</p><div style="padding: 8px 12px; background: rgb(var(--accent-weak)); border: 1px solid rgb(var(--accent) / 0.4); border-radius: 2px; font-size: 13px; margin-bottom: 12px;"><b>Mục đích của API Key:</b><ul style="margin: 8px 0 0 16px;"><li>Thông tin xác thực để gọi dịch vụ AI</li><li>Mỗi khóa gắn với một nhóm</li><li>Có thể đặt hạn mức và thời hạn</li><li>Hỗ trợ thống kê sử dụng riêng</li></ul></div><p style="margin-top: 16px; color: rgb(var(--accent-strong)); font-weight: 600;">Nhấn "API Keys" ở thanh bên trái</p></div>'
+      },
+      createKey: {
+        title: 'Tạo khóa',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Nhấn nút để tạo API Key đầu tiên của bạn.</p><p style="padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px;"><b>Mẹo:</b> Sao chép và lưu ngay sau khi tạo - khóa chỉ hiển thị một lần</p><p style="margin-top: 12px; color: rgb(var(--accent-strong)); font-weight: 600;">Nhấn nút "Tạo khóa"</p></div>'
+      },
+      keyName: {
+        title: '1. Tên khóa',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Đặt cho khóa một cái tên dễ quản lý.</p><p style="padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px;"><b>Gợi ý đặt tên:</b> "Khóa thử nghiệm", "Production", "Di động", v.v.</p></div>',
+        nextBtn: 'Tiếp'
+      },
+      keyGroup: {
+        title: '2. Chọn nhóm',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Chọn nhóm bạn vừa cấu hình.</p><div style="padding: 8px 12px; background: rgb(var(--accent-weak)); border: 1px solid rgb(var(--accent) / 0.4); border-radius: 2px; font-size: 13px; margin-bottom: 12px;"><b>Nhóm quyết định:</b><ul style="margin: 8px 0 0 16px;"><li>Khóa này được dùng những tài khoản nào</li><li>Áp dụng hệ số tính phí nào</li><li>Có phải là khóa độc quyền hay không</li></ul></div><p style="padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px;"><b>Mẹo:</b> Chọn nhóm thử nghiệm bạn vừa tạo</p></div>',
+        nextBtn: 'Tiếp'
+      },
+      keySubmit: {
+        title: 'Tạo và sao chép',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Hệ thống sẽ tạo một API Key hoàn chỉnh sau khi nhấn tạo.</p><div style="padding: 8px 12px; background: rgb(var(--danger-weak)); border: 1px solid rgb(var(--danger) / 0.4); border-radius: 2px; font-size: 13px; margin-bottom: 12px;"><b>Lưu ý quan trọng:</b><ul style="margin: 8px 0 0 16px;"><li>Khóa chỉ hiển thị một lần, hãy sao chép ngay</li><li>Nếu mất phải tạo lại</li><li>Hãy giữ an toàn, không chia sẻ cho người khác</li></ul></div><div style="padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px; margin-bottom: 12px;"><b>Các bước tiếp theo:</b><ul style="margin: 8px 0 0 16px;"><li>Sao chép khóa sk-xxx vừa tạo</li><li>Dùng trong bất kỳ client nào tương thích OpenAI</li><li>Bắt đầu trải nghiệm dịch vụ AI!</li></ul></div><p style="margin-top: 12px; color: rgb(var(--accent-strong)); font-weight: 600;">Nhấn nút "Tạo"</p></div>'
+      }
+    },
+    // User tour steps
+    user: {
+      welcome: {
+        title: 'Chào mừng đến với {siteName}',
+        description: '<div style="line-height: 1.8;"><p style="margin-bottom: 16px;">Xin chào! Chào mừng bạn đến với nền tảng dịch vụ AI {siteName}.</p><p style="margin-bottom: 12px;"><b>Bắt đầu nhanh:</b></p><ul style="margin-left: 20px; margin-bottom: 16px;"><li>Tạo API Key</li><li>Sao chép khóa vào ứng dụng của bạn</li><li>Bắt đầu sử dụng dịch vụ AI</li></ul><p style="color: rgb(var(--accent-strong)); font-weight: 600;">Chỉ mất 1 phút, bắt đầu thôi →</p></div>',
+        nextBtn: 'Bắt đầu ',
+        prevBtn: 'Bỏ qua'
+      },
+      keyManage: {
+        title: 'Quản lý API Key',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Quản lý tất cả khóa truy cập API của bạn tại đây.</p><p style="padding: 8px 12px; background: rgb(var(--accent-weak)); border: 1px solid rgb(var(--accent) / 0.4); border-radius: 2px; font-size: 13px;"><b>API Key là gì?</b><br/>API Key là thông tin xác thực để truy cập dịch vụ AI, giống như chiếc chìa khóa cho phép ứng dụng của bạn gọi các khả năng AI.</p><p style="margin-top: 12px; color: rgb(var(--accent-strong)); font-weight: 600;">Nhấn để vào trang khóa</p></div>'
+      },
+      createKey: {
+        title: 'Tạo khóa mới',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Nhấn nút để tạo API Key đầu tiên của bạn.</p><p style="padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px;"><b>Mẹo:</b> Khóa chỉ hiển thị một lần sau khi tạo, hãy nhớ sao chép và lưu lại</p><p style="margin-top: 12px; color: rgb(var(--accent-strong)); font-weight: 600;">Nhấn "Tạo khóa"</p></div>'
+      },
+      keyName: {
+        title: 'Tên khóa',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Đặt cho khóa một cái tên dễ nhận biết.</p><p style="padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px;"><b>Ví dụ:</b> "Khóa đầu tiên", "Để thử nghiệm", v.v.</p></div>',
+        nextBtn: 'Tiếp'
+      },
+      keyGroup: {
+        title: 'Chọn nhóm',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Chọn nhóm dịch vụ được quản trị viên cấp.</p><p style="padding: 8px 12px; background: rgb(var(--accent-weak)); border: 1px solid rgb(var(--accent) / 0.4); border-radius: 2px; font-size: 13px;"><b>Thông tin nhóm:</b><br/>Các nhóm khác nhau có thể có chất lượng dịch vụ và mức tính phí khác nhau, hãy chọn theo nhu cầu.</p></div>',
+        nextBtn: 'Tiếp'
+      },
+      keySubmit: {
+        title: 'Hoàn tất tạo khóa',
+        description: '<div style="line-height: 1.7;"><p style="margin-bottom: 12px;">Nhấn để xác nhận và tạo API Key của bạn.</p><div style="padding: 8px 12px; background: rgb(var(--danger-weak)); border: 1px solid rgb(var(--danger) / 0.4); border-radius: 2px; font-size: 13px; margin-bottom: 12px;"><b>Quan trọng:</b><ul style="margin: 8px 0 0 16px;"><li>Sao chép khóa (sk-xxx) ngay sau khi tạo</li><li>Khóa chỉ hiển thị một lần, nếu mất phải tạo lại</li></ul></div><p style="padding: 8px 12px; background: rgb(var(--success-weak)); border: 1px solid rgb(var(--success) / 0.4); border-radius: 2px; font-size: 13px;"><b>Cách sử dụng:</b><br/>Cấu hình khóa trong bất kỳ client nào tương thích OpenAI (như ChatBox, OpenCat, v.v.) và bắt đầu sử dụng!</p><p style="margin-top: 12px; color: rgb(var(--accent-strong)); font-weight: 600;">Nhấn nút "Tạo"</p></div>'
+      }
+    }
+  },
+
+  // Payment System
+  payment: {
+    title: 'Nạp tiền / Đăng ký',
+    amountLabel: 'Số tiền',
+    paymentAmount: 'Số tiền thanh toán',
+    creditedBalance: 'Số dư được cộng',
+    quickAmounts: 'Số tiền nhanh',
+    customAmount: 'Số tiền tùy chỉnh',
+    enterAmount: 'Nhập số tiền',
+    paymentMethod: 'Phương thức thanh toán',
+    fee: 'Phí',
+    actualPay: 'Thực trả',
+    createOrder: 'Xác nhận thanh toán',
+    methods: {
+      sepay: 'SePay',
+      sepay_bank_transfer: 'VietQR',
+      sepay_napas: 'Chuyển khoản Napas',
+      sepay_card: 'Thẻ (Visa / Mastercard / JCB)',
+      nowpayments: 'NOWPayments',
+      nowpayments_crypto: 'Tiền mã hóa (BTC / ETH / USDT ...)',
+    },
+    status: {
+      pending: 'Chờ xử lý',
+      paid: 'Đã thanh toán',
+      recharging: 'Đang nạp',
+      completed: 'Hoàn tất',
+      expired: 'Đã hết hạn',
+      cancelled: 'Đã hủy',
+      failed: 'Thất bại',
+      refund_requested: 'Đã yêu cầu hoàn tiền',
+      refunding: 'Đang hoàn tiền',
+      refund_pending: 'Chờ hoàn tiền',
+      refunded: 'Đã hoàn tiền',
+      partially_refunded: 'Hoàn tiền một phần',
+      refund_failed: 'Hoàn tiền thất bại',
+    },
+    qr: {
+      scanToPay: 'Quét để thanh toán',
+      payInNewWindow: 'Hoàn tất thanh toán trong cửa sổ mới',
+      payInNewWindowHint: 'Trang thanh toán đã mở trong cửa sổ mới. Vui lòng hoàn tất thanh toán ở đó rồi quay lại trang này.',
+      openPayWindow: 'Mở lại trang thanh toán',
+      expiresIn: 'Hết hạn sau',
+      expired: 'Đơn hàng đã hết hạn',
+      expiredDesc: 'Đơn hàng này đã hết hạn. Vui lòng tạo đơn mới.',
+      cancelled: 'Đơn hàng đã hủy',
+      cancelledDesc: 'Bạn đã hủy khoản thanh toán này.',
+      waitingPayment: 'Đang chờ thanh toán...',
+      cancelOrder: 'Hủy đơn hàng',
+      saveQRCode: 'Lưu mã QR',
+    },
+    orders: {
+      title: 'Đơn hàng của tôi',
+      empty: 'Chưa có đơn hàng',
+      orderId: 'ID đơn hàng',
+      orderNo: 'Mã đơn hàng',
+      amount: 'Số tiền',
+      payAmount: 'Đã trả',
+      creditedAmount: 'Số tiền được cộng',
+      fee: 'Phí',
+      baseAmount: 'Số tiền gốc',
+      includedInPayAmount: 'đã bao gồm trong số tiền đã trả',
+      status: 'Trạng thái',
+      paymentMethod: 'Phương thức thanh toán',
+      createdAt: 'Ngày tạo',
+      cancel: 'Hủy đơn hàng',
+      userId: 'ID người dùng',
+      orderType: 'Loại đơn hàng',
+      actions: 'Thao tác',
+    },
+    result: {
+      success: 'Thanh toán thành công',
+      subscriptionSuccess: 'Đăng ký thành công',
+      processing: 'Đang xử lý thanh toán',
+      cancelled: 'Đã hủy thanh toán',
+      cancelledHint: 'Bạn đã hủy khoản thanh toán này. Đơn hàng vẫn mở cho đến khi hết hạn — hãy bắt đầu thanh toán mới khi bạn sẵn sàng.',
+      processingHint: 'Thanh toán vẫn đang chờ xác nhận. Trang này sẽ tự động làm mới.',
+      failed: 'Thanh toán thất bại',
+      failedHint: 'Cổng thanh toán báo khoản thanh toán này thất bại. Đơn hàng vẫn mở cho đến khi hết hạn — hãy bắt đầu thanh toán mới khi bạn sẵn sàng.',
+      backToRecharge: 'Quay lại nạp tiền',
+      viewOrders: 'Xem đơn hàng',
+    },
+    currentBalance: 'Số dư hiện tại',
+    groupFallback: 'Nhóm #{id}',
+    rechargeAccount: 'Tài khoản nạp',
+    activeSubscription: 'Gói đăng ký đang hoạt động',
+    noActiveSubscription: 'Không có gói đăng ký đang hoạt động',
+    tabTopUp: 'Nạp tiền',
+    tabSubscribe: 'Đăng ký',
+    noPlans: 'Không có gói đăng ký nào',
+    notAvailable: 'Hiện không thể nạp tiền',
+    billingUnavailable: 'Hiện không thể nạp tiền hay đăng ký. Vui lòng liên hệ quản trị viên.',
+    confirmSubscription: 'Xác nhận đăng ký',
+    confirmCancel: 'Bạn có chắc muốn hủy đơn hàng này?',
+    amountTooLow: 'Số tiền tối thiểu là {min}',
+    amountTooHigh: 'Số tiền tối đa là {max}',
+    amountNoMethod: 'Không có phương thức thanh toán nào cho số tiền này',
+    rechargeRatePreview: 'Tỷ lệ hiện tại: 1 {currency} = {usd} USD',
+    exchangeRateNote: 'Tỷ giá: 1 USD = {rate}',
+    convertedAmount: 'Bạn sẽ bị tính {amount}',
+    exchangeRateUnavailable: 'Hiện chưa lấy được tỷ giá. Vui lòng thử lại sau giây lát.',
+    errors: {
+      tooManyPending: 'Có quá nhiều đơn hàng đang chờ (tối đa {max}). Vui lòng hoàn tất hoặc hủy các đơn hiện có trước.',
+      methodUnavailable: 'Phương thức thanh toán này tạm thời không khả dụng.',
+      methodRetryMobileHint: 'Vui lòng thử lại hoặc chuyển sang phương thức thanh toán khác.',
+      methodRetryDesktopHint: 'Vui lòng thử lại hoặc đảm bảo cửa sổ thanh toán không bị chặn.',
+      cancelRateLimited: 'Hủy quá nhiều lần. Vui lòng thử lại sau.',
+      // Structured error codes (reason strings from backend ApplicationError)
+      PAYMENT_DISABLED: 'Hệ thống thanh toán đã bị tắt.',
+      USER_INACTIVE: 'Tài khoản của bạn đã bị vô hiệu hóa.',
+      BALANCE_PAYMENT_DISABLED: 'Nạp số dư đã bị tắt.',
+      INVALID_AMOUNT: 'Số tiền không hợp lệ.',
+      INVALID_INPUT: 'Yêu cầu không hợp lệ.',
+      PLAN_NOT_AVAILABLE: 'Không tìm thấy gói hoặc gói không còn khả dụng.',
+      GROUP_NOT_FOUND: 'Nhóm đăng ký không còn khả dụng.',
+      GROUP_TYPE_MISMATCH: 'Nhóm này không phải loại đăng ký.',
+      TOO_MANY_PENDING: 'Có quá nhiều đơn hàng đang chờ (tối đa {max}). Vui lòng hoàn tất hoặc hủy các đơn hiện có trước.',
+      DAILY_LIMIT_EXCEEDED: 'Đã đạt giới hạn nạp trong ngày. Còn lại: {remaining}.',
+      DAILY_LIMIT_PENDING_HOLD:
+        'Các đơn chưa thanh toán đang giữ {held} trong giới hạn hôm nay. Hãy thanh toán hoặc hủy chúng, hoặc đợi đến {held_until}. Còn lại: {remaining}.',
+      PAYMENT_GATEWAY_ERROR: 'Phương thức thanh toán không khả dụng.',
+      NO_AVAILABLE_INSTANCE: 'Hiện không có kênh thanh toán nào khả dụng.',
+      SEPAY_CONFIG_MISSING_KEY: 'Cấu hình SePay thiếu khóa bắt buộc: {field}.',
+      SEPAY_CONFIG_INVALID_ENV: 'Môi trường SePay phải là sandbox hoặc production.',
+      SEPAY_CONFIG_INVALID_CURRENCY: 'Loại tiền tệ SePay không hợp lệ.',
+      SEPAY_UNSUPPORTED_PAYMENT_TYPE: 'SePay không hỗ trợ phương thức thanh toán này.',
+      NOWPAYMENTS_CONFIG_MISSING_KEY: 'Cấu hình NOWPayments thiếu khóa bắt buộc: {field}.',
+      NOWPAYMENTS_CONFIG_INVALID_ENV: 'Môi trường NOWPayments phải là sandbox hoặc production.',
+      NOWPAYMENTS_CONFIG_INVALID_CURRENCY: 'Loại tiền tệ NOWPayments không hợp lệ.',
+      NOWPAYMENTS_UNSUPPORTED_PAYMENT_TYPE: 'NOWPayments không hỗ trợ phương thức thanh toán này.',
+      PAYMENT_PROVIDER_MISCONFIGURED: 'Nhà cung cấp thanh toán bị cấu hình sai. Vui lòng liên hệ quản trị viên.',
+      PENDING_ORDERS: 'Nhà cung cấp này còn đơn hàng đang chờ. Vui lòng đợi chúng hoàn tất trước khi thay đổi.',
+      CANCEL_RATE_LIMITED: 'Hủy quá nhiều lần. Vui lòng thử lại sau.',
+      NOT_FOUND: 'Không tìm thấy đơn hàng.',
+      FORBIDDEN: 'Không có quyền với đơn hàng này.',
+      CONFLICT: 'Trạng thái đơn hàng đã thay đổi. Vui lòng làm mới.',
+      INVALID_STATUS: 'Trạng thái đơn hàng hiện tại không cho phép thao tác này.',
+    },
+    subscribeNow: 'Đăng ký ngay',
+    renewNow: 'Gia hạn',
+    selectPlan: 'Chọn gói',
+    planFeatures: 'Tính năng',
+    planCard: {
+      rate: 'Tỷ lệ',
+      peakRate: 'Tỷ lệ giờ cao điểm',
+      dailyLimit: 'Hằng ngày',
+      weeklyLimit: 'Hằng tuần',
+      monthlyLimit: 'Hằng tháng',
+      quota: 'Hạn mức',
+      unlimited: 'Không giới hạn',
+      models: 'Mô hình',
+    },
+    days: 'ngày',
+    weeks: 'tuần',
+    months: 'tháng',
+    years: 'năm',
+    oneMonth: '1 tháng',
+    oneYear: '1 năm',
+    perMonth: 'tháng',
+    perYear: 'năm',
+    admin: {
+      tabs: {
+        overview: 'Tổng quan',
+        orders: 'Đơn hàng',
+        channels: 'Kênh',
+        plans: 'Gói',
+      },
+      todayRevenue: 'Doanh thu hôm nay',
+      totalRevenue: 'Tổng doanh thu',
+      todayOrders: 'Đơn hàng hôm nay',
+      orderCount: 'Số đơn hàng',
+      avgAmount: 'Số tiền trung bình',
+      revenue: 'Doanh thu',
+      dailyRevenue: 'Doanh thu theo ngày',
+      paymentDistribution: 'Phân bổ thanh toán',
+      colUser: 'Người dùng',
+      topUsers: 'Người dùng hàng đầu',
+      noData: 'Không có dữ liệu',
+      days: 'ngày',
+      weeks: 'tuần',
+      months: 'tháng',
+      searchOrders: 'Tìm đơn hàng...',
+      allStatuses: 'Tất cả trạng thái',
+      allPaymentTypes: 'Tất cả loại thanh toán',
+      allOrderTypes: 'Tất cả loại đơn hàng',
+      orderDetail: 'Chi tiết đơn hàng',
+      orderType: 'Loại đơn hàng',
+      orders: 'Đơn hàng',
+      balanceOrder: 'Nạp số dư',
+      subscriptionOrder: 'Gói đăng ký',
+      paidAt: 'Thanh toán lúc',
+      completedAt: 'Hoàn tất lúc',
+      expiresAt: 'Hết hạn lúc',
+      feeRate: 'Tỷ lệ phí',
+      // Historical refund data is still displayed on old orders, so these
+      // labels stay even though nothing produces a refund any more.
+      refundAmount: 'Số tiền hoàn',
+      refundReason: 'Lý do hoàn tiền',
+      refundInfo: 'Thông tin hoàn tiền',
+      deductBalanceHint: 'Trừ số tiền đã nạp khỏi số dư người dùng',
+      userBalance: 'Số dư người dùng',
+      orderAmount: 'Số tiền đơn hàng',
+      insufficientBalance: 'Số dư không đủ — sẽ trừ về $0',
+      noDeduction: 'Sẽ KHÔNG trừ số dư người dùng',
+      orderCancelled: 'Đơn hàng đã hủy',
+      retry: 'Thử lại',
+      retrySuccess: 'Thử lại thành công',
+      refundRequestInfo: 'Thông tin yêu cầu hoàn tiền',
+      refundRequestedAt: 'Yêu cầu lúc',
+      refundRequestedBy: 'Người yêu cầu',
+      refundRequestReason: 'Lý do yêu cầu',
+      auditLogs: 'Nhật ký kiểm toán',
+      operator: 'Người thao tác',
+      channelName: 'Tên kênh',
+      channelDescription: 'Mô tả kênh',
+      createChannel: 'Tạo kênh',
+      editChannel: 'Sửa kênh',
+      deleteChannel: 'Xóa kênh',
+      deleteChannelConfirm: 'Bạn có chắc muốn xóa kênh này?',
+      planName: 'Tên gói',
+      planDescription: 'Mô tả gói',
+      createPlan: 'Tạo gói',
+      editPlan: 'Sửa gói',
+      deletePlan: 'Xóa gói',
+      deletePlanConfirm: 'Bạn có chắc muốn xóa gói này?',
+      originalPrice: 'Giá gốc',
+      price: 'Giá',
+      currency: 'Nhãn tiền tệ',
+      currencyPlaceholder: 'VD: USD / NZD / CNY',
+      currencyHint: 'Mã tiền tệ ISO 3 chữ cái chỉ để hiển thị cạnh giá; để trống để ẩn, không ảnh hưởng đến tính phí',
+      subscriptionCnyPayPreview: 'Xem trước số tiền thu qua kênh CNY: {amount}',
+      subscriptionCnyPayPreviewWithFee: '(đã gồm phí {feeRate}%: {total})',
+      validity: 'Thời hạn',
+      validityUnit: 'Đơn vị thời hạn',
+      sortOrder: 'Thứ tự sắp xếp',
+      forSale: 'Đang bán',
+      onSale: 'Đang bán',
+      offSale: 'Ngừng bán',
+      group: 'Nhóm',
+      groupId: 'ID nhóm',
+      features: 'Tính năng',
+      featuresHint: 'Mỗi dòng một tính năng',
+      featuresPlaceholder: 'Nhập tính năng của gói...',
+      providerManagement: 'Quản lý nhà cung cấp',
+      providerManagementDesc: 'Quản lý các phiên bản nhà cung cấp thanh toán',
+      createProvider: 'Tạo nhà cung cấp',
+      editProvider: 'Sửa nhà cung cấp',
+      deleteProvider: 'Xóa nhà cung cấp',
+      deleteProviderConfirm: 'Bạn có chắc muốn xóa nhà cung cấp này?',
+      providerName: 'Tên nhà cung cấp',
+      providerKey: 'Khóa nhà cung cấp',
+      selectProviderKey: 'Chọn khóa nhà cung cấp',
+      providerConfig: 'Cấu hình nhà cung cấp',
+      noProviders: 'Chưa cấu hình nhà cung cấp nào',
+      noProvidersHint: 'Tạo một phiên bản nhà cung cấp để bắt đầu nhận thanh toán',
+      supportedTypes: 'Loại thanh toán được hỗ trợ',
+      supportedTypesHint: 'Chọn các loại thanh toán mà nhà cung cấp này hỗ trợ',
+      rateMultiplier: 'Hệ số tính phí',
+      dashboardTitle: 'Bảng điều khiển thanh toán',
+      dashboardDesc: 'Phân tích và thống kê đơn nạp tiền',
+      daySuffix: 'ng',
+      paymentConfigTitle: 'Cấu hình thanh toán',
+      paymentConfigDesc: 'Cấu hình nhà cung cấp và cài đặt thanh toán',
+      plansPageTitle: 'Gói đăng ký',
+      plansPageDesc: 'Quản lý cấu hình gói đăng ký',
+      tabPlanConfig: 'Cấu hình gói',
+      tabUserSubs: 'Gói đăng ký của người dùng',
+      selectGroup: 'Chọn một nhóm',
+      groupRequired: 'Vui lòng chọn nhóm đăng ký',
+      priceRequired: 'Giá phải lớn hơn 0',
+      validityRequired: 'Thời hạn phải lớn hơn 0',
+      groupMissing: 'Thiếu',
+      groupInfo: 'Thông tin nhóm',
+      platform: 'Nền tảng',
+      rateMultiplierLabel: 'Tỷ lệ',
+      dailyLimit: 'Giới hạn ngày',
+      weeklyLimit: 'Giới hạn tuần',
+      monthlyLimit: 'Giới hạn tháng',
+      unlimited: 'Không giới hạn',
+      searchUserSubs: 'Tìm gói đăng ký của người dùng...',
+      daily: 'N',
+      weekly: 'T',
+      monthly: 'Th',
+      subsStatus: {
+        active: 'Đang hoạt động',
+        expired: 'Đã hết hạn',
+        revoked: 'Đã thu hồi',
+      },
+    },
+  },
+
+}
