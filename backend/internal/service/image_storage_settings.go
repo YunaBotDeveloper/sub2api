@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
@@ -42,6 +43,23 @@ type ImageStorageSettings struct {
 	AccessKeyID     string `json:"access_key_id"`
 	SecretAccessKey string `json:"secret_access_key,omitempty"` //nolint:revive // field name follows AWS convention
 	ForcePathStyle  bool   `json:"force_path_style"`
+
+	// StudioRetentionDays 是 Image Studio 图片保留天数；未设置时为 30，0 表示永久保留。
+	StudioRetentionDays *int `json:"studio_retention_days,omitempty"`
+}
+
+const defaultImageStudioRetentionDays = 30
+
+// ImageStudioRetention 返回 Image Studio 图片保留时长；0 表示永久保留。
+func (s *ImageStorageSettingService) ImageStudioRetention(ctx context.Context) time.Duration {
+	days := defaultImageStudioRetentionDays
+	if settings, err := s.load(ctx); err == nil && settings != nil && settings.StudioRetentionDays != nil {
+		days = *settings.StudioRetentionDays
+	}
+	if days <= 0 {
+		return 0
+	}
+	return time.Duration(days) * 24 * time.Hour
 }
 
 // ImageStorageSettingService 读写后台设置，并把结果解析成一个可直接使用的 uploader。

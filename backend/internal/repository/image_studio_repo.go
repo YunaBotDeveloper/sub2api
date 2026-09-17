@@ -258,6 +258,63 @@ func (r *imageStudioRepository) DeleteAsset(ctx context.Context, userID, id int6
 	return key, nil
 }
 
+func (r *imageStudioRepository) DeleteExpiredJobs(ctx context.Context, before time.Time, limit int) (keys []string, deleted int, err error) {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+		}
+	}()
+	// SKIP LOCKED：多副本同时清理时各取不同批次。
+	rows, err := tx.QueryContext(ctx, `SELECT id FROM image_studio_jobs WHERE created_at < $1 AND status IN ('succeeded', 'failed')
+		ORDER BY created_at LIMIT $2 FOR UPDATE SKIP LOCKED`, before, limit)
+	if err != nil {
+		return nil, 0, err
+	}
+	var ids []int64
+	for rows.Next() {
+		var id int64
+		if err = rows.Scan(&id); err != nil {
+			_ = rows.Close()
+			return nil, 0, err
+		}
+		ids = append(ids, id)
+	}
+	_ = rows.Close()
+	if err = rows.Err(); err != nil || len(ids) == 0 {
+		if err == nil {
+			err = tx.Commit()
+		}
+		return nil, 0, err
+	}
+	keyRows, err := tx.QueryContext(ctx, `SELECT storage_key FROM image_studio_assets WHERE job_id = ANY($1)`, pq.Array(ids))
+	if err != nil {
+		return nil, 0, err
+	}
+	for keyRows.Next() {
+		var key string
+		if err = keyRows.Scan(&key); err != nil {
+			_ = keyRows.Close()
+			return nil, 0, err
+		}
+		keys = append(keys, key)
+	}
+	_ = keyRows.Close()
+	if err = keyRows.Err(); err != nil {
+		return nil, 0, err
+	}
+	if _, err = tx.ExecContext(ctx, `DELETE FROM image_studio_jobs WHERE id = ANY($1)`, pq.Array(ids)); err != nil {
+		return nil, 0, err
+	}
+	if err = tx.Commit(); err != nil {
+		return nil, 0, err
+	}
+	return keys, len(ids), nil
+}
+
 func imageStudioPage(page, pageSize int) (limit, offset int) {
 	if pageSize <= 0 || pageSize > 100 {
 		pageSize = 20

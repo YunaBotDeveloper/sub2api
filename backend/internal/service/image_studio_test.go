@@ -23,6 +23,8 @@ type fakeImageStudioRepo struct {
 	created    *ImageStudioJob
 	finished   *ImageStudioJob
 	assets     []ImageStudioAsset
+
+	expiredBefore time.Time
 }
 
 func (r *fakeImageStudioRepo) CreateJob(_ context.Context, job *ImageStudioJob) error {
@@ -37,6 +39,10 @@ func (r *fakeImageStudioRepo) CountUnfinishedJobs(context.Context, int64) (int, 
 	return r.unfinished, nil
 }
 func (r *fakeImageStudioRepo) MarkJobRunning(context.Context, int64) error { return nil }
+func (r *fakeImageStudioRepo) DeleteExpiredJobs(_ context.Context, before time.Time, _ int) ([]string, int, error) {
+	r.expiredBefore = before
+	return []string{"img/studio/10/1-0.png"}, 1, nil
+}
 func (r *fakeImageStudioRepo) FinishJob(_ context.Context, job *ImageStudioJob, assets []ImageStudioAsset) error {
 	r.finished, r.assets = job, assets
 	return nil
@@ -162,4 +168,29 @@ func TestImageStudioRunStoresAssetsAndHandlesFailures(t *testing.T) {
 		require.Contains(t, repo.finished.Warning, "storage_failed")
 		require.Len(t, repo.assets, 1)
 	})
+}
+
+func TestImageStudioRetentionDeletesExpiredJobsAndObjects(t *testing.T) {
+	now := time.Date(2026, 9, 17, 12, 0, 0, 0, time.UTC)
+	repo, store := &fakeImageStudioRepo{}, &fakeImageObjectStore{}
+	studio := newTestImageStudio(repo, store)
+
+	studio.retention = func(context.Context) time.Duration { return 0 }
+	deleted, err := studio.RunRetentionOnce(context.Background(), now)
+	require.NoError(t, err)
+	require.Zero(t, deleted, "retention 0 keeps images forever")
+	require.True(t, repo.expiredBefore.IsZero())
+
+	studio.retention = func(context.Context) time.Duration { return 30 * 24 * time.Hour }
+	deleted, err = studio.RunRetentionOnce(context.Background(), now)
+	require.NoError(t, err)
+	require.Equal(t, 1, deleted)
+	require.Equal(t, now.Add(-30*24*time.Hour), repo.expiredBefore)
+	require.Equal(t, []string{"img/studio/10/1-0.png"}, store.deleted)
+
+	studio.resolve = func() (*ImageResultUploader, bool) { return nil, false }
+	repo.expiredBefore = time.Time{}
+	deleted, err = studio.RunRetentionOnce(context.Background(), now)
+	require.NoError(t, err)
+	require.Zero(t, deleted, "rows are kept while storage is off so objects are not orphaned")
 }

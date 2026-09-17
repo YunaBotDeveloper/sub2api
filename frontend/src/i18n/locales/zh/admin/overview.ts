@@ -114,6 +114,8 @@ export default {
         publicBaseUrl: '公开访问域名',
         publicBaseUrlPlaceholder: '留空则返回预签名临时链接',
         presignExpiryHours: '预签名链接有效期（小时）',
+        studioRetentionDays: '图片工作室保留天数',
+        studioRetentionDaysHint: '已结束的图片工作室任务及其图片超过该天数后自动删除；0 表示永久保留。',
         saved: '异步生图对象存储配置已保存'
       },
       schedule: {

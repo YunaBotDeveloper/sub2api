@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 	"unicode/utf8"
 
@@ -92,6 +93,8 @@ type ImageStudioRepository interface {
 	ListAssets(ctx context.Context, userID int64, page, pageSize int) ([]ImageStudioAsset, int64, error)
 	GetAsset(ctx context.Context, userID, id int64) (*ImageStudioAsset, error)
 	DeleteAsset(ctx context.Context, userID, id int64) (string, error)
+	// DeleteExpiredJobs 删除 before 之前创建的已结束任务（最多 limit 个），返回其资产 key 与删除数。
+	DeleteExpiredJobs(ctx context.Context, before time.Time, limit int) ([]string, int, error)
 }
 
 type ImageStudioCreateInput struct {
@@ -122,13 +125,87 @@ type imageStudioKeyLookup interface {
 }
 
 type ImageStudioService struct {
-	repo    ImageStudioRepository
-	apiKeys imageStudioKeyLookup
-	resolve ImageStorageResolver
+	repo      ImageStudioRepository
+	apiKeys   imageStudioKeyLookup
+	resolve   ImageStorageResolver
+	retention func(ctx context.Context) time.Duration
+
+	stopOnce sync.Once
+	stop     chan struct{}
+	done     chan struct{}
 }
 
 func NewImageStudioService(repo ImageStudioRepository, apiKeys *APIKeyService, settings *ImageStorageSettingService) *ImageStudioService {
-	return &ImageStudioService{repo: repo, apiKeys: apiKeys, resolve: settings.Resolver()}
+	return &ImageStudioService{repo: repo, apiKeys: apiKeys, resolve: settings.Resolver(), retention: settings.ImageStudioRetention}
+}
+
+// ProvideImageStudioService 构造服务并启动保留期清理循环。
+func ProvideImageStudioService(repo ImageStudioRepository, apiKeys *APIKeyService, settings *ImageStorageSettingService) *ImageStudioService {
+	s := NewImageStudioService(repo, apiKeys, settings)
+	s.Start()
+	return s
+}
+
+const (
+	imageStudioCleanupInterval  = 30 * time.Minute
+	imageStudioCleanupBatchSize = 200
+	imageStudioCleanupMaxRounds = 10
+)
+
+// Start 启动保留期清理循环；多副本并行时由仓储的 SKIP LOCKED 保证互不重复处理。
+func (s *ImageStudioService) Start() {
+	if s == nil || s.repo == nil || s.stop != nil {
+		return
+	}
+	s.stop, s.done = make(chan struct{}), make(chan struct{})
+	go func() {
+		defer close(s.done)
+		ticker := time.NewTicker(imageStudioCleanupInterval)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-s.stop:
+				return
+			case <-ticker.C:
+				if _, err := s.RunRetentionOnce(context.Background(), time.Now()); err != nil {
+					logger.L().Warn("image_studio.retention_cleanup_failed", zap.Error(err))
+				}
+			}
+		}
+	}()
+}
+
+func (s *ImageStudioService) Stop() {
+	if s == nil || s.stop == nil {
+		return
+	}
+	s.stopOnce.Do(func() { close(s.stop) })
+	<-s.done
+}
+
+// RunRetentionOnce 删除超过保留期的已结束任务（级联资产）并尽力清理对象，返回删除的任务数。
+// 对象存储关闭时跳过，避免只删行不删对象而遗留孤儿文件。
+func (s *ImageStudioService) RunRetentionOnce(ctx context.Context, now time.Time) (int, error) {
+	if s.retention == nil {
+		return 0, nil
+	}
+	retention := s.retention(ctx)
+	if retention <= 0 || !s.Enabled() {
+		return 0, nil
+	}
+	total := 0
+	for round := 0; round < imageStudioCleanupMaxRounds; round++ {
+		keys, deleted, err := s.repo.DeleteExpiredJobs(ctx, now.Add(-retention), imageStudioCleanupBatchSize)
+		if err != nil {
+			return total, err
+		}
+		s.deleteObjects(ctx, keys...)
+		total += deleted
+		if deleted < imageStudioCleanupBatchSize {
+			break
+		}
+	}
+	return total, nil
 }
 
 func (s *ImageStudioService) store() (*ImageResultUploader, ImageObjectStore, bool) {

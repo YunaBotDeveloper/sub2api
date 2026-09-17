@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/service"
+	"github.com/lib/pq"
 	"github.com/stretchr/testify/require"
 )
 
@@ -82,4 +83,42 @@ func TestImageStudioRepository_Lifecycle(t *testing.T) {
 	count, err = repo.CountUnfinishedJobs(ctx, userID)
 	require.NoError(t, err)
 	require.Zero(t, count)
+}
+
+func TestImageStudioRepository_DeleteExpiredJobs(t *testing.T) {
+	ctx := context.Background()
+	var userID int64
+	email := fmt.Sprintf("image-studio-retention-%d@example.com", time.Now().UnixNano())
+	require.NoError(t, integrationDB.QueryRowContext(ctx, `INSERT INTO users (email, password_hash) VALUES ($1, 'x') RETURNING id`, email).Scan(&userID))
+	t.Cleanup(func() {
+		_, _ = integrationDB.ExecContext(context.Background(), `DELETE FROM users WHERE id = $1`, userID)
+	})
+
+	repo := NewImageStudioRepository(integrationDB)
+	newJob := func(status string) *service.ImageStudioJob {
+		job := &service.ImageStudioJob{UserID: userID, APIKeyID: 1, Status: status, Kind: service.ImageStudioKindGenerate, Model: "m", Prompt: "p", Params: []byte(`{}`)}
+		require.NoError(t, repo.CreateJob(ctx, job))
+		return job
+	}
+	old := newJob(service.ImageStudioStatusQueued)
+	old.Status = service.ImageStudioStatusSucceeded
+	require.NoError(t, repo.FinishJob(ctx, old, []service.ImageStudioAsset{{JobID: old.ID, UserID: userID, StorageKey: "studio/old.png", MimeType: "image/png", Bytes: 1}}))
+	running := newJob(service.ImageStudioStatusRunning)
+	_, err := integrationDB.ExecContext(ctx, `UPDATE image_studio_jobs SET created_at = NOW() - INTERVAL '40 days' WHERE id = ANY($1)`, pq.Array([]int64{old.ID, running.ID}))
+	require.NoError(t, err)
+	fresh := newJob(service.ImageStudioStatusQueued)
+	fresh.Status = service.ImageStudioStatusFailed
+	require.NoError(t, repo.FinishJob(ctx, fresh, nil))
+
+	keys, deleted, err := repo.DeleteExpiredJobs(ctx, time.Now().Add(-30*24*time.Hour), 100)
+	require.NoError(t, err)
+	require.GreaterOrEqual(t, deleted, 1)
+	require.Contains(t, keys, "studio/old.png")
+
+	_, err = repo.GetJob(ctx, userID, old.ID)
+	require.ErrorIs(t, err, service.ErrImageStudioNotFound)
+	_, err = repo.GetJob(ctx, userID, running.ID)
+	require.NoError(t, err, "unfinished jobs are never expired")
+	_, err = repo.GetJob(ctx, userID, fresh.ID)
+	require.NoError(t, err, "jobs inside the retention window are kept")
 }
