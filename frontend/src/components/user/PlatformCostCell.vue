@@ -1,15 +1,15 @@
 <template>
-  <div v-if="usage" class="text-sm">
+  <div v-if="usage" class="text-body">
     <div class="flex items-center gap-1.5">
-      <span class="text-gray-500 dark:text-gray-400">{{ t('admin.users.today') }}:</span>
-      <span class="font-medium text-gray-900 dark:text-white">${{ usage.today_actual_cost.toFixed(4) }}</span>
+      <span class="text-fg-muted">{{ t('admin.users.today') }}:</span>
+      <span class="font-medium tabular-nums text-fg">${{ usage.today_actual_cost.toFixed(4) }}</span>
     </div>
     <div class="mt-0.5 flex items-center gap-1.5">
-      <span class="text-gray-500 dark:text-gray-400">{{ t('admin.users.total') }}:</span>
-      <span class="font-medium text-gray-900 dark:text-white">${{ usage.total_actual_cost.toFixed(4) }}</span>
+      <span class="text-fg-muted">{{ t('admin.users.total') }}:</span>
+      <span class="font-medium tabular-nums text-fg">${{ usage.total_actual_cost.toFixed(4) }}</span>
     </div>
   </div>
-  <span v-else class="text-sm text-gray-400 dark:text-gray-500">—</span>
+  <span v-else class="text-body text-fg-subtle">—</span>
 </template>
 
 <script setup lang="ts">

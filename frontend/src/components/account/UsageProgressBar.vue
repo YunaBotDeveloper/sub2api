@@ -5,19 +5,19 @@
       v-if="windowStats && (windowStats.requests > 0 || windowStats.tokens > 0)"
       class="mb-0.5 flex items-center"
     >
-      <div class="flex items-center gap-1.5 text-[9px] text-gray-500 dark:text-gray-400">
-        <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
+      <div class="flex items-center gap-1.5 text-[9px] text-fg-muted">
+        <span class="border border-border px-1 tabular-nums">
           {{ formatRequests }} req
         </span>
-        <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800">
+        <span class="border border-border px-1 tabular-nums">
           {{ formatTokens }}
         </span>
-        <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800" :title="t('usage.accountBilled')">
+        <span class="border border-border px-1 tabular-nums" :title="t('usage.accountBilled')">
           A ${{ formatAccountCost }}
         </span>
         <span
           v-if="windowStats?.user_cost != null"
-          class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800"
+          class="border border-border px-1 tabular-nums"
           :title="t('usage.userBilled')"
         >
           U ${{ formatUserCost }}
@@ -25,7 +25,7 @@
         <span
           v-if="estimatedTotalCost != null"
           data-test="estimated-total-cost"
-          class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800"
+          class="border border-border px-1 tabular-nums"
           :title="t('admin.accounts.usageWindow.estimatedTotalCostTooltip')"
         >
           {{ t('admin.accounts.usageWindow.estimatedTotalCost', { cost: estimatedTotalCost.toFixed(2) }) }}
@@ -41,7 +41,7 @@
       </span>
 
       <!-- Progress bar container -->
-      <div class="h-1.5 w-8 shrink-0 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+      <div class="h-1.5 w-8 shrink-0 overflow-hidden border border-border bg-surface-sunken">
         <div
           :class="['h-full transition-all duration-300', barClass]"
           :style="{ width: barWidth }"
@@ -49,12 +49,12 @@
       </div>
 
       <!-- Percentage -->
-      <span :class="['w-[32px] shrink-0 text-right text-[10px] font-medium', textClass]">
+      <span :class="['w-[32px] shrink-0 text-right text-[10px] font-medium tabular-nums', textClass]">
         {{ displayPercent }}
       </span>
 
       <!-- Reset time -->
-      <span v-if="shouldShowResetTime" class="shrink-0 text-[10px] text-gray-400">
+      <span v-if="shouldShowResetTime" class="shrink-0 text-[10px] text-fg-subtle">
         {{ formatResetTime }}
       </span>
     </div>
@@ -112,10 +112,10 @@ watch(
 // Label background colors
 const labelClass = computed(() => {
   const colors = {
-    indigo: 'bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300',
-    emerald: 'bg-success-100 text-success-700 dark:bg-success-900/40 dark:text-success-300',
-    purple: 'bg-gray-100 text-gray-700 dark:bg-gray-900/40 dark:text-gray-300',
-    amber: 'bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-300'
+    indigo: 'border border-border text-fg-muted',
+    emerald: 'border border-border text-fg-muted',
+    purple: 'border border-border text-fg-muted',
+    amber: 'border border-border text-fg-muted'
   }
   return colors[props.color]
 })
@@ -124,26 +124,26 @@ const labelClass = computed(() => {
 // 监控页「Pro/7 天」类组合标签。百分比列在两种模式下保持不变。
 const labelSizeClass = computed(() =>
   props.labelWidth === 'auto'
-    ? 'max-w-[72px] shrink-0 truncate rounded px-1 text-left text-[10px] font-medium'
-    : 'w-[32px] shrink-0 rounded px-1 text-center text-[10px] font-medium'
+    ? 'max-w-[72px] shrink-0 truncate rounded-sm px-1 text-left text-[10px] font-medium'
+    : 'w-[32px] shrink-0 rounded-sm px-1 text-center text-[10px] font-medium'
 )
 
 // Progress bar color based on utilization
 const barClass = computed(() => {
   if (props.remainingCapacity) {
     if (props.utilization <= 20) {
-      return 'bg-danger-500'
+      return 'bg-danger'
     } else if (props.utilization <= 50) {
-      return 'bg-warning-500'
+      return 'bg-warning'
     }
-    return 'bg-success-500'
+    return 'bg-success'
   }
   if (props.utilization >= 90) {
-    return 'bg-danger-500'
+    return 'bg-danger'
   } else if (props.utilization >= 75) {
-    return 'bg-warning-500'
+    return 'bg-warning'
   } else {
-    return 'bg-success-500'
+    return 'bg-success'
   }
 })
 
@@ -151,18 +151,18 @@ const barClass = computed(() => {
 const textClass = computed(() => {
   if (props.remainingCapacity) {
     if (props.utilization <= 20) {
-      return 'text-danger-600 dark:text-danger-400'
+      return 'text-danger'
     } else if (props.utilization <= 50) {
-      return 'text-warning-600 dark:text-warning-400'
+      return 'text-warning'
     }
-    return 'text-gray-600 dark:text-gray-400'
+    return 'text-fg-muted'
   }
   if (props.utilization >= 90) {
-    return 'text-danger-600 dark:text-danger-400'
+    return 'text-danger'
   } else if (props.utilization >= 75) {
-    return 'text-warning-600 dark:text-warning-400'
+    return 'text-warning'
   } else {
-    return 'text-gray-600 dark:text-gray-400'
+    return 'text-fg-muted'
   }
 })
 

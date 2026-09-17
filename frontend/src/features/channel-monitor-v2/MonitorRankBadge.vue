@@ -42,7 +42,7 @@
     <span v-if="showTrophy" class="sr-only">{{ ariaLabel }}</span>
     <span
       class="text-xs font-semibold"
-      :class="showTrophy ? rankClass : 'text-gray-500 dark:text-dark-300'"
+      :class="showTrophy ? rankClass : 'text-fg-muted'"
     >
       {{ label }}
     </span>
@@ -114,9 +114,9 @@ const ariaLabel = computed(() => {
 const titleText = computed(() => ariaLabel.value)
 
 const rankClass = computed(() => {
-  if (rankNum.value === 1) return 'text-warning-600 dark:text-warning-400'
-  if (rankNum.value === 2) return 'text-gray-500 dark:text-gray-300'
-  if (rankNum.value === 3) return 'text-warning-800 dark:text-warning-600'
+  if (rankNum.value === 1) return 'text-warning'
+  if (rankNum.value === 2) return 'text-fg-muted'
+  if (rankNum.value === 3) return 'text-warning-strong'
   return ''
 })
 </script>

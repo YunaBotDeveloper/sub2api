@@ -7,56 +7,35 @@
     @close="closeSortModal"
   >
     <div class="space-y-4">
-      <p class="text-sm text-gray-500 dark:text-gray-400">
+      <p class="text-sm text-fg-muted">
         {{ t("admin.groups.sortOrderHint") }}
       </p>
       <VueDraggable
         v-model="sortableGroups"
         :animation="200"
-        class="space-y-2"
+        class="divide-y divide-border border-y border-border"
       >
         <div
           v-for="group in sortableGroups"
           :key="group.id"
-          class="flex cursor-grab items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 transition-shadow active:cursor-grabbing dark:border-dark-600 dark:bg-dark-700"
+          class="flex cursor-grab items-center gap-3 bg-surface px-2 py-2.5 hover:bg-accent-weak/50 active:cursor-grabbing"
         >
-          <div class="text-gray-400">
+          <div class="text-fg-subtle">
             <Icon name="menu" size="md" />
           </div>
           <div class="flex-1">
-            <div class="font-medium text-gray-900 dark:text-white">
+            <div class="font-medium text-fg">
               {{ group.name }}
             </div>
-            <div class="text-xs text-gray-500 dark:text-gray-400">
+            <div class="text-xs text-fg-muted">
               <span
-                :class="[
-                  'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium',
-                  group.platform === 'anthropic'
-                    ? 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400'
-                    : group.platform === 'openai'
-                      ? 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400'
-                      : group.platform === 'antigravity'
-                        ? 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-                        : group.platform === 'grok'
-                          ? 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100'
-                          : group.platform === 'kimi'
-                            ? 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-                            : group.platform === 'zhipu'
-                              ? 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400'
-                              : group.platform === 'deepseek'
-                                ? 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400'
-                                : group.platform === 'minimax'
-                                  ? 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400'
-                                  : group.platform === 'opencode_go'
-                                    ? 'bg-warning-100 text-warning-800 dark:bg-warning-900/30 dark:text-warning-300'
-                                    : 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400',
-                ]"
+                class="badge badge-gray"
               >
                 {{ t("admin.groups.platforms." + group.platform) }}
               </span>
             </div>
           </div>
-          <div class="text-sm text-gray-400">#{{ group.id }}</div>
+          <div class="font-mono text-meta text-fg-subtle">#{{ group.id }}</div>
         </div>
       </VueDraggable>
     </div>

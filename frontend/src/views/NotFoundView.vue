@@ -1,78 +1,34 @@
 <template>
-  <div
-    class="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-50 px-4 dark:bg-dark-950"
-  >
-    <!-- Background Decoration -->
-    <div class="pointer-events-none absolute inset-0 overflow-hidden">
-      <div
-        class="absolute -right-40 -top-40 h-80 w-80 rounded-full bg-primary-400/10 blur-3xl"
-      ></div>
-      <div
-        class="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary-500/10 blur-3xl"
-      ></div>
-    </div>
-
-    <div class="relative z-10 w-full max-w-md text-center">
-      <!-- 404 Display -->
-      <div class="mb-8">
-        <div class="relative inline-block">
-          <span class="text-[12rem] font-bold leading-none text-gray-100 dark:text-dark-800"
-            >404</span
-          >
-          <div class="absolute inset-0 flex items-center justify-center">
-            <div
-              class="flex h-24 w-24 items-center justify-center rounded-lg bg-primary-500 shadow-lg"
-            >
-              <svg
-                class="h-12 w-12 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
+  <div class="flex min-h-screen items-center justify-center bg-surface-sunken px-4 py-10">
+    <div class="w-full max-w-md border border-border bg-surface" style="border-top: 4px solid rgb(var(--accent))">
+      <!-- 作废票据：404 + VOID 印章 -->
+      <div class="relative overflow-hidden border-b border-border px-6 py-10 text-center">
+        <!-- 作废：404 上压一道红色双线 -->
+        <span class="relative inline-block text-[6rem] font-bold leading-none tabular-nums text-border-strong" aria-hidden="true">
+          404
+          <span class="absolute inset-x-[-0.5rem] top-1/2 h-2 -translate-y-1/2 border-y-2 border-danger"></span>
+        </span>
       </div>
 
-      <!-- Text Content -->
-      <div class="mb-8">
-        <h1 class="mb-3 text-2xl font-bold text-gray-900 dark:text-white">
+      <div class="px-6 py-6">
+        <h1 class="text-h2 font-bold text-accent-strong">
           {{ t('errors.pageNotFound') }}
         </h1>
-        <p class="text-gray-500 dark:text-dark-400">
-          The page you are looking for doesn't exist or has been moved.
+        <p class="mt-2 text-body text-fg-muted">
+          {{ t('errors.pageNotFoundDesc') }}
         </p>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="flex flex-col justify-center gap-3 sm:flex-row">
-        <button @click="goBack" class="btn btn-secondary">
-          <Icon name="arrowLeft" size="md" class="mr-2" />
-          Go Back
+      <div class="flex flex-col gap-3 border-t border-border bg-surface-sunken px-6 py-4 sm:flex-row">
+        <button type="button" @click="goBack" class="btn btn-secondary">
+          <Icon name="arrowLeft" size="sm" />
+          {{ t('common.back') }}
         </button>
         <router-link to="/dashboard" class="btn btn-primary">
-          <Icon name="home" size="md" class="mr-2" />
-          Go to Dashboard
+          <Icon name="home" size="sm" />
+          {{ t('home.goToDashboard') }}
         </router-link>
       </div>
-
-      <!-- Help Link -->
-      <p class="mt-8 text-sm text-gray-400 dark:text-dark-500">
-        Need help?
-        <a
-          href="#"
-          class="text-primary-600 transition-colors hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
-        >
-          Contact support
-        </a>
-      </p>
     </div>
   </div>
 </template>

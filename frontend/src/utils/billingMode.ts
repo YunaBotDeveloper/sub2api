@@ -14,10 +14,10 @@ export function getBillingModeLabel(mode: string | null | undefined, t: (key: st
 
 export function getBillingModeBadgeClass(mode: string | null | undefined): string {
   switch (mode) {
-    case BILLING_MODE_PER_REQUEST: return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300'
-    case BILLING_MODE_IMAGE: return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300'
-    case BILLING_MODE_VIDEO: return 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300'
-    default: return 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300'
+    case BILLING_MODE_PER_REQUEST: return 'bg-surface-sunken text-fg-muted'
+    case BILLING_MODE_IMAGE: return 'bg-surface-sunken text-fg-muted'
+    case BILLING_MODE_VIDEO: return 'bg-warning-weak text-warning-strong'
+    default: return 'bg-accent-weak text-accent-strong'
   }
 }
 

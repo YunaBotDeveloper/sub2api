@@ -1,20 +1,19 @@
 <template>
   <AppLayout>
     <div class="mx-auto max-w-[1600px]" :class="activeTab === 'config' && draft ? 'pb-28' : 'pb-8'">
-      <header class="mb-6 flex flex-wrap items-end justify-between gap-4">
+      <header class="page-header flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary-600 dark:text-primary-400">{{ t('nav.securityAudit') }}</p>
-          <h1 class="mt-1 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white">{{ t('admin.promptAudit.title') }}</h1>
-          <p class="mt-2 max-w-3xl text-sm text-gray-500 dark:text-dark-300">{{ t('admin.promptAudit.description') }}</p>
+          <h1 class="page-title">{{ t('admin.promptAudit.title') }}</h1>
+          <p class="page-description max-w-3xl">{{ t('admin.promptAudit.description') }}</p>
         </div>
-        <div v-if="draft" class="text-right text-xs text-gray-500 dark:text-dark-400">
+        <div v-if="draft" class="text-right text-meta tabular-nums text-fg-muted">
           <p>{{ t('admin.promptAudit.configVersion', { version: draft.config_version }) }}</p>
           <p v-if="draft.updated_at" class="mt-1">{{ formatDate(draft.updated_at) }}</p>
         </div>
       </header>
 
-      <div v-if="loadErrors.config && !draft" role="alert" class="rounded-xl border border-danger-200 bg-danger-50 p-5 dark:border-danger-900 dark:bg-danger-950/30">
-        <p class="text-sm text-danger-700 dark:text-danger-300">{{ loadErrors.config }}</p>
+      <div v-if="loadErrors.config && !draft" role="alert" class="border border-danger/40 bg-danger-weak p-5">
+        <p class="text-body text-danger-strong">{{ loadErrors.config }}</p>
         <button type="button" class="btn btn-secondary btn-sm mt-3" @click="loadConfig">{{ t('admin.promptAudit.actions.retry') }}</button>
       </div>
 
@@ -49,7 +48,7 @@
                 @update:endpoints="updateEndpoints"
                 @probe="runProbe"
               />
-              <div v-if="loadErrors.groups" role="alert" class="mt-5 rounded-lg bg-warning-50 px-4 py-3 text-sm text-warning-800 dark:bg-warning-950/30 dark:text-warning-200">{{ loadErrors.groups }}</div>
+              <div v-if="loadErrors.groups" role="alert" class="mt-5 border border-warning/40 bg-warning-weak px-4 py-3 text-body text-warning-strong">{{ loadErrors.groups }}</div>
               <PolicyPanel :draft="draft" :groups="groups" @update:draft="replaceDraft" />
             </template>
           </div>
@@ -59,7 +58,7 @@
               v-if="draft?.enabled && !draft.store_pass_events"
               data-test="pass-events-disabled-notice"
               role="status"
-              class="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-warning-200 bg-warning-50 px-4 py-3 text-sm text-warning-900 dark:border-warning-900/70 dark:bg-warning-950/30 dark:text-warning-200"
+              class="mt-6 flex flex-wrap items-center justify-between gap-3 border border-warning/40 bg-warning-weak px-4 py-3 text-body text-warning-strong"
             >
               <span>{{ t('admin.promptAudit.events.passEventsDisabled') }}</span>
               <button type="button" class="btn btn-secondary btn-sm" @click="activeTab = 'config'">
@@ -90,7 +89,7 @@
       </template>
     </div>
 
-    <div v-if="draft && activeTab === 'config'" class="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white/95 px-4 py-3 shadow-[0_-12px_35px_rgba(15,23,42,0.08)] dark:border-dark-700/80 dark:bg-dark-900/95 dark:shadow-[0_-12px_35px_rgba(0,0,0,0.35)] lg:left-64">
+    <div v-if="draft && activeTab === 'config'" class="fixed inset-x-0 bottom-0 z-30 border-t-2 border-accent bg-surface px-4 py-3 lg:left-64">
       <div class="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
           <SaveToggle :label="t('admin.promptAudit.saveBar.enabled')" :model-value="draft.enabled" data-test="enabled-toggle" @update:model-value="setEnabled" />
@@ -99,7 +98,7 @@
           <SaveToggle :label="t('admin.promptAudit.saveBar.storePass')" :model-value="draft.store_pass_events" data-test="store-pass-toggle" @update:model-value="replaceDraft({ ...draft!, store_pass_events: $event })" />
         </div>
         <div class="flex items-center gap-3">
-          <span class="text-sm" :class="dirty ? 'text-warning-700 dark:text-warning-300' : 'text-gray-500 dark:text-dark-400'">
+          <span class="text-body font-semibold" :class="dirty ? 'text-warning-strong' : 'text-fg-muted'">
             {{ dirty ? t('admin.promptAudit.saveBar.dirty') : t('admin.promptAudit.saveBar.synced') }}
           </span>
           <button type="button" class="btn btn-secondary" :disabled="!dirty || loading.saving" @click="resetDraft">{{ t('common.reset') }}</button>
@@ -205,7 +204,7 @@ const SaveToggle = defineComponent({
   props: { label: { type: String, required: true }, modelValue: { type: Boolean, required: true }, disabled: { type: Boolean, default: false } },
   emits: ['update:modelValue'],
   setup(props, { emit, attrs }) {
-    return () => h('label', { class: ['flex items-center gap-2.5 text-sm', props.disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'] }, [
+    return () => h('label', { class: ['flex min-h-10 items-center gap-2.5 text-body', props.disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'] }, [
       h('button', {
         ...attrs,
         type: 'button',
@@ -214,8 +213,8 @@ const SaveToggle = defineComponent({
         'aria-label': props.label,
         disabled: props.disabled,
         class: [
-          'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2',
-          props.modelValue ? 'bg-primary-600' : 'bg-gray-300 dark:bg-dark-600',
+          'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2',
+          props.modelValue ? 'bg-accent' : 'bg-border-strong',
           props.disabled ? 'cursor-not-allowed' : 'cursor-pointer',
         ],
         onClick: (event: MouseEvent) => {
@@ -225,12 +224,12 @@ const SaveToggle = defineComponent({
       }, [
         h('span', {
           class: [
-            'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ease-in-out',
+            'pointer-events-none inline-block h-5 w-5 rounded-full bg-white transition-transform duration-200 ease-in-out',
             props.modelValue ? 'translate-x-5' : 'translate-x-0',
           ],
         }),
       ]),
-      h('span', { class: 'select-none text-gray-700 dark:text-dark-200' }, props.label),
+      h('span', { class: 'select-none text-fg' }, props.label),
     ])
   },
 })

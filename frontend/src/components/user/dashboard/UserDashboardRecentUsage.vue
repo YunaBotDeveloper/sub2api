@@ -1,7 +1,7 @@
 <template>
   <section class="card">
     <div class="card-header flex items-center justify-between gap-3">
-      <h2 class="text-h2 font-semibold text-fg">{{ t('dashboard.recentUsage') }}</h2>
+      <h2 class="card-title">{{ t('dashboard.recentUsage') }}</h2>
       <span class="text-meta text-fg-muted">{{ t('dashboard.last7Days') }}</span>
     </div>
     <DataTable
@@ -19,11 +19,11 @@
         <span class="text-meta text-fg-muted">{{ formatDateTime(row.created_at) }}</span>
       </template>
       <template #cell-cost="{ row }">
-        <span class="font-mono tabular-nums text-fg" :title="t('dashboard.actual')">${{ formatCost(row.actual_cost) }}</span>
-        <span class="font-mono tabular-nums text-fg-subtle" :title="t('dashboard.standard')"> / ${{ formatCost(row.total_cost) }}</span>
+        <span class="tabular-nums text-fg" :title="t('dashboard.actual')">${{ formatCost(row.actual_cost) }}</span>
+        <span class="tabular-nums text-fg-subtle" :title="t('dashboard.standard')"> / ${{ formatCost(row.total_cost) }}</span>
       </template>
       <template #cell-tokens="{ row }">
-        <span class="font-mono tabular-nums text-fg">{{ (row.input_tokens + row.output_tokens).toLocaleString() }}</span>
+        <span class="tabular-nums text-fg">{{ (row.input_tokens + row.output_tokens).toLocaleString() }}</span>
       </template>
       <template #empty>
         <EmptyState :title="t('dashboard.noUsageRecords')" :description="t('dashboard.startUsingApi')" />

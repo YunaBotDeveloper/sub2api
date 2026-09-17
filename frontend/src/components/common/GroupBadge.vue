@@ -1,7 +1,7 @@
 <template>
   <span
     :class="[
-      'inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium transition-colors',
+      'inline-flex max-w-full items-center gap-1.5 rounded-sm border px-1.5 py-0.5 text-meta font-medium',
       badgeClass
     ]"
   >
@@ -126,120 +126,32 @@ const labelText = computed(() => {
 })
 
 // Label style based on type and days remaining
+// 账单印章：倍率 / 天数作为印章内的右栏，用细竖线隔开；颜色只表达“即将到期”这类语义
 const labelClass = computed(() => {
-  const base = 'px-1.5 py-0.5 rounded text-[10px] font-semibold'
+  const base = 'border-l border-current/30 pl-1.5 text-meta font-semibold tabular-nums'
 
-  if (!isSubscription.value) {
-    // Standard: subtle background (不再为专属倍率使用不同的背景色)
-    return `${base} bg-black/10 dark:bg-white/10`
-  }
-
-  // 订阅类型：根据剩余天数显示不同颜色
-  if (props.daysRemaining !== null && props.daysRemaining !== undefined) {
-    if (props.daysRemaining <= 0 || props.daysRemaining <= 3) {
-      // 已过期或紧急（<=3天）：红色
-      return `${base} bg-danger-200/80 text-danger-800 dark:bg-danger-800/50 dark:text-danger-300`
+  if (isSubscription.value && props.daysRemaining !== null && props.daysRemaining !== undefined) {
+    if (props.daysRemaining <= 3) {
+      // 已过期或紧急（<=3天）
+      return `${base} text-danger`
     }
     if (props.daysRemaining <= 7) {
-      // 警告（<=7天）：橙色
-      return `${base} bg-warning-200/80 text-warning-800 dark:bg-warning-800/50 dark:text-warning-300`
+      // 警告（<=7天）
+      return `${base} text-warning`
     }
   }
 
-  // 正常状态或无天数：根据平台显示主题色
-  if (props.platform === 'anthropic') {
-    return `${base} bg-warning-200/60 text-warning-800 dark:bg-warning-800/40 dark:text-warning-300`
-  }
-  if (props.platform === 'openai') {
-    return `${base} bg-success-200/60 text-success-800 dark:bg-success-800/40 dark:text-success-300`
-  }
-  if (props.platform === 'gemini') {
-    return `${base} bg-accent-200/60 text-accent-800 dark:bg-accent-800/40 dark:text-accent-300`
-  }
-  if (props.platform === 'antigravity') {
-    return `${base} bg-gray-200/60 text-gray-800 dark:bg-gray-800/40 dark:text-gray-300`
-  }
-  if (props.platform === 'grok') {
-    return `${base} bg-gray-300/70 text-gray-800 dark:bg-gray-700/60 dark:text-gray-200`
-  }
-  if (props.platform === 'kimi') {
-    return `${base} bg-gray-200/60 text-gray-800 dark:bg-gray-800/40 dark:text-gray-300`
-  }
-  if (props.platform === 'zhipu') {
-    return `${base} bg-accent-200/60 text-accent-800 dark:bg-accent-800/40 dark:text-accent-300`
-  }
-  if (props.platform === 'deepseek') {
-    return `${base} bg-accent-200/60 text-accent-800 dark:bg-accent-800/40 dark:text-accent-300`
-  }
-  if (props.platform === 'minimax') {
-    return `${base} bg-danger-200/60 text-danger-800 dark:bg-danger-800/40 dark:text-danger-300`
-  }
-  if (props.platform === 'composite') {
-    return `${base} bg-accent-200/70 text-accent-900 dark:bg-accent-900/50 dark:text-accent-300`
-  }
-  return `${base} bg-gray-200/60 text-gray-800 dark:bg-gray-800/40 dark:text-gray-300`
+  return base
 })
 
 const peakRateClass = computed(() => {
-  return 'px-1.5 py-0.5 rounded text-[10px] font-semibold bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300'
+  return 'rounded-sm border border-warning/60 bg-warning-weak px-1 text-meta font-semibold tabular-nums text-warning-strong'
 })
 
-// Badge color based on platform and subscription type
+// 标准分组 = 白底印章；订阅分组 = 浅蓝底印章。平台由左侧品牌图标区分。
 const badgeClass = computed(() => {
-  if (props.platform === 'anthropic') {
-    // Claude: orange theme
-    return isSubscription.value
-      ? 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400'
-      : 'bg-warning-50 text-warning-700 dark:bg-warning-900/20 dark:text-warning-400'
-  } else if (props.platform === 'openai') {
-    // OpenAI: green theme
-    return isSubscription.value
-      ? 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400'
-      : 'bg-success-50 text-success-700 dark:bg-success-900/20 dark:text-success-400'
-  }
-  if (props.platform === 'gemini') {
-    return isSubscription.value
-      ? 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400'
-      : 'bg-accent-50 text-accent-700 dark:bg-accent-900/20 dark:text-accent-400'
-  }
-  if (props.platform === 'antigravity') {
-    return isSubscription.value
-      ? 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-      : 'bg-gray-50 text-gray-700 dark:bg-gray-900/20 dark:text-gray-400'
-  }
-  if (props.platform === 'grok') {
-    return isSubscription.value
-      ? 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100'
-      : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200'
-  }
-  if (props.platform === 'kimi') {
-    return isSubscription.value
-      ? 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-      : 'bg-gray-50 text-gray-700 dark:bg-gray-900/20 dark:text-gray-400'
-  }
-  if (props.platform === 'zhipu') {
-    return isSubscription.value
-      ? 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400'
-      : 'bg-accent-50 text-accent-700 dark:bg-accent-900/20 dark:text-accent-400'
-  }
-  if (props.platform === 'deepseek') {
-    return isSubscription.value
-      ? 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400'
-      : 'bg-accent-50 text-accent-700 dark:bg-accent-900/20 dark:text-accent-400'
-  }
-  if (props.platform === 'minimax') {
-    return isSubscription.value
-      ? 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400'
-      : 'bg-danger-50 text-danger-700 dark:bg-danger-900/20 dark:text-danger-400'
-  }
-  if (props.platform === 'composite') {
-    return isSubscription.value
-      ? 'bg-accent-100 text-accent-800 dark:bg-accent-900/30 dark:text-accent-300'
-      : 'bg-accent-50 text-accent-800 dark:bg-accent-900/20 dark:text-accent-300'
-  }
-  // Fallback: original colors
   return isSubscription.value
-    ? 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-    : 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400'
+    ? 'border-accent/60 bg-accent-weak text-accent-strong'
+    : 'border-border-strong bg-surface text-fg'
 })
 </script>

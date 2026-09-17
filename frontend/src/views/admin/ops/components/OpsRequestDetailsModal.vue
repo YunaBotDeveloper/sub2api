@@ -154,8 +154,8 @@ function openErrorDetail(errorId: number | null | undefined) {
 }
 
 const kindBadgeClass = (kind: string) => {
-  if (kind === 'error') return 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300'
-  return 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-300'
+  if (kind === 'error') return 'badge-danger'
+  return 'badge-success'
 }
 
 const columns = computed<Column[]>(() => [
@@ -175,7 +175,7 @@ const columns = computed<Column[]>(() => [
     <template #default>
       <div class="flex h-full min-h-0 flex-col">
         <div class="mb-4 flex flex-shrink-0 items-center justify-between">
-          <div class="text-xs text-gray-500 dark:text-gray-400">
+          <div class="text-xs text-fg-muted">
             {{ t('admin.ops.requestDetails.rangeLabel', { range: rangeLabel }) }}
           </div>
           <button
@@ -187,10 +187,10 @@ const columns = computed<Column[]>(() => [
           </button>
         </div>
 
-        <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border">
+        <div class="flex min-h-0 flex-1 flex-col overflow-hidden border border-border">
           <DataTable :columns="columns" :data="items" :loading="loading" :sticky-first-column="false">
             <template #cell-kind="{ row }">
-              <span class="rounded-full px-2 py-1 text-meta font-bold" :class="kindBadgeClass(row.kind)">
+              <span class="badge" :class="kindBadgeClass(row.kind)">
                 {{ row.kind === 'error' ? t('admin.ops.requestDetails.kind.error') : t('admin.ops.requestDetails.kind.success') }}
               </span>
             </template>
@@ -203,7 +203,7 @@ const columns = computed<Column[]>(() => [
                   {{ row.request_id }}
                 </span>
                 <button
-                  class="rounded-md bg-gray-100 px-2 py-1 text-meta font-bold text-gray-600 hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
+                  class="btn btn-ghost btn-sm"
                   @click="handleCopyRequestId(row.request_id)"
                 >
                   {{ t('admin.ops.requestDetails.copy') }}
@@ -215,7 +215,7 @@ const columns = computed<Column[]>(() => [
               <div class="text-right">
                 <button
                   v-if="row.kind === 'error' && row.error_id"
-                  class="rounded-lg bg-danger-50 px-3 py-1.5 text-label font-bold text-danger-600 hover:bg-danger-100 dark:bg-danger-900/20 dark:text-danger-300 dark:hover:bg-danger-900/30"
+                  class="btn btn-secondary btn-sm text-danger"
                   @click="openErrorDetail(row.error_id)"
                 >
                   {{ t('admin.ops.requestDetails.viewError') }}

@@ -1,21 +1,21 @@
 <template>
   <div class="space-y-4">
-    <!-- Quick Amount Buttons -->
+    <!-- Quick amounts: a printed tier grid -->
     <div>
       <div class="mb-2 flex items-center justify-between gap-2">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label class="input-label mb-0">
           {{ t('payment.quickAmounts') }}
         </label>
-        <div v-if="currencyOptions.length > 1" class="inline-flex rounded-lg border border-gray-200 p-0.5 dark:border-dark-600">
+        <div v-if="currencyOptions.length > 1" class="inline-flex border border-border-strong">
           <button
             v-for="code in currencyOptions"
             :key="code"
             type="button"
             :class="[
-              'rounded-md px-2.5 py-1 text-xs font-semibold transition-colors',
+              'min-h-[32px] px-2.5 py-1 text-meta font-semibold transition-colors',
               code === currency
-                ? 'bg-primary-500 text-white'
-                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200',
+                ? 'bg-accent text-white dark:text-surface-sunken'
+                : 'text-fg-muted hover:text-accent-strong',
             ]"
             @click="emit('update:currency', code)"
           >
@@ -23,16 +23,16 @@
           </button>
         </div>
       </div>
-      <div class="grid grid-cols-3 gap-2">
+      <div class="grid grid-cols-3 border-l border-t border-border">
         <button
           v-for="amt in filteredAmounts"
           :key="amt"
           type="button"
           :class="[
-            'rounded-lg border-2 px-4 py-3 text-center font-medium transition-colors',
+            'min-h-[48px] border-b border-r border-border px-3 py-3 text-center text-body font-semibold tabular-nums transition-colors',
             modelValue === amt
-              ? 'border-primary-500 bg-primary-50 text-primary-700 dark:border-primary-400 dark:bg-primary-900/40 dark:text-primary-300'
-              : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-200 dark:hover:border-dark-500',
+              ? 'bg-accent-weak text-accent-strong ring-2 ring-inset ring-accent'
+              : 'bg-surface text-fg hover:bg-accent-weak/50',
           ]"
           @click="selectAmount(amt)"
         >
@@ -43,11 +43,11 @@
 
     <!-- Custom Amount Input -->
     <div>
-      <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label class="input-label">
         {{ t('payment.customAmount') }}
       </label>
       <div class="relative">
-        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-dark-500">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-fg-subtle">
           {{ currencySymbol(currency) }}
         </span>
         <input
@@ -55,7 +55,7 @@
           inputmode="decimal"
           :value="customText"
           :placeholder="placeholderText"
-          class="input w-full py-3 pl-8 pr-4"
+          class="input w-full py-3 pl-8 pr-4 text-h3 font-semibold tabular-nums"
           @input="handleInput"
         />
       </div>

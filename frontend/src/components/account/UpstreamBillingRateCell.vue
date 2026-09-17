@@ -3,8 +3,8 @@
     <HelpTooltip class="-ml-1" width-class="w-max max-w-[calc(100vw-2rem)]" data-testid="upstream-billing-details">
       <template #trigger>
         <span
-          class="cursor-help border-b border-dotted border-gray-300 text-sm font-medium dark:border-dark-600"
-          :class="hasEffectiveRate ? 'font-mono text-gray-800 dark:text-gray-200' : statusClass || 'text-gray-400 dark:text-gray-500'"
+          class="cursor-help border-b border-dotted border-border-strong text-sm font-medium"
+          :class="hasEffectiveRate ? 'tabular-nums text-fg' : statusClass || 'text-fg-subtle'"
           data-testid="upstream-billing-rate"
         >
           {{ primaryValue }}
@@ -51,7 +51,7 @@
         </p>
         <p class="mt-2 border-t border-white/15 pt-2" data-testid="upstream-billing-probe-state">
           {{ t('admin.accounts.upstreamBilling.accountProbeState') }}
-          <span :class="probeEnabled ? 'text-success-400' : 'text-danger-400'">
+          <span :class="probeEnabled ? 'text-success' : 'text-danger'">
             {{ probeEnabled ? t('admin.accounts.upstreamBilling.enabled') : t('admin.accounts.upstreamBilling.disabled') }}
           </span>
         </p>
@@ -61,7 +61,7 @@
           data-testid="upstream-billing-global-probe-state"
         >
           {{ t('admin.accounts.upstreamBilling.globalProbeState') }}
-          <span class="text-danger-400">{{ t('admin.accounts.upstreamBilling.disabled') }}</span>
+          <span class="text-danger">{{ t('admin.accounts.upstreamBilling.disabled') }}</span>
         </p>
       </div>
     </HelpTooltip>
@@ -70,7 +70,7 @@
     </span>
     <button
       type="button"
-      class="inline-flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-accent-600 transition-colors hover:bg-accent-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-accent-400 dark:hover:bg-accent-900/30"
+      class="inline-flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-sm text-accent transition-colors hover:bg-accent-weak disabled:cursor-not-allowed disabled:opacity-50"
       :disabled="probing"
       :aria-label="t('admin.accounts.upstreamBilling.manualProbe')"
       :title="t('admin.accounts.upstreamBilling.manualProbe')"
@@ -80,7 +80,7 @@
       <Icon name="refresh" size="xs" :class="{ 'animate-spin': probing }" />
     </button>
   </div>
-  <span v-else class="text-sm text-gray-400 dark:text-dark-500">-</span>
+  <span v-else class="text-sm text-fg-subtle">-</span>
 </template>
 
 <script setup lang="ts">
@@ -202,10 +202,10 @@ const statusLabel = computed(() => {
   return ''
 })
 const statusClass = computed(() => {
-  if (!snapshot.value) return 'text-gray-400 dark:text-gray-500'
-  if (snapshot.value.status === 'unsupported') return 'text-gray-500 dark:text-gray-400'
-  if (stale.value) return 'text-warning-600 dark:text-warning-400'
-  if (snapshot.value.status === 'failed') return 'text-danger-600 dark:text-danger-400'
+  if (!snapshot.value) return 'text-fg-subtle'
+  if (snapshot.value.status === 'unsupported') return 'text-fg-muted'
+  if (stale.value) return 'text-warning'
+  if (snapshot.value.status === 'failed') return 'text-danger'
   return ''
 })
 const hasEffectiveRate = computed(() => effectiveRate.value !== '-')

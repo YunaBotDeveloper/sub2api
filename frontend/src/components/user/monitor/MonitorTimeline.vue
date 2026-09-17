@@ -1,32 +1,28 @@
 <template>
-  <div class="mt-4 pt-3 border-t border-gray-100 dark:border-dark-700/60">
-    <div
-      class="flex justify-between text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-2"
-    >
-      <span>{{ t('monitorCommon.history60pts', { n: length }) }}</span>
-      <span class="tabular-nums">{{ t('monitorCommon.nextUpdateIn', { n: countdownSeconds }) }}</span>
+  <div class="min-w-0">
+    <div class="mb-1.5 flex justify-between gap-2 text-meta text-fg-muted">
+      <span class="truncate">{{ t('monitorCommon.history60pts', { n: length }) }}</span>
+      <span class="flex-shrink-0 tabular-nums">{{ t('monitorCommon.nextUpdateIn', { n: countdownSeconds }) }}</span>
     </div>
 
     <div
       v-if="maintenance"
-      class="flex h-5 w-full items-center justify-center rounded border border-dashed border-gray-300 dark:border-dark-600 text-[10px] uppercase tracking-widest text-gray-400"
+      class="flex h-6 w-full items-center justify-center border border-dashed border-border-strong text-meta text-fg-subtle"
     >
       {{ t('monitorCommon.maintenancePaused') }}
     </div>
-    <div v-else class="flex items-end gap-[2px] h-5 w-full">
+    <div v-else class="flex h-6 w-full items-end gap-px border-b border-border-strong">
       <div
         v-for="(bar, idx) in displayBars"
         :key="idx"
-        class="flex-1 min-w-0 rounded-sm"
+        class="min-w-0 flex-1"
         :class="bar.colorClass"
         :style="{ height: bar.heightPct + '%' }"
         :title="bar.title"
       ></div>
     </div>
 
-    <div
-      class="mt-1 flex justify-between text-[9px] uppercase tracking-widest text-gray-400"
-    >
+    <div class="mt-0.5 flex justify-between text-meta text-fg-subtle">
       <span>{{ t('monitorCommon.past') }}</span>
       <span>{{ t('monitorCommon.now') }}</span>
     </div>
@@ -70,11 +66,11 @@ const STATUS_HEIGHT: Record<string, number> = {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  operational: 'bg-success-500',
-  degraded: 'bg-warning-500',
-  failed: 'bg-danger-500',
-  error: 'bg-danger-500',
-  empty: 'bg-gray-300 dark:bg-dark-600',
+  operational: 'bg-success',
+  degraded: 'bg-warning',
+  failed: 'bg-danger',
+  error: 'bg-danger',
+  empty: 'bg-border',
 }
 
 const displayBars = computed<Bar[]>(() => {

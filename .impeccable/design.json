@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-17T00:00:00Z",
+  "title": "Design System: Sub2API Console",
+  "extensions": {
+    "colorMeta": {
+      "bill-blue": { "role": "primary", "displayName": "Bill Blue", "canonical": "rgb(31 78 140)", "cssVar": "--accent", "tonalRamp": ["#0a1a30", "#10294b", "#163a6b", "#1f4e8c", "#3d6bab", "#7aa6e0", "#c7d7ec", "#f1f5fb"] },
+      "bill-blue-weak": { "role": "primary", "displayName": "Bill Blue Wash", "canonical": "rgb(231 238 247)", "cssVar": "--accent-weak" },
+      "bill-blue-strong": { "role": "primary", "displayName": "Bill Blue Deep", "canonical": "rgb(22 58 107)", "cssVar": "--accent-strong" },
+      "meter-yellow": { "role": "secondary", "displayName": "Meter Yellow", "canonical": "rgb(242 194 48)", "cssVar": "--meter", "tonalRamp": ["#261c00", "#3d2e00", "#5c4500", "#8a650a", "#b3850a", "#f2c230", "#fae59c", "#fefaeb"] },
+      "meter-yellow-weak": { "role": "secondary", "displayName": "Meter Yellow Ground", "canonical": "rgb(253 243 208)", "cssVar": "--meter-weak" },
+      "meter-ink": { "role": "secondary", "displayName": "Meter Ink", "canonical": "rgb(92 69 0)", "cssVar": "--meter-ink" },
+      "bill-stock": { "role": "neutral", "displayName": "Bill Stock", "canonical": "rgb(255 255 255)", "cssVar": "--surface" },
+      "page-stock": { "role": "neutral", "displayName": "Page Stock", "canonical": "rgb(243 246 250)", "cssVar": "--surface-sunken", "tonalRamp": ["#12161c", "#20242a", "#3a4452", "#546070", "#8a9ab0", "#b7c5d6", "#d6dfea", "#f3f6fa"] },
+      "hairline": { "role": "neutral", "displayName": "Printed Hairline", "canonical": "rgb(214 223 234)", "cssVar": "--border" },
+      "rule-strong": { "role": "neutral", "displayName": "Strong Rule", "canonical": "rgb(158 178 204)", "cssVar": "--border-strong" },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "rgb(32 36 42)", "cssVar": "--fg" },
+      "ink-muted": { "role": "neutral", "displayName": "Ink Muted", "canonical": "rgb(84 96 112)", "cssVar": "--fg-muted" },
+      "ink-subtle": { "role": "neutral", "displayName": "Ink Subtle", "canonical": "rgb(104 116 132)", "cssVar": "--fg-subtle" },
+      "success": { "role": "status", "displayName": "Paid Green", "canonical": "rgb(21 115 71)", "cssVar": "--success" },
+      "warning": { "role": "status", "displayName": "Notice Amber", "canonical": "rgb(168 90 0)", "cssVar": "--warning" },
+      "danger": { "role": "status", "displayName": "Overdue Red", "canonical": "rgb(180 35 24)", "cssVar": "--danger" },
+      "night-stock": { "role": "neutral", "displayName": "Night Bill Stock", "canonical": "rgb(17 24 36)", "cssVar": ".dark --surface", "tonalRamp": ["#0b1019", "#111824", "#161f2e", "#263347", "#405470", "#56657c", "#7d8ba0", "#e8ecf2"] },
+      "night-blue": { "role": "primary", "displayName": "Night Bill Blue", "canonical": "rgb(122 166 224)", "cssVar": ".dark --accent" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Rare large figures and public-page headlines." },
+      "headline": { "displayName": "Headline (h1)", "purpose": "Page titles and meter values." },
+      "title": { "displayName": "Title (h2)", "purpose": "Modal titles, account name in the account band." },
+      "section": { "displayName": "Section (h3)", "purpose": "Card titles and bill section titles, bold bill-blue-strong." },
+      "body": { "displayName": "Body", "purpose": "Table cells, inputs, descriptions." },
+      "label": { "displayName": "Label", "purpose": "Buttons, table headers, form labels, tabs, nav." },
+      "meta": { "displayName": "Meta", "purpose": "Meter labels, hints, stamps, small buttons." },
+      "mono": { "displayName": "Mono", "purpose": "API keys, IDs, codes, URLs, model identifiers, code only." }
+    },
+    "shadows": [
+      { "name": "overlay", "value": "0 8px 24px rgba(15, 20, 28, 0.12)", "purpose": "Dropdowns, modals, dialogs, toasts only. In-flow surfaces are flat." },
+      { "name": "inner", "value": "inset 0 1px 2px rgba(15, 20, 28, 0.08)", "purpose": "Pressed wells; rare." }
+    ],
+    "motion": [
+      { "name": "digit-roll", "value": "transform 700ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "MeterValue per-digit vertical roll on value change. The signature and only load-time motion; instant under reduced motion." },
+      { "name": "state-color", "value": "150ms ease-out (colors only)", "purpose": "Buttons, inputs, tabs, nav hover." },
+      { "name": "modal-enter", "value": "opacity 150ms ease-out; transform translateY(8px) 180ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Modal sheet entrance; leave 120ms ease-in." },
+      { "name": "toast-slide", "value": "translateX(12px) to 0, 200ms ease-out", "purpose": "Toast slip entrance." },
+      { "name": "dropdown-scale", "value": "scale(0.98) to 1, 150ms ease-out", "purpose": "Dropdown open." },
+      { "name": "progress-width", "value": "300ms", "purpose": "Ruler progress fill width." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px", "note": "Stub edge turns horizontal below this." },
+      { "name": "md", "value": "768px", "note": "Form controls 16px below this." },
+      { "name": "lg", "value": "1024px", "note": "Dashboard 2/3 + 1/3 split." }
+    ],
+    "rules": {
+      "weights": { "hairline": "1px solid border", "sectionRule": "2px solid accent", "overlayRule": "3px solid accent or status", "totalRule": "3px double fg", "perforation": "2px dashed border-strong" }
+    },
+    "charts": {
+      "source": "frontend/src/components/charts/chartTheme.ts",
+      "series": ["accent", "fg", "border-strong", "success", "warning", "accent @0.55", "fg-muted", "success-strong", "danger", "fg @0.35"],
+      "highlight": "meter (current series only, not in rotation)",
+      "tooltip": "surface ground, fg text, 1px border-strong, radius 2, padding 8, Be Vietnam Pro 12 bold / 12 / 11"
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary action: squared bill-blue fill, color-only hover.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Top up</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid; border-radius: 2px; padding: 8px 14px; font: 600 13px/1.4 'Be Vietnam Pro', system-ui, sans-serif; transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out; cursor: pointer; } .ds-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px rgb(var(--surface, 255 255 255)), 0 0 0 4px rgb(var(--accent, 31 78 140)); } .ds-btn-primary { background: rgb(var(--accent, 31 78 140)); border-color: rgb(var(--accent, 31 78 140)); color: #fff; } .ds-btn-primary:hover { background: rgb(var(--accent-strong, 22 58 107)); border-color: rgb(var(--accent-strong, 22 58 107)); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outlined on bill stock; border and text turn blue on hover.",
+      "html": "<button class=\"ds-btn2\">Export</button>",
+      "css": ".ds-btn2 { display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgb(var(--border-strong, 158 178 204)); border-radius: 2px; padding: 8px 14px; background: rgb(var(--surface, 255 255 255)); color: rgb(var(--fg, 32 36 42)); font: 600 13px/1.4 'Be Vietnam Pro', system-ui, sans-serif; transition: border-color 150ms ease-out, color 150ms ease-out; cursor: pointer; } .ds-btn2:hover { border-color: rgb(var(--accent, 31 78 140)); color: rgb(var(--accent-strong, 22 58 107)); } .ds-btn2:focus-visible { outline: 2px solid rgb(var(--accent, 31 78 140)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Form fill-in field with label and hint.",
+      "html": "<label class=\"ds-label\">API key name<input class=\"ds-input\" placeholder=\"e.g. laptop\" /></label><p class=\"ds-hint\">Shown only to you.</p>",
+      "css": ".ds-label { display: block; font: 600 13px/1.4 'Be Vietnam Pro', system-ui, sans-serif; color: rgb(var(--fg, 32 36 42)); } .ds-input { display: block; width: 100%; margin-top: 6px; border: 1px solid rgb(var(--border-strong, 158 178 204)); border-radius: 2px; background: rgb(var(--surface, 255 255 255)); padding: 8px 12px; font: 400 14px/1.55 'Be Vietnam Pro', system-ui, sans-serif; color: rgb(var(--fg, 32 36 42)); caret-color: rgb(var(--accent, 31 78 140)); transition: border-color 150ms; } .ds-input::placeholder { color: rgb(var(--fg-subtle, 104 116 132)); } .ds-input:focus { outline: none; border-color: rgb(var(--accent, 31 78 140)); box-shadow: 0 0 0 1px rgb(var(--accent, 31 78 140)); } .ds-hint { margin-top: 4px; font: 400 12px/1.4 'Be Vietnam Pro', system-ui, sans-serif; color: rgb(var(--fg-muted, 84 96 112)); }"
+    },
+    {
+      "name": "Meter Strip",
+      "kind": "custom",
+      "refersTo": "meter-cell",
+      "description": "A row of readings on printed hairlines; one current reading in yellow; boxed digits on the live figure.",
+      "html": "<div class=\"ds-meter\"><div class=\"ds-cell\"><p class=\"ds-mlabel\">Previous</p><p class=\"ds-mval ds-muted\">1,204,331</p><p class=\"ds-msub\">Start of period</p></div><div class=\"ds-cell ds-current\"><p class=\"ds-mlabel\">Current</p><p class=\"ds-mval\"><span class=\"ds-box\">1</span><span class=\"ds-box\">2</span><span class=\"ds-box\">9</span><span class=\"ds-box\">8</span></p><p class=\"ds-msub\">Live</p></div><div class=\"ds-cell\"><p class=\"ds-mlabel\">Charge</p><p class=\"ds-mval\">$4.18</p><p class=\"ds-msub\">Actual</p></div></div>",
+      "css": ".ds-meter { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1px; background: rgb(var(--border, 214 223 234)); border: 1px solid rgb(var(--border, 214 223 234)); font-family: 'Be Vietnam Pro', system-ui, sans-serif; } .ds-cell { position: relative; display: flex; flex-direction: column; gap: 4px; background: rgb(var(--surface, 255 255 255)); padding: 12px 16px; } .ds-cell p { margin: 0; } .ds-mlabel, .ds-msub { font-size: 12px; line-height: 1.4; font-weight: 500; color: rgb(var(--fg-muted, 84 96 112)); } .ds-msub { font-weight: 400; } .ds-mval { font-size: 24px; line-height: 1.25; font-weight: 700; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; color: rgb(var(--fg, 32 36 42)); } .ds-muted { color: rgb(var(--fg-muted, 84 96 112)); } .ds-current { background: rgb(var(--meter-weak, 253 243 208)); } .ds-current::before { content: ''; position: absolute; left: 0; top: 0; width: 8px; height: 8px; background: rgb(var(--meter, 242 194 48)); } .ds-current .ds-mlabel, .ds-current .ds-msub { color: rgb(var(--meter-ink, 92 69 0)); } .ds-box { display: inline-block; box-sizing: content-box; width: 1ch; padding: 0 0.2em; text-align: center; border: 1px solid rgb(var(--border-strong, 158 178 204)); background: rgb(var(--surface, 255 255 255)); } .ds-box + .ds-box { border-left-width: 0; }"
+    },
+    {
+      "name": "Bill Section",
+      "kind": "card",
+      "refersTo": "bill-section",
+      "description": "Replaces cards: 2px blue top rule, hairline edges, square, no shadow.",
+      "html": "<section class=\"ds-section\"><header class=\"ds-sh\"><h3>Recent requests</h3></header><div class=\"ds-sb\">Section content divided by rules, never by nested boxes.</div></section>",
+      "css": ".ds-section { background: rgb(var(--surface, 255 255 255)); border: 1px solid rgb(var(--border, 214 223 234)); border-top: 2px solid rgb(var(--accent, 31 78 140)); border-radius: 0; font-family: 'Be Vietnam Pro', system-ui, sans-serif; } .ds-sh { border-bottom: 1px solid rgb(var(--border, 214 223 234)); padding: 12px 20px; } .ds-sh h3 { margin: 0; font-size: 15px; line-height: 1.4; font-weight: 700; color: rgb(var(--accent-strong, 22 58 107)); } .ds-sb { padding: 20px; font-size: 14px; line-height: 1.55; color: rgb(var(--fg, 32 36 42)); }"
+    },
+    {
+      "name": "Printed Table",
+      "kind": "custom",
+      "refersTo": "table-header",
+      "description": "Pale-blue header band, 2px blue rule, full hairline grid, right-aligned figures, double-ruled total.",
+      "html": "<div class=\"ds-tc\"><table class=\"ds-t\"><thead><tr><th>Platform</th><th class=\"r\">Requests</th><th class=\"r\">Cost</th></tr></thead><tbody><tr><td>Anthropic</td><td class=\"r\">1,208</td><td class=\"r\">$3.10</td></tr><tr><td>OpenAI</td><td class=\"r\">402</td><td class=\"r\">$1.08</td></tr><tr class=\"total\"><td>Total</td><td class=\"r\">1,610</td><td class=\"r\">$4.18</td></tr></tbody></table></div>",
+      "css": ".ds-tc { overflow-x: auto; border: 1px solid rgb(var(--border, 214 223 234)); background: rgb(var(--surface, 255 255 255)); } .ds-t { width: 100%; border-collapse: collapse; font: 400 14px/1.55 'Be Vietnam Pro', system-ui, sans-serif; font-variant-numeric: tabular-nums; } .ds-t th { text-align: left; white-space: nowrap; padding: 8px 12px; font-size: 13px; font-weight: 600; background: rgb(var(--accent-weak, 231 238 247)); color: rgb(var(--accent-strong, 22 58 107)); border-bottom: 2px solid rgb(var(--accent, 31 78 140)); border-right: 1px solid rgb(var(--border, 214 223 234)); } .ds-t td { padding: 8px 12px; color: rgb(var(--fg, 32 36 42)); border-bottom: 1px solid rgb(var(--border, 214 223 234)); border-right: 1px solid rgb(var(--border, 214 223 234)); } .ds-t th:last-child, .ds-t td:last-child { border-right: 0; } .ds-t tr:last-child td { border-bottom: 0; } .ds-t tbody tr:hover { background: rgb(var(--accent-weak, 231 238 247) / 0.5); } .ds-t .r { text-align: right; } .ds-t .total td { font-weight: 700; border-top: 3px double rgb(var(--fg, 32 36 42)); }"
+    },
+    {
+      "name": "Status Stamp",
+      "kind": "chip",
+      "refersTo": "badge-success",
+      "description": "Outlined rectangular stamp; never a pill.",
+      "html": "<span class=\"ds-stamp ok\">Active</span> <span class=\"ds-stamp bad\">Expired</span> <span class=\"ds-stamp\">Draft</span>",
+      "css": ".ds-stamp { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; border: 1px solid rgb(var(--border-strong, 158 178 204)); border-radius: 2px; padding: 1px 6px; font: 600 12px/1.4 'Be Vietnam Pro', system-ui, sans-serif; background: rgb(var(--surface-sunken, 243 246 250)); color: rgb(var(--fg-muted, 84 96 112)); } .ds-stamp.ok { border-color: rgb(var(--success, 21 115 71) / 0.6); background: rgb(var(--success-weak, 229 243 235)); color: rgb(var(--success-strong, 15 90 55)); } .ds-stamp.bad { border-color: rgb(var(--danger, 180 35 24) / 0.6); background: rgb(var(--danger-weak, 251 233 231)); color: rgb(var(--danger-strong, 142 27 18)); }"
+    },
+    {
+      "name": "Tear-off Stub",
+      "kind": "custom",
+      "refersTo": "stub",
+      "description": "Payment QR / redeem code / one-time key reveal: details above a notched dashed perforation.",
+      "html": "<div class=\"ds-stub\"><div class=\"ds-part\"><strong>Scan to pay</strong><div class=\"ds-row\"><span>Order</span><code>#100482</code></div></div><div class=\"ds-perf\"></div><div class=\"ds-part ds-center\">[ QR ]</div></div>",
+      "css": ".ds-stub { position: relative; max-width: 28rem; border: 1px solid rgb(var(--border-strong, 158 178 204)); background: rgb(var(--surface, 255 255 255)); font: 400 14px/1.55 'Be Vietnam Pro', system-ui, sans-serif; color: rgb(var(--fg, 32 36 42)); } .ds-part { padding: 16px 20px; } .ds-part strong { color: rgb(var(--accent-strong, 22 58 107)); font-size: 15px; } .ds-row { display: flex; justify-content: space-between; margin-top: 12px; padding-top: 8px; border-top: 1px solid rgb(var(--border, 214 223 234)); } .ds-row span { color: rgb(var(--fg-muted, 84 96 112)); } .ds-row code { font-family: 'JetBrains Mono', ui-monospace, monospace; } .ds-center { text-align: center; padding: 20px; } .ds-perf { position: relative; height: 0; border-top: 2px dashed rgb(var(--border-strong, 158 178 204)); } .ds-perf::before, .ds-perf::after { content: ''; position: absolute; top: 50%; width: 16px; height: 16px; transform: translateY(-50%); border-radius: 9999px; border: 1px solid rgb(var(--border-strong, 158 178 204)); background: rgb(var(--surface-sunken, 243 246 250)); } .ds-perf::before { left: -9px; clip-path: inset(0 0 0 50%); } .ds-perf::after { right: -9px; clip-path: inset(0 50% 0 0); }"
+    },
+    {
+      "name": "Underline Tabs",
+      "kind": "nav",
+      "refersTo": "tab-active",
+      "description": "Tabs on a hairline baseline; active tab takes a 2px bill-blue rule.",
+      "html": "<div class=\"ds-tabs\"><button class=\"ds-tab on\">Usage</button><button class=\"ds-tab\">Orders</button><button class=\"ds-tab\">Keys</button></div>",
+      "css": ".ds-tabs { display: flex; border-bottom: 1px solid rgb(var(--border, 214 223 234)); } .ds-tab { margin-bottom: -1px; border: 0; border-bottom: 2px solid transparent; background: none; padding: 8px 12px; font: 600 13px/1.4 'Be Vietnam Pro', system-ui, sans-serif; color: rgb(var(--fg-muted, 84 96 112)); cursor: pointer; transition: color 150ms; } .ds-tab:hover { color: rgb(var(--accent-strong, 22 58 107)); } .ds-tab.on { border-bottom-color: rgb(var(--accent, 31 78 140)); color: rgb(var(--accent-strong, 22 58 107)); } .ds-tab:focus-visible { outline: 2px solid rgb(var(--accent, 31 78 140)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Ruler Progress",
+      "kind": "custom",
+      "refersTo": "progress",
+      "description": "Square 8px bar with a tick every 10%; bill-blue fill.",
+      "html": "<div class=\"ds-prog\" role=\"progressbar\" aria-valuenow=\"62\"><div class=\"ds-bar\" style=\"width:62%\"></div></div>",
+      "css": ".ds-prog { position: relative; height: 8px; overflow: hidden; border: 1px solid rgb(var(--border, 214 223 234)); background-color: rgb(var(--surface-sunken, 243 246 250)); background-image: repeating-linear-gradient(to right, transparent 0, transparent calc(10% - 1px), rgb(var(--border, 214 223 234)) calc(10% - 1px), rgb(var(--border, 214 223 234)) 10%); } .ds-bar { height: 100%; background: rgb(var(--accent, 31 78 140)); transition: width 300ms; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Metered Utility Bill",
+    "overview": "Every authenticated surface, from the user portal to the admin console, auth and payment pages, is printed as a utility bill. Balance and usage are meter readings. Dense data sits in printed registers with a full hairline grid. Paying, redeeming and one-time key reveals happen on a tear-off stub. The system rejects the generic SaaS dashboard look: same-size stat cards with icon tiles, a teal accent, rounded panels nested in panels, eyebrow labels.\n\nHierarchy comes from line weight, type weight and size, not from shadows or fills. Paper is white bill stock on a faint blue-grey page (night mode: deep ink-navy stock). Bill blue carries headers, rules and the primary action. Meter yellow is rationed: it marks the one live reading or something that needs attention. Density is operator-grade. Tables are tight, figures are tabular and right-aligned, and a double rule marks the total.\n\nThe runtime source of truth is the RGB triplet tokens under `:root` and `.dark` in `frontend/src/style.css`. The frontmatter hex values mirror them exactly. Tokens switch with the theme, so templates never need `dark:` color pairs. Operator branding (site name and logo) is supplied at runtime and never hard-coded.",
+    "keyCharacteristics": [
+      "Bill sections: a 2px bill-blue top rule over hairline edges, square corners, no shadow.",
+      "Meter strips: readings share 1px printed hairlines. The current reading gets a yellow ground and a yellow corner block.",
+      "Boxed, rolling digits for live figures.",
+      "Printed tables: pale-blue header band, 2px blue rule under the header, full hairline grid, double-ruled total row.",
+      "Status shown as outlined rectangular stamps.",
+      "Perforated tear-off stubs for payment, redeem and key reveals.",
+      "One face (Be Vietnam Pro) with tabular figures. Mono only for machine strings."
+    ],
+    "rules": [
+      { "name": "The Rationed Yellow Rule", "body": "Meter yellow marks only the current reading, the live balance, or something that needs attention now (for example an expiring countdown). Never use it for decoration, never in the chart series rotation, and never more than one yellow cell per meter strip.", "section": "colors" },
+      { "name": "The Token-Only Rule", "body": "Colors come from the semantic tokens. No raw Tailwind hues, no arbitrary hex, no `dark:` color pairs. The only exceptions are third-party payment brand buttons (Stripe, Airwallex, Alipay, WeChat Pay) and provider logos.", "section": "colors" },
+      { "name": "The Tabular Figures Rule", "body": "Every figure uses `tabular-nums` (table cells, meter values, stat values and `.num` get it by default), so auto-refresh never jiggles column widths. Figures are never set in mono.", "section": "typography" },
+      { "name": "The Mono Is For Machines Rule", "body": "JetBrains Mono appears only for API keys, IDs, order numbers, codes, URLs, environment variables, model identifiers and code blocks.", "section": "typography" },
+      { "name": "The No Eyebrow Rule", "body": "No small uppercase, letter-spaced label above a heading. If the heading already says it, the label goes. A value's label is Meta in ink-muted, in sentence case.", "section": "typography" },
+      { "name": "The Rules Not Shadows Rule", "body": "An in-flow panel never gets a shadow, glow, blur or hover lift. If something needs more weight, give it a heavier rule.", "section": "elevation" },
+      { "name": "The Thin Side Rule", "body": "A vertical rule on the side of a block is never thicker than 1px. Accent weight goes on top or bottom rules, never on a colored side stripe.", "section": "shapes" },
+      { "name": "The No Nested Box Rule", "body": "Inside a section, subgroups are divided by rules (`border-t`, `divide-y`, or 1px gaps on a hairline ground). They never get another bordered, rounded or tinted box.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do open every section with a 2px bill-blue rule (a card top rule or a bill section title) and put its title in bold bill-blue-strong.",
+      "Do collect a group of figures into one meter strip, and mark only the current reading with the yellow cell.",
+      "Do put dense data in a printed table with right-aligned tabular figures and a double-ruled total row.",
+      "Do show status as an outlined rectangular stamp (`badge badge-success|warning|danger|primary|gray`).",
+      "Do put payment, redeem and one-time key reveals on a stub with a perforation between details and hand-over.",
+      "Do use the digit roll only when a live value changes. Nothing else animates on load.",
+      "Do keep corners at 2px on controls and square on sections, meters, tables and stubs."
+    ],
+    "donts": [
+      "Don't build a grid of same-size stat cards, or put icons in colored rounded or circular tiles. Icons stay 16px in `currentColor` or bill blue, inside buttons, nav and inline actions.",
+      "Don't nest bordered, rounded or tinted boxes inside a section. Divide with rules.",
+      "Don't add eyebrow or kicker labels (small uppercase letter-spaced text above a heading).",
+      "Don't use colored side stripes thicker than 1px.",
+      "Don't use color gradients, gradient text, glows, backdrop blur, hover lifts or in-flow shadows. The only gradient allowed is the hard-stop tick pattern that draws the ruler progress bar.",
+      "Don't set figures, prose or labels in mono. JetBrains Mono is for keys, IDs, codes, URLs and model identifiers.",
+      "Don't use meter yellow for decoration, emphasis or chart series.",
+      "Don't hard-code a product name or logo. Branding comes from the operator's runtime settings.",
+      "Don't add entrance animations (`fade-in`, `slide-*`) to page content."
+    ]
+  },
+  "knownDeviations": [
+    "No pricing tier table ships: the API exposes no rate data. The dashboard's printed register is per-platform cost, not tiers.",
+    "Onboarding tour copy (i18n misc.ts) still contains emoji, inline-styled tinted boxes and a hard-coded 'Sub2API' brand; pending the user's decision. Not canonized.",
+    "Settings grids are stacked, not label-left.",
+    "No visual verification yet (no browser available); tokens and components recorded from source only."
+  ]
+}

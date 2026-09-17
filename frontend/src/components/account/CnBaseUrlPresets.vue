@@ -6,10 +6,10 @@
       type="button"
       data-testid="cn-base-url-preset"
       :class="[
-        'rounded-lg px-3 py-1 text-xs transition-colors',
+        'rounded-sm px-3 py-1 text-xs transition-colors',
         isActive(preset)
-          ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
-          : 'bg-gray-100 text-gray-700 hover:bg-primary-50 hover:text-primary-700 dark:bg-dark-600 dark:text-gray-300 dark:hover:bg-primary-900/30 dark:hover:text-primary-400'
+          ? 'bg-accent-weak text-accent-strong'
+          : 'bg-surface-sunken text-fg hover:bg-accent-weak hover:text-accent-strong'
       ]"
       @click="emit('select', preset)"
     >

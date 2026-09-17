@@ -13,7 +13,7 @@
       <!-- Low balance badge (reactive 402/429 marker or probe-detected) -->
       <span
         v-if="balanceLow"
-        class="inline-flex items-center rounded bg-danger-100 px-1 py-0.5 text-[10px] font-medium text-danger-700 dark:bg-danger-900/30 dark:text-danger-300"
+        class="badge badge-danger"
       >
         {{ t('admin.accounts.cnProviders.balanceLow') }}
       </span>
@@ -27,7 +27,7 @@
       <button
         type="button"
         data-test="cn-provider-balance-probe"
-        class="inline-flex items-center gap-0.5 whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-medium leading-4 text-accent-600 transition-colors hover:bg-accent-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-accent-400 dark:hover:bg-accent-900/30"
+        class="inline-flex items-center gap-0.5 whitespace-nowrap rounded-sm px-1.5 py-0.5 text-[10px] font-medium leading-4 text-accent transition-colors hover:bg-accent-weak disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="loading"
         :title="t('admin.accounts.cnProviders.balanceProbeTooltip')"
         @click="handleProbe"
@@ -50,7 +50,7 @@
       </button>
     </div>
 
-    <div v-if="error" class="truncate text-[10px] text-danger-600 dark:text-danger-400" :title="error">
+    <div v-if="error" class="truncate text-[10px] text-danger" :title="error">
       {{ truncatedError }}
     </div>
   </div>

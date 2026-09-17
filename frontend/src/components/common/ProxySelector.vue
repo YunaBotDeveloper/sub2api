@@ -27,7 +27,7 @@
         <!-- Search and Batch Test Header -->
         <div class="select-header">
           <div class="select-search">
-            <Icon name="search" size="sm" class="text-gray-400" />
+            <Icon name="search" size="sm" class="text-fg-subtle" />
             <input
               ref="searchInputRef"
               v-model="searchQuery"
@@ -72,7 +72,7 @@
             :class="['select-option', modelValue === null && 'select-option-selected']"
           >
             <span class="select-option-label">{{ t('admin.accounts.noProxy') }}</span>
-            <Icon v-if="modelValue === null" name="check" size="sm" class="text-primary-500" />
+            <Icon v-if="modelValue === null" name="check" size="sm" class="text-accent" />
           </div>
 
           <!-- Proxy options -->
@@ -88,7 +88,7 @@
                 <!-- Account count badge -->
                 <span
                   v-if="proxy.account_count !== undefined"
-                  class="inline-flex flex-shrink-0 items-center rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 dark:bg-dark-600 dark:text-gray-400"
+                  class="inline-flex flex-shrink-0 items-center rounded bg-surface-sunken px-1.5 py-0.5 text-xs text-fg-muted"
                 >
                   {{ proxy.account_count }}
                 </span>
@@ -96,7 +96,7 @@
                 <template v-if="testResults[proxy.id]">
                   <span
                     v-if="testResults[proxy.id].success"
-                    class="inline-flex flex-shrink-0 items-center gap-1 rounded bg-success-100 px-1.5 py-0.5 text-xs text-success-700 dark:bg-success-900/30 dark:text-success-400"
+                    class="inline-flex flex-shrink-0 items-center gap-1 rounded bg-success-weak px-1.5 py-0.5 text-xs text-success-strong"
                   >
                     <span v-if="testResults[proxy.id].country">{{
                       testResults[proxy.id].country
@@ -107,13 +107,13 @@
                   </span>
                   <span
                     v-else
-                    class="inline-flex flex-shrink-0 items-center rounded bg-danger-100 px-1.5 py-0.5 text-xs text-danger-700 dark:bg-danger-900/30 dark:text-danger-400"
+                    class="inline-flex flex-shrink-0 items-center rounded bg-danger-weak px-1.5 py-0.5 text-xs text-danger-strong"
                   >
                     {{ t('admin.proxies.testFailed') }}
                   </span>
                 </template>
               </div>
-              <div class="truncate text-xs text-gray-500 dark:text-gray-400">
+              <div class="truncate text-xs text-fg-muted">
                 {{ proxy.protocol }}://{{ proxy.host }}:{{ proxy.port }}
               </div>
             </div>
@@ -153,7 +153,7 @@
               v-if="modelValue === proxy.id"
               name="check"
               size="sm"
-              class="flex-shrink-0 text-primary-500"
+              class="flex-shrink-0 text-accent"
             />
           </div>
 
@@ -321,22 +321,22 @@ onUnmounted(() => {
 <style scoped>
 .select-trigger {
   @apply flex w-full items-center justify-between gap-2;
-  @apply rounded-xl px-4 py-2.5 text-sm;
-  @apply bg-white dark:bg-dark-800;
-  @apply border border-gray-200 dark:border-dark-600;
-  @apply text-gray-900 dark:text-gray-100;
+  @apply rounded-sm px-4 py-2.5 text-sm;
+  @apply bg-surface;
+  @apply border border-border;
+  @apply text-fg;
   @apply transition-all duration-200;
-  @apply focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30;
-  @apply hover:border-gray-300 dark:hover:border-dark-500;
+  @apply focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent;
+  @apply hover:border-border-strong;
   @apply cursor-pointer;
 }
 
 .select-trigger-open {
-  @apply border-primary-500 ring-2 ring-primary-500/30;
+  @apply border-accent ring-2 ring-accent;
 }
 
 .select-trigger-disabled {
-  @apply cursor-not-allowed bg-gray-100 opacity-60 dark:bg-dark-900;
+  @apply cursor-not-allowed bg-surface-sunken opacity-60;
 }
 
 .select-value {
@@ -344,21 +344,21 @@ onUnmounted(() => {
 }
 
 .select-icon {
-  @apply flex-shrink-0 text-gray-400 dark:text-dark-400;
+  @apply flex-shrink-0 text-fg-subtle;
 }
 
 .select-dropdown {
   @apply absolute z-[100] mt-2 w-full;
-  @apply bg-white dark:bg-dark-800;
-  @apply rounded-xl;
-  @apply border border-gray-200 dark:border-dark-700;
-  @apply shadow-lg shadow-black/10 dark:shadow-black/30;
+  @apply bg-surface;
+  @apply rounded-sm;
+  @apply border border-border;
+  @apply shadow-overlay;
   @apply overflow-hidden;
 }
 
 .select-header {
   @apply flex items-center gap-2 px-3 py-2;
-  @apply border-b border-gray-100 dark:border-dark-700;
+  @apply border-b border-border;
 }
 
 .select-search {
@@ -367,15 +367,15 @@ onUnmounted(() => {
 
 .select-search-input {
   @apply flex-1 bg-transparent text-sm;
-  @apply text-gray-900 dark:text-gray-100;
-  @apply placeholder:text-gray-400 dark:placeholder:text-dark-400;
+  @apply text-fg;
+  @apply placeholder:text-fg-subtle;
   @apply focus:outline-none;
 }
 
 .batch-test-btn {
-  @apply flex-shrink-0 rounded-lg p-1.5;
-  @apply text-gray-500 hover:text-success-600 dark:hover:text-success-400;
-  @apply hover:bg-success-50 dark:hover:bg-success-900/20;
+  @apply flex-shrink-0 rounded-sm p-1.5;
+  @apply text-fg-muted hover:text-success;
+  @apply hover:bg-success-weak;
   @apply transition-colors disabled:cursor-not-allowed disabled:opacity-50;
 }
 
@@ -386,14 +386,14 @@ onUnmounted(() => {
 .select-option {
   @apply flex items-center justify-between gap-2;
   @apply px-4 py-2.5 text-sm;
-  @apply text-gray-700 dark:text-gray-300;
+  @apply text-fg;
   @apply cursor-pointer transition-colors duration-150;
-  @apply hover:bg-gray-50 dark:hover:bg-dark-700;
+  @apply hover:bg-surface-sunken;
 }
 
 .select-option-selected {
-  @apply bg-primary-50 dark:bg-primary-900/20;
-  @apply text-primary-700 dark:text-primary-300;
+  @apply bg-accent-weak;
+  @apply text-accent-strong;
 }
 
 .select-option-label {
@@ -402,13 +402,13 @@ onUnmounted(() => {
 
 .select-empty {
   @apply px-4 py-8 text-center text-sm;
-  @apply text-gray-500 dark:text-dark-400;
+  @apply text-fg-muted;
 }
 
 .test-btn {
   @apply flex-shrink-0 rounded p-1;
-  @apply text-gray-400 hover:text-success-600 dark:hover:text-success-400;
-  @apply hover:bg-success-50 dark:hover:bg-success-900/20;
+  @apply text-fg-subtle hover:text-success;
+  @apply hover:bg-success-weak;
   @apply transition-colors disabled:cursor-not-allowed disabled:opacity-50;
 }
 

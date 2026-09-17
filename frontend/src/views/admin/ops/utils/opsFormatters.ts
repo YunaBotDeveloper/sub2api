@@ -10,10 +10,10 @@ import { formatBytes } from '@/utils/format'
 
 export function getSeverityClass(severity: OpsSeverity): string {
   const classes: Record<string, string> = {
-    P0: 'bg-danger-100 text-danger-800 dark:bg-danger-900/30 dark:text-danger-400',
-    P1: 'bg-warning-100 text-warning-800 dark:bg-warning-900/30 dark:text-warning-400',
-    P2: 'bg-warning-100 text-warning-800 dark:bg-warning-900/30 dark:text-warning-400',
-    P3: 'bg-accent-100 text-accent-800 dark:bg-accent-900/30 dark:text-accent-400'
+    P0: 'badge badge-danger',
+    P1: 'badge badge-warning',
+    P2: 'badge badge-warning',
+    P3: 'badge badge-primary'
   }
   return classes[String(severity || '')] || classes.P3
 }

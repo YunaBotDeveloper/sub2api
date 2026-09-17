@@ -38,26 +38,26 @@ export const durationSeverity = (ms: number): LatencySeverity =>
   classify(ms, DURATION_THRESHOLDS_MS)
 
 export const LATENCY_TEXT_CLASSES: Record<LatencySeverity, string> = {
-  good: 'text-success-600 dark:text-success-400',
-  warn: 'text-warning-600 dark:text-warning-400',
-  slow: 'text-warning-600 dark:text-warning-400',
-  critical: 'text-danger-600 dark:text-danger-400',
+  good: 'text-success',
+  warn: 'text-warning',
+  slow: 'text-warning',
+  critical: 'text-danger',
 }
 
 /** 无首字数据时的纯色色条（仅按总耗时档着色）。 */
 export const LATENCY_BAR_CLASSES: Record<LatencySeverity, string> = {
-  good: 'bg-success-500',
-  warn: 'bg-warning-400',
-  slow: 'bg-warning-500',
-  critical: 'bg-danger-500',
+  good: 'bg-success',
+  warn: 'bg-warning/70',
+  slow: 'bg-warning',
+  critical: 'bg-danger',
 }
 
 /** 渐变色条上端（首字档）；与 LATENCY_BAR_TO_CLASSES 组合成上下渐变，避免两段硬切割裂感。 */
 export const LATENCY_BAR_FROM_CLASSES: Record<LatencySeverity, string> = {
-  good: 'bg-success-500',
-  warn: 'bg-warning-400',
-  slow: 'bg-warning-500',
-  critical: 'bg-danger-500',
+  good: 'bg-success',
+  warn: 'bg-warning/70',
+  slow: 'bg-warning',
+  critical: 'bg-danger',
 }
 
 /** 渐变色条下端（总耗时档）。 */

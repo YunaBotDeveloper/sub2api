@@ -3,20 +3,20 @@
     <!-- Default Settings -->
     <div class="card">
       <div
-        class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
+        class="card-header"
       >
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+        <h2 class="card-title">
           {{ t("admin.settings.defaults.title") }}
         </h2>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p class="mt-1 text-sm text-fg-muted">
           {{ t("admin.settings.defaults.description") }}
         </p>
       </div>
-      <div class="space-y-6 p-6">
+      <div class="card-body space-y-6">
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
             <label
-              class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+              class="input-label"
             >
               {{ t("admin.settings.defaults.defaultBalance") }}
             </label>
@@ -28,13 +28,13 @@
               class="input"
               placeholder="0.00"
             />
-            <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+            <p class="input-hint">
               {{ t("admin.settings.defaults.defaultBalanceHint") }}
             </p>
           </div>
           <div>
             <label
-              class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+              class="input-label"
             >
               {{ t("admin.settings.defaults.defaultConcurrency") }}
             </label>
@@ -45,13 +45,13 @@
               class="input"
               placeholder="1"
             />
-            <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+            <p class="input-hint">
               {{ t("admin.settings.defaults.defaultConcurrencyHint") }}
             </p>
           </div>
           <div>
             <label
-              class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+              class="input-label"
             >
               {{ t("admin.settings.defaults.defaultUserRpmLimit") }}
             </label>
@@ -63,19 +63,19 @@
               class="input"
               placeholder="0"
             />
-            <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+            <p class="input-hint">
               {{ t("admin.settings.defaults.defaultUserRpmLimitHint") }}
             </p>
           </div>
         </div>
 
-        <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
+        <div class="border-t border-border pt-4">
           <div class="mb-3 flex items-center justify-between">
             <div>
-              <label class="font-medium text-gray-900 dark:text-white">
+              <label class="font-medium text-fg">
                 {{ t("admin.settings.defaults.defaultSubscriptions") }}
               </label>
-              <p class="text-sm text-gray-500 dark:text-gray-400">
+              <p class="text-sm text-fg-muted">
                 {{
                   t("admin.settings.defaults.defaultSubscriptionsHint")
                 }}
@@ -93,7 +93,7 @@
 
           <div
             v-if="form.default_subscriptions.length === 0"
-            class="rounded border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-500 dark:border-dark-600 dark:text-gray-400"
+            class="border-y border-dashed border-border-strong py-3 text-sm text-fg-muted"
           >
             {{ t("admin.settings.defaults.defaultSubscriptionsEmpty") }}
           </div>
@@ -102,11 +102,11 @@
             <div
               v-for="(item, index) in form.default_subscriptions"
               :key="`default-sub-${index}`"
-              class="grid grid-cols-1 gap-3 rounded border border-gray-200 p-3 md:grid-cols-[1fr_160px_auto] dark:border-dark-600"
+              class="grid grid-cols-1 gap-3 border-b border-border pb-3 md:grid-cols-[1fr_160px_auto]"
             >
               <div>
                 <label
-                  class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
+                  class="mb-1 block text-xs font-medium text-fg-muted"
                 >
                   {{ t("admin.settings.defaults.subscriptionGroup") }}
                 </label>
@@ -142,7 +142,7 @@
                         ).rate
                       "
                     />
-                    <span v-else class="text-gray-400">
+                    <span v-else class="text-fg-subtle">
                       {{ t("admin.settings.defaults.subscriptionGroup") }}
                     </span>
                   </template>
@@ -180,7 +180,7 @@
               </div>
               <div>
                 <label
-                  class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
+                  class="mb-1 block text-xs font-medium text-fg-muted"
                 >
                   {{
                     t("admin.settings.defaults.subscriptionValidityDays")
@@ -197,7 +197,7 @@
               <div class="flex items-end">
                 <button
                   type="button"
-                  class="btn btn-secondary default-sub-delete-btn w-full text-danger-600 hover:text-danger-700 dark:text-danger-400"
+                  class="btn btn-secondary default-sub-delete-btn w-full text-danger hover:text-danger-strong"
                   @click="removeDefaultSubscription(index)"
                 >
                   {{ t("common.delete") }}
@@ -208,22 +208,22 @@
         </div>
 
         <!-- ★ 新增：系统全局默认平台限额矩阵 -->
-        <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
+        <div class="border-t border-border pt-4">
           <div class="mb-3">
-            <label class="font-medium text-gray-900 dark:text-white">
+            <label class="font-medium text-fg">
               {{ t("admin.settings.defaults.defaultPlatformQuotas") }}
             </label>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            <p class="mt-1 text-sm text-fg-muted">
               {{ t("admin.settings.defaults.defaultPlatformQuotasHint") }}
             </p>
-            <p class="mt-0.5 text-xs text-warning-600 dark:text-warning-400">
+            <p class="mt-0.5 text-xs text-warning">
               {{ t("admin.settings.defaults.platformQuotaNotice") }}
             </p>
           </div>
           <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
               <thead>
-                <tr class="text-left text-xs text-gray-500 dark:text-gray-400">
+                <tr class="text-left text-xs text-fg-muted">
                   <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.platform") }}</th>
                   <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.daily") }}</th>
                   <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.weekly") }}</th>
@@ -233,7 +233,7 @@
               <tbody class="space-y-2">
                 <tr v-for="p in (['anthropic', 'openai', 'gemini', 'antigravity', 'grok'] as const)" :key="p" class="align-top">
                   <td class="pr-4 py-1">
-                    <span class="font-mono text-xs text-gray-700 dark:text-gray-300">{{ p }}</span>
+                    <span class="font-mono text-xs text-fg">{{ p }}</span>
                   </td>
                   <td class="pr-4 py-1">
                     <input
@@ -276,24 +276,24 @@
 
     <div class="card">
       <div
-        class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
+        class="card-header"
       >
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+        <h2 class="card-title">
           {{ t("admin.settings.authSourceDefaults.title") }}
         </h2>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p class="mt-1 text-sm text-fg-muted">
           {{ t("admin.settings.authSourceDefaults.description") }}
         </p>
       </div>
-      <div class="space-y-6 p-6">
+      <div class="card-body space-y-6">
         <div
-          class="flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
+          class="flex items-center justify-between gap-4 border-t border-border pt-4"
         >
           <div>
-            <label class="font-medium text-gray-900 dark:text-white">
+            <label class="font-medium text-fg">
               {{ t("admin.settings.authSourceDefaults.requireEmailLabel") }}
             </label>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p class="text-sm text-fg-muted">
               {{ t("admin.settings.authSourceDefaults.requireEmailHint") }}
             </p>
           </div>
@@ -304,14 +304,14 @@
           <div
             v-for="authSource in authSourceDefaultsMeta"
             :key="authSource.source"
-            class="rounded-xl border border-gray-200 p-4 dark:border-dark-700"
+            class="border-t border-border pt-4"
           >
             <div class="flex items-center justify-between gap-4">
               <div>
-                <div class="font-medium text-gray-900 dark:text-white">
+                <div class="font-medium text-fg">
                   {{ authSource.title }}
                 </div>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                <p class="mt-1 text-sm text-fg-muted">
                   {{ authSource.description }}
                 </p>
               </div>
@@ -326,16 +326,16 @@
             <div
               v-if="authSourceDefaults[authSource.source].grant_on_signup"
               :data-testid="`auth-source-${authSource.source}-panel`"
-              class="mt-4 space-y-4 border-t border-gray-100 pt-4 dark:border-dark-700"
+              class="mt-4 space-y-4 border-t border-border pt-4"
             >
-              <p class="text-sm text-gray-500 dark:text-gray-400">
+              <p class="text-sm text-fg-muted">
                 {{ t("admin.settings.authSourceDefaults.enabledHint") }}
               </p>
 
               <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label
-                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    class="input-label"
                   >
                     {{ t("admin.settings.defaults.defaultBalance") }}
                   </label>
@@ -352,7 +352,7 @@
                 </div>
                 <div>
                   <label
-                    class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    class="input-label"
                   >
                     {{ t("admin.settings.defaults.defaultConcurrency") }}
                   </label>
@@ -369,16 +369,16 @@
               </div>
 
               <div
-                class="flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
+                class="flex items-center justify-between gap-4 border-t border-border pt-4"
               >
                 <div>
                   <label
-                    class="font-medium text-gray-900 dark:text-white"
+                    class="font-medium text-fg"
                   >
                     {{ t("admin.settings.authSourceDefaults.grantOnFirstBindLabel") }}
                   </label>
                   <p
-                    class="mt-0.5 text-xs text-gray-500 dark:text-gray-400"
+                    class="mt-0.5 text-xs text-fg-muted"
                   >
                     {{ t("admin.settings.authSourceDefaults.grantOnFirstBindHint") }}
                   </p>
@@ -394,11 +394,11 @@
               <div class="mb-3 flex items-center justify-between">
                 <div>
                   <label
-                    class="font-medium text-gray-900 dark:text-white"
+                    class="font-medium text-fg"
                   >
                     {{ t("admin.settings.authSourceDefaults.defaultSubscriptionsLabel") }}
                   </label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="text-sm text-fg-muted">
                     {{ t("admin.settings.authSourceDefaults.defaultSubscriptionsHint") }}
                   </p>
                 </div>
@@ -421,7 +421,7 @@
                   authSourceDefaults[authSource.source].subscriptions
                     .length === 0
                 "
-                class="rounded border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-500 dark:border-dark-600 dark:text-gray-400"
+                class="border-y border-dashed border-border-strong py-3 text-sm text-fg-muted"
               >
                 {{ t("admin.settings.authSourceDefaults.noSourceSubscriptions") }}
               </div>
@@ -432,11 +432,11 @@
                     authSource.source
                   ].subscriptions"
                   :key="`${authSource.source}-sub-${index}`"
-                  class="grid grid-cols-1 gap-3 rounded border border-gray-200 p-3 md:grid-cols-[1fr_160px_auto] dark:border-dark-600"
+                  class="grid grid-cols-1 gap-3 border-b border-border pb-3 md:grid-cols-[1fr_160px_auto]"
                 >
                   <div>
                     <label
-                      class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
+                      class="mb-1 block text-xs font-medium text-fg-muted"
                     >
                       {{ t("admin.settings.defaults.subscriptionGroup") }}
                     </label>
@@ -472,7 +472,7 @@
                             ).rate
                           "
                         />
-                        <span v-else class="text-gray-400">
+                        <span v-else class="text-fg-subtle">
                           {{
                             t("admin.settings.defaults.subscriptionGroup")
                           }}
@@ -512,7 +512,7 @@
                   </div>
                   <div>
                     <label
-                      class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
+                      class="mb-1 block text-xs font-medium text-fg-muted"
                     >
                       {{
                         t(
@@ -531,7 +531,7 @@
                   <div class="flex items-end">
                     <button
                       type="button"
-                      class="btn btn-secondary w-full text-danger-600 hover:text-danger-700 dark:text-danger-400"
+                      class="btn btn-secondary w-full text-danger hover:text-danger-strong"
                       @click="
                         removeAuthSourceDefaultSubscription(
                           authSource.source,
@@ -546,19 +546,19 @@
               </div>
 
               <!-- ★ 新增：auth source 平台限额覆盖区块 -->
-              <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
+              <div class="border-t border-border pt-4">
                 <div class="mb-3">
-                  <label class="font-medium text-gray-900 dark:text-white">
+                  <label class="font-medium text-fg">
                     {{ t("admin.settings.authSourceDefaults.platformQuotasOverride") }}
                   </label>
-                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                  <p class="mt-0.5 text-xs text-fg-muted">
                     {{ t("admin.settings.authSourceDefaults.platformQuotasOverrideHint") }}
                   </p>
                 </div>
                 <div class="overflow-x-auto">
                   <table class="min-w-full text-sm">
                     <thead>
-                      <tr class="text-left text-xs text-gray-500 dark:text-gray-400">
+                      <tr class="text-left text-xs text-fg-muted">
                         <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.platform") }}</th>
                         <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.daily") }}</th>
                         <th class="pb-2 pr-4 font-medium">{{ t("admin.settings.platformQuota.weekly") }}</th>
@@ -568,7 +568,7 @@
                     <tbody>
                       <tr v-for="p in (['anthropic', 'openai', 'gemini', 'antigravity', 'grok'] as const)" :key="`${authSource.source}-pq-${p}`" class="align-top">
                         <td class="pr-4 py-1">
-                          <span class="font-mono text-xs text-gray-700 dark:text-gray-300">{{ p }}</span>
+                          <span class="font-mono text-xs text-fg">{{ p }}</span>
                         </td>
                         <td class="pr-4 py-1">
                           <input

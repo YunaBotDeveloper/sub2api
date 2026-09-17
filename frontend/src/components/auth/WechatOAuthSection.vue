@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-4">
-    <button type="button" :disabled="buttonDisabled" class="btn btn-secondary w-full" @click="startLogin">
+    <button type="button" :disabled="buttonDisabled" class="flex min-h-11 w-full items-center gap-3 border-y border-border bg-surface px-3 py-2.5 text-left text-body font-semibold text-fg transition-colors hover:bg-accent-weak hover:text-accent-strong focus:outline-none focus-visible:bg-accent-weak disabled:cursor-not-allowed disabled:opacity-50" @click="startLogin">
       <span
-        class="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-success-100 text-xs font-semibold text-success-700 dark:bg-success-900/30 dark:text-success-300"
+        class="inline-flex h-4 w-4 shrink-0 items-center justify-center text-meta font-bold text-success" aria-hidden="true"
       >
         W
       </span>
@@ -12,17 +12,17 @@
     <p
       v-if="disabledHint"
       data-testid="wechat-oauth-hint"
-      class="text-sm text-warning-600 dark:text-warning-400"
+      class="text-meta text-warning-strong"
     >
       {{ disabledHint }}
     </p>
 
     <div v-if="showDivider" class="flex items-center gap-3">
-      <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
-      <span class="text-xs text-gray-500 dark:text-dark-400">
+      <div class="h-px flex-1 bg-border"></div>
+      <span class="text-meta text-fg-muted">
         {{ t('auth.oauthOrContinue') }}
       </span>
-      <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
+      <div class="h-px flex-1 bg-border"></div>
     </div>
   </div>
 </template>

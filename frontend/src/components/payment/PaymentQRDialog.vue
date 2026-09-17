@@ -1,58 +1,66 @@
 <template>
   <BaseDialog :show="show" :title="dialogTitle" width="narrow" @close="handleClose">
-    <!-- QR Code + Polling State -->
-    <div v-if="!success" class="flex flex-col items-center space-y-4">
+    <!-- QR Code + Polling State: scan part of the stub -->
+    <div v-if="!success" class="flex flex-col items-center gap-4">
       <!-- QR Code mode -->
       <template v-if="qrUrl">
-        <div class="rounded-lg bg-white p-4 shadow-sm dark:bg-dark-800">
+        <div class="border border-border-strong bg-white p-3">
           <canvas ref="qrCanvas" class="mx-auto"></canvas>
         </div>
-        <p v-if="scanHint" class="text-center text-sm text-gray-500 dark:text-gray-400">
+        <p v-if="scanHint" class="text-center text-body text-fg-muted">
           {{ scanHint }}
         </p>
       </template>
       <!-- Popup window waiting mode (no QR code) -->
       <template v-else>
         <div class="flex flex-col items-center py-4">
-          <div class="h-10 w-10 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
-          <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">{{ t('payment.qr.payInNewWindowHint') }}</p>
-          <button v-if="payUrl" class="btn btn-secondary mt-3 text-sm" @click="reopenPopup">
+          <div class="spinner h-8 w-8 text-accent"></div>
+          <p class="mt-4 text-body text-fg-muted">{{ t('payment.qr.payInNewWindowHint') }}</p>
+          <button v-if="payUrl" class="btn btn-secondary mt-3" @click="reopenPopup">
             {{ t('payment.qr.openPayWindow') }}
           </button>
         </div>
       </template>
+      <div class="stub-perforation w-full" />
       <!-- Countdown -->
       <div v-if="expired" class="text-center">
-        <p class="text-lg font-medium text-danger-500">{{ t('payment.qr.expired') }}</p>
+        <span class="badge badge-danger px-2.5 py-1 text-label">{{ t('payment.qr.expired') }}</span>
       </div>
-      <div v-else class="text-center">
-        <p class="text-sm text-gray-500 dark:text-gray-400">{{ qrUrl ? t('payment.qr.expiresIn') : '' }}</p>
-        <p class="mt-1 text-2xl font-bold tabular-nums text-gray-900 dark:text-white">{{ countdownDisplay }}</p>
-        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{ t('payment.qr.waitingPayment') }}</p>
+      <div
+        v-else
+        class="flex w-full items-baseline justify-between gap-3 border border-border px-3 py-2"
+        :class="remainingSeconds > 0 && remainingSeconds <= 60 ? 'bg-meter-weak text-meter-ink' : ''"
+      >
+        <span class="text-meta font-medium" :class="remainingSeconds > 0 && remainingSeconds <= 60 ? '' : 'text-fg-muted'">
+          {{ qrUrl ? t('payment.qr.expiresIn') : t('payment.qr.waitingPayment') }}
+        </span>
+        <span class="text-h2 font-bold tabular-nums">{{ countdownDisplay }}</span>
       </div>
+      <p v-if="!expired && qrUrl" class="text-meta text-fg-subtle">{{ t('payment.qr.waitingPayment') }}</p>
     </div>
-    <!-- Success State -->
-    <div v-else class="flex flex-col items-center space-y-4 py-4">
-      <div class="flex h-16 w-16 items-center justify-center rounded-full bg-success-100 dark:bg-success-900/30">
-        <Icon name="check" size="lg" class="text-success-500" />
+    <!-- Success State: receipt with stamp -->
+    <div v-else class="space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <p class="text-h3 font-bold text-accent-strong">{{ t('payment.result.success') }}</p>
+        <span class="badge badge-success px-2.5 py-1 text-label">
+          <Icon name="check" size="sm" />
+          {{ t('payment.status.paid') }}
+        </span>
       </div>
-      <p class="text-lg font-bold text-gray-900 dark:text-white">{{ t('payment.result.success') }}</p>
-      <div v-if="paidOrder" class="w-full rounded-xl bg-gray-50 p-4 dark:bg-dark-800">
-        <div class="space-y-2 text-sm">
-          <div class="flex justify-between">
-            <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderId') }}</span>
-            <span class="font-medium text-gray-900 dark:text-white">#{{ paidOrder.id }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.amount') }}</span>
-            <span class="font-medium text-gray-900 dark:text-white">{{ formatCreditedAmount(paidOrder.amount) }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.payAmount') }}</span>
-            <span class="font-medium text-gray-900 dark:text-white">{{ formatOrderAmount(paidOrder.pay_amount, paidOrder.currency) }}</span>
-          </div>
+      <dl v-if="paidOrder" class="divide-y divide-border border-y border-border text-body">
+        <div class="flex justify-between gap-4 py-2">
+          <dt class="text-fg-muted">{{ t('payment.orders.orderId') }}</dt>
+          <dd class="font-mono text-fg">#{{ paidOrder.id }}</dd>
         </div>
-      </div>
+        <div class="flex justify-between gap-4 py-2">
+          <dt class="text-fg-muted">{{ t('payment.orders.amount') }}</dt>
+          <dd class="tabular-nums text-fg">{{ formatCreditedAmount(paidOrder.amount) }}</dd>
+        </div>
+        <div class="flex justify-between gap-4 py-2">
+          <dt class="text-fg-muted">{{ t('payment.orders.payAmount') }}</dt>
+          <dd class="font-bold tabular-nums text-fg">{{ formatOrderAmount(paidOrder.pay_amount, paidOrder.currency) }}</dd>
+        </div>
+      </dl>
     </div>
     <template #footer>
       <div class="flex justify-end gap-3">

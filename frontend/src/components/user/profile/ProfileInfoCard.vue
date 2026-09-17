@@ -1,13 +1,11 @@
 <template>
   <div class="space-y-6">
-    <section
-      data-testid="profile-overview-hero"
-      class="card overflow-hidden border border-primary-100/80 bg-primary-50 dark:border-primary-900/40 dark:bg-primary-950/40"
-    >
-      <div class="px-6 py-6 md:px-8">
-        <div class="flex flex-col gap-6 lg:flex-row lg:items-start">
+    <!-- 客户账户栏：账单抬头 -->
+    <section data-testid="profile-overview-hero" class="card">
+      <div class="flex flex-col gap-5 px-5 py-4 md:flex-row md:items-start">
+        <div class="flex min-w-0 flex-1 items-start gap-4">
           <div
-            class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[1.75rem] bg-primary-500 text-2xl font-bold text-white shadow-lg"
+            class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-h2 font-bold text-white dark:text-surface-sunken"
           >
             <img
               v-if="avatarUrl"
@@ -18,112 +16,91 @@
             <span v-else>{{ avatarInitial }}</span>
           </div>
 
-          <div class="min-w-0 flex-1 space-y-5">
-            <div class="space-y-3">
-              <div class="flex flex-wrap items-center gap-2">
-                <h2 class="truncate text-2xl font-semibold text-gray-900 dark:text-white">
-                  {{ displayName }}
-                </h2>
-                <span :class="['badge', user?.role === 'admin' ? 'badge-primary' : 'badge-gray']">
-                  {{ user?.role === 'admin' ? t('profile.administrator') : t('profile.user') }}
-                </span>
-                <span
-                  :class="['badge', user?.status === 'active' ? 'badge-success' : 'badge-danger']"
-                >
-                  {{
-                    user?.status === 'active'
-                      ? t('common.active')
-                      : t('common.disabled')
-                  }}
-                </span>
-              </div>
-
-              <div class="space-y-1">
-                <p class="truncate text-sm text-gray-600 dark:text-gray-300">
-                  {{ primaryEmailDisplay }}
-                </p>
-                <div
-                  v-if="sourceHints.length"
-                  class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400"
-                >
-                  <span
-                    v-for="hint in sourceHints"
-                    :key="hint.key"
-                    class="inline-flex items-center gap-1 rounded-full bg-white/80 px-3 py-1 ring-1 ring-primary-100 dark:bg-dark-900/70 dark:ring-primary-900/40"
-                  >
-                    <Icon name="link" size="sm" />
-                    {{ hint.text }}
-                  </span>
-                </div>
-              </div>
+          <div class="min-w-0 flex-1 space-y-1.5">
+            <div class="flex flex-wrap items-center gap-2">
+              <h2 class="truncate text-h2 font-bold text-accent-strong">
+                {{ displayName }}
+              </h2>
+              <span :class="['badge', user?.role === 'admin' ? 'badge-primary' : 'badge-gray']">
+                {{ user?.role === 'admin' ? t('profile.administrator') : t('profile.user') }}
+              </span>
+              <span
+                :class="['badge', user?.status === 'active' ? 'badge-success' : 'badge-danger']"
+              >
+                {{
+                  user?.status === 'active'
+                    ? t('common.active')
+                    : t('common.disabled')
+                }}
+              </span>
             </div>
-
-            <div class="grid gap-3 sm:grid-cols-3">
-              <div
-                data-testid="profile-overview-metric-balance"
-                class="rounded-lg bg-white/85 px-4 py-3 shadow-sm ring-1 ring-white/70 dark:bg-dark-900/60 dark:ring-dark-700"
+            <p class="truncate text-body text-fg-muted">
+              {{ primaryEmailDisplay }}
+            </p>
+            <div
+              v-if="sourceHints.length"
+              class="flex flex-wrap gap-x-4 gap-y-1 text-meta text-fg-muted"
+            >
+              <span
+                v-for="hint in sourceHints"
+                :key="hint.key"
+                class="inline-flex items-center gap-1"
               >
-                <p class="text-xs font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-500">
-                  {{ t('profile.accountBalance') }}
-                </p>
-                <p class="mt-1 text-lg font-semibold text-gray-900 dark:text-white">
-                  {{ formatCurrency(user?.balance || 0) }}
-                </p>
-              </div>
-              <div
-                data-testid="profile-overview-metric-concurrency"
-                class="rounded-lg bg-white/85 px-4 py-3 shadow-sm ring-1 ring-white/70 dark:bg-dark-900/60 dark:ring-dark-700"
-              >
-                <p class="text-xs font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-500">
-                  {{ t('profile.concurrencyLimit') }}
-                </p>
-                <p class="mt-1 text-lg font-semibold text-gray-900 dark:text-white">
-                  {{ user?.concurrency || 0 }}
-                </p>
-              </div>
-              <div
-                data-testid="profile-overview-metric-member-since"
-                class="rounded-lg bg-white/85 px-4 py-3 shadow-sm ring-1 ring-white/70 dark:bg-dark-900/60 dark:ring-dark-700"
-              >
-                <p class="text-xs font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-500">
-                  {{ t('profile.memberSince') }}
-                </p>
-                <p class="mt-1 text-lg font-semibold text-gray-900 dark:text-white">
-                  {{ memberSinceLabel }}
-                </p>
-              </div>
+                <Icon name="link" size="sm" class="text-accent" />
+                {{ hint.text }}
+              </span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- 账户读数：余额为当前读数 -->
+      <div class="meter border-x-0 border-b-0">
+        <div
+          data-testid="profile-overview-metric-balance"
+          class="meter-cell meter-cell-current"
+        >
+          <p class="meter-label">{{ t('profile.accountBalance') }}</p>
+          <p class="meter-value">{{ formatCurrency(user?.balance || 0) }}</p>
+        </div>
+        <div
+          data-testid="profile-overview-metric-concurrency"
+          class="meter-cell"
+        >
+          <p class="meter-label">{{ t('profile.concurrencyLimit') }}</p>
+          <p class="meter-value">{{ user?.concurrency || 0 }}</p>
+        </div>
+        <div
+          data-testid="profile-overview-metric-member-since"
+          class="meter-cell"
+        >
+          <p class="meter-label">{{ t('profile.memberSince') }}</p>
+          <p class="meter-value">{{ memberSinceLabel }}</p>
         </div>
       </div>
     </section>
 
     <div class="space-y-6">
       <div data-testid="profile-main-column" class="space-y-6">
-        <section
-          data-testid="profile-basics-panel"
-          class="card border border-gray-100 bg-white/90 p-6 dark:border-dark-700 dark:bg-dark-900/50"
-        >
-          <div class="mb-5 flex items-start justify-between gap-4">
-            <div>
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                {{ t('profile.basicsTitle') }}
-              </h3>
-              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {{ t('profile.basicsDescription') }}
-              </p>
-            </div>
+        <section data-testid="profile-basics-panel" class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              {{ t('profile.basicsTitle') }}
+            </h3>
+            <p class="mt-0.5 text-meta text-fg-muted">
+              {{ t('profile.basicsDescription') }}
+            </p>
           </div>
 
-          <div class="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
-            <div class="rounded-lg border border-gray-100 bg-gray-50/80 p-5 dark:border-dark-700 dark:bg-dark-900/30">
+          <div class="grid divide-y divide-border md:grid-cols-2 md:divide-x md:divide-y-0">
+            <div class="p-5">
               <ProfileAvatarCard
                 :user="user"
                 embedded
               />
             </div>
 
-            <div class="rounded-lg border border-gray-100 bg-gray-50/80 p-5 dark:border-dark-700 dark:bg-dark-900/30">
+            <div class="p-5">
               <ProfileEditForm
                 :initial-username="user?.username || ''"
                 embedded
@@ -132,10 +109,7 @@
           </div>
         </section>
 
-        <section
-          data-testid="profile-auth-bindings-panel"
-          class="card border border-gray-100 bg-white/90 p-6 dark:border-dark-700 dark:bg-dark-900/50"
-        >
+        <section data-testid="profile-auth-bindings-panel" class="card card-body">
           <ProfileIdentityBindingsSection
             :user="user"
             :linuxdo-enabled="linuxdoEnabled"
@@ -152,27 +126,26 @@
       </div>
 
       <div data-testid="profile-side-column" class="space-y-6">
-        <section
-          v-if="sourceHints.length"
-          class="card border border-gray-100 bg-white/90 p-6 dark:border-dark-700 dark:bg-dark-900/50"
-        >
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-            {{ t('profile.linkedProfileSources') }}
-          </h3>
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {{ t('profile.linkedProfileSourcesDescription') }}
-          </p>
+        <section v-if="sourceHints.length" class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              {{ t('profile.linkedProfileSources') }}
+            </h3>
+            <p class="mt-0.5 text-meta text-fg-muted">
+              {{ t('profile.linkedProfileSourcesDescription') }}
+            </p>
+          </div>
 
-          <div class="mt-5 grid gap-3">
-            <div
+          <ul class="divide-y divide-border">
+            <li
               v-for="hint in sourceHints"
               :key="hint.key"
-              class="flex items-start gap-3 rounded-lg border border-gray-100 bg-gray-50/80 px-4 py-3 text-sm text-gray-600 dark:border-dark-700 dark:bg-dark-900/30 dark:text-gray-300"
+              class="flex items-start gap-3 px-5 py-3 text-body text-fg"
             >
-              <Icon name="link" size="sm" class="mt-0.5 text-gray-400 dark:text-gray-500" />
+              <Icon name="link" size="sm" class="mt-0.5 text-accent" />
               <span>{{ hint.text }}</span>
-            </div>
-          </div>
+            </li>
+          </ul>
         </section>
       </div>
     </div>

@@ -8,16 +8,16 @@
     @close="close"
   >
     <form id="bulk-edit-keys-form" class="space-y-5" @submit.prevent="submit">
-      <div class="space-y-1 text-sm">
-        <p class="font-medium text-gray-900 dark:text-white">
+      <div class="space-y-1 border-b border-border pb-3 text-label">
+        <p class="font-bold text-accent-strong">
           {{ t('keys.bulkEdit.selectedCount', { count: pendingKeys.length }) }}
         </p>
-        <p class="text-gray-500 dark:text-gray-400">{{ t('keys.bulkEdit.hint') }}</p>
+        <p class="text-fg-muted">{{ t('keys.bulkEdit.hint') }}</p>
       </div>
 
       <fieldset :disabled="submitting" class="space-y-5">
         <div class="space-y-2">
-          <label class="flex items-center gap-2 text-sm font-medium">
+          <label class="flex items-center gap-2 text-label font-semibold text-fg">
             <input v-model="enabled.group_id" type="checkbox" class="checkbox" data-test="enable-group" />
             {{ t('keys.groupLabel') }}
           </label>
@@ -34,7 +34,7 @@
         </div>
 
         <div class="space-y-2">
-          <label class="flex items-center gap-2 text-sm font-medium">
+          <label class="flex items-center gap-2 text-label font-semibold text-fg">
             <input v-model="enabled.status" type="checkbox" class="checkbox" data-test="enable-status" />
             {{ t('keys.statusLabel') }}
           </label>
@@ -49,7 +49,7 @@
         </div>
 
         <div v-for="field in limitFields" :key="field.key" class="space-y-2">
-          <label class="flex items-center gap-2 text-sm font-medium">
+          <label class="flex items-center gap-2 text-label font-semibold text-fg">
             <input
               v-model="enabled[field.key]"
               type="checkbox"
@@ -74,12 +74,12 @@
         </div>
 
         <div class="space-y-2">
-          <label class="flex items-center gap-2 text-sm font-medium">
+          <label class="flex items-center gap-2 text-label font-semibold text-fg">
             <input v-model="enabled.expires_at" type="checkbox" class="checkbox" data-test="enable-expiration" />
             {{ t('keys.expiration') }}
           </label>
           <div v-if="enabled.expires_at" class="space-y-2">
-            <label class="flex items-center gap-2 text-sm">
+            <label class="flex items-center gap-2 text-label text-fg">
               <input v-model="neverExpires" type="checkbox" class="checkbox" data-test="never-expires" />
               {{ t('keys.noExpiration') }}
             </label>
@@ -96,7 +96,7 @@
         </div>
 
         <div v-for="field in ipFields" :key="field.key" class="space-y-2">
-          <label class="flex items-center gap-2 text-sm font-medium">
+          <label class="flex items-center gap-2 text-label font-semibold text-fg">
             <input
               v-model="enabled[field.key]"
               type="checkbox"
@@ -109,7 +109,7 @@
             <textarea
               v-model="ipLists[field.key]"
               rows="3"
-              class="input font-mono text-sm"
+              class="input font-mono text-label"
               :aria-label="t(field.label)"
               :data-test="`${field.key}-input`"
             />
@@ -118,10 +118,10 @@
         </div>
       </fieldset>
 
-      <p v-if="validationError" role="alert" class="text-sm text-danger-600 dark:text-danger-400">
+      <p v-if="validationError" role="alert" class="input-error-text">
         {{ validationError }}
       </p>
-      <div v-if="failures.length" role="alert" class="space-y-2 text-sm text-danger-600 dark:text-danger-400">
+      <div v-if="failures.length" role="alert" class="space-y-2 border border-danger/40 bg-danger-weak px-3 py-2 text-label text-danger-strong">
         <p>{{ t('keys.bulkEdit.failureHint') }}</p>
         <ul class="max-h-40 space-y-1 overflow-y-auto">
           <li v-for="failure in failures" :key="failure.id" class="break-words">

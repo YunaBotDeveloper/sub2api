@@ -46,7 +46,7 @@ onUnmounted(() => {
 <style scoped>
 /* 桌面端：Flexbox 布局 */
 .table-page-layout {
-  @apply flex flex-col gap-6;
+  @apply flex flex-col gap-4;
   height: calc(100vh - 64px - 4rem); /* 减去 header + lg:p-8 的上下padding */
 }
 
@@ -60,7 +60,7 @@ onUnmounted(() => {
 
 /* 表格滚动容器 - 增强版表体滚动方案 */
 .table-scroll-container {
-  @apply flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface-raised;
+  @apply flex h-full flex-col overflow-hidden rounded-none bg-surface;
 }
 
 .table-scroll-container :deep(.table-wrapper) {
@@ -76,7 +76,7 @@ onUnmounted(() => {
 }
 
 .table-scroll-container :deep(thead) {
-  @apply bg-surface-sunken;
+  @apply bg-accent-weak;
 }
 
 .table-scroll-container :deep(tbody) {
@@ -84,7 +84,7 @@ onUnmounted(() => {
 }
 
 .table-scroll-container :deep(th) {
-  @apply border-b border-border px-4 py-2.5 text-left text-label font-medium text-fg-muted;
+  @apply border-b border-border px-4 py-2 text-left text-label font-semibold text-accent-strong;
 }
 
 .table-scroll-container :deep(td) {

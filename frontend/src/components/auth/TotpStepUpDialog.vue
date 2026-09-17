@@ -11,8 +11,8 @@
     @close="handleCancel"
   >
     <div class="mb-6 text-center">
-      <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30">
-        <svg class="h-6 w-6 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+      <div class="mx-auto flex items-center justify-center text-accent">
+        <svg class="h-6 w-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
         </svg>
       </div>
@@ -43,15 +43,15 @@
           inputmode="numeric"
           pattern="[0-9]"
           autocomplete="off"
-          class="h-12 w-10 rounded-lg border border-gray-300 text-center text-lg font-semibold focus:border-primary-500 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
+          class="h-12 w-10 rounded-sm border border-border-strong text-center text-lg font-semibold focus:border-accent focus:ring-accent"
           :disabled="verifying"
           @input="handleCodeInput($event, index)"
           @keydown="handleKeydown($event, index)"
           @paste="handlePaste"
         />
       </div>
-      <div v-if="verifying" class="mt-3 flex items-center justify-center gap-2 text-sm text-gray-500">
-        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-500"></div>
+      <div v-if="verifying" class="mt-3 flex items-center justify-center gap-2 text-sm text-fg-muted">
+        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-accent"></div>
         {{ t('common.verifying') }}
       </div>
     </div>

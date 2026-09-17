@@ -26,7 +26,7 @@
       <button
         type="button"
         data-test="cn-provider-quota-probe"
-        class="inline-flex items-center gap-0.5 whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-medium leading-4 text-accent-600 transition-colors hover:bg-accent-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-accent-400 dark:hover:bg-accent-900/30"
+        class="inline-flex items-center gap-0.5 whitespace-nowrap rounded-sm px-1.5 py-0.5 text-[10px] font-medium leading-4 text-accent transition-colors hover:bg-accent-weak disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="loading"
         :title="t('admin.accounts.cnProviders.probeTooltip')"
         @click="handleProbe()"
@@ -51,7 +51,7 @@
 
     <div
       v-if="error"
-      class="truncate text-[10px] leading-4 text-danger-600 dark:text-danger-400"
+      class="truncate text-[10px] leading-4 text-danger"
       :title="error"
     >
       {{ truncatedError }}

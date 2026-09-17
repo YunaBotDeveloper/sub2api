@@ -2,27 +2,27 @@
   <AuthLayout>
     <div class="space-y-6">
       <!-- Title -->
-      <div class="text-center">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+      <div>
+        <h2 class="text-h2 font-bold text-accent-strong">
           {{ t('auth.forgotPasswordTitle') }}
         </h2>
-        <p class="mt-2 text-sm text-gray-500 dark:text-dark-400">
+        <p class="mt-1 text-body text-fg-muted">
           {{ t('auth.forgotPasswordHint') }}
         </p>
       </div>
 
       <!-- Success State -->
       <div v-if="isSubmitted" class="space-y-6">
-        <div class="rounded-xl border border-success-200 bg-success-50 p-6 dark:border-success-800/50 dark:bg-success-900/20">
-          <div class="flex flex-col items-center gap-4 text-center">
-            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-success-100 dark:bg-success-800/50">
-              <Icon name="checkCircle" size="lg" class="text-success-600 dark:text-success-400" />
+        <div class="border border-success/60 bg-success-weak px-4 py-3">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 pt-0.5">
+              <Icon name="checkCircle" size="md" class="text-success" />
             </div>
             <div>
-              <h3 class="text-lg font-semibold text-success-800 dark:text-success-200">
+              <h3 class="text-h3 font-bold text-success-strong">
                 {{ t('auth.resetEmailSent') }}
               </h3>
-              <p class="mt-2 text-sm text-success-700 dark:text-success-300">
+              <p class="mt-1 text-body text-success-strong">
                 {{ t('auth.resetEmailSentHint') }}
               </p>
             </div>
@@ -32,7 +32,7 @@
         <div class="text-center">
           <router-link
             to="/login"
-            class="inline-flex items-center gap-2 font-medium text-primary-600 transition-colors hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+            class="inline-flex items-center gap-2 font-medium text-accent transition-colors hover:text-accent-strong"
           >
             <Icon name="arrowLeft" size="sm" />
             {{ t('auth.backToLogin') }}
@@ -48,9 +48,6 @@
             {{ t('auth.emailLabel') }}
           </label>
           <div class="relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-              <Icon name="mail" size="md" class="text-gray-400 dark:text-dark-500" />
-            </div>
             <input
               id="email"
               v-model="formData.email"
@@ -59,7 +56,7 @@
               autofocus
               autocomplete="email"
               :disabled="isLoading"
-              class="input pl-11"
+              class="input"
               :class="{ 'input-error': errors.email }"
               :placeholder="t('auth.emailPlaceholder')"
             />
@@ -89,11 +86,11 @@
         <button
           type="submit"
           :disabled="isLoading || (turnstileEnabled && !turnstileToken)"
-          class="btn btn-primary w-full"
+          class="btn btn-primary btn-lg w-full"
         >
           <svg
             v-if="isLoading"
-            class="-ml-1 mr-2 h-4 w-4 animate-spin text-white"
+            class="h-4 w-4 animate-spin"
             fill="none"
             viewBox="0 0 24 24"
           >
@@ -111,7 +108,6 @@
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             ></path>
           </svg>
-          <Icon v-else name="mail" size="md" class="mr-2" />
           {{ isLoading ? t('auth.sendingResetLink') : t('auth.sendResetLink') }}
         </button>
       </form>
@@ -119,11 +115,11 @@
 
     <!-- Footer -->
     <template #footer>
-      <p class="text-gray-500 dark:text-dark-400">
+      <p class="text-fg-muted">
         {{ t('auth.rememberedPassword') }}
         <router-link
           to="/login"
-          class="font-medium text-primary-600 transition-colors hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+          class="font-medium text-accent transition-colors hover:text-accent-strong"
         >
           {{ t('auth.signIn') }}
         </router-link>

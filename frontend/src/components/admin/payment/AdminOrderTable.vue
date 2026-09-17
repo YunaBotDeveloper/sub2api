@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-4">
-    <div class="card p-4">
+    <div class="border-b-2 border-accent pb-3">
       <div class="flex flex-wrap items-center gap-3">
         <div class="flex-1 sm:max-w-64">
           <input
@@ -44,27 +44,27 @@
 
     <DataTable :columns="columns" :data="orders" :loading="loading">
       <template #cell-id="{ value }">
-        <span class="font-mono text-sm">#{{ value }}</span>
+        <span class="font-mono text-meta text-fg-muted">#{{ value }}</span>
       </template>
 
       <template #cell-user_id="{ value }">
-        <span class="text-sm text-gray-600 dark:text-gray-400">#{{ value }}</span>
+        <span class="font-mono text-meta text-fg-muted">#{{ value }}</span>
       </template>
 
       <template #cell-pay_amount="{ value, row }">
-        <div class="text-sm">
-          <span class="font-medium text-gray-900 dark:text-white">{{ paymentAmountSymbol(row) }}{{ value.toFixed(2) }}</span>
-          <span v-if="row.fee_rate > 0" class="ml-1 text-xs text-gray-400" :title="t('payment.orders.fee') + ': ' + row.fee_rate + '%'">
+        <div class="text-right tabular-nums">
+          <span class="font-semibold text-fg">{{ paymentAmountSymbol(row) }}{{ value.toFixed(2) }}</span>
+          <span v-if="row.fee_rate > 0" class="ml-1 text-meta text-fg-subtle" :title="t('payment.orders.fee') + ': ' + row.fee_rate + '%'">
             ({{ row.fee_rate }}%)
           </span>
-          <div v-if="row.amount !== row.pay_amount" class="text-xs text-gray-500">
+          <div v-if="row.amount !== row.pay_amount" class="text-meta text-fg-muted">
             {{ t('payment.orders.creditedAmount') }}: {{ creditedAmountSymbol }}{{ row.amount.toFixed(2) }}
           </div>
         </div>
       </template>
 
       <template #cell-payment_type="{ value }">
-        <span class="text-sm text-gray-700 dark:text-gray-300">
+        <span class="text-body text-fg">
           {{ t('payment.methods.' + value, value) }}
         </span>
       </template>
@@ -76,39 +76,39 @@
       </template>
 
       <template #cell-order_type="{ value }">
-        <span class="text-sm text-gray-700 dark:text-gray-300">
+        <span class="text-body text-fg">
           {{ t('payment.admin.' + value + 'Order', value) }}
         </span>
       </template>
 
       <template #cell-created_at="{ value }">
-        <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatDateTime(value) }}</span>
+        <span class="text-meta tabular-nums text-fg-muted">{{ formatDateTime(value) }}</span>
       </template>
 
       <template #cell-actions="{ row }">
         <div class="flex items-center gap-2">
           <button
             @click="emit('detail', row)"
-            class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 dark:hover:bg-gray-800/50 dark:hover:text-gray-300"
+            class="flex flex-col items-center gap-0.5 rounded-sm p-1.5 text-fg-muted transition-colors hover:bg-accent-weak hover:text-accent-strong"
           >
             <Icon name="eye" size="sm" />
-            <span class="text-xs">{{ t('common.view') }}</span>
+            <span class="text-meta">{{ t('common.view') }}</span>
           </button>
           <button
             v-if="row.status === 'PENDING'"
             @click="emit('cancel', row)"
-            class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-warning-50 hover:text-warning-600 dark:hover:bg-warning-900/20 dark:hover:text-warning-400"
+            class="flex flex-col items-center gap-0.5 rounded-sm p-1.5 text-fg-muted transition-colors hover:bg-warning-weak hover:text-warning"
           >
             <Icon name="x" size="sm" />
-            <span class="text-xs">{{ t('payment.orders.cancel') }}</span>
+            <span class="text-meta">{{ t('payment.orders.cancel') }}</span>
           </button>
           <button
             v-if="row.status === 'FAILED'"
             @click="emit('retry', row)"
-            class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-accent-50 hover:text-accent-600 dark:hover:bg-accent-900/20 dark:hover:text-accent-400"
+            class="flex flex-col items-center gap-0.5 rounded-sm p-1.5 text-fg-muted transition-colors hover:bg-accent-weak hover:text-accent-strong"
           >
             <Icon name="refresh" size="sm" />
-            <span class="text-xs">{{ t('payment.admin.retry') }}</span>
+            <span class="text-meta">{{ t('payment.admin.retry') }}</span>
           </button>
         </div>
       </template>
@@ -183,7 +183,7 @@ function emitFiltersChanged() {
 const columns = computed<Column[]>(() => [
   { key: 'id', label: t('payment.orders.orderId') },
   { key: 'user_id', label: t('payment.orders.userId') },
-  { key: 'pay_amount', label: t('payment.orders.payAmount') },
+  { key: 'pay_amount', label: t('payment.orders.payAmount'), class: 'text-right' },
   { key: 'payment_type', label: t('payment.orders.paymentMethod') },
   { key: 'status', label: t('payment.orders.status') },
   { key: 'order_type', label: t('payment.orders.orderType') },

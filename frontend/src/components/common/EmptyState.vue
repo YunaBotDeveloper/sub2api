@@ -1,9 +1,7 @@
 <template>
   <div class="empty-state">
     <!-- Icon -->
-    <div
-      class="mb-5 flex h-20 w-20 items-center justify-center rounded-lg bg-gray-100 dark:bg-dark-800"
-    >
+    <div class="mb-3 flex items-center justify-center text-border-strong">
       <slot name="icon">
         <component v-if="icon" :is="icon" class="empty-state-icon h-10 w-10" aria-hidden="true" />
         <svg
@@ -34,7 +32,7 @@
     </p>
 
     <!-- Action -->
-    <div v-if="actionText || $slots.action" class="mt-6">
+    <div v-if="actionText || $slots.action" class="mt-5">
       <slot name="action">
         <component
           :is="actionTo ? 'RouterLink' : 'button'"
@@ -43,7 +41,7 @@
           @click="!actionTo && $emit('action')"
           class="btn btn-primary"
         >
-          <Icon v-if="actionIcon" name="plus" size="md" class="mr-2" />
+          <Icon v-if="actionIcon" name="plus" size="sm" />
           {{ actionText }}
         </component>
       </slot>

@@ -1,11 +1,9 @@
 <template>
-  <div class="inline-flex items-center gap-1.5">
-    <!-- 形状 + 颜色双通道：成功=实心圆，警告=空心圆，错误=实心方块，其它=灰色空心圆 -->
-    <span :class="['inline-block h-2 w-2 flex-shrink-0', variantClass]" aria-hidden="true"></span>
-    <span class="text-body text-fg">
-      {{ label }}
-    </span>
-  </div>
+  <!-- 状态印章：形状 + 颜色双通道（成功=实心点，警告=空心点，错误=方块，其它=灰色空心点） -->
+  <span :class="['badge', badgeClass]">
+    <span :class="['inline-block h-1.5 w-1.5 flex-shrink-0', variantClass]" aria-hidden="true"></span>
+    {{ label }}
+  </span>
 </template>
 
 <script setup lang="ts">
@@ -16,6 +14,23 @@ const props = defineProps<{
   label: string
 }>()
 
+const badgeClass = computed(() => {
+  switch (props.status) {
+    case 'active':
+    case 'success':
+      return 'badge-success'
+    case 'disabled':
+    case 'inactive':
+    case 'warning':
+      return 'badge-warning'
+    case 'error':
+    case 'danger':
+      return 'badge-danger'
+    default:
+      return 'badge-gray'
+  }
+})
+
 const variantClass = computed(() => {
   switch (props.status) {
     case 'active':
@@ -24,12 +39,12 @@ const variantClass = computed(() => {
     case 'disabled':
     case 'inactive':
     case 'warning':
-      return 'rounded-full border-2 border-warning bg-transparent'
+      return 'rounded-full border border-warning bg-transparent'
     case 'error':
     case 'danger':
       return 'rounded-sm bg-danger'
     default:
-      return 'rounded-full border-2 border-fg-subtle bg-transparent'
+      return 'rounded-full border border-fg-subtle bg-transparent'
   }
 })
 </script>

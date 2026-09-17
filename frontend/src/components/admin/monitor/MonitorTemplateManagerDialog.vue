@@ -6,7 +6,7 @@
     @close="$emit('close')"
   >
     <!-- provider tabs -->
-    <div class="mb-4 border-b border-gray-200 dark:border-dark-700">
+    <div class="mb-4 border-b border-border">
       <div role="tablist" class="flex flex-wrap gap-1">
         <button
           v-for="tab in providerTabs"
@@ -14,14 +14,14 @@
           type="button"
           role="tab"
           :aria-selected="activeProvider === tab.value"
-          class="px-4 py-2 text-sm font-medium transition-colors"
+          class="-mb-px px-4 py-2 text-sm font-semibold transition-colors"
           :class="tabClass(tab.value)"
           @click="activeProvider = tab.value"
         >
           {{ tab.label }}
           <span
             v-if="countByProvider[tab.value] > 0"
-            class="ml-1.5 rounded-full bg-gray-100 px-2 py-0.5 text-xs dark:bg-dark-700"
+            class="badge badge-gray ml-1.5 tabular-nums"
           >
             {{ countByProvider[tab.value] }}
           </span>
@@ -38,13 +38,13 @@
         </button>
       </div>
 
-      <div v-if="loading" class="py-8 text-center text-sm text-gray-400">
+      <div v-if="loading" class="py-8 text-center text-sm text-fg-subtle">
         {{ t('common.loading') }}
       </div>
 
       <div
         v-else-if="templatesForActiveProvider.length === 0"
-        class="py-8 text-center text-sm text-gray-400"
+        class="py-8 text-center text-sm text-fg-subtle"
       >
         {{ t('admin.channelMonitor.template.emptyState') }}
       </div>
@@ -53,36 +53,36 @@
         v-for="tpl in templatesForActiveProvider"
         v-else
         :key="tpl.id"
-        class="rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-800"
+        class="border-b border-border py-3"
       >
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0 flex-1">
             <div class="flex items-center gap-2">
-              <span class="font-medium text-gray-900 dark:text-white">{{ tpl.name }}</span>
+              <span class="font-medium text-fg">{{ tpl.name }}</span>
               <span
-                class="inline-flex items-center rounded-md px-1.5 py-0.5 text-xs"
+                class="badge"
                 :class="modeBadgeClass(tpl.body_override_mode)"
               >
                 {{ modeLabel(tpl.body_override_mode) }}
               </span>
               <span
                 v-if="tpl.provider === PROVIDER_OPENAI"
-                class="inline-flex items-center rounded-md px-1.5 py-0.5 text-xs"
+                class="badge"
                 :class="apiModeBadgeClass(tpl.api_mode)"
               >
                 {{ apiModeLabel(tpl.api_mode) }}
               </span>
               <span
                 v-if="tpl.associated_monitors > 0"
-                class="text-xs text-gray-500 dark:text-gray-400"
+                class="text-xs text-fg-muted"
               >
                 {{ t('admin.channelMonitor.template.associatedCount', { n: tpl.associated_monitors }) }}
               </span>
             </div>
-            <p v-if="tpl.description" class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+            <p v-if="tpl.description" class="mt-0.5 text-xs text-fg-muted">
               {{ tpl.description }}
             </p>
-            <p class="mt-1 text-xs text-gray-400">
+            <p class="mt-1 text-xs text-fg-subtle">
               {{ t('admin.channelMonitor.template.headersSummary', {
                 n: Object.keys(tpl.extra_headers || {}).length,
               }) }}
@@ -101,7 +101,7 @@
             <button class="btn btn-secondary btn-sm" @click="openEditForm(tpl)">
               {{ t('common.edit') }}
             </button>
-            <button class="btn btn-secondary btn-sm text-danger-600" @click="handleDelete(tpl)">
+            <button class="btn btn-secondary btn-sm text-danger" @click="handleDelete(tpl)">
               {{ t('common.delete') }}
             </button>
           </div>
@@ -114,7 +114,7 @@
       <div>
         <label class="input-label">
           {{ t('admin.channelMonitor.template.form.name') }}
-          <span class="text-danger-500">*</span>
+          <span class="text-danger">*</span>
         </label>
         <input
           v-model="form.name"
@@ -128,14 +128,14 @@
       <div v-if="editing === 'new'">
         <label class="input-label">
           {{ t('admin.channelMonitor.form.provider') }}
-          <span class="text-danger-500">*</span>
+          <span class="text-danger">*</span>
         </label>
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <button
             v-for="opt in providerTabs"
             :key="opt.value"
             type="button"
-            class="rounded-lg border-2 px-3 py-2 text-sm font-medium transition-colors"
+            class="rounded-sm border px-3 py-2 text-sm font-semibold transition-colors"
             :class="providerPickerClass(opt.value, form.provider === opt.value)"
             @click="form.provider = opt.value"
           >
@@ -144,14 +144,14 @@
         </div>
       </div>
 
-      <div v-if="form.provider === PROVIDER_OPENAI" class="rounded-lg border border-accent-100 bg-accent-50/50 p-3 dark:border-accent-500/20 dark:bg-accent-500/10">
+      <div v-if="form.provider === PROVIDER_OPENAI" class="border border-accent/40 pl-3">
         <label class="input-label">{{ t('admin.channelMonitor.form.apiMode') }}</label>
         <div class="grid gap-3 sm:grid-cols-2">
           <button
             v-for="opt in apiModeOptions"
             :key="opt.value"
             type="button"
-            class="rounded-lg border-2 px-3 py-2 text-left transition-colors"
+            class="rounded-sm border px-3 py-2 text-left transition-colors"
             :class="apiModeButtonClass(opt.value)"
             @click="form.api_mode = opt.value"
           >
@@ -471,18 +471,18 @@ async function doDelete() {
 // --- misc ---
 function tabClass(value: Provider): string {
   return activeProvider.value === value
-    ? 'border-b-2 border-primary-500 text-primary-600 dark:text-primary-400'
-    : 'border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+    ? 'border-b-2 border-accent text-accent-strong'
+    : 'border-b-2 border-transparent text-fg-muted hover:text-accent-strong'
 }
 
 function modeBadgeClass(mode: BodyOverrideMode): string {
   switch (mode) {
     case 'merge':
-      return 'bg-warning-100 text-warning-700 dark:bg-warning-500/15 dark:text-warning-300'
+      return 'badge-warning'
     case 'replace':
-      return 'bg-gray-100 text-gray-700 dark:bg-gray-500/15 dark:text-gray-300'
+      return 'badge-primary'
     default:
-      return 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
+      return 'badge-gray'
   }
 }
 
@@ -516,9 +516,9 @@ function normalizeAPIMode(mode: APIMode | undefined | null): APIMode {
 function apiModeButtonClass(mode: APIMode): string {
   const active = form.api_mode === mode
   if (active) {
-    return 'border-primary-500 bg-white text-primary-700 shadow-sm dark:border-primary-400 dark:bg-primary-500/15 dark:text-primary-300'
+    return 'border-accent bg-accent-weak text-accent-strong'
   }
-  return 'border-accent-100 bg-white/70 text-gray-600 hover:border-primary-300 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400'
+  return 'border-border-strong bg-surface text-fg-muted hover:border-accent hover:text-accent-strong'
 }
 
 function apiModeLabel(mode: APIMode): string {
@@ -529,8 +529,8 @@ function apiModeLabel(mode: APIMode): string {
 
 function apiModeBadgeClass(mode: APIMode): string {
   if (normalizeAPIMode(mode) === API_MODE_RESPONSES) {
-    return 'bg-accent-100 text-accent-700 dark:bg-accent-500/15 dark:text-accent-300'
+    return 'badge-primary'
   }
-  return 'bg-success-100 text-success-700 dark:bg-success-500/15 dark:text-success-300'
+  return 'badge-success'
 }
 </script>

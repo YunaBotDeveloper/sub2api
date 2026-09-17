@@ -9,20 +9,20 @@ export type UsageRequestKind = UsageRequestType
 
 /** 状态码徽章:≥500 红、429 紫、≥400 琥珀、其余灰 */
 export function statusCodeBadgeClass(code: number): string {
-  if (code >= 500) return 'bg-danger-100 text-danger-800 dark:bg-danger-900 dark:text-danger-200'
-  if (code === 429) return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
-  if (code >= 400) return 'bg-warning-100 text-warning-800 dark:bg-warning-900 dark:text-warning-200'
-  return 'bg-gray-100 text-gray-800 dark:bg-dark-700 dark:text-gray-200'
+  if (code >= 500) return 'bg-danger-weak text-danger-strong'
+  if (code === 429) return 'bg-surface-sunken text-fg-muted'
+  if (code >= 400) return 'bg-warning-weak text-warning-strong'
+  return 'bg-surface-sunken text-fg-muted'
 }
 
 /** 请求类型徽章配色(cyber 红、live 绿、ws 紫、stream 蓝、sync 灰、未知琥珀) */
 export function requestTypeBadgeClass(kind: UsageRequestKind): string {
-  if (kind === 'cyber') return 'bg-danger-100 text-danger-800 dark:bg-danger-900 dark:text-danger-200'
-  if (kind === 'live') return 'bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-200'
-  if (kind === 'ws_v2') return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
-  if (kind === 'stream') return 'bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200'
-  if (kind === 'sync') return 'bg-gray-100 text-gray-800 dark:bg-dark-700 dark:text-gray-200'
-  return 'bg-warning-100 text-warning-800 dark:bg-warning-900 dark:text-warning-200'
+  if (kind === 'cyber') return 'bg-danger-weak text-danger-strong'
+  if (kind === 'live') return 'bg-success-weak text-success-strong'
+  if (kind === 'ws_v2') return 'bg-surface-sunken text-fg-muted'
+  if (kind === 'stream') return 'bg-accent-weak text-accent-strong'
+  if (kind === 'sync') return 'bg-surface-sunken text-fg-muted'
+  return 'bg-warning-weak text-warning-strong'
 }
 
 /** 请求类型 i18n 键(展示方自行 t()) */

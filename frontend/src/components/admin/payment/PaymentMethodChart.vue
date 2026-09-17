@@ -1,44 +1,44 @@
 <template>
-  <div class="card p-4">
-    <h3 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
-      {{ t('payment.admin.paymentDistribution') }}
-    </h3>
+  <section class="card">
+    <div class="card-header">
+      <h3 class="card-title">{{ t('payment.admin.paymentDistribution') }}</h3>
+    </div>
     <div
       v-if="!methods?.length"
-      class="flex h-32 items-center justify-center text-sm text-gray-500 dark:text-gray-400"
+      class="flex h-32 items-center justify-center text-body text-fg-muted"
     >
       {{ t('payment.admin.noData') }}
     </div>
-    <div v-else class="space-y-3">
-      <div v-for="method in methods" :key="method.type" class="space-y-1">
-        <div class="flex items-center justify-between">
+    <div v-else class="divide-y divide-border">
+      <div v-for="method in methods" :key="method.type" class="space-y-1.5 px-5 py-3">
+        <div class="flex items-start justify-between gap-3">
           <div class="flex items-center gap-2">
-            <span :class="['inline-block h-3 w-3 rounded-full', colorMap[method.type] || 'bg-gray-400']"></span>
-            <span class="text-sm text-gray-700 dark:text-gray-300">
+            <span :class="['inline-block h-2.5 w-2.5 rounded-sm', colorMap[method.type] || 'bg-border-strong']"></span>
+            <span class="text-body text-fg">
               {{ t('payment.methods.' + method.type, method.type) }}
             </span>
           </div>
-          <div class="space-y-1 text-right">
-            <span v-for="[currency, amount] in sortedAmounts(method.amount)" :key="currency" class="block text-sm font-medium text-gray-900 dark:text-white">
+          <div class="space-y-0.5 text-right tabular-nums">
+            <span v-for="[currency, amount] in sortedAmounts(method.amount)" :key="currency" class="block text-body font-semibold text-fg">
               {{ formatMoney(currency, amount) }}
             </span>
-            <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">
+            <span class="text-meta text-fg-muted">
               ({{ method.count }})
             </span>
           </div>
         </div>
         <div v-for="[currency, amount] in sortedAmounts(method.amount)" :key="currency" class="flex items-center gap-2">
-          <span class="w-10 text-xs text-gray-500 dark:text-gray-400">{{ currency }}</span>
-          <div class="h-2 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-dark-700">
+          <span class="w-10 text-meta text-fg-muted">{{ currency }}</span>
+          <div class="progress flex-1">
             <div
-              :class="['h-full rounded-full transition-all', barColorMap[method.type] || 'bg-gray-400']"
+              :class="['progress-bar', barColorMap[method.type] || 'bg-border-strong']"
               :style="{ width: barWidth(currency, amount) + '%' }"
             ></div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -53,15 +53,15 @@ const props = defineProps<{
 }>()
 
 const colorMap: Record<string, string> = {
-  sepay_bank_transfer: 'bg-accent-500',
-  sepay_napas: 'bg-success-500',
-  sepay_card: 'bg-gray-500',
+  sepay_bank_transfer: 'bg-accent',
+  sepay_napas: 'bg-success',
+  sepay_card: 'bg-fg-muted',
 }
 
 const barColorMap: Record<string, string> = {
-  sepay_bank_transfer: 'bg-accent-500',
-  sepay_napas: 'bg-success-500',
-  sepay_card: 'bg-gray-500',
+  sepay_bank_transfer: 'bg-accent',
+  sepay_napas: 'bg-success',
+  sepay_card: 'bg-fg-muted',
 }
 
 const maxAmounts = computed<CurrencyAmounts>(() => {

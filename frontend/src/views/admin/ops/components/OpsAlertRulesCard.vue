@@ -397,11 +397,11 @@ function cancelDelete() {
 </script>
 
 <template>
-  <div class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
+  <div class="card p-5">
     <div class="mb-4 flex flex-wrap items-start justify-between gap-3 sm:gap-4">
       <div>
-        <h3 class="text-sm font-bold text-gray-900 dark:text-white">{{ t('admin.ops.alertRules.title') }}</h3>
-        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('admin.ops.alertRules.description') }}</p>
+        <h3 class="text-body font-bold text-accent-strong">{{ t('admin.ops.alertRules.title') }}</h3>
+        <p class="mt-1 text-xs text-fg-muted">{{ t('admin.ops.alertRules.description') }}</p>
       </div>
 
       <div class="flex items-center gap-2">
@@ -409,7 +409,7 @@ function cancelDelete() {
           {{ t('admin.ops.alertRules.create') }}
         </button>
         <button
-          class="flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-700 transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
+          class="btn btn-secondary btn-sm"
           :disabled="loading"
           @click="load"
         >
@@ -421,15 +421,15 @@ function cancelDelete() {
       </div>
     </div>
 
-    <div v-if="loading" class="py-10 text-center text-sm text-gray-500 dark:text-gray-400">
+    <div v-if="loading" class="py-10 text-center text-sm text-fg-muted">
       {{ t('admin.ops.alertRules.loading') }}
     </div>
 
-    <div v-else-if="sortedRules.length === 0" class="rounded-xl border border-dashed border-gray-200 p-8 text-center text-sm text-gray-500 dark:border-dark-700 dark:text-gray-400">
+    <div v-else-if="sortedRules.length === 0" class="border-y border-border py-8 text-center text-sm text-fg-muted">
       {{ t('admin.ops.alertRules.empty') }}
     </div>
 
-    <div v-else class="max-h-[520px] overflow-hidden rounded-xl border border-gray-200 dark:border-dark-700">
+    <div v-else class="max-h-[520px] overflow-hidden border border-border">
       <div class="max-h-[520px] overflow-y-auto">
         <DataTable :columns="columns" :data="sortedRules" row-key="id">
           <template #cell-name="{ row }">
@@ -468,7 +468,7 @@ function cancelDelete() {
       @close="showEditor = false"
     >
       <div class="space-y-4">
-        <div v-if="!editorValidation.valid" class="rounded-xl bg-danger-50 p-4 text-xs text-danger-700 dark:bg-danger-900/30 dark:text-danger-300">
+        <div v-if="!editorValidation.valid" class="border border-danger/40 bg-danger-weak px-3 py-2 text-xs text-danger-strong">
           <div class="font-bold">{{ t('admin.ops.alertRules.validation.title') }}</div>
           <ul class="mt-1 list-disc pl-5">
             <li v-for="e in editorValidation.errors" :key="e">{{ e }}</li>
@@ -489,7 +489,7 @@ function cancelDelete() {
           <div>
             <label class="input-label">{{ t('admin.ops.alertRules.form.metric') }}</label>
             <Select v-model="draft!.metric_type" :options="metricOptions" />
-            <div v-if="selectedMetricDefinition" class="mt-1 space-y-0.5 text-xs text-gray-500 dark:text-gray-400">
+            <div v-if="selectedMetricDefinition" class="mt-1 space-y-0.5 text-xs text-fg-muted">
               <p>{{ selectedMetricDefinition.description }}</p>
               <p>
                 {{
@@ -511,7 +511,7 @@ function cancelDelete() {
           <div class="md:col-span-2">
             <label class="input-label">
               {{ t('admin.ops.alertRules.form.groupId') }}
-              <span v-if="isGroupMetricSelected" class="ml-1 text-danger-500">*</span>
+              <span v-if="isGroupMetricSelected" class="ml-1 text-danger">*</span>
             </label>
             <Select
               v-model="draftGroupId"
@@ -520,7 +520,7 @@ function cancelDelete() {
               :placeholder="t('admin.ops.alertRules.form.groupPlaceholder')"
               :error="isGroupMetricSelected && !draftGroupId"
             />
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <p class="mt-1 text-xs text-fg-muted">
               {{ isGroupMetricSelected ? t('admin.ops.alertRules.hints.groupRequired') : t('admin.ops.alertRules.hints.groupOptional') }}
             </p>
           </div>
@@ -550,14 +550,14 @@ function cancelDelete() {
             <input v-model.number="draft!.cooldown_minutes" class="input" type="number" min="0" max="1440" />
           </div>
 
-          <div class="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 dark:bg-dark-800/50 md:col-span-2">
-            <span class="text-xs font-bold text-gray-700 dark:text-gray-200">{{ t('admin.ops.alertRules.form.enabled') }}</span>
-            <input v-model="draft!.enabled" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+          <div class="flex items-center justify-between border-y border-border py-3 md:col-span-2">
+            <span class="text-xs font-bold text-fg">{{ t('admin.ops.alertRules.form.enabled') }}</span>
+            <input v-model="draft!.enabled" type="checkbox" class="h-4 w-4 rounded-sm border-border-strong text-accent focus:ring-accent" />
           </div>
 
-          <div class="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 dark:bg-dark-800/50 md:col-span-2">
-            <span class="text-xs font-bold text-gray-700 dark:text-gray-200">{{ t('admin.ops.alertRules.form.notifyEmail') }}</span>
-            <input v-model="draft!.notify_email" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+          <div class="flex items-center justify-between border-y border-border py-3 md:col-span-2">
+            <span class="text-xs font-bold text-fg">{{ t('admin.ops.alertRules.form.notifyEmail') }}</span>
+            <input v-model="draft!.notify_email" type="checkbox" class="h-4 w-4 rounded-sm border-border-strong text-accent focus:ring-accent" />
           </div>
         </div>
       </div>

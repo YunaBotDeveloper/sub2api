@@ -1,6 +1,33 @@
 <template>
   <AppLayout>
     <div class="space-y-6">
+      <!-- 账单抬头：运营方品牌 + 客户名/编号 | 余额读数（数字方格） | 撕角充值存根 -->
+      <section v-if="user" class="flex flex-wrap items-stretch border border-border border-t-2 border-t-accent bg-surface">
+        <div class="min-w-0 flex-1 px-5 py-3">
+          <p class="flex items-center gap-2 text-meta font-semibold text-accent-strong">
+            <img v-if="siteLogo" :src="siteLogo" alt="" class="h-4 w-4 object-contain" />
+            <span class="truncate">{{ appStore.siteName }}</span>
+          </p>
+          <p class="mt-1 truncate text-h2 font-bold text-fg">{{ user.username || user.email }}</p>
+          <p class="mt-0.5 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-meta text-fg-muted">
+            <span>{{ t('payment.orders.userId') }} <span class="font-mono text-fg">{{ user.id }}</span></span>
+            <span v-if="user.username && user.email" class="truncate">{{ user.email }}</span>
+          </p>
+        </div>
+        <div v-if="!authStore.isSimpleMode" class="flex min-w-0 flex-col justify-center gap-1 border-l border-border bg-meter-weak px-5 py-3 max-sm:w-full max-sm:border-l-0 max-sm:border-t">
+          <span class="text-meta font-medium text-meter-ink">{{ t('dashboard.balance') }} · {{ t('common.available') }}</span>
+          <span class="text-h1 font-bold text-fg">$<MeterValue :value="formatBalance(user.balance || 0)" boxed /></span>
+        </div>
+        <router-link
+          v-if="canTopUp"
+          to="/purchase"
+          class="stub-edge flex min-h-[44px] items-center gap-2 bg-accent px-6 py-3 text-label font-bold text-white transition-colors hover:bg-accent-strong dark:text-surface-sunken max-sm:w-full max-sm:justify-center"
+        >
+          {{ t('nav.recharge') }}
+          <Icon name="arrowRight" size="sm" aria-hidden="true" />
+        </router-link>
+      </section>
+
       <div v-if="loading" class="flex items-center justify-center py-12"><LoadingSpinner /></div>
       <template v-else-if="stats">
         <UserDashboardStats :stats="stats" :balance="user?.balance || 0" :is-simple="authStore.isSimpleMode" :platform-quotas="platformQuotas" />
@@ -16,14 +43,26 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'; import { useAuthStore } from '@/stores/auth'; import { usageAPI, type UserDashboardStats as UserStatsType } from '@/api/usage'
+import { useI18n } from 'vue-i18n'
 import AppLayout from '@/components/layout/AppLayout.vue'; import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import Icon from '@/components/icons/Icon.vue'
+import MeterValue from '@/components/common/MeterValue.vue'
+import { useAppStore } from '@/stores'
+import { sanitizeUrl } from '@/utils/url'
 import UserDashboardStats from '@/components/user/dashboard/UserDashboardStats.vue'; import UserDashboardCharts from '@/components/user/dashboard/UserDashboardCharts.vue'
 import UserDashboardRecentUsage from '@/components/user/dashboard/UserDashboardRecentUsage.vue'; import UserDashboardQuickActions from '@/components/user/dashboard/UserDashboardQuickActions.vue'
 import type { UsageLog, TrendDataPoint, ModelStat, PlatformQuotaItem } from '@/types'
 import { getMyPlatformQuotas } from '@/api/user'
 import { formatDateLocalInput } from '@/utils/format'
+import { FeatureFlags, isFeatureFlagEnabled } from '@/utils/featureFlags'
 
+const { t } = useI18n()
+const appStore = useAppStore()
+const siteLogo = computed(() => sanitizeUrl(appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
+const formatBalance = (b: number) => new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(b)
 const authStore = useAuthStore(); const user = computed(() => authStore.user)
+// 充值入口与侧边栏 /purchase 同条件：支付开关 + 非简单模式
+const canTopUp = computed(() => !authStore.isSimpleMode && isFeatureFlagEnabled(FeatureFlags.payment))
 const stats = ref<UserStatsType | null>(null); const loading = ref(false); const loadingUsage = ref(false); const loadingCharts = ref(false)
 const trendData = ref<TrendDataPoint[]>([]); const modelStats = ref<ModelStat[]>([]); const recentUsage = ref<UsageLog[]>([])
 const platformQuotas = ref<PlatformQuotaItem[] | null>(null)

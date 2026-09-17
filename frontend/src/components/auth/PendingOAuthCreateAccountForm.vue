@@ -61,10 +61,10 @@
         }}
       </button>
     </div>
-    <p v-if="emailVerifyEnabled && sendCodeSuccess" class="text-sm text-success-600 dark:text-success-400">
+    <p v-if="emailVerifyEnabled && sendCodeSuccess" class="text-sm text-success">
       {{ t('auth.codeSentSuccess') }}
     </p>
-    <p v-else-if="emailVerifyEnabled" class="text-xs text-gray-500 dark:text-dark-400">
+    <p v-else-if="emailVerifyEnabled" class="text-xs text-fg-muted">
       {{ t('auth.verificationCodeHint') }}
     </p>
     <input

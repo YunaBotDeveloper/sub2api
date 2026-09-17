@@ -14,7 +14,7 @@
     <div v-if="step === 0" class="space-y-6">
       <!-- Loading verification method -->
       <div v-if="methodLoading" class="flex items-center justify-center py-8">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+        <div class="spinner h-8 w-8 text-accent"></div>
       </div>
 
       <template v-else>
@@ -76,30 +76,33 @@
     <!-- Step 1: Show QR Code -->
     <div v-if="step === 1" class="space-y-6">
       <!-- QR Code and Secret -->
+      <!-- 一次性密钥：撕角存根（上：扫码，下：手动输入） -->
       <template v-if="setupData">
-        <div class="flex justify-center">
-          <div class="rounded-lg border border-gray-200 p-4 bg-white dark:border-dark-600 dark:bg-white">
-            <img :src="qrCodeDataUrl" alt="QR Code" class="h-48 w-48" />
+        <div class="stub">
+          <div class="flex justify-center p-4">
+            <div class="border border-border bg-white p-3">
+              <img :src="qrCodeDataUrl" alt="QR Code" class="h-48 w-48" />
+            </div>
           </div>
-        </div>
-
-        <div class="text-center">
-          <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
-            {{ t('profile.totp.manualEntry') }}
-          </p>
-          <div class="flex items-center justify-center gap-2">
-            <code class="rounded bg-gray-100 px-3 py-2 font-mono text-sm dark:bg-dark-700">
-              {{ setupData.secret }}
-            </code>
-            <button
-              type="button"
-              class="rounded p-1.5 text-gray-500 hover:bg-gray-100 dark:hover:bg-dark-700"
-              @click="copySecret"
-            >
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
-              </svg>
-            </button>
+          <div class="stub-perforation" aria-hidden="true"></div>
+          <div class="px-4 py-3 text-center">
+            <p class="mb-2 text-meta font-medium text-fg-muted">
+              {{ t('profile.totp.manualEntry') }}
+            </p>
+            <div class="flex items-center justify-center gap-2">
+              <code class="break-all font-mono text-label font-semibold text-fg">
+                {{ setupData.secret }}
+              </code>
+              <button
+                type="button"
+                class="btn btn-ghost btn-icon"
+                @click="copySecret"
+              >
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </template>
@@ -135,7 +138,7 @@
               maxlength="1"
               inputmode="numeric"
               pattern="[0-9]"
-              class="h-12 w-10 rounded-lg border border-gray-300 text-center text-lg font-semibold focus:border-primary-500 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
+              class="h-12 w-10 rounded-sm border border-border-strong bg-surface text-center text-h2 font-bold tabular-nums text-fg focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               @input="handleCodeInput($event, index)"
               @keydown="handleKeydown($event, index)"
               @paste="handlePaste"

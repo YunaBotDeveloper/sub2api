@@ -7,7 +7,7 @@
   >
     <form id="channel-monitor-form" @submit.prevent="handleSubmit" class="space-y-5">
       <div>
-        <label class="input-label">{{ t('admin.channelMonitor.form.name') }} <span class="text-danger-500">*</span></label>
+        <label class="input-label">{{ t('admin.channelMonitor.form.name') }} <span class="text-danger">*</span></label>
         <input v-model="form.name" type="text" required class="input" :placeholder="t('admin.channelMonitor.form.namePlaceholder')" />
       </div>
 
@@ -22,7 +22,7 @@
             :data-testid="`monitor-check-mode-${opt.value}`"
             :aria-pressed="form.check_mode === opt.value"
             :disabled="opt.disabled"
-            class="rounded-lg border-2 px-3 py-2 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+            class="rounded-sm border px-3 py-2 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50"
             :class="checkModeButtonClass(opt.value)"
             @click="selectCheckMode(opt.value)"
           >
@@ -33,7 +33,7 @@
       </div>
 
       <div>
-        <label class="input-label">{{ t('admin.channelMonitor.form.provider') }} <span class="text-danger-500">*</span></label>
+        <label class="input-label">{{ t('admin.channelMonitor.form.provider') }} <span class="text-danger">*</span></label>
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <button
             v-for="opt in providerOptions"
@@ -41,7 +41,7 @@
             type="button"
             :data-testid="`monitor-provider-${opt.value}`"
             :aria-pressed="form.provider === opt.value"
-            class="flex items-center justify-center gap-2 rounded-lg border-2 px-3 py-2.5 text-sm font-medium transition-colors"
+            class="flex items-center justify-center gap-2 rounded-sm border px-3 py-2.5 text-sm font-semibold transition-colors"
             :class="providerPickerClass(opt.value, form.provider === opt.value)"
             @click="selectProvider(opt.value)"
           >
@@ -54,7 +54,7 @@
       <!-- 配额模式数据源：关联账号（复用账号侧用量/余额服务） -->
       <div v-if="usesQuotaMode">
         <label class="input-label">
-          {{ t('admin.channelMonitor.form.linkedAccount') }} <span class="text-danger-500">*</span>
+          {{ t('admin.channelMonitor.form.linkedAccount') }} <span class="text-danger">*</span>
         </label>
         <div data-testid="monitor-linked-account">
           <Select
@@ -66,19 +66,19 @@
             @search="onAccountSearch"
           />
         </div>
-        <p class="mt-1 text-xs text-gray-400">{{ t('admin.channelMonitor.form.linkedAccountHint') }}</p>
-        <p v-if="form.provider === PROVIDER_OPENAI" class="mt-1 text-xs text-warning-600 dark:text-warning-400">
+        <p class="mt-1 text-xs text-fg-subtle">{{ t('admin.channelMonitor.form.linkedAccountHint') }}</p>
+        <p v-if="form.provider === PROVIDER_OPENAI" class="mt-1 text-xs text-warning">
           {{ t('admin.channelMonitor.form.openAIQuotaProbeHint') }}
         </p>
-        <p v-if="accountHydrationFailed" class="mt-1 text-xs text-warning-600 dark:text-warning-400">
+        <p v-if="accountHydrationFailed" class="mt-1 text-xs text-warning">
           {{ t('admin.channelMonitor.form.linkedAccountMissing') }}
         </p>
-        <p v-if="accountOptions.length === 0 && !accountsLoading && !accountSearchQuery" class="mt-1 text-xs text-warning-600 dark:text-warning-400">
+        <p v-if="accountOptions.length === 0 && !accountsLoading && !accountSearchQuery" class="mt-1 text-xs text-warning">
           {{ t('admin.channelMonitor.form.linkedAccountEmpty') }}
         </p>
       </div>
 
-      <div v-if="form.provider === PROVIDER_OPENAI && usesProbePart" class="rounded-lg border border-accent-100 bg-accent-50/50 p-3 dark:border-accent-500/20 dark:bg-accent-500/10">
+      <div v-if="form.provider === PROVIDER_OPENAI && usesProbePart" class="border border-accent/40 pl-3">
         <label class="input-label">{{ t('admin.channelMonitor.form.apiMode') }}</label>
         <div class="grid gap-3 sm:grid-cols-2">
           <button
@@ -86,7 +86,7 @@
             :key="opt.value"
             type="button"
             :aria-pressed="form.api_mode === opt.value"
-            class="rounded-lg border-2 px-3 py-2 text-left transition-colors"
+            class="rounded-sm border px-3 py-2 text-left transition-colors"
             :class="apiModeButtonClass(opt.value)"
             @click="form.api_mode = opt.value"
           >
@@ -97,7 +97,7 @@
       </div>
 
       <div v-if="usesProbePart">
-        <label class="input-label">{{ t('admin.channelMonitor.form.endpoint') }} <span class="text-danger-500">*</span></label>
+        <label class="input-label">{{ t('admin.channelMonitor.form.endpoint') }} <span class="text-danger">*</span></label>
         <div class="flex gap-2">
           <input v-model="form.endpoint" data-testid="monitor-endpoint" type="text" required class="input flex-1" :placeholder="t('admin.channelMonitor.form.endpointPlaceholder')" />
           <button type="button" @click="useCurrentDomain" class="btn btn-secondary whitespace-nowrap">
@@ -108,7 +108,7 @@
 
       <div v-if="usesProbePart">
         <label class="input-label">
-          {{ t('admin.channelMonitor.form.apiKey') }}<span v-if="!editing" class="text-danger-500"> *</span>
+          {{ t('admin.channelMonitor.form.apiKey') }}<span v-if="!editing" class="text-danger"> *</span>
         </label>
         <div class="flex gap-2">
           <input
@@ -122,11 +122,11 @@
             {{ t('admin.channelMonitor.form.useMyKey') }}
           </button>
         </div>
-        <p v-if="editing && editing.api_key_masked" class="mt-1 text-xs text-gray-400">{{ editing.api_key_masked }}</p>
+        <p v-if="editing && editing.api_key_masked" class="mt-1 text-xs text-fg-subtle">{{ editing.api_key_masked }}</p>
       </div>
 
       <div v-if="usesProbePart">
-        <label class="input-label">{{ t('admin.channelMonitor.form.primaryModel') }} <span class="text-danger-500">*</span></label>
+        <label class="input-label">{{ t('admin.channelMonitor.form.primaryModel') }} <span class="text-danger">*</span></label>
         <input
           v-model="form.primary_model"
           data-testid="monitor-primary-model"
@@ -154,15 +154,15 @@
       </div>
 
       <div>
-        <label class="input-label">{{ t('admin.channelMonitor.form.intervalSeconds') }} <span class="text-danger-500">*</span></label>
+        <label class="input-label">{{ t('admin.channelMonitor.form.intervalSeconds') }} <span class="text-danger">*</span></label>
         <input v-model.number="form.interval_seconds" type="number" min="15" max="3600" required class="input" />
-        <p class="mt-1 text-xs text-gray-400">{{ t('admin.channelMonitor.form.intervalSecondsHint') }}</p>
+        <p class="mt-1 text-xs text-fg-subtle">{{ t('admin.channelMonitor.form.intervalSecondsHint') }}</p>
       </div>
 
       <div>
         <label class="input-label">{{ t('admin.channelMonitor.form.jitterSeconds') }}</label>
         <input v-model.number="form.jitter_seconds" type="number" min="0" :max="maxJitterSeconds" class="input" />
-        <p class="mt-1 text-xs text-gray-400">{{ t('admin.channelMonitor.form.jitterSecondsHint') }}</p>
+        <p class="mt-1 text-xs text-fg-subtle">{{ t('admin.channelMonitor.form.jitterSecondsHint') }}</p>
       </div>
 
       <div class="flex items-center justify-between">
@@ -171,11 +171,11 @@
       </div>
 
       <!-- 高级设置区：请求模板 + 自定义 headers/body（仅探活模式有意义） -->
-      <details v-if="usesProbePart" class="rounded-lg border border-gray-200 bg-gray-50/50 p-3 dark:border-dark-700 dark:bg-dark-900/30">
-        <summary class="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300">
+      <details v-if="usesProbePart" class="border-t border-border pt-4">
+        <summary class="cursor-pointer text-h3 font-bold text-accent-strong">
           {{ t('admin.channelMonitor.advanced.section') }}
         </summary>
-        <p class="mt-1 text-xs text-gray-400">{{ t('admin.channelMonitor.advanced.sectionHint') }}</p>
+        <p class="mt-1 text-xs text-fg-subtle">{{ t('admin.channelMonitor.advanced.sectionHint') }}</p>
 
         <div class="mt-4 space-y-4">
           <div>
@@ -185,7 +185,7 @@
               :options="templateOptions"
               :placeholder="t('admin.channelMonitor.templateField.placeholder')"
             />
-            <p class="mt-1 text-xs text-gray-400">{{ t('admin.channelMonitor.templateField.applyHint') }}</p>
+            <p class="mt-1 text-xs text-fg-subtle">{{ t('admin.channelMonitor.templateField.applyHint') }}</p>
           </div>
 
           <MonitorAdvancedRequestConfig
@@ -443,9 +443,9 @@ function normalizeAPIMode(mode: APIMode | undefined | null): APIMode {
 function apiModeButtonClass(mode: APIMode): string {
   const active = form.api_mode === mode
   if (active) {
-    return 'border-primary-500 bg-white text-primary-700 shadow-sm dark:border-primary-400 dark:bg-primary-500/15 dark:text-primary-300'
+    return 'border-accent bg-accent-weak text-accent-strong'
   }
-  return 'border-accent-100 bg-white/70 text-gray-600 hover:border-primary-300 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400'
+  return 'border-border-strong bg-surface text-fg-muted hover:border-accent hover:text-accent-strong'
 }
 
 function templateOptionLabel(tpl: ChannelMonitorTemplate): string {
@@ -523,9 +523,9 @@ const checkModeOptions = computed<CheckModeOption[]>(() => [
 function checkModeButtonClass(mode: CheckMode): string {
   const active = form.check_mode === mode
   if (active) {
-    return 'border-primary-500 bg-white text-primary-700 shadow-sm dark:border-primary-400 dark:bg-primary-500/15 dark:text-primary-300'
+    return 'border-accent bg-accent-weak text-accent-strong'
   }
-  return 'border-accent-100 bg-white/70 text-gray-600 hover:border-primary-300 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400'
+  return 'border-border-strong bg-surface text-fg-muted hover:border-accent hover:text-accent-strong'
 }
 
 function selectCheckMode(mode: CheckMode) {

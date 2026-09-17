@@ -3,17 +3,17 @@
     <TablePageLayout>
       <!-- Filters -->
       <template #filters>
-        <div class="card p-4 sm:p-6">
-          <div class="flex flex-wrap items-end justify-between gap-4">
+        <div class="card px-4 py-3 sm:px-5">
+          <div class="flex flex-wrap items-end justify-between gap-3">
             <!-- Left: filter fields -->
-            <div class="flex flex-1 flex-wrap items-end gap-4">
+            <div class="flex flex-1 flex-wrap items-end gap-3">
               <div class="w-full sm:w-auto sm:min-w-[240px]">
                 <label class="input-label">{{ t('admin.audit.filters.q') }}</label>
                 <div class="relative">
                   <Icon
                     name="search"
                     size="md"
-                    class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                    class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-fg-subtle"
                   />
                   <input
                     v-model.trim="filters.q"
@@ -66,7 +66,7 @@
             </div>
 
             <!-- Right: actions -->
-            <div class="flex w-full flex-wrap items-center justify-end gap-3 sm:w-auto">
+            <div class="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
               <button type="button" class="btn btn-primary" :disabled="loading" @click="search">
                 {{ t('common.search') }}
               </button>
@@ -86,15 +86,15 @@
       <template #table>
         <DataTable :columns="columns" :data="logs" :loading="loading" row-key="id">
           <template #cell-created_at="{ value }">
-            <span class="whitespace-nowrap text-gray-600 dark:text-gray-300">{{ formatTime(value) }}</span>
+            <span class="whitespace-nowrap tabular-nums text-fg-muted">{{ formatTime(value) }}</span>
           </template>
 
           <template #cell-actor="{ row }">
             <div class="min-w-0 max-w-[220px]">
-              <div class="truncate font-medium text-gray-900 dark:text-white" :title="row.actor_email">
+              <div class="truncate font-medium text-fg" :title="row.actor_email">
                 {{ row.actor_email || '—' }}
               </div>
-              <div class="mt-0.5 truncate text-xs text-gray-400">
+              <div class="mt-0.5 truncate text-meta text-fg-subtle">
                 {{ row.actor_role }}<span v-if="row.auth_method"> · {{ authMethodLabel(row.auth_method) }}</span>
               </div>
             </div>
@@ -102,10 +102,10 @@
 
           <template #cell-action="{ row }">
             <div class="min-w-0 max-w-xs">
-              <div class="truncate font-mono text-sm text-gray-800 dark:text-gray-200" :title="row.action">
+              <div class="truncate font-mono text-label text-fg" :title="row.action">
                 {{ row.action }}
               </div>
-              <div class="mt-0.5 truncate font-mono text-xs text-gray-400" :title="`${row.method} ${row.path}`">
+              <div class="mt-0.5 truncate font-mono text-meta text-fg-subtle" :title="`${row.method} ${row.path}`">
                 {{ row.method }} {{ row.path }}
               </div>
             </div>
@@ -113,23 +113,22 @@
 
           <template #cell-status_code="{ row }">
             <span :class="statusBadgeClass(row.status_code)">
-              <span class="h-1.5 w-1.5 rounded-full" :class="statusDotClass(row.status_code)"></span>
               {{ row.status_code }}
             </span>
           </template>
 
           <template #cell-latency_ms="{ value }">
-            <span class="whitespace-nowrap text-gray-500 dark:text-gray-400">{{ value }} ms</span>
+            <span class="block whitespace-nowrap text-right tabular-nums text-fg-muted">{{ value }} ms</span>
           </template>
 
           <template #cell-client_ip="{ value }">
-            <span class="whitespace-nowrap font-mono text-gray-600 dark:text-gray-300">{{ value || '—' }}</span>
+            <span class="whitespace-nowrap font-mono text-label text-fg-muted">{{ value || '—' }}</span>
           </template>
 
           <template #cell-actions="{ row }">
             <button
               type="button"
-              class="inline-flex items-center gap-1 font-medium text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+              class="inline-flex min-h-[40px] items-center gap-1 font-semibold text-accent transition-colors hover:text-accent-strong"
               @click="openDetail(row.id)"
             >
               <Icon name="eye" size="sm" />
@@ -138,9 +137,8 @@
           </template>
 
           <template #empty>
-            <div class="flex flex-col items-center py-8">
-              <Icon name="shield" size="xl" class="mb-4 h-12 w-12 text-gray-300 dark:text-dark-600" />
-              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ t('admin.audit.empty') }}</p>
+            <div class="empty-state">
+              <p class="text-body font-medium text-fg-muted">{{ t('admin.audit.empty') }}</p>
             </div>
           </template>
         </DataTable>
@@ -169,32 +167,31 @@
     >
       <div v-if="detailLoading" class="flex items-center justify-center py-16">
         <div class="flex flex-col items-center gap-3">
-          <div class="h-8 w-8 animate-spin rounded-full border-b-2 border-primary-600"></div>
-          <div class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ t('common.loading') }}</div>
+          <div class="h-8 w-8 animate-spin rounded-full border-b-2 border-accent"></div>
+          <div class="text-body font-medium text-fg-muted">{{ t('common.loading') }}</div>
         </div>
       </div>
 
       <div v-else-if="detail" class="space-y-5 py-2">
         <!-- Hero: action + result at a glance -->
-        <div class="rounded-lg border border-gray-200 bg-gray-50/60 p-5 dark:border-dark-700 dark:bg-dark-900/60">
+        <div class="border-b-2 border-accent pb-3">
           <div class="flex flex-wrap items-center gap-3">
             <span :class="statusBadgeClass(detail.status_code)">
-              <span class="h-1.5 w-1.5 rounded-full" :class="statusDotClass(detail.status_code)"></span>
               {{ detail.status_code }} {{ statusText(detail.status_code) }}
             </span>
-            <span class="break-all font-mono text-base font-semibold text-gray-900 dark:text-white">
+            <span class="break-all font-mono text-body font-semibold text-accent-strong">
               {{ detail.action }}
             </span>
           </div>
 
-          <div class="mt-3 flex items-center gap-2 rounded-lg bg-white px-3 py-2 ring-1 ring-gray-200 dark:bg-dark-800 dark:ring-dark-600">
-            <span class="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[11px] font-bold text-gray-700 dark:bg-dark-700 dark:text-gray-200">
+          <div class="mt-2 flex items-center gap-2">
+            <span class="badge badge-gray font-mono">
               {{ detail.method }}
             </span>
-            <span class="break-all font-mono text-xs text-gray-600 dark:text-gray-300">{{ detail.path }}</span>
+            <span class="break-all font-mono text-meta text-fg">{{ detail.path }}</span>
           </div>
 
-          <div class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-gray-500 dark:text-gray-400">
+          <div class="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-meta tabular-nums text-fg-muted">
             <span class="inline-flex items-center gap-1.5">
               <Icon name="clock" size="xs" />
               {{ formatTime(detail.created_at) }}
@@ -208,34 +205,34 @@
         </div>
 
         <!-- Actor / auth / source -->
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
-            <div class="text-xs font-bold uppercase tracking-wider text-gray-400">
+        <div class="grid grid-cols-1 divide-y divide-border border-y border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          <div class="px-3 py-2.5">
+            <div class="text-meta font-medium text-fg-muted">
               {{ t('admin.audit.columns.actor') }}
             </div>
-            <div class="mt-1 break-all text-sm font-medium text-gray-900 dark:text-white">
+            <div class="mt-1 break-all text-body font-semibold text-fg">
               {{ detail.actor_email || '—' }}
             </div>
-            <div class="mt-0.5 text-xs text-gray-400">{{ detail.actor_role }}</div>
+            <div class="mt-0.5 text-meta text-fg-subtle">{{ detail.actor_role }}</div>
           </div>
 
-          <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
-            <div class="text-xs font-bold uppercase tracking-wider text-gray-400">
+          <div class="px-3 py-2.5">
+            <div class="text-meta font-medium text-fg-muted">
               {{ t('admin.audit.filters.authMethod') }}
             </div>
-            <div class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+            <div class="mt-1 text-body font-semibold text-fg">
               {{ authMethodLabel(detail.auth_method) || '—' }}
             </div>
-            <div v-if="detail.credential_masked" class="mt-0.5 break-all font-mono text-xs text-gray-400">
+            <div v-if="detail.credential_masked" class="mt-0.5 break-all font-mono text-meta text-fg-subtle">
               {{ detail.credential_masked }}
             </div>
           </div>
 
-          <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
-            <div class="text-xs font-bold uppercase tracking-wider text-gray-400">
+          <div class="px-3 py-2.5">
+            <div class="text-meta font-medium text-fg-muted">
               {{ t('admin.audit.columns.clientIp') }}
             </div>
-            <div class="mt-1 break-all font-mono text-sm font-medium text-gray-900 dark:text-white">
+            <div class="mt-1 break-all font-mono text-body font-semibold text-fg">
               {{ detail.client_ip || '—' }}
             </div>
           </div>
@@ -243,28 +240,28 @@
 
         <!-- User-Agent -->
         <section>
-          <h4 class="mb-1.5 text-xs font-bold uppercase tracking-wider text-gray-400">
+          <h4 class="mb-1.5 text-label font-semibold text-accent-strong">
             {{ t('admin.audit.detail.userAgent') }}
           </h4>
-          <div class="break-all rounded-xl bg-gray-50 p-3 font-mono text-xs leading-relaxed text-gray-600 dark:bg-dark-900 dark:text-gray-400">
+          <div class="break-all rounded-sm border border-border bg-surface-sunken p-3 font-mono text-xs leading-relaxed text-fg">
             {{ detail.user_agent || '—' }}
           </div>
         </section>
 
         <!-- Request body (redacted) -->
         <section v-if="detail.request_body">
-          <h4 class="mb-1.5 text-xs font-bold uppercase tracking-wider text-gray-400">
+          <h4 class="mb-1.5 text-label font-semibold text-accent-strong">
             {{ t('admin.audit.detail.requestBody') }}
           </h4>
-          <pre class="max-h-72 overflow-auto rounded-xl bg-gray-50 p-4 font-mono text-xs leading-relaxed text-gray-600 dark:bg-dark-900 dark:text-gray-400">{{ prettyBody(detail.request_body) }}</pre>
+          <pre class="max-h-72 overflow-auto rounded-sm border border-border bg-surface-sunken p-3 font-mono text-xs leading-relaxed text-fg">{{ prettyBody(detail.request_body) }}</pre>
         </section>
 
         <!-- Extra -->
         <section v-if="detail.extra && Object.keys(detail.extra).length">
-          <h4 class="mb-1.5 text-xs font-bold uppercase tracking-wider text-gray-400">
+          <h4 class="mb-1.5 text-label font-semibold text-accent-strong">
             {{ t('admin.audit.detail.extra') }}
           </h4>
-          <pre class="max-h-48 overflow-auto rounded-xl bg-gray-50 p-4 font-mono text-xs leading-relaxed text-gray-600 dark:bg-dark-900 dark:text-gray-400">{{ JSON.stringify(detail.extra, null, 2) }}</pre>
+          <pre class="max-h-48 overflow-auto rounded-sm border border-border bg-surface-sunken p-3 font-mono text-xs leading-relaxed text-fg">{{ JSON.stringify(detail.extra, null, 2) }}</pre>
         </section>
       </div>
     </BaseDialog>
@@ -322,7 +319,7 @@
       @close="cancelClearTotp"
     >
       <div class="py-2">
-        <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('admin.audit.clearConfirm.totpHint') }}</p>
+        <p class="text-body text-fg-muted">{{ t('admin.audit.clearConfirm.totpHint') }}</p>
         <input
           v-model.trim="clearTotpCode"
           type="text"
@@ -669,16 +666,9 @@ function statusText(status: number): string {
 }
 
 function statusBadgeClass(status: number): string {
-  const base = 'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold '
-  if (status >= 500) return base + 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300'
-  if (status >= 400) return base + 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300'
-  return base + 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-300'
-}
-
-function statusDotClass(status: number): string {
-  if (status >= 500) return 'bg-danger-500'
-  if (status >= 400) return 'bg-warning-500'
-  return 'bg-success-500'
+  if (status >= 500) return 'badge badge-danger tabular-nums'
+  if (status >= 400) return 'badge badge-warning tabular-nums'
+  return 'badge badge-success tabular-nums'
 }
 
 onMounted(fetchLogs)

@@ -2,21 +2,21 @@
   <div :class="props.embedded ? 'space-y-4' : 'card'">
     <div
       v-if="!props.embedded"
-      class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
+      class="card-header"
     >
-      <h2 class="text-lg font-medium text-gray-900 dark:text-white">
+      <h2 class="card-title">
         {{ t('profile.avatar.title') }}
       </h2>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      <p class="mt-0.5 text-meta text-fg-muted">
         {{ t('profile.avatar.description') }}
       </p>
     </div>
 
-    <div :class="props.embedded ? 'space-y-3' : 'flex flex-col gap-5 px-6 py-6 sm:flex-row sm:items-start'">
+    <div :class="props.embedded ? 'space-y-3' : 'flex flex-col gap-5 px-5 py-5 sm:flex-row sm:items-start'">
       <div
         :class="props.embedded
-          ? 'flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-primary-500 text-xl font-bold text-white shadow-lg'
-          : 'flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-primary-500 text-3xl font-bold text-white shadow-lg'"
+          ? 'flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-h2 font-bold text-white dark:text-surface-sunken'
+          : 'flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-h1 font-bold text-white dark:text-surface-sunken'"
       >
         <img
           v-if="avatarPreviewUrl"
@@ -30,13 +30,13 @@
 
       <div :class="props.embedded ? 'space-y-3' : 'min-w-0 flex-1 space-y-4'">
         <div class="space-y-1">
-          <p v-if="props.embedded" class="text-sm font-semibold text-gray-900 dark:text-white">
+          <p v-if="props.embedded" class="text-label font-bold text-accent-strong">
             {{ t('profile.avatar.title') }}
           </p>
-          <p v-else class="text-sm font-medium text-gray-900 dark:text-white">
+          <p v-else class="text-body font-semibold text-fg">
             {{ displayName }}
           </p>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
+          <p class="text-meta text-fg-muted">
             {{ t('profile.avatar.uploadHint') }}
           </p>
         </div>

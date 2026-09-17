@@ -1,101 +1,91 @@
 <template>
-  <div
-    :class="[
-      'group relative flex flex-col overflow-hidden rounded-lg border transition-all',
-      ' hover:-translate-y-0.5',
-      borderClass,
-      'bg-white dark:bg-dark-800',
-    ]"
-  >
-    <!-- Colored top accent bar -->
-    <div :class="['h-1.5', accentClass]" />
-
-    <div class="flex flex-1 flex-col p-4">
-      <!-- Header: name + badge + price -->
-      <div class="mb-3 flex items-start justify-between gap-2">
-        <div class="min-w-0 flex-1">
-          <h3
-            :title="plan.name"
-            class="h-12 min-w-0 break-words [overflow-wrap:anywhere] text-base font-bold leading-6 text-gray-900 dark:text-white line-clamp-2"
-          >
-            {{ plan.name }}
-          </h3>
-          <p v-if="plan.description" class="mt-0.5 text-xs leading-relaxed text-gray-500 dark:text-dark-400 line-clamp-2">
-            {{ plan.description }}
-          </p>
+  <!-- One column of a printed tier table: header band (name + price), ruled terms, action -->
+  <div class="-ml-px -mt-px flex flex-col border border-border bg-surface">
+    <!-- Header: name + badge + price -->
+    <div class="flex items-start justify-between gap-2 border-b-2 border-accent bg-accent-weak px-4 py-3">
+      <div class="min-w-0 flex-1">
+        <h3
+          :title="plan.name"
+          class="h-12 min-w-0 break-words [overflow-wrap:anywhere] text-base font-bold leading-6 text-accent-strong line-clamp-2"
+        >
+          {{ plan.name }}
+        </h3>
+        <p v-if="plan.description" class="mt-0.5 text-meta text-fg-muted line-clamp-2">
+          {{ plan.description }}
+        </p>
+      </div>
+      <div class="shrink-0 text-right">
+        <div class="flex items-baseline justify-end gap-1">
+          <span class="text-meta text-fg-muted">{{ planCurrencySymbol }}</span>
+          <span class="text-h1 font-bold tabular-nums tracking-tight text-fg">{{ plan.price }}</span>
+          <span v-if="plan.currency" class="text-meta font-medium text-fg-muted">{{ plan.currency }}</span>
         </div>
-        <div class="shrink-0 text-right">
-          <div class="flex items-baseline gap-1">
-            <span class="text-xs text-gray-400 dark:text-dark-500">{{ planCurrencySymbol }}</span>
-            <span :class="['text-2xl font-extrabold tracking-tight', textClass]">{{ plan.price }}</span>
-            <span v-if="plan.currency" class="text-xs font-medium text-gray-400 dark:text-dark-500">{{ plan.currency }}</span>
-          </div>
-          <div class="flex items-center justify-end gap-1">
-            <span :class="['inline-flex shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium', badgeLightClass]">
-              {{ pLabel }}
-            </span>
-            <span class="text-[11px] text-gray-400 dark:text-dark-500">/ {{ validitySuffix }}</span>
-          </div>
-          <div v-if="plan.original_price" class="mt-0.5 flex items-center justify-end gap-1.5">
-            <span class="text-xs text-gray-400 line-through dark:text-dark-500">{{ planCurrencySymbol }}{{ plan.original_price }}<template v-if="plan.currency"> {{ plan.currency }}</template></span>
-            <span :class="['rounded px-1 py-0.5 text-[10px] font-semibold', discountClass]">{{ discountText }}</span>
-          </div>
+        <div class="mt-0.5 flex items-center justify-end gap-1">
+          <span class="badge shrink-0">
+            {{ pLabel }}
+          </span>
+          <span class="text-meta text-fg-muted">/ {{ validitySuffix }}</span>
+        </div>
+        <div v-if="plan.original_price" class="mt-0.5 flex items-center justify-end gap-1.5">
+          <span class="text-meta tabular-nums text-fg-subtle line-through">{{ planCurrencySymbol }}{{ plan.original_price }}<template v-if="plan.currency"> {{ plan.currency }}</template></span>
+          <span v-if="discountText" class="badge badge-success">{{ discountText }}</span>
         </div>
       </div>
+    </div>
 
-      <!-- Group quota info (compact) -->
-      <div class="mb-3 grid grid-cols-2 gap-x-3 gap-y-1 rounded-lg bg-gray-50 px-3 py-2 text-xs dark:bg-dark-700/50">
-        <div class="flex items-center justify-between">
-          <span class="text-gray-400 dark:text-dark-500">{{ t('payment.planCard.rate') }}</span>
-          <span class="font-medium text-gray-700 dark:text-gray-300">{{ rateDisplay }}</span>
-        </div>
-        <div v-if="hasPeakRate" class="col-span-2 flex items-center justify-between gap-2">
-          <span class="text-gray-400 dark:text-dark-500">{{ t('payment.planCard.peakRate') }}</span>
-          <span class="text-right font-medium text-warning-700 dark:text-warning-300">{{ peakRateDisplay }}</span>
-        </div>
-        <div v-if="plan.daily_limit_usd != null" class="flex items-center justify-between">
-          <span class="text-gray-400 dark:text-dark-500">{{ t('payment.planCard.dailyLimit') }}</span>
-          <span class="font-medium text-gray-700 dark:text-gray-300">${{ plan.daily_limit_usd }}</span>
-        </div>
-        <div v-if="plan.weekly_limit_usd != null" class="flex items-center justify-between">
-          <span class="text-gray-400 dark:text-dark-500">{{ t('payment.planCard.weeklyLimit') }}</span>
-          <span class="font-medium text-gray-700 dark:text-gray-300">${{ plan.weekly_limit_usd }}</span>
-        </div>
-        <div v-if="plan.monthly_limit_usd != null" class="flex items-center justify-between">
-          <span class="text-gray-400 dark:text-dark-500">{{ t('payment.planCard.monthlyLimit') }}</span>
-          <span class="font-medium text-gray-700 dark:text-gray-300">${{ plan.monthly_limit_usd }}</span>
-        </div>
-        <div v-if="plan.daily_limit_usd == null && plan.weekly_limit_usd == null && plan.monthly_limit_usd == null" class="flex items-center justify-between">
-          <span class="text-gray-400 dark:text-dark-500">{{ t('payment.planCard.quota') }}</span>
-          <span class="font-medium text-gray-700 dark:text-gray-300">{{ t('payment.planCard.unlimited') }}</span>
-        </div>
-        <div v-if="modelScopeLabels.length > 0" class="col-span-2 flex items-center justify-between">
-          <span class="text-gray-400 dark:text-dark-500">{{ t('payment.planCard.models') }}</span>
-          <div class="flex flex-wrap justify-end gap-1">
-            <span v-for="scope in modelScopeLabels" :key="scope"
-              class="rounded bg-gray-200/80 px-1.5 py-0.5 text-[10px] font-medium text-gray-600 dark:bg-dark-600 dark:text-gray-300">
-              {{ scope }}
-            </span>
-          </div>
-        </div>
+    <!-- Tier terms: ruled rows -->
+    <dl class="divide-y divide-border border-b border-border text-label">
+      <div class="flex items-center justify-between gap-3 px-4 py-1.5">
+        <dt class="text-fg-muted">{{ t('payment.planCard.rate') }}</dt>
+        <dd class="font-semibold tabular-nums text-fg">{{ rateDisplay }}</dd>
       </div>
-
-      <!-- Features list (compact) -->
-      <div v-if="plan.features.length > 0" class="mb-3 space-y-1">
-        <div v-for="feature in plan.features" :key="feature" class="flex items-start gap-1.5">
-          <svg :class="['mt-0.5 h-3.5 w-3.5 flex-shrink-0', iconClass]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-          </svg>
-          <span class="text-xs text-gray-600 dark:text-gray-300">{{ feature }}</span>
-        </div>
+      <div v-if="hasPeakRate" class="flex items-center justify-between gap-3 px-4 py-1.5">
+        <dt class="text-fg-muted">{{ t('payment.planCard.peakRate') }}</dt>
+        <dd class="text-right font-semibold text-warning">{{ peakRateDisplay }}</dd>
       </div>
+      <div v-if="plan.daily_limit_usd != null" class="flex items-center justify-between gap-3 px-4 py-1.5">
+        <dt class="text-fg-muted">{{ t('payment.planCard.dailyLimit') }}</dt>
+        <dd class="font-semibold tabular-nums text-fg">${{ plan.daily_limit_usd }}</dd>
+      </div>
+      <div v-if="plan.weekly_limit_usd != null" class="flex items-center justify-between gap-3 px-4 py-1.5">
+        <dt class="text-fg-muted">{{ t('payment.planCard.weeklyLimit') }}</dt>
+        <dd class="font-semibold tabular-nums text-fg">${{ plan.weekly_limit_usd }}</dd>
+      </div>
+      <div v-if="plan.monthly_limit_usd != null" class="flex items-center justify-between gap-3 px-4 py-1.5">
+        <dt class="text-fg-muted">{{ t('payment.planCard.monthlyLimit') }}</dt>
+        <dd class="font-semibold tabular-nums text-fg">${{ plan.monthly_limit_usd }}</dd>
+      </div>
+      <div v-if="plan.daily_limit_usd == null && plan.weekly_limit_usd == null && plan.monthly_limit_usd == null" class="flex items-center justify-between gap-3 px-4 py-1.5">
+        <dt class="text-fg-muted">{{ t('payment.planCard.quota') }}</dt>
+        <dd class="font-semibold text-fg">{{ t('payment.planCard.unlimited') }}</dd>
+      </div>
+      <div v-if="modelScopeLabels.length > 0" class="flex items-center justify-between gap-3 px-4 py-1.5">
+        <dt class="text-fg-muted">{{ t('payment.planCard.models') }}</dt>
+        <dd class="flex flex-wrap justify-end gap-1">
+          <span v-for="scope in modelScopeLabels" :key="scope" class="badge">
+            {{ scope }}
+          </span>
+        </dd>
+      </div>
+    </dl>
 
-      <div class="flex-1" />
+    <!-- Features list -->
+    <ul v-if="plan.features.length > 0" class="space-y-1 px-4 pt-3">
+      <li v-for="feature in plan.features" :key="feature" class="flex items-start gap-1.5">
+        <svg class="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+        <span class="text-meta text-fg">{{ feature }}</span>
+      </li>
+    </ul>
 
-      <!-- Subscribe Button -->
+    <div class="flex-1" />
+
+    <!-- Subscribe Button -->
+    <div class="p-4">
       <button
         type="button"
-        :class="['w-full rounded-xl py-2.5 text-sm font-semibold transition-all active:scale-[0.98]', btnClass]"
+        class="btn btn-primary w-full"
         @click="emit('select', plan)"
       >
         {{ isRenewal ? t('payment.renewNow') : t('payment.subscribeNow') }}
@@ -113,16 +103,7 @@ import { useAppStore } from '@/stores/app'
 import { hasPeakRate as groupHasPeakRate, formatPeakRateWindow, serverTimezoneLabel } from '@/utils/peak-rate'
 import { planValiditySuffix } from './validity'
 import { currencySymbol } from '@/components/payment/currency'
-import {
-  platformAccentBarClass,
-  platformBadgeLightClass,
-  platformBorderClass,
-  platformTextClass,
-  platformIconClass,
-  platformButtonClass,
-  platformDiscountClass,
-  platformLabel,
-} from '@/utils/platformColors'
+import { platformLabel } from '@/utils/platformColors'
 
 const props = defineProps<{ plan: SubscriptionPlan; activeSubscriptions?: UserSubscription[] }>()
 const emit = defineEmits<{ select: [plan: SubscriptionPlan] }>()
@@ -133,14 +114,6 @@ const isRenewal = computed(() =>
   props.activeSubscriptions?.some(s => s.group_id === props.plan.group_id && s.status === 'active') ?? false
 )
 
-// Derived color classes from central config
-const accentClass = computed(() => platformAccentBarClass(platform.value))
-const borderClass = computed(() => platformBorderClass(platform.value))
-const badgeLightClass = computed(() => platformBadgeLightClass(platform.value))
-const textClass = computed(() => platformTextClass(platform.value))
-const iconClass = computed(() => platformIconClass(platform.value))
-const btnClass = computed(() => platformButtonClass(platform.value))
-const discountClass = computed(() => platformDiscountClass(platform.value))
 const pLabel = computed(() => platformLabel(platform.value))
 
 const discountText = computed(() => {

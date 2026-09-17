@@ -4,7 +4,7 @@
       <template #filters>
         <div class="flex flex-wrap items-center gap-3">
           <div class="relative w-full md:w-80">
-            <Icon name="search" size="md" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Icon name="search" size="md" class="absolute left-3 top-1/2 -translate-y-1/2 text-fg-subtle" />
             <input v-model="filters.search" type="text" class="input pl-10" :placeholder="t('admin.affiliates.records.searchPlaceholder')" @input="debounceLoad" />
           </div>
           <input v-model="filters.start_at" type="date" class="input w-full sm:w-44" :title="t('admin.affiliates.records.startAt')" @change="reloadFromFirstPage" />
@@ -54,12 +54,12 @@
             />
           </template>
           <template #cell-aff_code="{ row }">
-            <span class="font-mono text-sm text-gray-700 dark:text-gray-300">{{ row.aff_code || '-' }}</span>
+            <span class="font-mono text-meta text-fg">{{ row.aff_code || '-' }}</span>
           </template>
           <template #cell-order="{ row }">
             <div class="space-y-0.5">
-              <div class="font-mono text-sm text-gray-900 dark:text-white">#{{ row.order_id }}</div>
-              <div class="max-w-56 truncate text-sm text-gray-500 dark:text-dark-400">{{ row.out_trade_no }}</div>
+              <div class="font-mono text-meta text-fg">#{{ row.order_id }}</div>
+              <div class="max-w-56 truncate font-mono text-meta text-fg-muted">{{ row.out_trade_no }}</div>
             </div>
           </template>
           <template #cell-payment_type="{ row }">
@@ -75,7 +75,7 @@
             <AmountText :value="row.order_amount" />
           </template>
           <template #cell-pay_amount="{ row }">
-            <span class="text-sm text-gray-900 dark:text-white">¥{{ formatAmount(row.pay_amount) }}</span>
+            <span class="tabular-nums text-fg">¥{{ formatAmount(row.pay_amount) }}</span>
           </template>
           <template #cell-rebate_amount="{ row }">
             <AmountText :value="row.rebate_amount" strong />
@@ -96,7 +96,7 @@
             <NullableAmountText :value="row.history_quota_after" />
           </template>
           <template #cell-created_at="{ row }">
-            <span class="text-sm text-gray-700 dark:text-gray-300">{{ formatDateTime(row.created_at) }}</span>
+            <span class="text-meta tabular-nums text-fg-muted">{{ formatDateTime(row.created_at) }}</span>
           </template>
         </DataTable>
       </template>
@@ -120,15 +120,15 @@
       @close="overviewDialog = false"
     >
       <div v-if="overviewLoading" class="flex justify-center py-8">
-        <div class="h-6 w-6 animate-spin rounded-full border-2 border-primary-500 border-t-transparent"></div>
+        <div class="spinner h-6 w-6 text-accent"></div>
       </div>
       <div v-else-if="selectedOverview" class="space-y-4">
-        <div class="rounded-lg border border-gray-100 bg-gray-50 p-4 dark:border-dark-700 dark:bg-dark-800">
-          <div class="font-mono text-sm text-gray-900 dark:text-white">#{{ selectedOverview.user_id }}</div>
-          <div class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selectedOverview.email || '-' }}</div>
-          <div class="mt-0.5 text-sm text-gray-500 dark:text-dark-400">{{ selectedOverview.username || '-' }}</div>
+        <div class="border-b-2 border-accent pb-3">
+          <div class="font-mono text-meta text-fg-muted">#{{ selectedOverview.user_id }}</div>
+          <div class="mt-1 text-body font-bold text-accent-strong">{{ selectedOverview.email || '-' }}</div>
+          <div class="mt-0.5 text-body text-fg-muted">{{ selectedOverview.username || '-' }}</div>
         </div>
-        <div class="grid gap-3 sm:grid-cols-2">
+        <div class="meter">
           <OverviewStat :label="t('admin.affiliates.overview.affCode')" :value="selectedOverview.aff_code || '-'" mono />
           <OverviewStat :label="t('admin.affiliates.overview.rebateRate')" :value="formatPercent(selectedOverview.rebate_rate_percent)" />
           <OverviewStat :label="t('admin.affiliates.overview.invitedCount')" :value="String(selectedOverview.invited_count)" />
@@ -182,7 +182,7 @@ const columns = computed<Column[]>(() => {
       { key: 'inviter', label: t('admin.affiliates.records.inviter'), sortable: true },
       { key: 'invitee', label: t('admin.affiliates.records.invitee'), sortable: true },
       { key: 'aff_code', label: t('admin.affiliates.records.affCode'), sortable: true },
-      { key: 'total_rebate', label: t('admin.affiliates.records.totalRebate'), sortable: true },
+      { key: 'total_rebate', label: t('admin.affiliates.records.totalRebate'), sortable: true, class: 'text-right' },
       { key: 'created_at', label: t('admin.affiliates.records.invitedAt'), sortable: true },
     ]
   }
@@ -191,9 +191,9 @@ const columns = computed<Column[]>(() => {
       { key: 'order', label: t('admin.affiliates.records.order'), sortable: true },
       { key: 'inviter', label: t('admin.affiliates.records.inviter'), sortable: true },
       { key: 'invitee', label: t('admin.affiliates.records.invitee'), sortable: true },
-      { key: 'order_amount', label: t('admin.affiliates.records.orderAmount'), sortable: true },
-      { key: 'pay_amount', label: t('admin.affiliates.records.payAmount'), sortable: true },
-      { key: 'rebate_amount', label: t('admin.affiliates.records.rebateAmount') },
+      { key: 'order_amount', label: t('admin.affiliates.records.orderAmount'), sortable: true, class: 'text-right' },
+      { key: 'pay_amount', label: t('admin.affiliates.records.payAmount'), sortable: true, class: 'text-right' },
+      { key: 'rebate_amount', label: t('admin.affiliates.records.rebateAmount'), class: 'text-right' },
       { key: 'payment_type', label: t('admin.affiliates.records.paymentType'), sortable: true },
       { key: 'order_status', label: t('admin.affiliates.records.orderStatus'), sortable: true },
       { key: 'created_at', label: t('admin.affiliates.records.rebatedAt'), sortable: true },
@@ -201,11 +201,11 @@ const columns = computed<Column[]>(() => {
   }
   return [
     { key: 'user', label: t('admin.affiliates.records.user'), sortable: true },
-    { key: 'amount', label: t('admin.affiliates.records.transferAmount'), sortable: true },
-    { key: 'balance_after', label: t('admin.affiliates.records.balanceAfter'), sortable: true },
-    { key: 'available_quota_after', label: t('admin.affiliates.records.availableQuotaAfter'), sortable: true },
-    { key: 'frozen_quota_after', label: t('admin.affiliates.records.frozenQuotaAfter'), sortable: true },
-    { key: 'history_quota_after', label: t('admin.affiliates.records.historyQuotaAfter'), sortable: true },
+    { key: 'amount', label: t('admin.affiliates.records.transferAmount'), sortable: true, class: 'text-right' },
+    { key: 'balance_after', label: t('admin.affiliates.records.balanceAfter'), sortable: true, class: 'text-right' },
+    { key: 'available_quota_after', label: t('admin.affiliates.records.availableQuotaAfter'), sortable: true, class: 'text-right' },
+    { key: 'frozen_quota_after', label: t('admin.affiliates.records.frozenQuotaAfter'), sortable: true, class: 'text-right' },
+    { key: 'history_quota_after', label: t('admin.affiliates.records.historyQuotaAfter'), sortable: true, class: 'text-right' },
     { key: 'created_at', label: t('admin.affiliates.records.transferredAt'), sortable: true },
   ]
 })
@@ -341,15 +341,15 @@ const UserCell = defineComponent({
   emits: ['open'],
   setup(cellProps, { emit }) {
     return () => h('div', { class: 'space-y-0.5' }, [
-      h('div', { class: 'font-mono text-sm text-gray-900 dark:text-white' }, `#${cellProps.id}`),
+      h('div', { class: 'font-mono text-meta text-fg-muted' }, `#${cellProps.id}`),
       h(cellProps.clickable ? 'button' : 'div', {
         class: cellProps.clickable
-          ? 'max-w-56 truncate text-left text-sm font-medium text-primary-600 hover:text-primary-700 hover:underline dark:text-primary-400 dark:hover:text-primary-300'
-          : 'max-w-56 truncate text-sm text-gray-700 dark:text-gray-300',
+          ? 'max-w-56 truncate text-left text-body font-medium text-accent hover:text-accent-strong hover:underline'
+          : 'max-w-56 truncate text-body text-fg',
         type: cellProps.clickable ? 'button' : undefined,
         onClick: cellProps.clickable ? () => emit('open', cellProps.id) : undefined,
       }, cellProps.email || '-'),
-      h('div', { class: 'max-w-56 truncate text-sm text-gray-500 dark:text-dark-400' }, cellProps.username || '-'),
+      h('div', { class: 'max-w-56 truncate text-meta text-fg-muted' }, cellProps.username || '-'),
     ])
   },
 })
@@ -362,8 +362,8 @@ const AmountText = defineComponent({
   setup(amountProps) {
     return () => h('span', {
       class: amountProps.strong
-        ? 'text-sm font-semibold text-success-600 dark:text-success-400'
-        : 'text-sm text-gray-900 dark:text-white',
+        ? 'font-semibold tabular-nums text-success'
+        : 'tabular-nums text-fg',
     }, `$${formatAmount(amountProps.value)}`)
   },
 })
@@ -376,7 +376,7 @@ const NullableAmountText = defineComponent({
     return () => {
       const value = amountProps.value
       if (value === null || value === undefined) {
-        return h('span', { class: 'text-sm text-gray-400 dark:text-dark-500' }, '-')
+        return h('span', { class: 'text-fg-subtle' }, '-')
       }
       return h(AmountText, { value })
     }
@@ -390,12 +390,12 @@ const OverviewStat = defineComponent({
     mono: { type: Boolean, default: false },
   },
   setup(statProps) {
-    return () => h('div', { class: 'rounded-lg border border-gray-100 bg-white p-3 dark:border-dark-700 dark:bg-dark-900' }, [
-      h('div', { class: 'text-sm text-gray-500 dark:text-dark-400' }, statProps.label),
+    return () => h('div', { class: 'meter-cell' }, [
+      h('div', { class: 'meter-label' }, statProps.label),
       h('div', {
         class: statProps.mono
-          ? 'mt-1 font-mono text-base font-semibold text-gray-900 dark:text-white'
-          : 'mt-1 text-base font-semibold text-gray-900 dark:text-white',
+          ? 'truncate font-mono text-h3 font-semibold text-fg'
+          : 'truncate text-h3 font-bold tabular-nums text-fg',
       }, statProps.value),
     ])
   },

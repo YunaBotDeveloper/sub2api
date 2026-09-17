@@ -406,29 +406,29 @@ function checkIntervalOverlap(sorted: IntervalFormEntry[], t: TranslateFn): stri
 /** 平台对应的模型 tag 样式（背景+文字） */
 export function getPlatformTagClass(platform: string): string {
   switch (platform) {
-    case 'anthropic': return 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400'
-    case 'openai': return 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400'
-    case 'gemini': return 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400'
-    case 'antigravity': return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-    case 'grok': return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
-    case 'kimi': return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-    case 'zhipu': return 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400'
-    case 'deepseek': return 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400'
-    default: return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
+    case 'anthropic': return 'bg-warning-weak text-warning-strong'
+    case 'openai': return 'bg-success-weak text-success-strong'
+    case 'gemini': return 'bg-accent-weak text-accent-strong'
+    case 'antigravity': return 'bg-surface-sunken text-fg-muted'
+    case 'grok': return 'bg-surface-sunken text-fg-muted'
+    case 'kimi': return 'bg-surface-sunken text-fg-muted'
+    case 'zhipu': return 'bg-accent-weak text-accent-strong'
+    case 'deepseek': return 'bg-accent-weak text-accent-strong'
+    default: return 'bg-surface-sunken text-fg-muted'
   }
 }
 
 /** 平台对应的模型文字色（仅 text-*，用于 input/text 场景）— 与 getPlatformTagClass 同色系 */
 export function getPlatformTextClass(platform: string): string {
   switch (platform) {
-    case 'anthropic': return 'text-warning-700 dark:text-warning-400'
-    case 'openai': return 'text-success-700 dark:text-success-400'
-    case 'gemini': return 'text-accent-700 dark:text-accent-400'
-    case 'antigravity': return 'text-gray-700 dark:text-gray-400'
-    case 'grok': return 'text-gray-700 dark:text-gray-300'
-    case 'kimi': return 'text-gray-700 dark:text-gray-400'
-    case 'zhipu': return 'text-accent-700 dark:text-accent-400'
-    case 'deepseek': return 'text-accent-700 dark:text-accent-400'
+    case 'anthropic': return 'text-warning'
+    case 'openai': return 'text-success'
+    case 'gemini': return 'text-accent'
+    case 'antigravity': return 'text-fg-muted'
+    case 'grok': return 'text-fg-muted'
+    case 'kimi': return 'text-fg-muted'
+    case 'zhipu': return 'text-accent'
+    case 'deepseek': return 'text-accent'
     default: return ''
   }
 }

@@ -3,6 +3,7 @@ import { driver, type Driver, type DriveStep } from 'driver.js'
 import 'driver.js/dist/driver.css'
 import { useAuthStore as useUserStore } from '@/stores/auth'
 import { useOnboardingStore } from '@/stores/onboarding'
+import { useAppStore } from '@/stores/app'
 import { useI18n } from 'vue-i18n'
 import { getAdminSteps, getUserSteps } from '@/components/Guide/steps'
 
@@ -15,6 +16,7 @@ export function useOnboardingTour(options: OnboardingOptions) {
   const { t } = useI18n()
   const userStore = useUserStore()
   const onboardingStore = useOnboardingStore()
+  const appStore = useAppStore()
   const storageVersion = 'v4_interactive' // Bump version for new tour type
 
   // Timing constants for better maintainability
@@ -95,7 +97,9 @@ export function useOnboardingTour(options: OnboardingOptions) {
     // 动态获取当前用户角色和步骤
     const isAdmin = userStore.user?.role === 'admin'
     const isSimpleMode = userStore.isSimpleMode
-    const steps = isAdmin ? getAdminSteps(t, isSimpleMode) : getUserSteps(t)
+    // 引导文案里的 {siteName} 用运营方在设置中配置的站点名称
+    const tBrand = (key: string) => t(key, { siteName: appStore.siteName })
+    const steps = isAdmin ? getAdminSteps(tBrand, isSimpleMode) : getUserSteps(tBrand)
 
     // 确保 DOM 就绪
     await nextTick()
@@ -186,7 +190,7 @@ export function useOnboardingTour(options: OnboardingOptions) {
             const hintClass = 'driver-popover-description-hint'
             if (!popover.description.querySelector(`.${hintClass}`)) {
               const hint = document.createElement('div')
-              hint.className = `${hintClass} mt-2 text-xs text-gray-500 flex items-center gap-1`
+              hint.className = `${hintClass} mt-2 text-xs text-fg-muted flex items-center gap-1`
 
               const iconSpan = document.createElement('span')
               iconSpan.className = 'i-mdi-keyboard-return mr-1'

@@ -1,27 +1,27 @@
 <template>
-  <div class="group/usage relative text-sm">
+  <div class="group/usage relative text-body">
     <div class="flex items-center gap-1.5">
-      <span class="text-gray-500 dark:text-gray-400">{{ t('admin.users.today') }}:</span>
-      <span class="font-medium text-gray-900 dark:text-white">${{ today.toFixed(4) }}</span>
+      <span class="text-fg-muted">{{ t('admin.users.today') }}:</span>
+      <span class="font-medium tabular-nums text-fg">${{ today.toFixed(4) }}</span>
       <Icon
         v-if="hasBreakdown"
         name="infoCircle"
         size="xs"
-        class="text-gray-400 dark:text-gray-500"
+        class="text-fg-subtle"
       />
     </div>
     <div class="mt-0.5 flex items-center gap-1.5">
-      <span class="text-gray-500 dark:text-gray-400">{{ t('admin.users.total') }}:</span>
-      <span class="font-medium text-gray-900 dark:text-white">${{ total.toFixed(4) }}</span>
+      <span class="text-fg-muted">{{ t('admin.users.total') }}:</span>
+      <span class="font-medium tabular-nums text-fg">${{ total.toFixed(4) }}</span>
     </div>
 
     <div
       v-if="hasBreakdown"
-      class="pointer-events-none absolute left-full top-0 z-50 ml-2 min-w-[220px] whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs text-white opacity-0 shadow-xl transition-opacity duration-100 group-hover/usage:opacity-100 dark:bg-dark-600"
+      class="pointer-events-none absolute left-full top-0 z-50 ml-2 min-w-[220px] whitespace-nowrap rounded-sm border border-border-strong bg-surface-raised px-3 py-2 text-meta text-fg opacity-0 shadow-overlay transition-opacity duration-100 group-hover/usage:opacity-100"
     >
-      <div class="mb-1.5 flex items-center justify-between gap-3 border-b border-white/10 pb-1 text-[11px] opacity-80">
+      <div class="mb-1.5 flex items-center justify-between gap-3 border-b-2 border-accent pb-1 font-semibold text-accent-strong">
         <span>{{ t('admin.users.platformBreakdown') }}</span>
-        <span class="font-mono">{{ t('admin.users.today') }} / {{ t('admin.users.total') }}</span>
+        <span>{{ t('admin.users.today') }} / {{ t('admin.users.total') }}</span>
       </div>
       <div
         v-for="item in sortedBreakdown"
@@ -32,9 +32,9 @@
         <span class="capitalize">
           {{ item.isOther ? t('admin.users.platformOther') : platformLabel(item.platform) }}
         </span>
-        <span class="font-mono">
+        <span class="tabular-nums">
           ${{ item.today_actual_cost.toFixed(4) }}
-          <span class="opacity-50">/</span>
+          <span class="text-fg-subtle">/</span>
           ${{ item.total_actual_cost.toFixed(4) }}
         </span>
       </div>

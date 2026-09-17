@@ -27,7 +27,7 @@
           />
           <button
             type="button"
-            class="flex-none rounded p-1 text-gray-400 hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-500/10 dark:hover:text-danger-400"
+            class="flex-none rounded-sm p-1 text-fg-subtle hover:bg-danger-weak hover:text-danger"
             :title="t('common.delete')" :aria-label="t('common.delete')"
             @click="removeRow(i)"
           >
@@ -38,7 +38,7 @@
         </div>
         <button
           type="button"
-          class="inline-flex items-center gap-1 rounded border border-dashed border-gray-300 px-2 py-1 text-xs text-gray-500 hover:border-primary-400 hover:text-primary-600 dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
+          class="btn btn-secondary btn-sm border-dashed"
           @click="addRow"
         >
           <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,8 +47,8 @@
           {{ t('admin.channelMonitor.advanced.headerAddRow') }}
         </button>
       </div>
-      <p v-if="headersError" class="mt-1 text-xs text-danger-500">{{ headersError }}</p>
-      <p v-else class="mt-1 text-xs text-gray-400">
+      <p v-if="headersError" class="mt-1 text-xs text-danger">{{ headersError }}</p>
+      <p v-else class="mt-1 text-xs text-fg-subtle">
         {{ t('admin.channelMonitor.advanced.headersHint') }}
       </p>
     </div>
@@ -61,14 +61,14 @@
           v-for="opt in bodyModeOptions"
           :key="opt.value"
           type="button"
-          class="rounded-lg border-2 px-3 py-2 text-sm font-medium transition-colors"
+          class="rounded-sm border px-3 py-2 text-sm font-semibold transition-colors"
           :class="bodyModeButtonClass(opt.value)"
           @click="updateBodyMode(opt.value)"
         >
           {{ opt.label }}
         </button>
       </div>
-      <p class="mt-1 text-xs text-gray-400">
+      <p class="mt-1 text-xs text-fg-subtle">
         {{ bodyModeHint }}
       </p>
     </div>
@@ -79,7 +79,7 @@
         <label class="input-label !mb-0">{{ t('admin.channelMonitor.advanced.bodyJson') }}</label>
         <button
           type="button"
-          class="text-xs text-primary-600 hover:underline disabled:cursor-not-allowed disabled:text-gray-400 disabled:no-underline dark:text-primary-400"
+          class="text-xs text-accent hover:underline disabled:cursor-not-allowed disabled:text-fg-subtle disabled:no-underline"
           :disabled="!bodyText.trim()"
           @click="formatBody"
         >
@@ -95,8 +95,8 @@
         spellcheck="false"
         @blur="commitBody"
       />
-      <p v-if="bodyError" class="mt-1 text-xs text-danger-500">{{ bodyError }}</p>
-      <p v-else class="mt-1 text-xs text-gray-400">
+      <p v-if="bodyError" class="mt-1 text-xs text-danger">{{ bodyError }}</p>
+      <p v-else class="mt-1 text-xs text-fg-subtle">
         {{ t('admin.channelMonitor.advanced.bodyJsonHint') }}
       </p>
     </div>
@@ -284,9 +284,9 @@ const bodyModeOptions = computed<{ value: BodyOverrideMode; label: string }[]>((
 function bodyModeButtonClass(mode: BodyOverrideMode): string {
   const active = props.bodyOverrideMode === mode
   if (active) {
-    return 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300 dark:border-primary-400'
+    return 'border-accent bg-accent-weak text-accent-strong'
   }
-  return 'border-gray-200 bg-white text-gray-600 hover:border-primary-300 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400'
+  return 'border-border-strong bg-surface text-fg-muted hover:border-accent hover:text-accent-strong'
 }
 
 const bodyModeHint = computed(() => {

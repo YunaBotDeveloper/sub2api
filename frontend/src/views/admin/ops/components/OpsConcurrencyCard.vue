@@ -302,10 +302,10 @@ watch(
 )
 
 function getLoadBarClass(loadPct: number): string {
-  if (loadPct >= 90) return 'bg-danger-500 dark:bg-danger-600'
-  if (loadPct >= 70) return 'bg-warning-500 dark:bg-warning-600'
-  if (loadPct >= 50) return 'bg-warning-500 dark:bg-warning-600'
-  return 'bg-success-500 dark:bg-success-600'
+  if (loadPct >= 90) return 'bg-danger'
+  if (loadPct >= 70) return 'bg-warning'
+  if (loadPct >= 50) return 'bg-warning'
+  return ''
 }
 
 function getLoadBarStyle(loadPct: number): string {
@@ -313,10 +313,10 @@ function getLoadBarStyle(loadPct: number): string {
 }
 
 function getLoadTextClass(loadPct: number): string {
-  if (loadPct >= 90) return 'text-danger-600 dark:text-danger-400'
-  if (loadPct >= 70) return 'text-warning-600 dark:text-warning-400'
-  if (loadPct >= 50) return 'text-warning-600 dark:text-warning-400'
-  return 'text-success-600 dark:text-success-400'
+  if (loadPct >= 90) return 'text-danger'
+  if (loadPct >= 70) return 'text-warning'
+  if (loadPct >= 50) return 'text-warning'
+  return 'text-success'
 }
 
 function formatDuration(seconds: number): string {
@@ -341,37 +341,30 @@ watch(
 </script>
 
 <template>
-  <div class="flex h-full flex-col rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
+  <section class="card flex h-full flex-col">
     <!-- 头部 -->
-    <div class="mb-4 flex shrink-0 items-center justify-between gap-3">
-      <h3 class="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
-        <svg class="h-4 w-4 text-accent-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-        {{ t('admin.ops.concurrency.title') }}
-      </h3>
-      <div class="flex items-center gap-2">
+    <div class="card-header flex shrink-0 items-center justify-between gap-3">
+      <h3 class="card-title">{{ t('admin.ops.concurrency.title') }}</h3>
+      <div class="flex items-center gap-1">
         <!-- 用户视图切换按钮 -->
         <button
-          class="flex items-center justify-center rounded-lg px-2 py-1 transition-colors"
-          :class="showByUser
-            ? 'bg-accent-100 text-accent-600 dark:bg-accent-900/30 dark:text-accent-400'
-            : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 dark:bg-dark-700 dark:text-gray-400 dark:hover:bg-dark-600 dark:hover:text-gray-300'"
+          class="btn btn-sm btn-icon"
+          :class="showByUser ? 'btn-secondary border-accent text-accent-strong' : 'btn-ghost'"
           :title="showByUser ? t('admin.ops.concurrency.switchToPlatform') : t('admin.ops.concurrency.switchToUser')" :aria-label="showByUser ? t('admin.ops.concurrency.switchToPlatform') : t('admin.ops.concurrency.switchToUser')"
           @click="showByUser = !showByUser"
         >
-          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
         </button>
         <!-- 刷新按钮 -->
         <button
-          class="flex items-center gap-1 rounded-lg bg-gray-100 px-2 py-1 text-[11px] font-semibold text-gray-700 transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
+          class="btn btn-ghost btn-sm btn-icon"
           :disabled="loading"
           :title="t('common.refresh')" :aria-label="t('common.refresh')"
           @click="loadData"
         >
-          <svg class="h-3 w-3" :class="{ 'animate-spin': loading }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg class="h-4 w-4" :class="{ 'animate-spin': loading }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
         </button>
@@ -379,136 +372,98 @@ watch(
     </div>
 
     <!-- 错误提示 -->
-    <div v-if="errorMessage" class="mb-3 shrink-0 rounded-xl bg-danger-50 p-2.5 text-xs text-danger-600 dark:bg-danger-900/20 dark:text-danger-400">
+    <div v-if="errorMessage" class="shrink-0 border-b border-danger/40 bg-danger-weak px-4 py-2 text-meta text-danger-strong">
       {{ errorMessage }}
     </div>
 
     <!-- 禁用状态 -->
-    <div
-      v-if="!realtimeEnabled"
-      class="flex flex-1 items-center justify-center rounded-xl border border-dashed border-gray-200 text-sm text-gray-500 dark:border-dark-700 dark:text-gray-400"
-    >
+    <div v-if="!realtimeEnabled" class="flex flex-1 items-center justify-center px-4 py-8 text-body text-fg-muted">
       {{ t('admin.ops.concurrency.disabledHint') }}
     </div>
 
     <!-- 数据展示区域 -->
-    <div v-else class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-gray-200 dark:border-dark-700">
-      <!-- 维度标题栏 -->
-      <div class="flex shrink-0 items-center justify-between border-b border-gray-200 bg-gray-50 px-3 py-2 dark:border-dark-700 dark:bg-dark-900">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-          {{ displayTitle }}
-        </span>
-        <span class="text-[10px] text-gray-500 dark:text-gray-400">
-          {{ t('admin.ops.concurrency.totalRows', { count: displayRows.length }) }}
-        </span>
+    <div v-else class="flex min-h-0 flex-1 flex-col">
+      <!-- 维度标题栏：印刷表头带 -->
+      <div class="flex shrink-0 items-center justify-between border-b-2 border-accent bg-accent-weak px-4 py-1.5 text-meta">
+        <span class="font-semibold text-accent-strong">{{ displayTitle }}</span>
+        <span class="tabular-nums text-fg-muted">{{ t('admin.ops.concurrency.totalRows', { count: displayRows.length }) }}</span>
       </div>
 
       <!-- 空状态 -->
-      <div v-if="displayRows.length === 0" class="flex flex-1 items-center justify-center text-sm text-gray-500 dark:text-gray-400">
+      <div v-if="displayRows.length === 0" class="flex flex-1 items-center justify-center py-8 text-body text-fg-muted">
         {{ t('admin.ops.concurrency.empty') }}
       </div>
 
       <!-- 用户视图 -->
-      <div v-else-if="displayDimension === 'user'" class="custom-scrollbar max-h-[360px] flex-1 space-y-2 overflow-y-auto p-3">
-        <div v-for="row in (displayRows as UserRow[])" :key="row.key" class="rounded-lg bg-gray-50 p-2.5 dark:bg-dark-900">
-          <!-- 用户信息和并发 -->
-          <div class="mb-1.5 flex items-center justify-between gap-2">
+      <div v-else-if="displayDimension === 'user'" class="custom-scrollbar max-h-[360px] flex-1 divide-y divide-border overflow-y-auto">
+        <div v-for="row in (displayRows as UserRow[])" :key="row.key" class="px-4 py-2">
+          <div class="mb-1.5 flex items-center justify-between gap-2 text-meta">
             <div class="flex min-w-0 flex-1 items-center gap-1.5">
-              <span class="truncate text-[11px] font-bold text-gray-900 dark:text-white" :title="row.username || row.user_email">
+              <span class="truncate font-semibold text-fg" :title="row.username || row.user_email">
                 {{ row.username || row.user_email }}
               </span>
-              <span v-if="row.username" class="shrink-0 truncate text-[10px] text-gray-400 dark:text-gray-500" :title="row.user_email">
+              <span v-if="row.username" class="shrink-0 truncate text-fg-subtle" :title="row.user_email">
                 {{ row.user_email }}
               </span>
             </div>
-            <div class="flex shrink-0 items-center gap-2 text-[10px]">
-              <span class="font-mono font-bold text-gray-900 dark:text-white"> {{ row.current_in_use }}/{{ row.max_capacity }} </span>
-              <span :class="['font-bold', getLoadTextClass(row.load_percentage)]"> {{ Math.round(row.load_percentage) }}% </span>
+            <div class="flex shrink-0 items-center gap-2 tabular-nums">
+              <span class="font-semibold text-fg">{{ row.current_in_use }}/{{ row.max_capacity }}</span>
+              <span :class="['font-bold', getLoadTextClass(row.load_percentage)]">{{ Math.round(row.load_percentage) }}%</span>
             </div>
           </div>
 
-          <!-- 进度条 -->
-          <div class="h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-700">
-            <div class="h-full rounded-full transition-all duration-300" :class="getLoadBarClass(row.load_percentage)" :style="getLoadBarStyle(row.load_percentage)"></div>
+          <div class="progress">
+            <div class="progress-bar transition-all duration-300" :class="getLoadBarClass(row.load_percentage)" :style="getLoadBarStyle(row.load_percentage)"></div>
           </div>
 
-          <!-- 等待队列 -->
           <div v-if="row.waiting_in_queue > 0" class="mt-1.5 flex justify-end">
-            <span class="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold text-gray-700 dark:bg-gray-900/30 dark:text-gray-400">
-              {{ t('admin.ops.concurrency.queued', { count: row.waiting_in_queue }) }}
-            </span>
+            <span class="badge badge-gray">{{ t('admin.ops.concurrency.queued', { count: row.waiting_in_queue }) }}</span>
           </div>
         </div>
       </div>
 
       <!-- 汇总视图（平台/分组） -->
-      <div v-else-if="displayDimension === 'platform' || displayDimension === 'group'" class="custom-scrollbar max-h-[360px] flex-1 space-y-2 overflow-y-auto p-3">
-        <div v-for="row in (displayRows as SummaryRow[])" :key="row.key" class="rounded-lg bg-gray-50 p-3 dark:bg-dark-900">
-          <!-- 标题行 -->
-          <div class="mb-2 flex items-center justify-between gap-2">
-            <div class="flex items-center gap-2">
-              <div class="truncate text-[11px] font-bold text-gray-900 dark:text-white" :title="row.name">
+      <div v-else-if="displayDimension === 'platform' || displayDimension === 'group'" class="custom-scrollbar max-h-[360px] flex-1 divide-y divide-border overflow-y-auto">
+        <div v-for="row in (displayRows as SummaryRow[])" :key="row.key" class="px-4 py-2.5">
+          <div class="mb-1.5 flex items-center justify-between gap-2 text-meta">
+            <div class="flex min-w-0 items-center gap-2">
+              <div class="truncate font-semibold text-fg" :title="row.name">
                 {{ row.name }}
               </div>
-              <span v-if="displayDimension === 'group' && row.platform" class="text-[10px] text-gray-400 dark:text-gray-500">
+              <span v-if="displayDimension === 'group' && row.platform" class="text-fg-subtle">
                 {{ row.platform.toUpperCase() }}
               </span>
             </div>
-            <div class="flex shrink-0 items-center gap-2 text-[10px]">
-              <span class="font-mono font-bold text-gray-900 dark:text-white"> {{ row.used_concurrency }}/{{ row.total_concurrency }} </span>
-              <span :class="['font-bold', getLoadTextClass(row.concurrency_percentage)]"> {{ row.concurrency_percentage }}% </span>
+            <div class="flex shrink-0 items-center gap-2 tabular-nums">
+              <span class="font-semibold text-fg">{{ row.used_concurrency }}/{{ row.total_concurrency }}</span>
+              <span :class="['font-bold', getLoadTextClass(row.concurrency_percentage)]">{{ row.concurrency_percentage }}%</span>
             </div>
           </div>
 
-          <!-- 进度条 -->
-          <div class="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-700">
+          <div class="progress mb-2">
             <div
-              class="h-full rounded-full transition-all duration-300"
+              class="progress-bar transition-all duration-300"
               :class="getLoadBarClass(row.concurrency_percentage)"
               :style="getLoadBarStyle(row.concurrency_percentage)"
             ></div>
           </div>
 
-          <!-- 统计信息 -->
-          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px]">
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-meta">
             <!-- 账号统计 -->
-            <div class="flex items-center gap-1">
-              <svg class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
-              <span class="text-gray-600 dark:text-gray-300">
-                <span class="font-bold text-success-600 dark:text-success-400">{{ row.available_accounts }}</span
-                >/{{ row.total_accounts }}
-              </span>
-              <span class="text-gray-400 dark:text-gray-500">{{ row.availability_percentage }}%</span>
-            </div>
+            <span class="tabular-nums text-fg-muted">
+              <span class="font-bold text-success">{{ row.available_accounts }}</span>/{{ row.total_accounts }}
+              <span class="text-fg-subtle">· {{ row.availability_percentage }}%</span>
+            </span>
 
-            <!-- 限流账号 -->
-            <span
-              v-if="row.rate_limited_accounts > 0"
-              class="rounded-full bg-warning-100 px-1.5 py-0.5 font-semibold text-warning-700 dark:bg-warning-900/30 dark:text-warning-400"
-            >
+            <span v-if="row.rate_limited_accounts > 0" class="badge badge-warning">
               {{ t('admin.ops.concurrency.rateLimited', { count: row.rate_limited_accounts }) }}
             </span>
 
-            <!-- 异常账号 -->
-            <span
-              v-if="row.error_accounts > 0"
-              class="rounded-full bg-danger-100 px-1.5 py-0.5 font-semibold text-danger-700 dark:bg-danger-900/30 dark:text-danger-400"
-            >
+            <span v-if="row.error_accounts > 0" class="badge badge-danger">
               {{ t('admin.ops.concurrency.errorAccounts', { count: row.error_accounts }) }}
             </span>
 
-            <!-- 等待队列 -->
-            <span
-              v-if="row.waiting_in_queue > 0"
-              class="rounded-full bg-gray-100 px-1.5 py-0.5 font-semibold text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
-            >
+            <span v-if="row.waiting_in_queue > 0" class="badge badge-gray">
               {{ t('admin.ops.concurrency.queued', { count: row.waiting_in_queue }) }}
             </span>
           </div>
@@ -516,87 +471,49 @@ watch(
       </div>
 
       <!-- 账号详细视图 -->
-      <div v-else class="custom-scrollbar max-h-[360px] flex-1 space-y-2 overflow-y-auto p-3">
-        <div v-for="row in (displayRows as AccountRow[])" :key="row.key" class="rounded-lg bg-gray-50 p-2.5 dark:bg-dark-900">
-          <!-- 账号名称和并发 -->
-          <div class="mb-1.5 flex items-center justify-between gap-2">
+      <div v-else class="custom-scrollbar max-h-[360px] flex-1 divide-y divide-border overflow-y-auto">
+        <div v-for="row in (displayRows as AccountRow[])" :key="row.key" class="px-4 py-2">
+          <div class="mb-1.5 flex items-center justify-between gap-2 text-meta">
             <div class="min-w-0 flex-1">
-              <div class="truncate text-[11px] font-bold text-gray-900 dark:text-white" :title="row.name">
+              <div class="truncate font-semibold text-fg" :title="row.name">
                 {{ row.name }}
               </div>
-              <div class="mt-0.5 text-[9px] text-gray-400 dark:text-gray-500">
+              <div class="truncate text-fg-subtle">
                 {{ row.group_name }}
               </div>
             </div>
             <div class="flex shrink-0 items-center gap-2">
-              <!-- 并发使用 -->
-              <span class="font-mono text-[11px] font-bold text-gray-900 dark:text-white"> {{ row.current_in_use }}/{{ row.max_capacity }} </span>
-              <!-- 状态徽章 -->
-              <span
-                v-if="row.is_available"
-                class="inline-flex items-center gap-1 rounded bg-success-100 px-1.5 py-0.5 text-[10px] font-medium text-success-700 dark:bg-success-900/30 dark:text-success-400"
-              >
-                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
+              <span class="font-semibold tabular-nums text-fg">{{ row.current_in_use }}/{{ row.max_capacity }}</span>
+              <!-- 状态印章 -->
+              <span v-if="row.is_available" class="badge badge-success">
                 {{ t('admin.ops.accountAvailability.available') }}
               </span>
-              <span
-                v-else-if="row.is_rate_limited"
-                class="inline-flex items-center gap-1 rounded bg-warning-100 px-1.5 py-0.5 text-[10px] font-medium text-warning-700 dark:bg-warning-900/30 dark:text-warning-400"
-              >
-                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              <span v-else-if="row.is_rate_limited" class="badge badge-warning tabular-nums">
                 {{ formatDuration(row.rate_limit_remaining_sec || 0) }}
               </span>
-              <span
-                v-else-if="row.is_overloaded"
-                class="inline-flex items-center gap-1 rounded bg-danger-100 px-1.5 py-0.5 text-[10px] font-medium text-danger-700 dark:bg-danger-900/30 dark:text-danger-400"
-              >
-                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
+              <span v-else-if="row.is_overloaded" class="badge badge-danger tabular-nums">
                 {{ formatDuration(row.overload_remaining_sec || 0) }}
               </span>
-              <span
-                v-else-if="row.has_error"
-                class="inline-flex items-center gap-1 rounded bg-danger-100 px-1.5 py-0.5 text-[10px] font-medium text-danger-700 dark:bg-danger-900/30 dark:text-danger-400"
-              >
-                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+              <span v-else-if="row.has_error" class="badge badge-danger">
                 {{ t('admin.ops.accountAvailability.accountError') }}
               </span>
-              <span
-                v-else
-                class="inline-flex items-center gap-1 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-400"
-              >
+              <span v-else class="badge badge-gray">
                 {{ t('admin.ops.accountAvailability.unavailable') }}
               </span>
             </div>
           </div>
 
-          <!-- 进度条 -->
-          <div class="h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-700">
-            <div class="h-full rounded-full transition-all duration-300" :class="getLoadBarClass(row.load_percentage)" :style="getLoadBarStyle(row.load_percentage)"></div>
+          <div class="progress">
+            <div class="progress-bar transition-all duration-300" :class="getLoadBarClass(row.load_percentage)" :style="getLoadBarStyle(row.load_percentage)"></div>
           </div>
 
-          <!-- 等待队列 -->
           <div v-if="row.waiting_in_queue > 0" class="mt-1.5 flex justify-end">
-            <span class="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold text-gray-700 dark:bg-gray-900/30 dark:text-gray-400">
-              {{ t('admin.ops.concurrency.queued', { count: row.waiting_in_queue }) }}
-            </span>
+            <span class="badge badge-gray">{{ t('admin.ops.concurrency.queued', { count: row.waiting_in_queue }) }}</span>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <style scoped>

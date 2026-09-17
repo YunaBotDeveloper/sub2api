@@ -1,97 +1,98 @@
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-gray-50 px-4 dark:bg-dark-900">
-    <div class="w-full max-w-md space-y-6">
+  <div class="flex min-h-screen items-center justify-center bg-surface-sunken px-4 py-8">
+    <div class="w-full max-w-md space-y-4">
       <!-- Loading -->
       <div v-if="loading" class="flex items-center justify-center py-20">
-        <div class="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
+        <div class="spinner h-8 w-8 text-accent"></div>
       </div>
       <template v-else>
-        <!-- Status Icon -->
-        <div class="text-center">
-          <div v-if="isSuccess"
-            class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-success-100 dark:bg-success-900/30">
-            <svg class="h-10 w-10 text-success-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-              stroke-width="2">
+        <div class="stub">
+        <!-- Receipt head: title + status stamp -->
+        <div class="flex flex-wrap items-start justify-between gap-3 px-5 py-4">
+          <div class="min-w-0">
+            <h2 class="text-h2 font-bold text-accent-strong">
+              {{ statusTitle }}
+            </h2>
+            <p v-if="isPending" class="mt-1 text-body text-fg-muted">
+              {{ statusHint }}
+            </p>
+          </div>
+          <span
+            class="badge shrink-0 gap-1.5 px-3 py-1 text-label"
+            :class="isSuccess ? 'badge-success' : isPending ? 'badge-warning' : 'badge-danger'"
+          >
+            <span v-if="isPending" class="spinner h-3 w-3" aria-hidden="true"></span>
+            <svg v-else-if="isSuccess" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
             </svg>
-          </div>
-          <div v-else-if="isPending"
-            class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-warning-100 dark:bg-warning-900/30">
-            <div class="h-10 w-10 animate-spin rounded-full border-4 border-warning-500 border-t-transparent"></div>
-          </div>
-          <div v-else
-            class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-danger-100 dark:bg-danger-900/30">
-            <svg class="h-10 w-10 text-danger-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <svg v-else class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
-          </div>
-          <h2 class="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
-            {{ statusTitle }}
-          </h2>
-          <p v-if="isPending" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-            {{ statusHint }}
-          </p>
+            {{ stampLabel }}
+          </span>
         </div>
         <!-- Order Info -->
-        <div v-if="order" class="rounded-xl bg-white p-5 shadow-sm dark:bg-dark-800">
-          <div class="space-y-3 text-sm">
-            <div v-if="hasOrderId(order)" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderId') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">#{{ order.id }}</span>
+        <div v-if="order" class="border-t border-border px-5">
+          <div class="divide-y divide-border text-body">
+            <div v-if="hasOrderId(order)" class="flex items-center justify-between gap-4 py-2">
+              <span class="shrink-0 text-fg-muted">{{ t('payment.orders.orderId') }}</span>
+              <span class="min-w-0 break-all text-right font-mono text-fg">#{{ order.id }}</span>
             </div>
-            <div v-if="order.out_trade_no" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderNo') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ order.out_trade_no }}</span>
+            <div v-if="order.out_trade_no" class="flex items-center justify-between gap-4 py-2">
+              <span class="shrink-0 text-fg-muted">{{ t('payment.orders.orderNo') }}</span>
+              <span class="min-w-0 break-all text-right font-mono text-fg">{{ order.out_trade_no }}</span>
             </div>
-            <div v-if="hasAmountFields(order)" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.baseAmount') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ formatGatewayAmount(baseAmount) }}</span>
+            <div v-if="hasAmountFields(order)" class="flex items-center justify-between gap-4 py-2">
+              <span class="shrink-0 text-fg-muted">{{ t('payment.orders.baseAmount') }}</span>
+              <span class="text-right tabular-nums text-fg">{{ formatGatewayAmount(baseAmount) }}</span>
             </div>
-            <div v-if="hasAmountFields(order) && order.fee_rate > 0" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.fee') }} ({{ order.fee_rate }}%)</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ formatGatewayAmount(feeAmount) }}</span>
+            <div v-if="hasAmountFields(order) && order.fee_rate > 0" class="flex items-center justify-between gap-4 py-2">
+              <span class="shrink-0 text-fg-muted">{{ t('payment.orders.fee') }} ({{ order.fee_rate }}%)</span>
+              <span class="text-right tabular-nums text-fg">{{ formatGatewayAmount(feeAmount) }}</span>
             </div>
-            <div v-if="hasAmountFields(order)" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.payAmount') }}</span>
-              <span class="font-bold text-primary-600 dark:text-primary-400">{{ formatGatewayAmount(order.pay_amount) }}</span>
+            <div v-if="hasAmountFields(order)" class="flex items-center justify-between gap-4 py-2">
+              <span class="shrink-0 text-fg-muted">{{ t('payment.orders.payAmount') }}</span>
+              <span class="text-h3 font-bold tabular-nums text-fg">{{ formatGatewayAmount(order.pay_amount) }}</span>
             </div>
             <!-- 只有充值单才有"到账"这回事，订阅单买的是订阅本身。amount 一律以
                  USD 记账，用网关币种格式化它会把 60 USD 显示成 60 VND。 -->
-            <div v-if="hasAmountFields(order) && order.order_type === 'balance' && order.amount !== order.pay_amount" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.creditedAmount') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ formatPaymentAmount(order.amount, 'USD', localeCode) }}</span>
+            <div v-if="hasAmountFields(order) && order.order_type === 'balance' && order.amount !== order.pay_amount" class="flex items-center justify-between gap-4 py-2">
+              <span class="shrink-0 text-fg-muted">{{ t('payment.orders.creditedAmount') }}</span>
+              <span class="text-right tabular-nums text-fg">{{ formatPaymentAmount(order.amount, 'USD', localeCode) }}</span>
             </div>
-            <div v-if="hasPaymentType(order)" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.paymentMethod') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ t(paymentMethodI18nKey(order.payment_type), normalizedOrderPaymentType(order.payment_type)) }}</span>
+            <div v-if="hasPaymentType(order)" class="flex items-center justify-between gap-4 py-2">
+              <span class="shrink-0 text-fg-muted">{{ t('payment.orders.paymentMethod') }}</span>
+              <span class="text-right tabular-nums text-fg">{{ t(paymentMethodI18nKey(order.payment_type), normalizedOrderPaymentType(order.payment_type)) }}</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.status') }}</span>
+            <div class="flex items-center justify-between gap-4 py-2">
+              <span class="shrink-0 text-fg-muted">{{ t('payment.orders.status') }}</span>
               <OrderStatusBadge :status="displayOrderStatus(order.status)" />
             </div>
           </div>
         </div>
         <!-- EasyPay return info (when no order loaded) -->
-        <div v-else-if="returnInfo" class="rounded-xl bg-white p-5 shadow-sm dark:bg-dark-800">
-          <div class="space-y-3 text-sm">
-            <div v-if="returnInfo.outTradeNo" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderId') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ returnInfo.outTradeNo }}</span>
+        <div v-else-if="returnInfo" class="border-t border-border px-5">
+          <div class="divide-y divide-border text-body">
+            <div v-if="returnInfo.outTradeNo" class="flex items-center justify-between gap-4 py-2">
+              <span class="shrink-0 text-fg-muted">{{ t('payment.orders.orderId') }}</span>
+              <span class="min-w-0 break-all text-right font-mono text-fg">{{ returnInfo.outTradeNo }}</span>
             </div>
-            <div v-if="returnInfo.money" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.payAmount') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ formatGatewayAmount(Number(returnInfo.money) || 0) }}</span>
+            <div v-if="returnInfo.money" class="flex items-center justify-between gap-4 py-2">
+              <span class="shrink-0 text-fg-muted">{{ t('payment.orders.payAmount') }}</span>
+              <span class="text-right tabular-nums text-fg">{{ formatGatewayAmount(Number(returnInfo.money) || 0) }}</span>
             </div>
-            <div v-if="returnInfo.type" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.paymentMethod') }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ t(paymentMethodI18nKey(returnInfo.type), normalizedOrderPaymentType(returnInfo.type)) }}</span>
+            <div v-if="returnInfo.type" class="flex items-center justify-between gap-4 py-2">
+              <span class="shrink-0 text-fg-muted">{{ t('payment.orders.paymentMethod') }}</span>
+              <span class="text-right tabular-nums text-fg">{{ t(paymentMethodI18nKey(returnInfo.type), normalizedOrderPaymentType(returnInfo.type)) }}</span>
             </div>
           </div>
         </div>
+        <div class="stub-perforation" />
         <!-- Actions -->
-        <div class="flex gap-3">
+        <div class="flex gap-3 px-5 py-4">
           <button class="btn btn-secondary flex-1" @click="router.push('/purchase')">{{ t('payment.result.backToRecharge') }}</button>
           <button class="btn btn-primary flex-1" @click="router.push('/orders')">{{ t('payment.result.viewOrders') }}</button>
+        </div>
         </div>
       </template>
     </div>
@@ -215,6 +216,18 @@ const statusTitle = computed(() => {
     return t('payment.result.processing')
   }
   return t('payment.result.failed')
+})
+
+// 印章上的状态词（订单行里仍有精确状态）
+const stampLabel = computed(() => {
+  if (isSuccess.value) return t('payment.status.paid')
+  if (isPending.value) {
+    if (isAbandonedReturn.value) {
+      return t(returnedStatus.value === 'cancelled' ? 'payment.status.cancelled' : 'payment.status.failed')
+    }
+    return t('payment.status.pending')
+  }
+  return t('payment.status.failed')
 })
 
 function normalizedOrderPaymentType(paymentType: string): string {

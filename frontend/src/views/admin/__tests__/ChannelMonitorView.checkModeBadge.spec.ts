@@ -148,11 +148,11 @@ describe('ChannelMonitorView check-mode badge', () => {
     // quota 系=蓝、probe=中性灰的配色区分。
     const cls = modeBadge!.attributes('class')
     if (mode === 'probe') {
-      expect(cls).toContain('bg-gray-100')
-      expect(cls).not.toContain('bg-accent-100')
+      expect(cls).toContain('bg-surface-sunken')
+      expect(cls).not.toContain('bg-accent-weak')
     } else {
-      expect(cls).toContain('bg-accent-100')
-      expect(cls).not.toContain('bg-gray-100')
+      expect(cls).toContain('bg-accent-weak')
+      expect(cls).not.toContain('bg-surface-sunken')
     }
     wrapper.unmount()
   })

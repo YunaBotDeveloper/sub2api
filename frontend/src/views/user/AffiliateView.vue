@@ -2,57 +2,45 @@
   <AppLayout>
     <div class="space-y-6">
       <div v-if="loading" class="flex justify-center py-12">
-        <div
-          class="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent"
-        ></div>
+        <div class="spinner h-8 w-8 text-accent"></div>
       </div>
 
       <template v-else-if="detail">
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div class="card p-5">
-            <p class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-dark-400">
-              <Icon name="dollar" size="sm" class="text-primary-500" />
-              {{ t('affiliate.stats.rebateRate') }}
-            </p>
-            <p class="mt-2 text-2xl font-semibold text-primary-600 dark:text-primary-400">
-              {{ formattedRebateRate }}<span class="ml-0.5 text-base font-medium">%</span>
-            </p>
-            <p class="mt-1 text-xs text-gray-400 dark:text-dark-500">
-              {{ t('affiliate.stats.rebateRateHint') }}
-            </p>
+        <!-- 返利读数：可转出额度为当前读数 -->
+        <div class="meter">
+          <div class="meter-cell">
+            <p class="meter-label">{{ t('affiliate.stats.rebateRate') }}</p>
+            <p class="meter-value">{{ formattedRebateRate }}<span class="ml-0.5 text-label font-medium text-fg-muted">%</span></p>
+            <p class="meter-sub">{{ t('affiliate.stats.rebateRateHint') }}</p>
           </div>
-          <div class="card p-5">
-            <p class="text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.stats.invitedUsers') }}</p>
-            <p class="mt-2 text-2xl font-semibold text-gray-900 dark:text-white">
-              {{ formatCount(detail.aff_count) }}
-            </p>
+          <div class="meter-cell">
+            <p class="meter-label">{{ t('affiliate.stats.invitedUsers') }}</p>
+            <p class="meter-value">{{ formatCount(detail.aff_count) }}</p>
           </div>
-          <div class="card p-5">
-            <p class="text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.stats.availableQuota') }}</p>
-            <p class="mt-2 text-2xl font-semibold text-success-600 dark:text-success-400">
-              {{ formatCurrency(detail.aff_quota) }}
-            </p>
+          <div class="meter-cell meter-cell-current">
+            <p class="meter-label">{{ t('affiliate.stats.availableQuota') }}</p>
+            <p class="meter-value">{{ formatCurrency(detail.aff_quota) }}</p>
           </div>
-          <div class="card p-5">
-            <p class="text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.stats.totalQuota') }}</p>
-            <p class="mt-2 text-2xl font-semibold text-gray-900 dark:text-white">
-              {{ formatCurrency(detail.aff_history_quota) }}
-            </p>
-            <p v-if="detail.aff_frozen_quota > 0" class="mt-1 text-xs text-warning-600 dark:text-warning-400">
+          <div class="meter-cell">
+            <p class="meter-label">{{ t('affiliate.stats.totalQuota') }}</p>
+            <p class="meter-value">{{ formatCurrency(detail.aff_history_quota) }}</p>
+            <p v-if="detail.aff_frozen_quota > 0" class="meter-sub !text-warning">
               {{ t('affiliate.stats.frozenQuota') }}: {{ formatCurrency(detail.aff_frozen_quota) }}
             </p>
           </div>
         </div>
 
-        <div class="card p-6">
-          <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('affiliate.title') }}</h3>
-          <p class="mt-1 text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.description') }}</p>
+        <section class="card">
+          <div class="card-header">
+            <h3 class="card-title">{{ t('affiliate.title') }}</h3>
+            <p class="mt-0.5 text-body text-fg-muted">{{ t('affiliate.description') }}</p>
+          </div>
 
-          <div class="mt-5 grid gap-4 md:grid-cols-2">
-            <div class="space-y-2">
-              <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('affiliate.yourCode') }}</p>
-              <div class="flex flex-col items-stretch gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 dark:border-dark-700 dark:bg-dark-900 sm:flex-row sm:items-center">
-                <code class="min-w-0 break-all text-sm font-semibold text-gray-900 dark:text-white sm:flex-1 sm:truncate">{{ detail.aff_code }}</code>
+          <div class="divide-y divide-border">
+            <div class="flex flex-col gap-1.5 px-5 py-3 sm:flex-row sm:items-center sm:gap-4">
+              <p class="text-meta font-medium text-fg-muted sm:w-32 sm:shrink-0">{{ t('affiliate.yourCode') }}</p>
+              <div class="flex min-w-0 flex-1 flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+                <code class="min-w-0 break-all font-mono text-body font-semibold text-fg sm:flex-1 sm:truncate">{{ detail.aff_code }}</code>
                 <button class="btn btn-secondary btn-sm w-full sm:w-auto sm:shrink-0" @click="copyCode">
                   <Icon name="copy" size="sm" />
                   <span>{{ t('affiliate.copyCode') }}</span>
@@ -60,34 +48,34 @@
               </div>
             </div>
 
-            <div class="space-y-2">
-              <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('affiliate.inviteLink') }}</p>
-              <div class="flex flex-col items-stretch gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 dark:border-dark-700 dark:bg-dark-900 sm:flex-row sm:items-center">
-                <code class="min-w-0 break-all text-sm text-gray-700 dark:text-gray-300 sm:flex-1 sm:truncate">{{ inviteLink }}</code>
+            <div class="flex flex-col gap-1.5 px-5 py-3 sm:flex-row sm:items-center sm:gap-4">
+              <p class="text-meta font-medium text-fg-muted sm:w-32 sm:shrink-0">{{ t('affiliate.inviteLink') }}</p>
+              <div class="flex min-w-0 flex-1 flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+                <code class="min-w-0 break-all font-mono text-meta text-fg sm:flex-1 sm:truncate">{{ inviteLink }}</code>
                 <button class="btn btn-secondary btn-sm w-full sm:w-auto sm:shrink-0" @click="copyInviteLink">
                   <Icon name="copy" size="sm" />
                   <span>{{ t('affiliate.copyLink') }}</span>
                 </button>
               </div>
             </div>
-          </div>
 
-          <div class="mt-5 rounded-xl border border-primary-200 bg-primary-50 p-4 dark:border-primary-900/40 dark:bg-primary-900/20">
-            <p class="text-sm font-medium text-primary-800 dark:text-primary-200">{{ t('affiliate.tips.title') }}</p>
-            <ul class="mt-2 space-y-1 text-sm text-primary-700 dark:text-primary-300">
-              <li>1. {{ t('affiliate.tips.line1') }}</li>
-              <li>2. {{ t('affiliate.tips.line2', { rate: `${formattedRebateRate}%` }) }}</li>
-              <li>3. {{ t('affiliate.tips.line3') }}</li>
-              <li v-if="detail.aff_frozen_quota > 0">4. {{ t('affiliate.tips.line4') }}</li>
-            </ul>
+            <div class="px-5 py-3">
+              <p class="text-label font-semibold text-fg">{{ t('affiliate.tips.title') }}</p>
+              <ol class="mt-1.5 space-y-1 text-body text-fg-muted">
+                <li>1. {{ t('affiliate.tips.line1') }}</li>
+                <li>2. {{ t('affiliate.tips.line2', { rate: `${formattedRebateRate}%` }) }}</li>
+                <li>3. {{ t('affiliate.tips.line3') }}</li>
+                <li v-if="detail.aff_frozen_quota > 0">4. {{ t('affiliate.tips.line4') }}</li>
+              </ol>
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div class="card p-6">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <section class="card">
+          <div class="card-body flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('affiliate.transfer.title') }}</h3>
-              <p class="mt-1 text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.transfer.description') }}</p>
+              <h3 class="card-title">{{ t('affiliate.transfer.title') }}</h3>
+              <p class="mt-0.5 text-body text-fg-muted">{{ t('affiliate.transfer.description') }}</p>
             </div>
             <button
               class="btn btn-primary"
@@ -99,24 +87,22 @@
               <span>{{ transferring ? t('affiliate.transfer.transferring') : t('affiliate.transfer.button') }}</span>
             </button>
           </div>
-          <p v-if="detail.aff_quota <= 0" class="mt-3 text-sm text-warning-600 dark:text-warning-400">
+          <p v-if="detail.aff_quota <= 0" class="card-footer text-body text-warning">
             {{ t('affiliate.transfer.empty') }}
           </p>
-        </div>
+        </section>
 
-        <div class="card p-6">
-          <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('affiliate.invitees.title') }}</h3>
-          <div class="mt-4">
-            <DataTable :columns="inviteeColumns" :data="detail.invitees" row-key="user_id">
-              <template #cell-total_rebate="{ row }">
-                <span class="font-medium text-success">{{ formatCurrency(row.total_rebate) }}</span>
-              </template>
-              <template #empty>
-                <p class="text-body text-fg-muted">{{ t('affiliate.invitees.empty') }}</p>
-              </template>
-            </DataTable>
-          </div>
-        </div>
+        <section class="space-y-0">
+          <h3 class="bill-section-title">{{ t('affiliate.invitees.title') }}</h3>
+          <DataTable :columns="inviteeColumns" :data="detail.invitees" row-key="user_id">
+            <template #cell-total_rebate="{ row }">
+              <span class="font-semibold tabular-nums text-success">{{ formatCurrency(row.total_rebate) }}</span>
+            </template>
+            <template #empty>
+              <p class="text-body text-fg-muted">{{ t('affiliate.invitees.empty') }}</p>
+            </template>
+          </DataTable>
+        </section>
       </template>
     </div>
   </AppLayout>

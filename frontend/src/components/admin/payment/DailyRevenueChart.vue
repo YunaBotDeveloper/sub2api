@@ -1,21 +1,21 @@
 <template>
-  <div class="card p-4">
-    <h3 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
-      {{ t('payment.admin.dailyRevenue') }}
-    </h3>
-    <div class="h-64">
+  <section class="card">
+    <div class="card-header">
+      <h3 class="card-title">{{ t('payment.admin.dailyRevenue') }}</h3>
+    </div>
+    <div class="h-64 p-4">
       <div v-if="loading" class="flex h-full items-center justify-center">
         <LoadingSpinner size="md" />
       </div>
       <Line v-else-if="chartData" :data="chartData" :options="chartOptions" />
       <div
         v-else
-        class="flex h-full items-center justify-center text-sm text-gray-500 dark:text-gray-400"
+        class="flex h-full items-center justify-center text-body text-fg-muted"
       >
         {{ t('payment.admin.noData') }}
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -33,6 +33,7 @@ import {
 } from 'chart.js'
 import { Line } from 'vue-chartjs'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import { useChartTheme, withAlpha } from '@/components/charts/chartTheme'
 import type { DailyPaymentStats } from '@/types/payment'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler)
@@ -44,21 +45,18 @@ const props = defineProps<{
   loading?: boolean
 }>()
 
-const colors = [
-  ['rgb(59, 130, 246)', 'rgba(59, 130, 246, 0.1)'],
-  ['rgb(168, 85, 247)', 'rgba(168, 85, 247, 0.1)'],
-  ['rgb(245, 158, 11)', 'rgba(245, 158, 11, 0.1)'],
-  ['rgb(239, 68, 68)', 'rgba(239, 68, 68, 0.1)'],
-]
+const chartTheme = useChartTheme()
 
 const chartData = computed(() => {
   if (!props.data || props.data.length === 0) return null
+  const theme = chartTheme.value
   const currencies = [...new Set(props.data.flatMap(day => Object.keys(day.amount)))].sort()
   return {
     labels: props.data.map(d => d.date),
     datasets: [
       ...currencies.map((currency, index) => {
-        const [borderColor, backgroundColor] = colors[index % colors.length]
+        const borderColor = theme.seriesColor(index)
+        const backgroundColor = withAlpha(borderColor, 0.1)
         return {
           label: `${currency} ${t('payment.admin.revenue')}`,
           data: props.data.map(day => day.amount[currency] || 0),
@@ -73,8 +71,8 @@ const chartData = computed(() => {
       {
         label: t('payment.admin.orderCount'),
         data: props.data.map(d => d.count),
-        borderColor: 'rgb(16, 185, 129)',
-        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderColor: theme.success,
+        backgroundColor: withAlpha(theme.success, 0.1),
         fill: false,
         tension: 0.3,
         pointRadius: 3,
@@ -85,7 +83,7 @@ const chartData = computed(() => {
   }
 })
 
-const chartOptions = {
+const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   interaction: { mode: 'index' as const, intersect: false },
@@ -94,18 +92,22 @@ const chartOptions = {
       type: 'linear' as const,
       display: true,
       position: 'left' as const,
-      title: { display: true, text: t('payment.admin.revenue') },
+      title: { display: true, text: t('payment.admin.revenue'), color: chartTheme.value.fgMuted },
+      grid: { color: chartTheme.value.border },
+      ticks: { color: chartTheme.value.fgMuted },
     },
     y1: {
       type: 'linear' as const,
       display: true,
       position: 'right' as const,
-      title: { display: true, text: t('payment.admin.orderCount') },
+      title: { display: true, text: t('payment.admin.orderCount'), color: chartTheme.value.fgMuted },
       grid: { drawOnChartArea: false },
+      ticks: { color: chartTheme.value.fgMuted },
     }
   },
   plugins: {
-    legend: { position: 'top' as const },
+    legend: { position: 'top' as const, labels: { color: chartTheme.value.fgMuted } },
+    tooltip: chartTheme.value.tooltip,
   }
-}
+}))
 </script>
