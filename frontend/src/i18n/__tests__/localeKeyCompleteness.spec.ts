@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import en from '../locales/en'
 import zh from '../locales/zh'
+import vi from '../locales/vi'
 
 type LocaleValue = Record<string, unknown>
 
@@ -70,8 +71,14 @@ describe('locale key completeness', () => {
     expect([...zhKeys].filter((key) => !enKeys.has(key)).sort()).toEqual([])
   })
 
+  it('keeps English and Vietnamese locale schemas identical', () => {
+    const viKeys = new Set(flattenLeafKeys(vi))
+    expect([...enKeys].filter((key) => !viKeys.has(key)).sort()).toEqual([])
+    expect([...viKeys].filter((key) => !enKeys.has(key)).sort()).toEqual([])
+  })
+
   it('contains a non-empty message for every locale leaf', () => {
-    for (const [locale, messages] of Object.entries({ en, zh })) {
+    for (const [locale, messages] of Object.entries({ en, zh, vi })) {
       const emptyKeys = flattenLeafKeys(messages).filter((key) => {
         let current: unknown = messages
         for (const segment of key.split('.')) {
