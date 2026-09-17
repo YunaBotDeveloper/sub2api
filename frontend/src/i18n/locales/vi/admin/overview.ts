@@ -114,6 +114,8 @@ export default {
         publicBaseUrl: 'URL gốc công khai',
         publicBaseUrlPlaceholder: 'Để trống để trả về liên kết presigned',
         presignExpiryHours: 'Thời hạn liên kết presigned (giờ)',
+        studioRetentionDays: 'Số ngày lưu ảnh Image Studio',
+        studioRetentionDaysHint: 'Các tác vụ Image Studio đã kết thúc và ảnh của chúng sẽ bị xóa sau số ngày này. 0 = giữ vĩnh viễn.',
         saved: 'Đã lưu cấu hình lưu trữ đối tượng cho ảnh bất đồng bộ'
       },
       schedule: {

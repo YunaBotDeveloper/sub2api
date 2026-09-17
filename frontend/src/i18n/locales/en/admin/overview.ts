@@ -114,6 +114,8 @@ export default {
         publicBaseUrl: 'Public base URL',
         publicBaseUrlPlaceholder: 'Leave empty to return presigned links',
         presignExpiryHours: 'Presigned link TTL (hours)',
+        studioRetentionDays: 'Image Studio retention (days)',
+        studioRetentionDaysHint: 'Finished Image Studio jobs and their images are deleted after this many days. 0 keeps them forever.',
         saved: 'Async image object storage saved'
       },
       schedule: {

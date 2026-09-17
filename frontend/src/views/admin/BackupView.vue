@@ -117,6 +117,11 @@
             <label class="input-label">{{ t('admin.backup.imageStorage.presignExpiryHours') }}</label>
             <input v-model.number="imageStorageForm.presign_expiry_hours" type="number" min="1" class="input w-full" />
           </div>
+          <div>
+            <label class="input-label" for="image-studio-retention">{{ t('admin.backup.imageStorage.studioRetentionDays') }}</label>
+            <input id="image-studio-retention" v-model.number="imageStorageForm.studio_retention_days" type="number" min="0" class="input w-full" />
+            <p class="mt-1 text-meta text-fg-muted">{{ t('admin.backup.imageStorage.studioRetentionDaysHint') }}</p>
+          </div>
         </div>
 
         <div class="card-footer -mx-5 -mb-5 mt-5 flex flex-wrap justify-end gap-2">
@@ -422,6 +427,7 @@ const imageStorageForm = ref<ImageStorageConfig>({
   access_key_id: '',
   secret_access_key: '',
   force_path_style: false,
+  studio_retention_days: 30,
 })
 const imageStorageSecretConfigured = ref(false)
 const savingImageStorage = ref(false)
@@ -625,6 +631,7 @@ async function loadImageStorageConfig() {
       prefix: config.prefix || 'images/',
       region: config.region || 'auto',
       secret_access_key: '',
+      studio_retention_days: config.studio_retention_days ?? 30,
     }
     imageStorageSecretConfigured.value = secret_configured
   } catch (error) {

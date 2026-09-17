@@ -27,6 +27,22 @@ type ImageStorage interface {
 	Save(ctx context.Context, key, contentType string, data []byte) (url string, err error)
 }
 
+// ImageObjectStore 是可读可删的对象存储，Image Studio 需要它来代理下载与清理。
+// 仓库自带的 S3 实现满足该接口；只实现 Save 的第三方存储不支持 Image Studio。
+type ImageObjectStore interface {
+	ImageStorage
+	Open(ctx context.Context, key string) (body io.ReadCloser, contentType string, err error)
+	Delete(ctx context.Context, key string) error
+}
+
+// StoredImage 描述 SaveImages 写入对象存储的一张图片。
+type StoredImage struct {
+	Key           string
+	ContentType   string
+	Bytes         int64
+	RevisedPrompt string
+}
+
 // ImageResultUploader 是 ImageStorage 的上层编排器（与具体厂商无关）：
 // 把上游生图响应里的每张图片（b64_json 解码 / url 下载）转存到对象存储，
 // 并把响应结果改写为只含短链接的紧凑 JSON，从而避免大 base64 落 Redis。
@@ -108,6 +124,45 @@ func (u *ImageResultUploader) Rewrite(ctx context.Context, taskID string, result
 		return nil, fmt.Errorf("encode image response: %w", err)
 	}
 	return out, nil
+}
+
+// Storage 返回底层对象存储。
+func (u *ImageResultUploader) Storage() ImageStorage {
+	if u == nil {
+		return nil
+	}
+	return u.storage
+}
+
+// SaveImages 把上游生图响应 data[] 中的图片逐张写入对象存储（key 为 prefix+keyBase-i.ext）。
+// 出错时仍返回已写入的图片，调用方据此保留部分成功的结果。
+func (u *ImageResultUploader) SaveImages(ctx context.Context, keyBase string, result json.RawMessage) ([]StoredImage, error) {
+	if u == nil || u.storage == nil {
+		return nil, errors.New("image storage is not configured")
+	}
+	var envelope struct {
+		Data []map[string]json.RawMessage `json:"data"`
+	}
+	if err := json.Unmarshal(result, &envelope); err != nil {
+		return nil, fmt.Errorf("parse image response: %w", err)
+	}
+	stored := make([]StoredImage, 0, len(envelope.Data))
+	for i, item := range envelope.Data {
+		data, contentType, err := u.fetchImageBytes(ctx, item)
+		if err != nil {
+			return stored, fmt.Errorf("image %d: %w", i, err)
+		}
+		key := u.buildKey(keyBase, i, contentType)
+		if _, err := u.storage.Save(ctx, key, contentType, data); err != nil {
+			return stored, fmt.Errorf("image %d: upload to object storage: %w", i, err)
+		}
+		var revised string
+		if raw, ok := item["revised_prompt"]; ok {
+			_ = json.Unmarshal(raw, &revised)
+		}
+		stored = append(stored, StoredImage{Key: key, ContentType: contentType, Bytes: int64(len(data)), RevisedPrompt: revised})
+	}
+	return stored, nil
 }
 
 func (u *ImageResultUploader) fetchImageBytes(ctx context.Context, item map[string]json.RawMessage) ([]byte, string, error) {

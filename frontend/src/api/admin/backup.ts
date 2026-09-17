@@ -96,6 +96,8 @@ export interface ImageStorageConfig {
   access_key_id: string
   secret_access_key?: string
   force_path_style: boolean
+  /** Image Studio retention in days; 0 keeps images forever. Unset means 30. */
+  studio_retention_days?: number
 }
 
 export interface ImageStorageConfigResponse {
