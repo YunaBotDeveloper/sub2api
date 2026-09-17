@@ -167,6 +167,7 @@ export default {
     announcements: 'Thông báo',
     apiKeys: 'API Keys',
     batchImage: 'Tạo ảnh hàng loạt',
+    imageStudio: 'Image Studio',
     usage: 'Sử dụng',
     redeem: 'Đổi mã',
     affiliate: 'Hoa hồng giới thiệu',
