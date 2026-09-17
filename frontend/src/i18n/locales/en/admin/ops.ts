@@ -390,7 +390,7 @@ export default {
         compareB: 'Compare B',
         suggestion: 'Suggestion',
         suggestUpstream: 'Upstream instability: check account status or consider switching accounts',
-        suggestRequest: 'Client request error: ask customer to fix request parameters',
+        suggestRequest: 'Client request error: ask customer to fix request parameters, or mark as resolved manually',
         suggestAuth: 'Auth failed: verify API key/credentials',
         suggestPlatform: 'Platform error: prioritize investigation and fix',
         suggestGeneric: 'See details for more context',
@@ -553,7 +553,7 @@ export default {
           threshold: 'Threshold',
           severity: 'Severity',
           window: 'Window (minutes)',
-          sustained: 'Sustained (samples)',
+          sustained: 'Sustained (minutes)',
           cooldown: 'Cooldown (minutes)',
           enabled: 'Enabled',
           notifyEmail: 'Send email notifications'

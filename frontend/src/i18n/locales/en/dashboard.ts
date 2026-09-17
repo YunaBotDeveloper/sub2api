@@ -404,7 +404,7 @@ export default {
     compactionFilter: 'Request Kind',
     allCompactionTypes: 'All Requests',
     compactionOnly: 'Compaction Only',
-    cyber: 'Cyber',
+    cyber: 'Cyber Policy',
     live: 'Live',
     unknown: 'Unknown',
     in: 'In',

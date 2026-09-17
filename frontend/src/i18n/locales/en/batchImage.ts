@@ -199,7 +199,7 @@ export default {
       itemImageIndexOutOfRange: 'This item has no previewable image.',
       downloadLimited: 'Too many download requests are active. Please try again later.',
       downloadTooLarge: 'This ZIP is too large for a single download. Download fewer items at once or ask an administrator to raise the batch download limit.',
-      deleteNotReady: 'Job records can only be deleted after the job finishes.',
+      deleteNotReady: 'Job records can only be deleted after the job finishes. Wait for jobs that are generating or settling to complete.',
       disabled: 'Batch image generation is currently disabled.',
       authRequired: 'The current API key is unavailable or expired. Select the key again.',
       adminReference: 'Send the error code and request ID to an administrator for troubleshooting.',
