@@ -493,6 +493,18 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/admin/quality-test',
+    name: 'AdminQualityTest',
+    component: () => import('@/views/admin/QualityTestView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true,
+      title: 'Quality Test',
+      titleKey: 'admin.qualityTest.title',
+      descriptionKey: 'admin.qualityTest.description'
+    }
+  },
+  {
     path: '/admin/plugins',
     name: 'AdminPlugins',
     component: () => import('@/views/admin/PluginsView.vue'),

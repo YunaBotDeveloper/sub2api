@@ -187,6 +187,7 @@ export default {
     proxies: 'Proxy',
     redeemCodes: 'Mã đổi thưởng',
     ops: 'Vận hành',
+    qualityTest: 'Kiểm tra chất lượng',
     promoCodes: 'Mã khuyến mãi',
     settings: 'Cài đặt',
     myAccount: 'Tài khoản của tôi',

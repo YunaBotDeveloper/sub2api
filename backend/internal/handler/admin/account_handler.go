@@ -1249,6 +1249,8 @@ type TestAccountRequest struct {
 	// ImageDataURL / AudioDataURL are data:<mime>;base64,... payloads.
 	ImageDataURL string `json:"image_data_url"`
 	AudioDataURL string `json:"audio_data_url"`
+	// ReasoningEffort is only used by mode=quality.
+	ReasoningEffort string `json:"reasoning_effort"`
 }
 
 type SyncFromCRSRequest struct {
@@ -1279,8 +1281,9 @@ func (h *AccountHandler) Test(c *gin.Context) {
 	_ = c.ShouldBindJSON(&req)
 
 	opts := service.AccountTestOptions{
-		ImageDataURL: req.ImageDataURL,
-		AudioDataURL: req.AudioDataURL,
+		ImageDataURL:    req.ImageDataURL,
+		AudioDataURL:    req.AudioDataURL,
+		ReasoningEffort: req.ReasoningEffort,
 	}
 
 	// Use AccountTestService to test the account with SSE streaming

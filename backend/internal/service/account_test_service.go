@@ -70,6 +70,8 @@ type TestEvent struct {
 type AccountTestOptions struct {
 	ImageDataURL string
 	AudioDataURL string
+	// ReasoningEffort is only used by AccountTestModeQuality.
+	ReasoningEffort string
 }
 
 func firstAccountTestOptions(opts []AccountTestOptions) AccountTestOptions {
@@ -355,6 +357,15 @@ func (s *AccountTestService) TestAccountConnection(c *gin.Context, accountID int
 		return nil
 	}
 
+	if isQualityTestMode(mode) {
+		spec, err := newQualityTestSpec(account, prompt, testOpts.ReasoningEffort)
+		if err != nil {
+			return s.sendErrorAndEnd(c, err.Error())
+		}
+		c.Request = c.Request.WithContext(withQualityTestSpec(ctx, spec))
+		mode = AccountTestModeDefault
+	}
+
 	// Route to platform-specific test method
 	if account.IsCNProvider() {
 		switch account.GetAPIProtocol() {
@@ -520,6 +531,7 @@ func (s *AccountTestService) testClaudeAccountConnection(c *gin.Context, account
 	if err != nil {
 		return s.sendErrorAndEnd(c, "Failed to create test payload")
 	}
+	applyClaudeQualityTestPayload(ctx, payload)
 	payloadBytes, _ := json.Marshal(payload)
 
 	// Send test_start event
@@ -598,6 +610,7 @@ func (s *AccountTestService) testClaudeVertexServiceAccountConnection(c *gin.Con
 	if err != nil {
 		return s.sendErrorAndEnd(c, "Failed to create test payload")
 	}
+	applyClaudeQualityTestPayload(ctx, payload)
 	payloadBytes, _ := json.Marshal(payload)
 	vertexBody, err := buildVertexAnthropicRequestBody(payloadBytes)
 	if err != nil {
@@ -847,6 +860,7 @@ func (s *AccountTestService) testOpenAIAccountConnection(c *gin.Context, account
 		upstreamTestModelID = normalizeOpenAIModelForUpstream(credentialAccount, testModelID)
 	}
 	payload := createOpenAITestPayload(upstreamTestModelID, isOAuth)
+	applyOpenAIQualityTestPayload(ctx, payload)
 	payloadBytes, _ := json.Marshal(payload)
 
 	// Send test_start event once. A task-invalid Agent Identity response may
