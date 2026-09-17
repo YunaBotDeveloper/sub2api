@@ -114,9 +114,9 @@ Rules:
 | P3 | Retention job and settings, restart recovery | ~300 LOC |
 | Later | Prompt templates and favorites; upscale (Catmull-Rom or external RealESRGAN); deferred billing; cancel; Redis queue | — |
 
-## 8. Open questions
+## 8. Decisions (2026-09-17)
 
-1. Is S3 mandatory, the same gate as async tasks, or should a local-disk backend be added for single-node deployments?
-2. Default retention: 30 days?
-3. Platforms: OpenAI and Grok (what `/v1/images` supports today)? Gemini image output is chat-based and would need a separate path.
-4. Should the per-user concurrency (2) and n cap (4) be admin settings, or constants for v1?
+1. **Storage: S3 only.** This is the same gate as async tasks, so no local-disk backend. Single-node deployments can run MinIO or R2. Revisit only if there is real demand.
+2. **Retention: 30 days by default,** set in the admin setting `image_studio.retention_days` (0 = keep forever). This is the only new setting in v1.
+3. **Platforms: OpenAI and Grok only,** reusing `/v1/images/*`. Gemini, which produces images through chat, is deferred.
+4. **Limits: constants.** At most 2 unfinished jobs per user and `n` ≤ 4. Billing and key rate limits already apply through the replayed gateway call, so these limits only protect the runner. Promote them to settings when an operator asks.
