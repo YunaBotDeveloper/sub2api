@@ -83,7 +83,7 @@ export default {
           enabled: '启用风控中心',
           enabledHint: '关闭后管理员侧边栏入口隐藏，网关内容审计不会执行。',
           cyberSessionBlock: 'cyber 会话自动屏蔽',
-          cyberSessionBlockHint: '开启后,被上游网络安全策略(cyber_policy)拦截的会话将在 TTL 内被本地屏蔽,不再发往上游。仅屏蔽该会话,不影响同 Key 其他会话。',
+          cyberSessionBlockHint: '开启后，被上游网络安全策略（cyber_policy）拦截的会话将在 TTL 内被本地屏蔽，不再发往上游。仅屏蔽该会话，不影响同 Key 其他会话。',
           cyberSessionBlockTTL: '屏蔽时长(秒)',
         },
         affiliate: {
@@ -330,7 +330,7 @@ export default {
           internalOnly: '仅本企业（Internal Only）'
         },
         bypassRegistration: '开放钉钉注册',
-        bypassRegistrationHint: '即使「开放注册」关闭时也可以通过钉钉登录来注册',
+        bypassRegistrationHint: '即使「开放注册」关闭时也可以通过钉钉登录来注册。',
         syncDisplayName: '同步钉钉姓名',
         syncDisplayNameHint: '登录时将钉钉姓名写入 username 字段（同时记录到 dingtalk_name 属性）',
         syncCorpEmail: '同步企业邮箱',
@@ -618,7 +618,7 @@ export default {
         siteSubtitleHint: '显示在登录和注册页面',
         siteSubtitlePlaceholder: '订阅转 API 转换平台',
         apiBaseUrl: 'API 端点地址',
-        apiBaseUrlHint: '用于"使用密钥"、"导入到 CC Switch"和回调地址建议，留空则使用当前站点地址',
+        apiBaseUrlHint: '用于「使用密钥」、「导入到 CC Switch」和回调地址建议，留空则使用当前站点地址',
         apiBaseUrlPlaceholder: 'https://api.example.com',
         tablePreferencesTitle: '通用表格设置',
         tablePreferencesDescription: '设置后台与用户侧表格组件的默认分页行为',
@@ -665,7 +665,7 @@ export default {
         compactHome: '简洁首页',
         compactHomeHint: '未设置自定义首页内容时，展示简洁的站点信息页面。',
         hideCcsImportButton: '隐藏 CCS 导入按钮',
-        hideCcsImportButtonHint: '启用后将在 API Keys 页面隐藏"导入 CCS"按钮'
+        hideCcsImportButtonHint: '启用后将在 API Keys 页面隐藏「导入 CCS」按钮'
       },
       purchase: {
         title: '充值/订阅页面',
@@ -676,7 +676,7 @@ export default {
         urlPlaceholder: 'https://example.com/purchase',
         urlHint: '必须是完整的 http(s) 链接',
         iframeWarning:
-          '⚠️ iframe 提示：部分网站会通过 X-Frame-Options 或 CSP（frame-ancestors）禁止被 iframe 嵌入，出现空白时可引导用户使用”新窗口打开”。',
+          '⚠️ iframe 提示：部分网站会通过 X-Frame-Options 或 CSP（frame-ancestors）禁止被 iframe 嵌入，出现空白时可引导用户使用「新窗口打开」。',
         integrationDoc: '支付集成文档',
         integrationDocHint: '包含接口说明、幂等语义及示例代码'
       },
@@ -699,7 +699,7 @@ export default {
         visibilityAdmin: '管理员',
         passToken: '向该页面透传访问令牌（涉及安全）',
         passTokenHint:
-          '默认关闭。开启后会把访问者本人的面板登录令牌（JWT）以 ?token=... 附加到页面地址上，iframe 和"在新标签页打开"的地址栏中都会带上它。任何能读到该地址的一方——被嵌入的站点、它加载的脚本、浏览器历史记录——都可以冒充该用户操作；若该页面仅管理员可见，泄露的就是管理员令牌。仅在页面由你自己运营且确实需要时开启，且地址必须为 https。',
+          '默认关闭。开启后会把访问者本人的面板登录令牌（JWT）以 ?token=... 附加到页面地址上，iframe 和「在新标签页打开」的地址栏中都会带上它。任何能读到该地址的一方——被嵌入的站点、它加载的脚本、浏览器历史记录——都可以冒充该用户操作；若该页面仅管理员可见，泄露的就是管理员令牌。仅在页面由你自己运营且确实需要时开启，且地址必须为 https。',
         add: '添加菜单项',
         remove: '删除',
         moveUp: '上移',
