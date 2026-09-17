@@ -668,7 +668,7 @@ export default {
       all: '全部'
     },
     badges: {
-      exclusive: '专属分组',
+      exclusive: '专属',
       subscription: '订阅'
     },
     detail: {
