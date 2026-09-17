@@ -2,22 +2,22 @@
   <div :class="props.embedded ? 'space-y-4' : 'card overflow-hidden'">
     <div
       v-if="!props.embedded"
-      class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
+      class="card-header"
     >
-      <h2 class="text-lg font-medium text-gray-900 dark:text-white">
+      <h2 class="card-title">
         {{ t('profile.authBindings.title') }}
       </h2>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      <p class="mt-0.5 text-meta text-fg-muted">
         {{ t('profile.authBindings.description') }}
       </p>
     </div>
 
-    <div :class="props.embedded ? 'space-y-4' : 'divide-y divide-gray-100 dark:divide-dark-700'">
+    <div :class="props.embedded ? 'space-y-4' : 'divide-y divide-border'">
       <div v-if="props.embedded">
-        <p class="text-sm font-semibold text-gray-900 dark:text-white">
+        <p class="text-label font-bold text-accent-strong">
           {{ t('profile.authBindings.title') }}
         </p>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p class="mt-0.5 text-meta text-fg-muted">
           {{ t('profile.authBindings.description') }}
         </p>
       </div>
@@ -29,22 +29,9 @@
       >
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div class="flex min-w-0 flex-1 items-start gap-4">
-            <div
-              :class="providerIconClass(item.provider)"
-              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-sm font-semibold"
-            >
-              <Icon
-                v-if="item.provider === 'email'"
-                name="mail"
-                size="sm"
-                class="text-current"
-              />
-              <span v-else>{{ providerInitial(item.provider) }}</span>
-            </div>
-
             <div class="min-w-0 flex-1 space-y-3">
               <div class="flex flex-wrap items-center gap-2">
-                <h3 class="font-medium text-gray-900 dark:text-white">
+                <h3 class="text-body font-semibold text-fg">
                   {{ item.label }}
                 </h3>
                 <span
@@ -61,18 +48,18 @@
 
               <p
                 v-if="providerSummary(item.provider)"
-                class="text-sm text-gray-600 dark:text-gray-300"
+                class="text-body text-fg-muted"
               >
                 {{ providerSummary(item.provider) }}
               </p>
 
               <div
                 v-if="hasBindingDetails(item.provider, item.details)"
-                class="grid gap-1 text-sm text-gray-500 dark:text-gray-400"
+                class="grid gap-1 text-meta text-fg-muted"
               >
                 <p
                   v-if="item.provider !== 'email' && item.details?.display_name"
-                  class="font-medium text-gray-700 dark:text-gray-200"
+                  class="font-medium text-fg"
                 >
                   {{ item.details.display_name }}
                 </p>
@@ -207,7 +194,6 @@ import {
   startOAuthBinding,
   unbindAuthIdentity,
 } from '@/api/user'
-import Icon from '@/components/icons/Icon.vue'
 import { useAppStore, useAuthStore } from '@/stores'
 import type { User, UserAuthBindingStatus, UserAuthProvider } from '@/types'
 
@@ -284,9 +270,9 @@ const compact = computed(() => props.compact)
 const rowClass = computed(() =>
   props.embedded
     ? compact.value
-      ? 'rounded-lg border border-gray-100 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-900/40'
-      : 'rounded-lg border border-gray-100 bg-gray-50/70 p-4 dark:border-dark-700 dark:bg-dark-900/30'
-    : 'px-6 py-5'
+      ? 'border-t border-border py-4'
+      : 'border-t border-border py-4'
+    : 'px-5 py-4'
 )
 const emailBound = computed(() => getBindingStatus('email'))
 const showEmailForm = computed(() => !compact.value || isEmailFormExpanded.value)
@@ -471,38 +457,6 @@ const providerItems = computed(() => [
     details: getBindingDetails('wechat'),
   },
 ])
-
-function providerInitial(provider: UserAuthProvider): string {
-  if (provider === 'linuxdo') {
-    return 'L'
-  }
-  if (provider === 'dingtalk') {
-    return 'D'
-  }
-  if (provider === 'wechat') {
-    return 'W'
-  }
-  if (provider === 'oidc') {
-    return 'O'
-  }
-  return 'E'
-}
-
-function providerIconClass(provider: UserAuthProvider): string {
-  if (provider === 'linuxdo') {
-    return 'bg-warning-100 text-warning-600 dark:bg-warning-900/20 dark:text-warning-300'
-  }
-  if (provider === 'dingtalk') {
-    return 'bg-accent-100 text-accent-600 dark:bg-accent-900/20 dark:text-accent-300'
-  }
-  if (provider === 'wechat') {
-    return 'bg-success-100 text-success-600 dark:bg-success-900/20 dark:text-success-300'
-  }
-  if (provider === 'oidc') {
-    return 'bg-accent-100 text-accent-600 dark:bg-accent-900/20 dark:text-accent-300'
-  }
-  return 'bg-primary-100 text-primary-600 dark:bg-primary-900/20 dark:text-primary-300'
-}
 
 function providerSummary(provider: UserAuthProvider): string {
   if (provider === 'email') {

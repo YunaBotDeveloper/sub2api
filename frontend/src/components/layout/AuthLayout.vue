@@ -1,24 +1,28 @@
 <template>
   <div class="flex min-h-screen items-center justify-center bg-surface-sunken p-4 sm:p-8">
-    <div class="w-full max-w-[420px]">
+    <div class="w-full max-w-[440px]">
       <!-- Logo/Brand -->
-      <div class="mb-8 text-center">
-        <template v-if="settingsLoaded">
-          <div class="mb-4 inline-flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg">
-            <img :src="siteLogo || '/logo.svg'" alt="Logo" class="h-full w-full object-contain" />
-          </div>
-          <h1 class="text-h1 font-semibold text-fg">
-            {{ siteName }}
-          </h1>
-          <p class="mt-1 text-body text-fg-muted">
-            {{ siteSubtitle }}
-          </p>
-        </template>
-      </div>
+      <div class="border border-border bg-surface" style="border-top: 4px solid rgb(var(--accent))">
+        <!-- 票头：运营方品牌 -->
+        <div class="flex min-h-[4.5rem] items-center gap-3 border-b border-border px-6 py-4 sm:px-8">
+          <template v-if="settingsLoaded">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden">
+              <img :src="siteLogo || '/logo.svg'" alt="Logo" class="h-full w-full object-contain" />
+            </div>
+            <div class="min-w-0">
+              <h1 class="truncate text-h2 font-bold text-accent-strong">
+                {{ siteName }}
+              </h1>
+              <p class="truncate text-meta text-fg-muted">
+                {{ siteSubtitle }}
+              </p>
+            </div>
+          </template>
+        </div>
 
-      <!-- Card Container -->
-      <div class="card p-6 sm:p-8">
-        <slot />
+        <div class="p-6 sm:p-8">
+          <slot />
+        </div>
       </div>
 
       <!-- Footer Links -->
@@ -28,7 +32,7 @@
 
       <!-- Copyright -->
       <div class="mt-8 text-center text-meta text-fg-subtle">
-        &copy; {{ currentYear }} {{ siteName }}. All rights reserved.
+        &copy; {{ currentYear }} {{ siteName }}. {{ t('home.footer.allRightsReserved') }}
       </div>
     </div>
   </div>
@@ -36,9 +40,11 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores'
 import { sanitizeUrl } from '@/utils/url'
 
+const { t } = useI18n()
 const appStore = useAppStore()
 
 const siteName = computed(() => appStore.siteName || 'Sub2API')

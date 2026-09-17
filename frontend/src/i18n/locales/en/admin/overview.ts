@@ -18,6 +18,7 @@ export default {
       newUsersToday: 'New Users Today',
       todayTokens: 'Today Tokens',
       totalTokens: 'Total Tokens',
+      beforeToday: 'Before Today',
       input: 'Input',
       output: 'Output',
       cacheToday: 'Cache (Today)',

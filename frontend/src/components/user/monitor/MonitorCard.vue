@@ -1,74 +1,54 @@
 <template>
   <button
     type="button"
-    class="group text-left p-5 rounded-lg min-h-[280px] w-full bg-white/70 border border-gray-200/80 shadow-card dark:bg-dark-800/60 dark:border-dark-700/70 hover:-translate-y-1 hover:shadow-card-hover dark:hover:border-primary-500/30 hover:border-gray-300 transition-all duration-300 ease-out flex flex-col"
+    class="group grid w-full grid-cols-1 gap-x-6 gap-y-3 bg-surface px-4 py-4 text-left transition-colors hover:bg-accent-weak/50 focus:outline-none focus-visible:bg-accent-weak lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1.4fr)] lg:items-center"
     @click="emit('click')"
   >
-    <!-- Header: icon + name/model + status chip -->
-    <div class="flex items-start gap-3">
-      <span
-        class="w-9 h-9 rounded-xl ring-1 ring-black/5 dark:ring-white/10 grid place-items-center flex-shrink-0"
-        :class="[providerGradient(item.provider), providerTintClass]"
-      >
-        <ProviderIcon :provider="item.provider" :size="20" />
+    <!-- 名称 / 提供方 / 模型 / 状态印章 -->
+    <div class="flex min-w-0 items-start gap-3">
+      <span class="mt-0.5 flex-shrink-0 text-accent">
+        <ProviderIcon :provider="item.provider" :size="18" />
       </span>
-      <div class="flex-1 min-w-0">
-        <div class="text-base font-semibold truncate text-gray-900 dark:text-gray-100">
-          {{ item.name }}
-        </div>
-        <div class="mt-0.5 flex items-center gap-1.5 min-w-0">
-          <span
-            class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium flex-shrink-0"
-            :class="providerBadgeClass(item.provider)"
-          >
-            {{ providerLabel(item.provider) }}
+      <div class="min-w-0 flex-1">
+        <div class="flex min-w-0 items-center gap-2">
+          <span class="truncate text-body font-semibold text-fg group-hover:text-accent-strong">
+            {{ item.name }}
           </span>
+          <span class="badge flex-shrink-0" :class="stampClass(item.primary_status)">
+            {{ statusLabel(item.primary_status) }}
+          </span>
+        </div>
+        <div class="mt-0.5 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-meta text-fg-muted">
+          <span class="flex-shrink-0 font-medium">{{ providerLabel(item.provider) }}</span>
           <!-- 纯配额模式主模型是占位符 "quota"，展示层替换为本地化「配额」标签 -->
-          <span class="font-mono text-xs truncate text-gray-500 dark:text-gray-400">
-            {{ formatMonitorModel(item.primary_model) }}
-          </span>
-          <span
-            v-if="item.group_name"
-            class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300 flex-shrink-0"
-          >
-            {{ item.group_name }}
-          </span>
+          <span class="truncate font-mono">{{ formatMonitorModel(item.primary_model) }}</span>
+          <span v-if="item.group_name" class="badge badge-gray flex-shrink-0">{{ item.group_name }}</span>
         </div>
+        <!-- 配额模式：最新用量/余额快照（服务端已按系统开关剥离，此处 flag 为纵深防御） -->
+        <MonitorQuotaView v-if="quotaVisible" :snapshot="item.latest_quota" class="mt-2" />
       </div>
-      <span
-        class="px-2.5 py-1 rounded-full text-xs font-semibold flex-shrink-0"
-        :class="statusBadgeClass(item.primary_status)"
-      >
-        {{ statusLabel(item.primary_status) }}
-      </span>
     </div>
 
-    <!-- Metrics -->
-    <MonitorMetricPair
-      primary-icon="bolt"
-      :primary-label="t('monitorCommon.dialogLatency')"
-      :primary-value="formatLatency(item.primary_latency_ms)"
-      primary-unit="ms"
-      secondary-icon="globe"
-      :secondary-label="t('monitorCommon.endpointPing')"
-      :secondary-value="formatLatency(item.primary_ping_latency_ms)"
-      secondary-unit="ms"
-    />
+    <!-- 延迟 + 可用率 -->
+    <div class="min-w-0">
+      <MonitorMetricPair
+        primary-icon="bolt"
+        :primary-label="t('monitorCommon.dialogLatency')"
+        :primary-value="formatLatency(item.primary_latency_ms)"
+        primary-unit="ms"
+        secondary-icon="globe"
+        :secondary-label="t('monitorCommon.endpointPing')"
+        :secondary-value="formatLatency(item.primary_ping_latency_ms)"
+        secondary-unit="ms"
+      />
+      <MonitorAvailabilityRow
+        :window-label="availabilityLabel"
+        :value="availabilityValue"
+        :samples-label="extraModelsCountLabel"
+      />
+    </div>
 
-    <!-- 配额模式：最新用量/余额快照（服务端已按系统开关剥离，此处 flag 为纵深防御） -->
-    <MonitorQuotaView v-if="quotaVisible" :snapshot="item.latest_quota" class="mt-2" />
-
-    <!-- Divider -->
-    <div class="mt-4 border-t border-gray-100 dark:border-dark-700/60"></div>
-
-    <!-- Availability row -->
-    <MonitorAvailabilityRow
-      :window-label="availabilityLabel"
-      :value="availabilityValue"
-      :samples-label="extraModelsCountLabel"
-    />
-
-    <!-- Timeline -->
+    <!-- 历史读数条 -->
     <MonitorTimeline
       :buckets="item.timeline"
       :countdown-seconds="countdownSeconds"
@@ -80,10 +60,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { UserMonitorView } from '@/api/channelMonitor'
-import {
-  useChannelMonitorFormat,
-  providerGradient,
-} from '@/composables/useChannelMonitorFormat'
+import { useChannelMonitorFormat } from '@/composables/useChannelMonitorFormat'
 import { isChannelMonitorQuotaVisible } from '@/utils/featureFlags'
 import ProviderIcon from './ProviderIcon.vue'
 import MonitorMetricPair from './MonitorMetricPair.vue'
@@ -91,18 +68,6 @@ import MonitorAvailabilityRow from './MonitorAvailabilityRow.vue'
 import MonitorTimeline from './MonitorTimeline.vue'
 import MonitorQuotaView from '@/components/common/MonitorQuotaView.vue'
 
-// 图标配色与 utils/platformColors.ts 的平台色对齐（新 4 家）。
-const PROVIDER_TINT: Record<string, string> = {
-  openai: 'text-success-600 dark:text-success-300',
-  anthropic: 'text-warning-600 dark:text-warning-300',
-  gemini: 'text-accent-600 dark:text-accent-300',
-  grok: 'text-gray-700 dark:text-gray-200',
-  antigravity: 'text-gray-600 dark:text-gray-300',
-  kimi: 'text-gray-600 dark:text-gray-300',
-  zhipu: 'text-accent-600 dark:text-accent-300',
-  deepseek: 'text-accent-600 dark:text-accent-300',
-  opencode_go: 'text-warning-700 dark:text-warning-300',
-}
 
 const props = defineProps<{
   item: UserMonitorView
@@ -118,16 +83,18 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const {
   statusLabel,
-  statusBadgeClass,
   providerLabel,
-  providerBadgeClass,
   formatLatency,
   formatMonitorModel,
 } = useChannelMonitorFormat()
 
-const providerTintClass = computed(() =>
-  PROVIDER_TINT[props.item.provider] ?? 'text-gray-500 dark:text-gray-300'
-)
+// 状态 → 印章
+const STAMP: Record<string, string> = {
+  operational: 'badge-success',
+  degraded: 'badge-warning',
+  failed: 'badge-danger',
+}
+const stampClass = (s: string) => STAMP[s] ?? 'badge-gray'
 
 const quotaVisible = computed(
   () => isChannelMonitorQuotaVisible() && !!props.item.latest_quota

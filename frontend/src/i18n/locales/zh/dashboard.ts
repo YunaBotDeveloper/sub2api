@@ -19,6 +19,16 @@ export default {
     modelDistribution: '模型分布',
     groupDistribution: '分组使用分布',
     platformBreakdown: '按平台拆分',
+    meterReading: {
+      title: 'Token 电表',
+      previous: '上次读数',
+      previousHint: '今日之前',
+      current: '本次读数',
+      currentHint: '累计',
+      consumed: '今日用量',
+      charge: '今日扣费',
+      account: '账户'
+    },
     platformBreakdownEmpty: '暂无平台用量',
     platformCount: '{count} 个平台',
     platformOther: '其他',
@@ -1019,6 +1029,7 @@ export default {
   errors: {
     somethingWentWrong: '出错了',
     pageNotFound: '页面未找到',
+    pageNotFoundDesc: '您访问的页面不存在或已被移动。',
     unauthorized: '未授权',
     forbidden: '禁止访问',
     serverError: '服务器错误',

@@ -3,18 +3,18 @@
     <!-- 铃铛按钮 -->
     <button
       @click="openModal"
-      class="relative flex h-9 w-9 items-center justify-center rounded-lg text-gray-600 transition-all hover:bg-gray-100 hover:scale-105 dark:text-gray-400 dark:hover:bg-dark-800"
-      :class="{ 'text-accent-600 dark:text-accent-400': unreadCount > 0 }"
+      class="relative flex h-10 w-10 items-center justify-center rounded-sm text-fg-muted transition-colors hover:bg-accent-weak hover:text-accent-strong"
+      :class="{ 'text-accent': unreadCount > 0 }"
       :aria-label="t('announcements.title')"
     >
       <Icon name="bell" size="md" />
       <!-- 未读红点 -->
       <span
         v-if="unreadCount > 0"
-        class="absolute right-1 top-1 flex h-2 w-2"
+        class="absolute right-2 top-2 flex h-2 w-2"
       >
-        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-danger-500 opacity-75"></span>
-        <span class="relative inline-flex h-2 w-2 rounded-full bg-danger-500"></span>
+        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-meter opacity-75"></span>
+        <span class="relative inline-flex h-2 w-2 rounded-full bg-meter ring-1 ring-meter-ink/40"></span>
       </span>
     </button>
 
@@ -31,7 +31,7 @@
       <!-- Toolbar -->
       <div v-if="unreadCount > 0" class="mb-3 flex items-center justify-between gap-3">
         <p class="text-body text-fg-muted">
-          <span class="font-medium text-accent">{{ unreadCount }}</span>
+          <span class="font-semibold tabular-nums text-accent-strong">{{ unreadCount }}</span>
           {{ t('announcements.unread') }}
         </p>
         <button
@@ -45,7 +45,7 @@
 
       <!-- Loading -->
       <div v-if="loading" class="flex items-center justify-center py-16">
-        <div class="h-10 w-10 animate-spin rounded-full border-4 border-border border-t-accent-500"></div>
+        <div class="spinner h-8 w-8 text-accent"></div>
       </div>
 
       <!-- Announcements List -->
@@ -53,23 +53,20 @@
         <div
           v-for="item in announcements"
           :key="item.id"
-          class="group relative flex cursor-pointer items-center gap-4 px-2 py-3 transition-colors hover:bg-surface-sunken"
-          :class="{ 'bg-accent-weak': !item.read_at }"
+          class="group relative flex min-h-12 cursor-pointer items-center gap-3 px-2 py-3 transition-colors hover:bg-accent-weak"
+          :class="{ 'shadow-[inset_3px_0_0_rgb(var(--meter))]': !item.read_at }"
           @click="openDetail(item)"
         >
           <!-- Status Indicator -->
-          <div
-            :class="[
-              'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg',
-              item.read_at ? 'bg-surface-sunken text-fg-subtle' : 'bg-accent-500 text-white'
-            ]"
-          >
-            <Icon :name="item.read_at ? 'checkCircle' : 'infoCircle'" size="md" />
-          </div>
+          <Icon
+            :name="item.read_at ? 'checkCircle' : 'infoCircle'"
+            size="sm"
+            :class="['flex-shrink-0', item.read_at ? 'text-fg-subtle' : 'text-accent']"
+          />
 
           <!-- Content -->
           <div class="min-w-0 flex-1">
-            <h3 class="truncate text-body font-medium text-fg">
+            <h3 class="truncate text-body font-semibold text-fg group-hover:text-accent-strong">
               {{ item.title }}
             </h3>
             <div class="mt-1 flex items-center gap-2">
@@ -86,17 +83,15 @@
           <Icon
             name="chevronRight"
             size="sm"
-            class="flex-shrink-0 text-fg-subtle transition-transform group-hover:translate-x-1"
+            class="flex-shrink-0 text-fg-subtle group-hover:text-accent-strong"
           />
         </div>
       </div>
 
       <!-- Empty State -->
-      <div v-else class="flex flex-col items-center justify-center py-16">
-        <div class="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-surface-sunken">
-          <Icon name="inbox" size="xl" class="text-fg-subtle" />
-        </div>
-        <p class="text-body font-medium text-fg">{{ t('announcements.empty') }}</p>
+      <div v-else class="empty-state">
+        <Icon name="inbox" size="xl" class="empty-state-icon" />
+        <p class="text-body font-semibold text-fg">{{ t('announcements.empty') }}</p>
         <p class="mt-1 text-meta text-fg-muted">{{ t('announcements.emptyDescription') }}</p>
       </div>
     </BaseDialog>
@@ -129,7 +124,7 @@
         </div>
 
         <!-- Body with Markdown -->
-        <div class="border-l-4 border-accent-500 pl-4">
+        <div class="border border-accent/40 pl-4">
           <div
             class="markdown-body prose prose-sm max-w-none dark:prose-invert"
             v-html="renderMarkdown(selectedAnnouncement.content)"

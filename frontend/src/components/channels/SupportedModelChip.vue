@@ -3,10 +3,10 @@
     <span
       ref="triggerEl"
       :class="[
-        'inline-flex cursor-help items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-medium transition-colors',
+        'inline-flex cursor-help items-center gap-1 rounded-sm border px-1.5 py-px font-mono text-meta font-medium transition-colors',
         effectivePlatform
           ? platformBadgeClass(effectivePlatform)
-          : 'border-gray-200 bg-gray-50 text-gray-700 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300',
+          : 'border-border-strong bg-surface-sunken text-fg',
       ]"
       @mouseenter="onEnter"
       @mouseleave="onLeave"
@@ -21,7 +21,7 @@
       />
       <span
         v-if="showPlatform && model.platform"
-        class="rounded bg-gray-200/60 px-1 text-[10px] uppercase text-gray-600 dark:bg-dark-700 dark:text-gray-400"
+        class="rounded-sm bg-surface-sunken px-1 font-sans text-meta text-fg-muted"
       >
         {{ model.platform }}
       </span>
@@ -36,32 +36,30 @@
         v-show="show"
         ref="popoverEl"
         role="tooltip"
-        class="pointer-events-none fixed z-[99999] w-80 max-w-[min(22rem,calc(100vw-1rem))] rounded-lg border bg-white text-xs shadow-xl dark:bg-dark-800"
-        :class="[popoverBorderClass]"
+        class="pointer-events-none fixed z-[99999] w-80 max-w-[min(22rem,calc(100vw-1rem))] rounded-none border border-border-strong border-t-2 border-t-accent bg-surface-raised text-meta shadow-overlay"
         :style="popoverStyle"
       >
         <!-- Header：平台主题色背景，含模型名 + 平台徽章 -->
         <div
-          class="flex items-center justify-between gap-2 rounded-t-lg border-b px-3 py-2"
-          :class="[popoverHeaderClass, popoverBorderClass]"
+          class="flex items-center justify-between gap-2 border-b border-border bg-accent-weak px-3 py-2 text-accent-strong"
         >
-          <span class="truncate font-semibold">{{ model.name }}</span>
+          <span class="truncate font-mono font-semibold">{{ model.name }}</span>
           <span
             v-if="model.platform"
-            class="flex-shrink-0 rounded bg-white/70 px-1.5 py-0.5 text-[10px] uppercase tracking-wide dark:bg-dark-900/60"
+            class="badge flex-shrink-0"
           >
             {{ model.platform }}
           </span>
         </div>
 
         <div class="p-3">
-          <div v-if="!model.pricing" class="text-gray-500 dark:text-gray-400">
+          <div v-if="!model.pricing" class="text-fg-muted">
             {{ noPricingLabel }}
           </div>
 
-          <div v-else class="space-y-2 text-gray-700 dark:text-gray-300">
+          <div v-else class="space-y-1.5 text-fg">
             <div class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t(prefixKey('billingMode')) }}</span>
+              <span class="text-fg-muted">{{ t(prefixKey('billingMode')) }}</span>
               <span>{{ billingModeLabel }}</span>
             </div>
 
@@ -137,19 +135,18 @@
 
             <div
               v-if="model.pricing.intervals && model.pricing.intervals.length > 0"
-              class="mt-2 border-t pt-2"
-              :class="[popoverBorderClass]"
+              class="mt-2 border-t border-border pt-2"
             >
-              <div class="mb-1 font-medium text-gray-600 dark:text-gray-400">
+              <div class="mb-1 font-semibold text-accent-strong">
                 {{ t(prefixKey('intervals')) }}
               </div>
               <div class="space-y-1">
                 <div
                   v-for="(iv, idx) in model.pricing.intervals"
                   :key="idx"
-                  class="flex justify-between text-[11px]"
+                  class="flex justify-between tabular-nums"
                 >
-                  <span class="text-gray-500 dark:text-gray-400">
+                  <span class="text-fg-muted">
                     <template v-if="iv.tier_label">{{ iv.tier_label }}</template>
                     <template v-else>{{ formatRange(iv.min_tokens, iv.max_tokens) }}</template>
                   </span>
@@ -179,7 +176,7 @@ import {
 import type { UserPricingInterval, UserSupportedModel, UserSupportedModelPricing } from '@/api/channels'
 import PlatformIcon from '@/components/common/PlatformIcon.vue'
 import type { GroupPlatform } from '@/types'
-import { platformBadgeClass, platformBorderClass, platformBadgeLightClass } from '@/utils/platformColors'
+import { platformBadgeClass } from '@/utils/platformColors'
 
 const props = withDefaults(
   defineProps<{
@@ -208,19 +205,6 @@ const { t } = useI18n()
 
 /** 按 token 定价展示时的换算单位：每百万 token。 */
 const perMillionScale = 1_000_000
-
-// Popover border + header classes echo the platform theme so each card reads
-// at a glance which model family it belongs to.
-const popoverBorderClass = computed(() =>
-  effectivePlatform.value
-    ? platformBorderClass(effectivePlatform.value)
-    : 'border-gray-200 dark:border-dark-600',
-)
-const popoverHeaderClass = computed(() =>
-  effectivePlatform.value
-    ? platformBadgeLightClass(effectivePlatform.value)
-    : 'bg-gray-50 text-gray-700 dark:bg-dark-700/60 dark:text-gray-300',
-)
 
 function prefixKey(k: string): string {
   return `${props.pricingKeyPrefix}.${k}`

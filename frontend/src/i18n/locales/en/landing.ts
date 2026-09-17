@@ -109,6 +109,39 @@ export default {
       description: 'Sign up now and get free trial credits to experience seamless AI access',
       button: 'Sign Up Free'
     },
+    connect: {
+      title: 'Point your CLI at this relay',
+      hint: 'Create an API key in the dashboard, then set this base URL in your tool. Full per-OS setup is shown next to each key.'
+    },
+    billing: {
+      title: 'How billing works',
+      description: 'You top up a prepaid balance. Every request is metered in tokens, priced at the model rate and deducted from that balance.',
+      meter: {
+        usage: 'Reading',
+        usageValue: 'Tokens used per request',
+        rate: 'Rate',
+        rateValue: 'Model price per 1M tokens',
+        multiplier: 'Multiplier',
+        multiplierValue: "Your key's group rate",
+        charge: 'Charge',
+        chargeValue: 'Deducted from balance'
+      },
+      table: {
+        item: 'Billed line',
+        unit: 'Unit',
+        basis: 'Priced at',
+        perMillion: 'per 1M tokens'
+      },
+      lines: {
+        input: { item: 'Input tokens', basis: 'Input price of the model' },
+        output: { item: 'Output tokens', basis: 'Output price of the model' },
+        cacheWrite: { item: 'Cache write tokens', basis: 'Cache write price of the model' },
+        cacheRead: { item: 'Cache read tokens', basis: 'Cache read price of the model' },
+        total: { item: 'Request charge', basis: 'Sum of lines × group multiplier' }
+      },
+      note: 'Rates differ by model and group. Every charge is itemised in your usage log.',
+      rateCardLink: 'See the model rate card'
+    },
     footer: {
       allRightsReserved: 'All rights reserved.'
     }

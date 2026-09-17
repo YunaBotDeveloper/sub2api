@@ -1,10 +1,10 @@
 <template>
   <BaseDialog :show="show" :title="t('admin.promptAudit.events.filterDeleteDialogTitle')" width="wide" @close="$emit('close')">
-    <div class="space-y-5 text-sm">
-      <p class="text-gray-500 dark:text-dark-300">{{ t('admin.promptAudit.events.filterDeleteDialogDesc') }}</p>
+    <div class="space-y-5 text-body">
+      <p class="text-fg-muted">{{ t('admin.promptAudit.events.filterDeleteDialogDesc') }}</p>
 
       <fieldset>
-        <legend class="text-xs font-medium text-gray-600 dark:text-dark-200">{{ t('admin.promptAudit.events.filterTimeRange') }}</legend>
+        <legend class="text-meta font-medium text-fg-muted">{{ t('admin.promptAudit.events.filterTimeRange') }}</legend>
         <div class="mt-2 flex flex-wrap gap-2" role="radiogroup" :aria-label="t('admin.promptAudit.events.filterTimeRange')">
           <label
             v-for="option in DELETE_RANGE_PRESETS"
@@ -12,27 +12,27 @@
             class="cursor-pointer"
           >
             <input v-model="preset" type="radio" name="prompt-delete-range" :value="option.id" class="peer sr-only" :data-test="`range-preset-${option.id}`" @change="criteriaChanged" />
-            <span class="inline-flex items-center rounded-full border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors peer-checked:border-danger-500 peer-checked:bg-danger-50 peer-checked:text-danger-700 peer-focus-visible:ring-2 peer-focus-visible:ring-danger-500/30 dark:border-dark-600 dark:text-dark-300 dark:peer-checked:border-danger-500 dark:peer-checked:bg-danger-950/40 dark:peer-checked:text-danger-300">
+            <span class="inline-flex min-h-9 items-center rounded-sm border border-border-strong px-3 py-1.5 text-label font-medium text-fg-muted transition-colors peer-checked:border-danger peer-checked:bg-danger-weak peer-checked:text-danger-strong peer-focus-visible:ring-2 peer-focus-visible:ring-danger">
               {{ t(`admin.promptAudit.events.timePresets.${option.id}`) }}
             </span>
           </label>
         </div>
-        <p class="mt-2 text-xs text-gray-500 dark:text-dark-400">{{ t('admin.promptAudit.events.filterTimeRangeHint') }}</p>
+        <p class="mt-2 text-meta text-fg-muted">{{ t('admin.promptAudit.events.filterTimeRangeHint') }}</p>
         <div v-if="preset === 'custom'" class="mt-3 grid gap-3 sm:grid-cols-2" data-test="custom-range">
-          <label class="text-xs text-gray-600 dark:text-dark-200">
+          <label class="text-meta font-medium text-fg-muted">
             <span>{{ t('admin.promptAudit.events.startAt') }}</span>
             <input v-model="local.start_at" type="datetime-local" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.startAt')" @change="criteriaChanged" />
           </label>
-          <label class="text-xs text-gray-600 dark:text-dark-200">
+          <label class="text-meta font-medium text-fg-muted">
             <span>{{ t('admin.promptAudit.events.endAt') }}</span>
             <input v-model="local.end_at" type="datetime-local" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.endAt')" @change="criteriaChanged" />
           </label>
-          <p v-if="!canPreview" class="text-xs text-danger-600 dark:text-danger-400 sm:col-span-2">{{ t('admin.promptAudit.events.customRangeInvalid') }}</p>
+          <p v-if="!canPreview" class="text-meta text-danger sm:col-span-2">{{ t('admin.promptAudit.events.customRangeInvalid') }}</p>
         </div>
       </fieldset>
 
       <div class="grid gap-3 sm:grid-cols-2">
-        <label class="text-xs text-gray-600 dark:text-dark-200">
+        <label class="text-meta font-medium text-fg-muted">
           <span>{{ t('admin.promptAudit.events.decision') }}</span>
           <select v-model="local.decision" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.decision')" data-test="delete-decision" @change="criteriaChanged">
             <option value="">{{ t('common.all') }}</option>
@@ -41,7 +41,7 @@
             <option value="critical">{{ t('admin.promptAudit.decisions.critical') }}</option>
           </select>
         </label>
-        <label class="text-xs text-gray-600 dark:text-dark-200">
+        <label class="text-meta font-medium text-fg-muted">
           <span>{{ t('admin.promptAudit.events.risk') }}</span>
           <select v-model="local.risk_level" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.risk')" data-test="delete-risk" @change="criteriaChanged">
             <option value="">{{ t('common.all') }}</option>
@@ -53,31 +53,31 @@
         </label>
       </div>
 
-      <details class="rounded-xl border border-gray-200 px-4 py-3 dark:border-dark-700/60" data-test="more-conditions">
-        <summary class="cursor-pointer select-none text-xs font-medium text-gray-600 dark:text-dark-200">{{ t('admin.promptAudit.events.moreConditions') }}</summary>
+      <details class="border-y border-border py-3" data-test="more-conditions">
+        <summary class="cursor-pointer select-none text-label font-semibold text-accent-strong">{{ t('admin.promptAudit.events.moreConditions') }}</summary>
         <div class="mt-3 grid gap-3 sm:grid-cols-2">
-          <label class="text-xs text-gray-600 dark:text-dark-200">
+          <label class="text-meta font-medium text-fg-muted">
             <span>{{ t('admin.promptAudit.events.endpoint') }}</span>
             <input v-model="local.endpoint" type="text" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.endpoint')" @input="criteriaChanged" />
           </label>
-          <label class="text-xs text-gray-600 dark:text-dark-200">
+          <label class="text-meta font-medium text-fg-muted">
             <span>{{ t('admin.promptAudit.events.keyword') }}</span>
             <input v-model="local.keyword" type="text" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.keyword')" @input="criteriaChanged" />
           </label>
-          <label class="text-xs text-gray-600 dark:text-dark-200">
+          <label class="text-meta font-medium text-fg-muted">
             <span>{{ t('admin.promptAudit.events.groupId') }}</span>
             <input v-model="local.group_id" type="number" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.groupId')" @input="criteriaChanged" />
           </label>
-          <label class="text-xs text-gray-600 dark:text-dark-200">
+          <label class="text-meta font-medium text-fg-muted">
             <span>{{ t('admin.promptAudit.events.userId') }}</span>
             <input v-model="local.user_id" type="number" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.userId')" @input="criteriaChanged" />
           </label>
         </div>
       </details>
 
-      <div v-if="preview" class="rounded-xl border border-danger-200 bg-danger-50/60 px-4 py-3 dark:border-danger-900/60 dark:bg-danger-950/20" data-test="delete-preview-result">
-        <p class="text-sm font-semibold text-danger-700 dark:text-danger-300">{{ t('admin.promptAudit.events.filterDeleteCount', { count: preview.matched_count }) }}</p>
-        <dl class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-dark-300">
+      <div v-if="preview" class="border border-danger/40 bg-danger-weak px-4 py-3" data-test="delete-preview-result">
+        <p class="text-body font-semibold tabular-nums text-danger-strong">{{ t('admin.promptAudit.events.filterDeleteCount', { count: preview.matched_count }) }}</p>
+        <dl class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-meta tabular-nums text-fg-muted">
           <dt>{{ t('admin.promptAudit.events.snapshotMax') }}</dt>
           <dd>{{ preview.snapshot_max_id }}</dd>
           <dt>Filter SHA-256</dt>
@@ -85,16 +85,16 @@
           <dt>{{ t('admin.promptAudit.events.expiresAt') }}</dt>
           <dd>{{ formatDate(preview.expires_at) }}</dd>
         </dl>
-        <p class="mt-2 rounded-lg bg-warning-50 px-3 py-2 text-xs text-warning-800 dark:bg-warning-950/30 dark:text-warning-200">{{ t('admin.promptAudit.events.filterDeleteWarning') }}</p>
+        <p class="mt-2 border-t border-danger/30 pt-2 text-meta font-medium text-warning-strong">{{ t('admin.promptAudit.events.filterDeleteWarning') }}</p>
       </div>
-      <p v-else class="rounded-xl border border-dashed border-gray-300 px-4 py-3 text-xs text-gray-500 dark:border-dark-600 dark:text-dark-400" data-test="delete-preview-empty">
+      <p v-else class="border-y border-dashed border-border-strong py-3 text-meta text-fg-muted" data-test="delete-preview-empty">
         {{ t('admin.promptAudit.events.filterDeleteNeedPreview') }}
       </p>
     </div>
 
     <template #footer>
       <div class="flex flex-wrap items-center justify-end gap-3">
-        <p v-if="confirmDisabledReason" class="mr-auto text-xs text-gray-500 dark:text-dark-400" data-test="confirm-disabled-reason">
+        <p v-if="confirmDisabledReason" class="mr-auto text-meta text-fg-muted" data-test="confirm-disabled-reason">
           {{ t(confirmDisabledReason) }}
         </p>
         <button type="button" class="btn btn-secondary" @click="$emit('close')">{{ t('common.cancel') }}</button>

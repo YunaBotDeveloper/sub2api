@@ -10,46 +10,62 @@ const v = (name) => `rgb(var(--${name}) / <alpha-value>)`
 
 // 中性色阶（浅色模式）
 const neutral = {
-  50: '#f6f7f9',
-  100: '#eef0f3',
-  200: '#e3e6ea',
-  300: '#c9cfd6',
-  400: '#9aa4af',
-  500: '#6e7885',
-  600: '#5b6673',
-  700: '#3d4652',
-  800: '#262d36',
-  900: '#12161c',
-  950: '#0a0d12'
+  50: '#f3f6fa',
+  100: '#e9eef5',
+  200: '#d6dfea',
+  300: '#b7c5d6',
+  400: '#8a9ab0',
+  500: '#687484',
+  600: '#546070',
+  700: '#3a4452',
+  800: '#2a313b',
+  900: '#20242a',
+  950: '#12161c'
 }
 
 // 深色模式表面色阶（模板里以 dark:bg-dark-800 等形式使用）
 const darkSurface = {
-  50: '#f3f5f7',
-  100: '#e6eaef',
-  200: '#c3cbd3',
-  300: '#9aa6b2',
-  400: '#6b7787',
-  500: '#4d5867',
-  600: '#39424e',
-  700: '#262d36',
-  800: '#161b22',
-  900: '#0f1319',
-  950: '#0a0d12'
+  50: '#e8ecf2',
+  100: '#d2dae5',
+  200: '#b4c0d0',
+  300: '#a0acbe',
+  400: '#7d8ba0',
+  500: '#56657c',
+  600: '#405470',
+  700: '#263347',
+  800: '#161f2e',
+  900: '#111824',
+  950: '#0b1019'
 }
 
-const teal = {
-  50: '#f0fdfa',
-  100: '#ccfbf1',
-  200: '#99f6e4',
-  300: '#5eead4',
-  400: '#2dd4bf',
-  500: '#14b8a6',
-  600: '#0d9488',
-  700: '#0f766e',
-  800: '#115e59',
-  900: '#134e4a',
-  950: '#042f2e'
+// 账单蓝（Metered Utility Bill 视觉世界）
+const billBlue = {
+  50: '#f1f5fb',
+  100: '#e7eef7',
+  200: '#c7d7ec',
+  300: '#9bb8dd',
+  400: '#7aa6e0',
+  500: '#3d6bab',
+  600: '#1f4e8c',
+  700: '#1f4e8c',
+  800: '#163a6b',
+  900: '#10294b',
+  950: '#0a1a30'
+}
+
+// 电表黄：只标记“当前读数”和需要注意的位置
+const meterYellow = {
+  50: '#fefaeb',
+  100: '#fdf3d0',
+  200: '#fae59c',
+  300: '#f6d468',
+  400: '#f2c230',
+  500: '#e0ab12',
+  600: '#b3850a',
+  700: '#8a650a',
+  800: '#5c4500',
+  900: '#3d2e00',
+  950: '#261c00'
 }
 
 const semantic = (scale, name) => ({
@@ -84,16 +100,16 @@ export default {
       '4xl': ['36px', { lineHeight: '1.1' }],
       '5xl': ['48px', { lineHeight: '1' }]
     },
-    // 圆角：3 级 + pill。旧的 xl/2xl/3xl 全部收敛到 8px。
+    // 圆角：印刷账单的直角感，最大 4px；pill 仅留给开关/头像。
     borderRadius: {
       none: '0',
-      sm: '4px',
-      DEFAULT: '6px',
-      md: '6px',
-      lg: '8px',
-      xl: '8px',
-      '2xl': '8px',
-      '3xl': '8px',
+      sm: '2px',
+      DEFAULT: '2px',
+      md: '3px',
+      lg: '4px',
+      xl: '4px',
+      '2xl': '4px',
+      '3xl': '4px',
       full: '9999px'
     },
     // 阴影：只保留浮层一档。卡片用 1px 边框。
@@ -126,17 +142,19 @@ export default {
           muted: v('fg-muted'),
           subtle: v('fg-subtle')
         },
-        accent: semantic(teal, 'accent'),
+        accent: semantic(billBlue, 'accent'),
+        meter: { ...meterYellow, DEFAULT: v('meter'), weak: v('meter-weak'), ink: v('meter-ink') },
         success: semantic(defaultColors.emerald, 'success'),
         warning: semantic(defaultColors.amber, 'warning'),
         danger: semantic(defaultColors.red, 'danger'),
         // ---- 兼容别名 ----
-        primary: semantic(teal, 'accent'),
+        primary: semantic(billBlue, 'accent'),
         gray: neutral,
         dark: darkSurface
       },
       fontFamily: {
         sans: [
+          'Be Vietnam Pro',
           'system-ui',
           '-apple-system',
           'BlinkMacSystemFont',

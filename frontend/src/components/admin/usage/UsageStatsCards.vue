@@ -1,89 +1,76 @@
 <template>
-  <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-    <div class="card p-4 flex items-center gap-3">
-      <div class="rounded-lg bg-accent-100 p-2 dark:bg-accent-900/30 text-accent-600">
-        <Icon name="document" size="md" />
-      </div>
-      <div>
-        <p class="text-xs font-medium text-gray-500">{{ t('usage.totalRequests') }}</p>
-        <p class="text-xl font-bold">{{ stats?.total_requests?.toLocaleString() || '0' }}</p>
-        <p class="text-xs text-gray-400">{{ t('usage.inSelectedRange') }}</p>
-      </div>
+  <!-- 本期读数：请求 / Token / 金额（当前读数） / 平均耗时 -->
+  <div class="meter">
+    <div class="meter-cell">
+      <p class="meter-label">{{ t('usage.totalRequests') }}</p>
+      <p class="meter-value">{{ stats?.total_requests?.toLocaleString() || '0' }}</p>
+      <p class="meter-sub">{{ t('usage.inSelectedRange') }}</p>
     </div>
-    <div class="card p-4 flex items-center gap-3">
-      <div class="rounded-lg bg-warning-100 p-2 dark:bg-warning-900/30 text-warning-600"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg></div>
-      <div>
-        <p class="text-xs font-medium text-gray-500">{{ t('usage.totalTokens') }}</p>
-        <p class="text-xl font-bold">{{ formatTokens(stats?.total_tokens || 0) }}</p>
-        <p class="flex flex-wrap items-center gap-x-1 text-xs text-gray-500">
-          <span>{{ t('usage.in') }}: {{ formatTokens(stats?.total_input_tokens || 0) }}</span>
-          <span>/</span>
-          <span>{{ t('usage.out') }}: {{ formatTokens(stats?.total_output_tokens || 0) }}</span>
-          <span>/</span>
-          <span class="group relative inline-flex cursor-help items-center gap-0.5" tabindex="0">
-            <span>{{ cacheLabel() }}: {{ formatTokens(stats?.total_cache_tokens || 0) }}</span>
-            <svg
-              class="h-3.5 w-3.5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <span
-              class="pointer-events-none absolute left-1/2 top-full z-30 mt-2 hidden w-56 -translate-x-1/2 rounded-lg border border-gray-200 bg-white p-3 text-left text-xs text-gray-700 shadow-lg group-hover:block group-focus:block dark:border-dark-600 dark:bg-dark-800 dark:text-dark-200"
-            >
-              <span class="mb-2 block font-medium text-gray-900 dark:text-white">
-                {{ cacheDetailLabel() }}
+    <div class="meter-cell">
+      <p class="meter-label">{{ t('usage.totalTokens') }}</p>
+      <p class="meter-value">{{ formatTokens(stats?.total_tokens || 0) }}</p>
+      <p class="meter-sub flex flex-wrap items-center gap-x-1 overflow-visible whitespace-normal tabular-nums">
+        <span>{{ t('usage.in') }}: {{ formatTokens(stats?.total_input_tokens || 0) }}</span>
+        <span class="text-fg-subtle">/</span>
+        <span>{{ t('usage.out') }}: {{ formatTokens(stats?.total_output_tokens || 0) }}</span>
+        <span class="text-fg-subtle">/</span>
+        <span class="group relative inline-flex cursor-help items-center gap-0.5" tabindex="0">
+          <span>{{ cacheLabel() }}: {{ formatTokens(stats?.total_cache_tokens || 0) }}</span>
+          <svg
+            class="h-3.5 w-3.5 text-fg-subtle"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span
+            class="pointer-events-none absolute left-1/2 top-full z-30 mt-2 hidden w-56 -translate-x-1/2 rounded-sm border border-border-strong bg-surface-raised p-3 text-left text-meta text-fg shadow-overlay group-hover:block group-focus:block"
+          >
+            <span class="mb-2 block border-b border-border pb-1 font-semibold text-accent-strong">
+              {{ cacheDetailLabel() }}
+            </span>
+            <span class="flex items-center justify-between gap-3">
+              <span>{{ t('usage.cacheCreationTokensLabel') }}</span>
+              <span class="tabular-nums">
+                {{ formatTokens(stats?.total_cache_creation_tokens || 0) }}
               </span>
-              <span class="flex items-center justify-between gap-3">
-                <span>{{ t('usage.cacheCreationTokensLabel') }}</span>
-                <span class="tabular-nums">
-                  {{ formatTokens(stats?.total_cache_creation_tokens || 0) }}
-                </span>
-              </span>
-              <span class="mt-1 flex items-center justify-between gap-3">
-                <span>{{ t('usage.cacheReadTokensLabel') }}</span>
-                <span class="tabular-nums">
-                  {{ formatTokens(stats?.total_cache_read_tokens || 0) }}
-                </span>
+            </span>
+            <span class="mt-1 flex items-center justify-between gap-3">
+              <span>{{ t('usage.cacheReadTokensLabel') }}</span>
+              <span class="tabular-nums">
+                {{ formatTokens(stats?.total_cache_read_tokens || 0) }}
               </span>
             </span>
           </span>
-        </p>
-      </div>
+        </span>
+      </p>
     </div>
-    <div class="card p-4 flex items-center gap-3">
-      <div class="rounded-lg bg-success-100 p-2 dark:bg-success-900/30 text-success-600">
-        <Icon name="dollar" size="md" />
-      </div>
-      <div class="min-w-0 flex-1">
-        <p class="text-xs font-medium text-gray-500">{{ t('usage.totalCost') }}</p>
-        <p class="text-xl font-bold text-success-600">
-          ${{ (stats?.total_actual_cost || 0).toFixed(4) }}
-        </p>
-        <p class="text-xs text-gray-400">
-          <template v-if="showAccountCost && totalAccountCost != null">
-            <span class="text-warning-500">{{ t('usage.accountCost') }} ${{ totalAccountCost.toFixed(4) }}</span>
-            <span> · </span>
-          </template>
-          <span>
-            {{ t('usage.standardCost') }}
-            <span :class="{ 'line-through': strikeStandardCost }">${{ (stats?.total_cost || 0).toFixed(4) }}</span>
-          </span>
-        </p>
-      </div>
+    <div class="meter-cell meter-cell-current">
+      <p class="meter-label">{{ t('usage.totalCost') }}</p>
+      <p class="meter-value">
+        ${{ (stats?.total_actual_cost || 0).toFixed(4) }}
+      </p>
+      <p class="meter-sub whitespace-normal tabular-nums">
+        <template v-if="showAccountCost && totalAccountCost != null">
+          <span>{{ t('usage.accountCost') }} ${{ totalAccountCost.toFixed(4) }}</span>
+          <span> · </span>
+        </template>
+        <span>
+          {{ t('usage.standardCost') }}
+          <span :class="{ 'line-through': strikeStandardCost }">${{ (stats?.total_cost || 0).toFixed(4) }}</span>
+        </span>
+      </p>
     </div>
-    <div class="card p-4 flex items-center gap-3">
-      <div class="rounded-lg bg-gray-100 p-2 dark:bg-gray-900/30 text-gray-600">
-        <Icon name="clock" size="md" />
-      </div>
-      <div><p class="text-xs font-medium text-gray-500">{{ t('usage.avgDuration') }}</p><p class="text-xl font-bold">{{ formatDuration(stats?.average_duration_ms || 0) }}</p></div>
+    <div class="meter-cell">
+      <p class="meter-label">{{ t('usage.avgDuration') }}</p>
+      <p class="meter-value">{{ formatDuration(stats?.average_duration_ms || 0) }}</p>
     </div>
   </div>
 </template>
@@ -93,7 +80,6 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { AdminUsageStatsResponse } from '@/api/admin/usage'
 import type { UsageStatsResponse } from '@/types'
-import Icon from '@/components/icons/Icon.vue'
 
 const props = withDefaults(defineProps<{
   stats: (AdminUsageStatsResponse | UsageStatsResponse) | null

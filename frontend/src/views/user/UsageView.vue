@@ -4,10 +4,10 @@
       <UsageStatsCards :stats="usageStats" :show-account-cost="false" :strike-standard-cost="true" />
 
       <div class="space-y-4">
-        <div class="card p-4">
+        <div class="border-b border-border pb-3">
           <div class="flex flex-wrap items-center gap-4">
             <div class="flex items-center gap-2">
-              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('admin.dashboard.timeRange') }}:</span>
+              <span class="text-label font-medium text-fg-muted">{{ t('admin.dashboard.timeRange') }}:</span>
               <DateRangePicker
                 v-model:start-date="startDate"
                 v-model:end-date="endDate"
@@ -15,7 +15,7 @@
               />
             </div>
             <div class="ml-auto flex items-center gap-2">
-              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('admin.dashboard.granularity') }}:</span>
+              <span class="text-label font-medium text-fg-muted">{{ t('admin.dashboard.granularity') }}:</span>
               <div class="w-28">
                 <Select v-model="granularity" :options="granularityOptions" @change="loadChartData" />
               </div>
@@ -66,7 +66,7 @@
         </div>
       </div>
 
-      <div class="card p-6">
+      <div class="card p-4 sm:p-5">
         <div class="flex flex-wrap items-end justify-between gap-4">
           <div v-if="activeTab === 'errors'" class="flex flex-1 flex-wrap items-end gap-4">
             <div class="w-full sm:w-auto sm:min-w-[220px]">
@@ -145,7 +145,7 @@
               </button>
               <div
                 v-if="showColumnDropdown"
-                class="absolute right-0 top-full z-50 mt-1 max-h-80 w-48 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-dark-600 dark:bg-dark-800"
+                class="dropdown right-0 top-full mt-1 max-h-80 w-48 overflow-y-auto"
               >
                 <button
                   v-for="col in currentToggleableColumns"
@@ -153,10 +153,10 @@
                   type="button"
                   :data-testid="`usage-column-toggle-${col.key}`"
                   @click="toggleCurrentColumn(col.key)"
-                  class="flex w-full items-center justify-between px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
+                  class="dropdown-item w-full justify-between text-left"
                 >
                   <span>{{ col.label }}</span>
-                  <Icon v-if="isCurrentColumnVisible(col.key)" name="check" size="sm" class="text-primary-500" />
+                  <Icon v-if="isCurrentColumnVisible(col.key)" name="check" size="sm" class="text-accent" aria-hidden="true" />
                 </button>
               </div>
             </div>
@@ -167,7 +167,7 @@
         </div>
       </div>
 
-      <div v-if="errorViewEnabled" class="flex gap-2 border-b border-gray-200 dark:border-dark-700">
+      <div v-if="errorViewEnabled" class="tabs">
         <button class="tab" :class="{ 'tab-active': activeTab === 'usage' }" @click="activeTab = 'usage'">
           {{ t('usage.tabs.usage') }}
         </button>
@@ -189,6 +189,30 @@
           @sort="handleSort"
           @ipGeoBatchFailed="handleIpGeoBatchFailed"
         />
+
+        <!-- 账单合计行：所选区间的请求 / Token / 费用 -->
+        <div v-if="usageStats" class="table-container">
+          <table class="table">
+            <tbody>
+              <tr class="row-total">
+                <td>{{ t('common.total') }} <span class="font-normal text-fg-muted">({{ t('usage.inSelectedRange') }})</span></td>
+                <td class="text-right tabular-nums">
+                  <span class="text-meta font-medium text-fg-muted">{{ t('usage.totalRequests') }}</span>
+                  {{ (usageStats.total_requests || 0).toLocaleString() }}
+                </td>
+                <td class="text-right tabular-nums">
+                  <span class="text-meta font-medium text-fg-muted">{{ t('usage.totalTokens') }}</span>
+                  {{ (usageStats.total_tokens || 0).toLocaleString() }}
+                </td>
+                <td class="text-right tabular-nums">
+                  <span class="text-meta font-medium text-fg-muted">{{ t('usage.actualCost') }}</span>
+                  ${{ (usageStats.total_actual_cost || 0).toFixed(4) }}
+                  <span class="font-normal text-fg-subtle line-through" :title="t('usage.standardCost')">${{ (usageStats.total_cost || 0).toFixed(4) }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <Pagination
           v-if="pagination.total > 0"

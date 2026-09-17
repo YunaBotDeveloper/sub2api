@@ -2,13 +2,13 @@
   <div v-if="shouldShowQuota">
     <!-- First line: Platform + Tier Badge -->
     <div class="mb-1 flex items-center gap-1">
-      <span :class="['badge text-xs px-2 py-0.5 rounded font-medium', tierBadgeClass]">
+      <span :class="['badge', tierBadgeClass]">
         {{ tierLabel }}
       </span>
     </div>
 
     <!-- Usage status: unlimited flow or rate limit -->
-    <div class="text-xs text-gray-400 dark:text-gray-500">
+    <div class="text-xs text-fg-subtle">
       <span v-if="!isRateLimited">
         {{ t('admin.accounts.gemini.rateLimit.unlimited') }}
       </span>
@@ -17,8 +17,8 @@
         :class="[
           'font-medium',
           isUrgent
-            ? 'text-danger-600 dark:text-danger-400 animate-pulse'
-            : 'text-warning-600 dark:text-warning-400'
+            ? 'text-danger animate-pulse'
+            : 'text-warning'
         ]"
       >
         {{ t('admin.accounts.gemini.rateLimit.limited', { time: resetCountdown }) }}
@@ -101,31 +101,31 @@ const tierBadgeClass = computed(() => {
 
   if (isCodeAssist.value) {
     const tier = (creds?.tier_id || '').toString().trim().toLowerCase()
-    if (tier === 'gcp_enterprise') return 'bg-gray-100 text-gray-600 dark:bg-gray-900/40 dark:text-gray-300'
-    if (tier === 'gcp_standard') return 'bg-accent-100 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
+    if (tier === 'gcp_enterprise') return 'badge-gray'
+    if (tier === 'gcp_standard') return 'badge-primary'
     // Backward compatibility
     const upper = (creds?.tier_id || '').toString().trim().toUpperCase()
-    if (upper.includes('ULTRA') || upper.includes('ENTERPRISE')) return 'bg-gray-100 text-gray-600 dark:bg-gray-900/40 dark:text-gray-300'
-    return 'bg-accent-100 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
+    if (upper.includes('ULTRA') || upper.includes('ENTERPRISE')) return 'badge-gray'
+    return 'badge-primary'
   }
 
   if (isGoogleOne.value) {
     const tier = (creds?.tier_id || '').toString().trim().toLowerCase()
-    if (tier === 'google_ai_ultra') return 'bg-gray-100 text-gray-600 dark:bg-gray-900/40 dark:text-gray-300'
-    if (tier === 'google_ai_pro') return 'bg-accent-100 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
-    if (tier === 'google_one_free') return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+    if (tier === 'google_ai_ultra') return 'badge-gray'
+    if (tier === 'google_ai_pro') return 'badge-primary'
+    if (tier === 'google_one_free') return 'badge-gray'
     // Backward compatibility
     const upper = (creds?.tier_id || '').toString().trim().toUpperCase()
-    if (upper === 'GOOGLE_ONE_UNLIMITED') return 'bg-gray-100 text-gray-600 dark:bg-gray-900/40 dark:text-gray-300'
-    if (upper === 'AI_PREMIUM') return 'bg-accent-100 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
-    return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+    if (upper === 'GOOGLE_ONE_UNLIMITED') return 'badge-gray'
+    if (upper === 'AI_PREMIUM') return 'badge-primary'
+    return 'badge-gray'
   }
 
   // AI Studio 默认样式：蓝色
   const tier = (creds?.tier_id || '').toString().trim().toLowerCase()
-  if (tier === 'aistudio_paid') return 'bg-accent-100 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
-  if (tier === 'aistudio_free') return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
-  return 'bg-accent-100 text-accent-600 dark:bg-accent-900/40 dark:text-accent-300'
+  if (tier === 'aistudio_paid') return 'badge-primary'
+  if (tier === 'aistudio_free') return 'badge-gray'
+  return 'badge-primary'
 })
 
 // 是否限流

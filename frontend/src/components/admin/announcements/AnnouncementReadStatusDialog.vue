@@ -31,11 +31,11 @@
         @sort="handleSort"
       >
         <template #cell-email="{ value }">
-          <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+          <span class="font-medium text-fg">{{ value }}</span>
         </template>
 
         <template #cell-balance="{ value }">
-          <span class="font-medium text-gray-900 dark:text-white">${{ Number(value ?? 0).toFixed(2) }}</span>
+          <span class="block text-right font-medium tabular-nums text-fg">${{ Number(value ?? 0).toFixed(2) }}</span>
         </template>
 
         <template #cell-eligible="{ value }">
@@ -45,7 +45,7 @@
         </template>
 
         <template #cell-read_at="{ value }">
-          <span class="text-sm text-gray-500 dark:text-dark-400">
+          <span class="text-body tabular-nums text-fg-muted">
             {{ value ? formatDateTime(value) : t('admin.announcements.unread') }}
           </span>
         </template>

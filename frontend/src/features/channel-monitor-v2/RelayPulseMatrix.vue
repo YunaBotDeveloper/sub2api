@@ -1,25 +1,20 @@
 <template>
-  <section
-    class="card flex min-h-[360px] flex-col overflow-visible !rounded-lg !border-0 !p-6 shadow-sm ring-1 ring-gray-900/5 dark:!bg-dark-800 dark:ring-dark-700"
-  >
-    <div class="card-header mb-4 flex shrink-0 flex-wrap items-start justify-between gap-3 !border-0 !p-0">
+  <section class="card flex min-h-[360px] flex-col overflow-visible">
+    <div class="card-header flex shrink-0 flex-wrap items-start justify-between gap-3">
       <div class="min-w-0">
-        <h2 class="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
-          <span class="inline-flex h-4 w-4 text-success-500" aria-hidden="true">
-            <Icon name="grid" size="sm" />
-          </span>
+        <h2 class="card-title">
           {{ t('channelMonitorV2.matrix.title') }}
         </h2>
-        <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">
+        <p class="mt-0.5 text-meta text-fg-muted">
           {{ t('channelMonitorV2.matrix.description') }}
         </p>
       </div>
-      <div class="flex w-full min-w-0 flex-wrap items-center justify-end gap-2 text-xs text-gray-500 dark:text-gray-400 sm:w-auto">
+      <div class="flex w-full min-w-0 flex-wrap items-center justify-end gap-2 text-xs text-fg-muted sm:w-auto">
         <span class="badge badge-gray shrink-0">{{ bucketLabel }}</span>
-        <span class="hidden text-[11px] text-gray-400 dark:text-dark-400 sm:inline">{{ t('channelMonitorV2.matrix.wheelZoomX') }}</span>
+        <span class="hidden text-[11px] text-fg-subtle sm:inline">{{ t('channelMonitorV2.matrix.wheelZoomX') }}</span>
         <button
           type="button"
-          class="inline-flex shrink-0 items-center rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-50 dark:border-dark-700 dark:bg-dark-900 dark:text-gray-300 dark:hover:bg-dark-800"
+          class="btn btn-secondary btn-sm shrink-0"
           :disabled="!zoomed"
           @click="resetMatrixZoom"
         >
@@ -28,23 +23,23 @@
       </div>
     </div>
 
-    <div class="card-body min-h-0 flex-1 !p-0">
+    <div class="card-body min-h-0 flex-1">
       <div
         v-if="rows.length"
         ref="scrollRef"
-        class="matrix-scroll max-h-[min(42vh,420px)] max-w-full overflow-auto rounded-lg bg-gray-50/60 p-2 dark:bg-dark-900/30"
+        class="matrix-scroll max-h-[min(42vh,420px)] max-w-full overflow-auto border border-border bg-surface"
         @wheel="onMatrixWheel"
       >
         <div class="matrix-table w-full" :style="tableStyle">
           <div
-            class="matrix-header matrix-row sticky top-0 z-[3] bg-gray-50 text-[10px] font-semibold uppercase tracking-wide text-gray-500 dark:bg-dark-900 dark:text-gray-400"
+            class="matrix-header matrix-row sticky top-0 z-[3] border-b-2 border-accent bg-accent-weak px-2 text-meta font-semibold text-accent-strong"
             :class="showThroughput ? 'matrix-row--with-tps' : ''"
           >
             <span>{{ t('channelMonitorV2.matrix.dimension') }}</span>
-            <span>{{ t('channelMonitorV2.metrics.successRate') }}</span>
-            <span>{{ t('channelMonitorV2.metrics.ttft') }}</span>
-            <span v-if="showThroughput">{{ t('channelMonitorV2.metrics.tps') }}</span>
-            <span>{{ t('channelMonitorV2.metrics.cacheRate') }}</span>
+            <span class="text-right">{{ t('channelMonitorV2.metrics.successRate') }}</span>
+            <span class="text-right">{{ t('channelMonitorV2.metrics.ttft') }}</span>
+            <span v-if="showThroughput" class="text-right">{{ t('channelMonitorV2.metrics.tps') }}</span>
+            <span class="text-right">{{ t('channelMonitorV2.metrics.cacheRate') }}</span>
             <span class="pulse-axis flex justify-between gap-3">
               <i class="not-italic">{{ axisStart }}</i>
               <i class="not-italic">{{ axisEnd }}</i>
@@ -53,31 +48,31 @@
           <div
             v-for="entry in alignedRows"
             :key="rowKey(entry.row)"
-            class="matrix-row border-b border-gray-100/80 dark:border-dark-700/60"
+            class="matrix-row border-b border-border px-2"
             :class="showThroughput ? 'matrix-row--with-tps' : ''"
           >
-            <div class="dimension-cell flex min-w-0 items-center gap-2 bg-white dark:bg-dark-800" :title="rowLabel(entry.row)">
+            <div class="dimension-cell flex min-w-0 items-center gap-2" :title="rowLabel(entry.row)">
               <span :class="['status-dot', cellClass(entry.row.health, entry.row.metrics.request_count)]"></span>
-              <strong class="truncate text-xs font-semibold text-gray-800 dark:text-gray-100">{{ rowLabel(entry.row) }}</strong>
+              <strong class="truncate text-label font-semibold text-fg">{{ rowLabel(entry.row) }}</strong>
             </div>
-            <strong class="summary-value bg-white text-xs font-medium tabular-nums text-gray-600 dark:bg-dark-800 dark:text-gray-300">
+            <strong class="summary-value text-right text-label font-medium tabular-nums text-fg">
               {{ successRate(entry.row.metrics) }}
             </strong>
             <strong
-              class="summary-value bg-white text-xs font-medium tabular-nums text-gray-600 dark:bg-dark-800 dark:text-gray-300"
+              class="summary-value text-right text-label font-medium tabular-nums text-fg"
               :title="latencyPrivacy(entry.row.metrics.ttft)"
             >
               {{ formatMs(entry.row.metrics.ttft.p50_ms) }}
             </strong>
             <strong
               v-if="showThroughput"
-              class="summary-value bg-white text-xs font-medium tabular-nums text-gray-600 dark:bg-dark-800 dark:text-gray-300"
+              class="summary-value text-right text-label font-medium tabular-nums text-fg"
               :title="exactTps(entry.row.metrics.tpm)"
             >
               {{ formatTps(entry.row.metrics.tpm) }}
             </strong>
             <strong
-              class="summary-value bg-white text-xs font-medium tabular-nums text-gray-600 dark:bg-dark-800 dark:text-gray-300"
+              class="summary-value text-right text-label font-medium tabular-nums text-fg"
             >
               {{ formatPercent(entry.row.metrics.cache_rate) }}
             </strong>
@@ -85,7 +80,7 @@
               <span
                 v-for="slot in entry.slots"
                 :key="slot.start"
-                class="pulse-cell relative rounded-sm border-0 p-0 outline-offset-1"
+                class="pulse-cell relative rounded-none border-0 p-0 outline-offset-1"
                 :class="[
                   slot.bucket ? cellClass(slot.bucket.health, slot.bucket.metrics.request_count) : 'health-unknown',
                   slot.bucket ? 'has-data' : 'is-empty',
@@ -130,12 +125,12 @@
       </div>
 
       <div class="mt-4 flex flex-col gap-2" :aria-label="t('channelMonitorV2.matrix.legendAria')">
-        <div class="flex items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400">
+        <div class="flex items-center gap-2 text-meta text-fg-muted">
           <span class="shrink-0">{{ t('channelMonitorV2.matrix.bad') }}</span>
-          <div class="score-legend h-2.5 flex-1 overflow-hidden rounded-full"></div>
+          <div class="score-legend h-2 flex-1 overflow-hidden border border-border"></div>
           <span class="shrink-0">{{ t('channelMonitorV2.matrix.good') }}</span>
         </div>
-        <div class="flex flex-wrap gap-4 text-[11px] text-gray-500 dark:text-gray-400">
+        <div class="flex flex-wrap gap-4 text-meta text-fg-muted">
           <span class="inline-flex items-center gap-1.5"><i class="status-dot health-score10"></i>{{ t('channelMonitorV2.matrix.healthyLegend') }}</span>
           <span class="inline-flex items-center gap-1.5"><i class="status-dot health-score6"></i>{{ t('channelMonitorV2.matrix.warningLegend') }}</span>
           <span class="inline-flex items-center gap-1.5"><i class="status-dot health-score2"></i>{{ t('channelMonitorV2.matrix.criticalLegend') }}</span>
@@ -176,7 +171,6 @@ import type {
   MonitorMetric,
 } from '@/api/channelMonitorV2'
 import EmptyState from '@/components/common/EmptyState.vue'
-import Icon from '@/components/icons/Icon.vue'
 import {
   formatLatencyPrivacy,
   formatMonitorMs,
@@ -507,35 +501,32 @@ function formatBucketRange(value: string) {
   border-radius: 9999px;
 }
 
-/* Multi-stop green → yellow → red (score10 best … score0 worst) */
-.health-score10 { background: #16a34a; }
-.health-score9  { background: #22c55e; }
-.health-score8  { background: #4ade80; }
-.health-score7  { background: #a3e635; }
-.health-score6  { background: #facc15; }
-.health-score5  { background: #fbbf24; }
-.health-score4  { background: #f59e0b; }
-.health-score3  { background: #f97316; }
-.health-score2  { background: #fb7185; }
-.health-score1  { background: #f87171; }
-.health-score0  { background: rgb(239, 67, 67); }
+/* 健康分色阶：危险红 → 警示色 → 成功绿，全部取自令牌，夜间自动切换 */
+.health-score10 { background: rgb(var(--success-strong)); }
+.health-score9  { background: rgb(var(--success)); }
+.health-score8  { background: color-mix(in srgb, rgb(var(--success)) 75%, rgb(var(--warning))); }
+.health-score7  { background: color-mix(in srgb, rgb(var(--success)) 50%, rgb(var(--warning))); }
+.health-score6  { background: color-mix(in srgb, rgb(var(--success)) 25%, rgb(var(--warning))); }
+.health-score5  { background: rgb(var(--warning)); }
+.health-score4  { background: color-mix(in srgb, rgb(var(--warning)) 75%, rgb(var(--danger))); }
+.health-score3  { background: color-mix(in srgb, rgb(var(--warning)) 50%, rgb(var(--danger))); }
+.health-score2  { background: color-mix(in srgb, rgb(var(--warning)) 25%, rgb(var(--danger))); }
+.health-score1  { background: rgb(var(--danger)); }
+.health-score0  { background: rgb(var(--danger-strong)); }
 /* Coarse fallbacks (older payloads without score) */
-.health-healthy  { background: #22c55e; }
-.health-warning  { background: #f59e0b; }
-.health-critical { background: #ef4444; }
-.health-unknown  { background: #9ca3af; }
+.health-healthy  { background: rgb(var(--success)); }
+.health-warning  { background: rgb(var(--warning)); }
+.health-critical { background: rgb(var(--danger)); }
+.health-unknown  { background: rgb(var(--border-strong)); }
 
 .score-legend {
   background: linear-gradient(
     90deg,
-    rgb(239, 67, 67) 0%,
-    #f87171 15%,
-    #f97316 30%,
-    #f59e0b 45%,
-    #facc15 55%,
-    #a3e635 70%,
-    #22c55e 85%,
-    #16a34a 100%
+    rgb(var(--danger-strong)) 0%,
+    rgb(var(--danger)) 15%,
+    rgb(var(--warning)) 50%,
+    rgb(var(--success)) 85%,
+    rgb(var(--success-strong)) 100%
   );
 }
 
@@ -552,7 +543,7 @@ function formatBucketRange(value: string) {
 }
 .pulse-cell.has-data:hover,
 .pulse-cell.has-data:focus-visible {
-  outline: 2px solid rgb(var(--color-primary-500, 99 102 241) / 0.55);
+  outline: 2px solid rgb(var(--accent));
   outline-offset: 1px;
   z-index: 5;
 }
@@ -569,37 +560,29 @@ function formatBucketRange(value: string) {
   min-width: 11.5rem;
   max-width: 16rem;
   transform: translateX(-50%) translateY(4px);
-  border-radius: 0.75rem;
-  border: 1px solid rgb(229 231 235);
-  background: rgb(255 255 255);
+  border-radius: 2px;
+  border: 1px solid rgb(var(--border-strong));
+  border-top: 2px solid rgb(var(--accent));
+  background: rgb(var(--surface-raised));
+  color: rgb(var(--fg));
   padding: 0.5rem 0.625rem;
-  box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.15);
+  box-shadow: 0 8px 24px rgba(15, 20, 28, 0.12);
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.12s ease, transform 0.12s ease, visibility 0.12s;
   white-space: nowrap;
 }
-:global(.dark) .pulse-tooltip {
-  border-color: rgb(55 65 81);
-  background: rgb(17 24 39);
-  color: rgb(229 231 235);
-}
 .pulse-tooltip-line {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.45;
-  color: rgb(75 85 99);
-}
-:global(.dark) .pulse-tooltip-line {
-  color: rgb(209 213 219);
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--fg-muted));
 }
 .pulse-tooltip-title {
   margin-bottom: 0.2rem;
   font-weight: 600;
-  color: rgb(17 24 39);
-}
-:global(.dark) .pulse-tooltip-title {
-  color: rgb(243 244 246);
+  color: rgb(var(--fg));
 }
 .pulse-cell:hover .pulse-tooltip,
 .pulse-cell:focus-visible .pulse-tooltip {
@@ -619,34 +602,26 @@ function formatBucketRange(value: string) {
   min-width: 11.5rem;
   max-width: min(18rem, calc(100vw - 1.5rem));
   transform: translate(-50%, -100%);
-  border-radius: 0.75rem;
-  border: 1px solid rgb(229 231 235);
-  background: rgb(255 255 255);
+  border-radius: 2px;
+  border: 1px solid rgb(var(--border-strong));
+  border-top: 2px solid rgb(var(--accent));
+  background: rgb(var(--surface-raised));
+  color: rgb(var(--fg));
   padding: 0.5rem 0.625rem;
-  box-shadow: 0 18px 40px -12px rgb(0 0 0 / 0.28);
+  box-shadow: 0 8px 24px rgba(15, 20, 28, 0.12);
   white-space: nowrap;
-}
-:global(.dark) .matrix-floating-tooltip {
-  border-color: rgb(55 65 81);
-  background: rgb(17 24 39);
-  color: rgb(229 231 235);
 }
 .matrix-floating-tooltip-line {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.45;
-  color: rgb(75 85 99);
-}
-:global(.dark) .matrix-floating-tooltip-line {
-  color: rgb(209 213 219);
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--fg-muted));
 }
 .matrix-floating-tooltip-title {
   margin-bottom: 0.2rem;
   font-weight: 600;
-  color: rgb(17 24 39);
-}
-:global(.dark) .matrix-floating-tooltip-title {
-  color: rgb(243 244 246);
+  color: rgb(var(--fg));
 }
 
 @media (max-width: 640px) {

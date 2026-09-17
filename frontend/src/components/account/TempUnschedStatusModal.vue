@@ -7,7 +7,7 @@
   >
     <div class="space-y-4">
       <div v-if="loading" class="flex items-center justify-center py-8">
-        <svg class="h-6 w-6 animate-spin text-gray-400" fill="none" viewBox="0 0 24 24">
+        <svg class="h-6 w-6 animate-spin text-fg-subtle" fill="none" viewBox="0 0 24 24">
           <circle
             class="opacity-25"
             cx="12"
@@ -24,87 +24,87 @@
         </svg>
       </div>
 
-      <div v-else-if="!isActive" class="rounded-lg border border-gray-200 p-4 text-sm text-gray-500 dark:border-dark-600 dark:text-gray-400">
+      <div v-else-if="!isActive" class="rounded-sm border border-border p-4 text-sm text-fg-muted">
         {{ t('admin.accounts.tempUnschedulable.notActive') }}
       </div>
 
       <div v-else class="space-y-4">
-        <div class="rounded-lg border border-success-200 bg-success-50 p-3 text-sm text-success-800 dark:border-success-500/30 dark:bg-success-500/10 dark:text-success-300">
+        <div class="border border-success/40 bg-success-weak px-3 py-2 text-sm text-success-strong">
           {{ t('admin.accounts.recoverStateHint') }}
         </div>
 
-        <div class="rounded-lg border border-gray-200 p-4 dark:border-dark-600">
-          <p class="text-xs text-gray-500 dark:text-gray-400">
+        <div class="border-t border-border pt-4">
+          <p class="text-xs text-fg-muted">
             {{ t('admin.accounts.tempUnschedulable.accountName') }}
           </p>
-          <p class="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+          <p class="mt-1 text-sm font-medium text-fg">
             {{ account?.name || '-' }}
           </p>
         </div>
 
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div class="rounded-lg border border-gray-200 p-3 dark:border-dark-600">
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+          <div class="border-t border-border pt-3">
+            <p class="text-xs text-fg-muted">
               {{ t('admin.accounts.tempUnschedulable.triggeredAt') }}
             </p>
-            <p class="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p class="mt-1 text-sm font-medium text-fg">
               {{ triggeredAtText }}
             </p>
           </div>
-          <div class="rounded-lg border border-gray-200 p-3 dark:border-dark-600">
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+          <div class="border-t border-border pt-3">
+            <p class="text-xs text-fg-muted">
               {{ t('admin.accounts.tempUnschedulable.until') }}
             </p>
-            <p class="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p class="mt-1 text-sm font-medium text-fg">
               {{ untilText }}
             </p>
           </div>
-          <div class="rounded-lg border border-gray-200 p-3 dark:border-dark-600">
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+          <div class="border-t border-border pt-3">
+            <p class="text-xs text-fg-muted">
               {{ t('admin.accounts.tempUnschedulable.remaining') }}
             </p>
-            <p class="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p class="mt-1 text-sm font-medium text-fg">
               {{ remainingText }}
             </p>
           </div>
-          <div class="rounded-lg border border-gray-200 p-3 dark:border-dark-600">
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+          <div class="border-t border-border pt-3">
+            <p class="text-xs text-fg-muted">
               {{ t('admin.accounts.tempUnschedulable.errorCode') }}
             </p>
-            <p class="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p class="mt-1 text-sm font-medium text-fg">
               {{ state?.status_code || '-' }}
             </p>
           </div>
-          <div class="rounded-lg border border-gray-200 p-3 dark:border-dark-600">
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+          <div class="border-t border-border pt-3">
+            <p class="text-xs text-fg-muted">
               {{ t('admin.accounts.tempUnschedulable.matchedKeyword') }}
             </p>
-            <p class="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p class="mt-1 text-sm font-medium text-fg">
               {{ state?.matched_keyword || '-' }}
             </p>
           </div>
-          <div class="rounded-lg border border-gray-200 p-3 dark:border-dark-600">
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+          <div class="border-t border-border pt-3">
+            <p class="text-xs text-fg-muted">
               {{ t('admin.accounts.tempUnschedulable.ruleOrder') }}
             </p>
-            <p class="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p class="mt-1 text-sm font-medium text-fg">
               {{ ruleIndexDisplay }}
             </p>
           </div>
         </div>
 
-        <div class="rounded-lg border border-gray-200 p-3 dark:border-dark-600">
-          <p class="text-xs text-gray-500 dark:text-gray-400">
+        <div class="border-t border-border pt-3">
+          <p class="text-xs text-fg-muted">
             {{ t('admin.accounts.tempUnschedulable.errorMessage') }}
           </p>
-          <div class="mt-2 rounded bg-gray-50 p-2 text-xs text-gray-700 dark:bg-dark-700 dark:text-gray-300">
+          <div class="mt-2 rounded-sm bg-surface-sunken p-2 text-xs text-fg">
             {{ state?.error_message || '-' }}
           </div>
         </div>
 
         <div
           v-if="hasThresholdEvidence"
-          class="rounded-lg border border-accent-200 bg-accent-50 p-3 text-sm text-accent-800 dark:border-accent-500/30 dark:bg-accent-500/10 dark:text-accent-300"
+          class="border border-accent/40 bg-accent-weak px-3 py-2 text-sm text-accent-strong"
           data-testid="temp-unsched-trigger-evidence"
         >
           {{ triggerEvidenceText }}

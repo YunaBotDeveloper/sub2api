@@ -19,6 +19,16 @@ export default {
     modelDistribution: 'Model Distribution',
     groupDistribution: 'Group Usage Distribution',
     platformBreakdown: 'Per-platform Breakdown',
+    meterReading: {
+      title: 'Token meter',
+      previous: 'Previous reading',
+      previousHint: 'Before today',
+      current: 'Current reading',
+      currentHint: 'All time',
+      consumed: 'Used today',
+      charge: 'Charged today',
+      account: 'Account'
+    },
     platformBreakdownEmpty: 'No platform usage yet',
     platformCount: '{count} platforms',
     platformOther: 'Other',
@@ -1015,6 +1025,7 @@ export default {
   errors: {
     somethingWentWrong: 'Something went wrong',
     pageNotFound: 'Page not found',
+    pageNotFoundDesc: "The page you are looking for doesn't exist or has been moved.",
     unauthorized: 'Unauthorized',
     forbidden: 'Forbidden',
     serverError: 'Server error',

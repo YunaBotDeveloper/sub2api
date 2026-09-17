@@ -10,9 +10,9 @@
     @close="noop"
   >
     <div class="space-y-5">
-      <div class="rounded-lg border border-warning-200 bg-warning-50 p-4 text-sm text-warning-900 dark:border-warning-500/30 dark:bg-warning-500/10 dark:text-warning-100">
+      <div class="border border-warning/40 bg-warning-weak px-4 py-3 text-body text-warning-strong">
         <div class="flex gap-3">
-          <Icon name="exclamationTriangle" size="md" class="mt-0.5 flex-shrink-0" />
+          <Icon name="exclamationTriangle" size="sm" class="mt-0.5 flex-shrink-0" />
           <div class="space-y-2">
             <p class="font-semibold">{{ t('adminCompliance.blockingNotice') }}</p>
             <p class="leading-6">{{ t('adminCompliance.riskNotice') }}</p>
@@ -21,16 +21,16 @@
       </div>
 
       <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_240px]">
-        <section class="min-h-[320px] max-h-[46vh] overflow-y-auto rounded-lg border border-gray-200 bg-white p-5 dark:border-dark-700 dark:bg-dark-900">
+        <section class="min-h-[320px] max-h-[46vh] overflow-y-auto border border-border border-t-2 border-t-accent bg-surface p-5">
           <div class="legal-document-content" v-html="renderedDocument"></div>
         </section>
 
-        <aside class="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm dark:border-dark-700 dark:bg-dark-900/60">
+        <aside class="space-y-3 border-t border-border pt-3 text-body md:border-l md:border-t-0 md:pl-4 md:pt-0">
           <div>
-            <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-dark-400">
+            <p class="text-meta font-medium text-fg-muted">
               {{ t('adminCompliance.version') }}
             </p>
-            <p class="mt-1 break-all font-mono text-gray-900 dark:text-white">
+            <p class="mt-1 break-all font-mono text-fg">
               {{ complianceStore.status?.version || 'v2026.06.10' }}
             </p>
           </div>
@@ -38,22 +38,22 @@
             :href="documentUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 text-primary-600 underline underline-offset-4 hover:text-primary-700 dark:text-primary-300 dark:hover:text-primary-200"
+            class="inline-flex items-center gap-2 text-accent underline underline-offset-4 hover:text-accent-strong"
           >
             <Icon name="externalLink" size="sm" />
             {{ t('adminCompliance.openDocument') }}
           </a>
-          <p class="leading-6 text-gray-600 dark:text-dark-300">
+          <p class="leading-6 text-fg-muted">
             {{ t('adminCompliance.documentSource') }}
           </p>
         </aside>
       </div>
 
       <div class="space-y-3">
-        <label for="admin-compliance-phrase" class="block text-sm font-semibold text-gray-900 dark:text-white">
+        <label for="admin-compliance-phrase" class="input-label mb-0">
           {{ t('adminCompliance.inputLabel') }}
         </label>
-        <div class="rounded-lg bg-gray-100 px-3 py-2 font-mono text-sm text-gray-900 dark:bg-dark-800 dark:text-dark-100">
+        <div class="code-block px-3 py-2">
           {{ expectedPhrase }}
         </div>
         <Input
@@ -67,7 +67,7 @@
         />
       </div>
 
-      <p class="text-xs leading-5 text-gray-500 dark:text-dark-400">
+      <p class="border-t border-border pt-3 text-meta leading-5 text-fg-muted">
         {{ t('adminCompliance.legalNote') }}
       </p>
     </div>
@@ -191,20 +191,20 @@ async function logout(): Promise<void> {
 }
 
 .legal-document-content :deep(h1) {
-  @apply mb-4 text-2xl font-bold text-gray-950 dark:text-white;
+  @apply mb-4 text-2xl font-bold text-fg;
 }
 
 .legal-document-content :deep(h2) {
-  @apply mb-3 mt-6 text-xl font-semibold text-gray-900 dark:text-white;
+  @apply mb-3 mt-6 text-xl font-semibold text-accent-strong;
 }
 
 .legal-document-content :deep(p) {
-  @apply mb-4 text-sm text-gray-700 dark:text-dark-200;
+  @apply mb-4 text-sm text-fg-muted;
 }
 
 .legal-document-content :deep(ul),
 .legal-document-content :deep(ol) {
-  @apply mb-4 pl-6 text-sm text-gray-700 dark:text-dark-200;
+  @apply mb-4 pl-6 text-sm text-fg-muted;
 }
 
 .legal-document-content :deep(ul) {
@@ -220,6 +220,6 @@ async function logout(): Promise<void> {
 }
 
 .legal-document-content :deep(strong) {
-  @apply font-semibold text-gray-950 dark:text-white;
+  @apply font-semibold text-fg;
 }
 </style>

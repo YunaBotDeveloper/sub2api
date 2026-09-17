@@ -1,25 +1,26 @@
 <template>
   <div v-if="hasProviders" class="space-y-4">
     <div v-if="showDivider" class="flex items-center gap-3">
-      <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
-      <span class="text-xs text-gray-500 dark:text-dark-400">
+      <div class="h-px flex-1 bg-border"></div>
+      <span class="text-meta text-fg-muted">
         {{ t('auth.oauthOrContinue') }}
       </span>
-      <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
+      <div class="h-px flex-1 bg-border"></div>
     </div>
 
-    <div :class="providerGridClass">
+    <!-- 规线行：网格间隙 1px 露出底色，即行间细线 -->
+    <div :class="providerGridClass" class="gap-px border-y border-border bg-border">
       <button
         v-for="provider in visibleProviders"
         :key="provider"
         type="button"
         :disabled="disabled"
-        class="btn btn-secondary h-12 w-full justify-center gap-2"
+        class="flex min-h-11 w-full items-center gap-3 bg-surface px-3 py-2.5 text-left text-body font-semibold text-fg transition-colors hover:bg-accent-weak hover:text-accent-strong focus:outline-none focus-visible:bg-accent-weak disabled:cursor-not-allowed disabled:opacity-50"
         @click="startLogin(provider)"
       >
-        <GitHubMark v-if="provider === 'github'" class="h-5 w-5 text-gray-800 dark:text-gray-100" />
-        <GoogleMark v-else class="h-5 w-5" />
-        <span class="font-medium">{{ providerLabel(provider) }}</span>
+        <GitHubMark v-if="provider === 'github'" class="h-4 w-4 shrink-0 text-fg" />
+        <GoogleMark v-else class="h-4 w-4 shrink-0" />
+        <span class="min-w-0 truncate">{{ providerLabel(provider) }}</span>
       </button>
     </div>
   </div>
@@ -66,7 +67,6 @@ const hasMultipleProviders = computed(() => visibleProviders.value.length > 1)
 const providerGridClass = computed(() => [
   'grid',
   'grid-cols-1',
-  'gap-3',
   hasMultipleProviders.value ? 'sm:grid-cols-2' : ''
 ])
 

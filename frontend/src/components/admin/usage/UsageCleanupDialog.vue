@@ -7,16 +7,18 @@
         v-model:endDate="localEndDate"
         :exporting="false"
         :show-actions="false"
+        flat
+        class="border-y border-border bg-surface-sunken"
         @change="noop"
       />
 
-      <div class="rounded-xl border border-warning-200 bg-warning-50 px-4 py-3 text-sm text-warning-700 dark:border-warning-500/30 dark:bg-warning-500/10 dark:text-warning-200">
+      <div class="border border-warning/40 bg-warning-weak px-4 py-3 text-body text-warning-strong">
         {{ t('admin.usage.cleanup.warning') }}
       </div>
 
-      <div class="rounded-xl border border-gray-200 p-4 dark:border-dark-700">
-        <div class="flex items-center justify-between">
-          <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-200">
+      <section>
+        <div class="bill-section-title items-center">
+          <h4 class="text-h3 font-bold text-accent-strong">
             {{ t('admin.usage.cleanup.recentTasks') }}
           </h4>
           <button type="button" class="btn btn-ghost btn-sm" @click="loadTasks">
@@ -25,42 +27,42 @@
         </div>
 
         <div class="mt-3 space-y-2">
-          <div v-if="tasksLoading" class="text-sm text-gray-500 dark:text-gray-400">
+          <div v-if="tasksLoading" class="py-2 text-body text-fg-muted">
             {{ t('admin.usage.cleanup.loadingTasks') }}
           </div>
-          <div v-else-if="tasks.length === 0" class="text-sm text-gray-500 dark:text-gray-400">
+          <div v-else-if="tasks.length === 0" class="py-2 text-body text-fg-muted">
             {{ t('admin.usage.cleanup.noTasks') }}
           </div>
-          <div v-else class="space-y-2">
+          <div v-else class="divide-y divide-border border-b border-border">
             <div
               v-for="task in tasks"
               :key="task.id"
-              class="flex flex-col gap-2 rounded-lg border border-gray-100 px-3 py-2 text-sm text-gray-600 dark:border-dark-700 dark:text-gray-300"
+              class="flex flex-col gap-1.5 py-2.5 text-body text-fg"
             >
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
-                  <span :class="statusClass(task.status)" class="rounded-full px-2 py-0.5 text-xs font-semibold">
+                  <span :class="statusClass(task.status)" class="badge">
                     {{ statusLabel(task.status) }}
                   </span>
-                  <span class="text-xs text-gray-400">#{{ task.id }}</span>
+                  <span class="font-mono text-meta text-fg-subtle">#{{ task.id }}</span>
                   <button
                     v-if="canCancel(task)"
                     type="button"
-                    class="btn btn-ghost btn-xs text-danger-600 hover:text-danger-700 dark:text-danger-300"
+                    class="btn btn-ghost btn-sm text-danger hover:text-danger-strong"
                     @click="openCancelConfirm(task)"
                   >
                     {{ t('admin.usage.cleanup.cancel') }}
                   </button>
                 </div>
-                <div class="text-xs text-gray-400">
+                <div class="text-meta tabular-nums text-fg-subtle">
                   {{ formatDateTime(task.created_at) }}
                 </div>
               </div>
-              <div class="flex flex-wrap items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+              <div class="flex flex-wrap items-center gap-4 text-meta tabular-nums text-fg-muted">
                 <span>{{ t('admin.usage.cleanup.range') }}: {{ formatRange(task) }}</span>
                 <span>{{ t('admin.usage.cleanup.deletedRows') }}: {{ task.deleted_rows.toLocaleString() }}</span>
               </div>
-              <div v-if="task.error_message" class="text-xs text-danger-500">
+              <div v-if="task.error_message" class="text-meta text-danger">
                 {{ task.error_message }}
               </div>
             </div>
@@ -79,7 +81,7 @@
           @update:page="handleTaskPageChange"
           @update:pageSize="handleTaskPageSizeChange"
         />
-      </div>
+      </section>
     </div>
 
     <template #footer>
@@ -205,13 +207,13 @@ const statusLabel = (status: string) => {
 
 const statusClass = (status: string) => {
   const map: Record<string, string> = {
-    pending: 'bg-warning-100 text-warning-700 dark:bg-warning-500/20 dark:text-warning-200',
-    running: 'bg-accent-100 text-accent-700 dark:bg-accent-500/20 dark:text-accent-200',
-    succeeded: 'bg-success-100 text-success-700 dark:bg-success-500/20 dark:text-success-200',
-    failed: 'bg-danger-100 text-danger-700 dark:bg-danger-500/20 dark:text-danger-200',
-    canceled: 'bg-gray-200 text-gray-600 dark:bg-dark-600 dark:text-gray-300'
+    pending: 'badge-warning',
+    running: 'badge-primary',
+    succeeded: 'badge-success',
+    failed: 'badge-danger',
+    canceled: 'badge-gray'
   }
-  return map[status] || 'bg-gray-100 text-gray-600'
+  return map[status] || 'badge-gray'
 }
 
 const formatDateTime = (value?: string | null) => {

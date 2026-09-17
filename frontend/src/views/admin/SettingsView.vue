@@ -27,7 +27,7 @@
                 :aria-selected="activeTab === tab.key"
                 :tabindex="activeTab === tab.key ? 0 : -1"
                 :class="[
-                  'tab inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border border-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50',
+                  'tab inline-flex min-h-[40px] shrink-0 items-center gap-1.5 whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent',
                   activeTab === tab.key && 'tab-active',
                 ]"
                 @click="selectSettingsTab(tab.key)"

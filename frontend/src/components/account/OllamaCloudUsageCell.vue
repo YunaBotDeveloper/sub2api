@@ -23,7 +23,7 @@
     <div v-if="state.configured" class="flex items-center pt-0.5">
       <button
         type="button"
-        class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium text-accent-600 transition-colors hover:bg-accent-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-accent-400 dark:hover:bg-accent-900/30"
+        class="inline-flex items-center gap-0.5 rounded-sm px-1.5 py-0.5 text-[10px] font-medium text-accent transition-colors hover:bg-accent-weak disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="refreshing"
         data-testid="ollama-cloud-usage-query"
         @click="refreshUsage"
@@ -46,7 +46,7 @@
       </button>
     </div>
   </div>
-  <span v-else class="text-sm text-gray-400 dark:text-dark-500">-</span>
+  <span v-else class="text-sm text-fg-subtle">-</span>
 </template>
 
 <script setup lang="ts">

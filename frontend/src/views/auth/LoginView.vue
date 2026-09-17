@@ -2,8 +2,8 @@
   <AuthLayout>
     <div class="space-y-6">
       <!-- Title -->
-      <div class="text-center">
-        <h2 class="text-h2 font-semibold text-fg">
+      <div>
+        <h2 class="text-h2 font-bold text-accent-strong">
           {{ t('auth.welcomeBack') }}
         </h2>
         <p class="mt-1 text-body text-fg-muted">
@@ -130,14 +130,10 @@
           @open="showAgreementModal = true"
         />
 
-        <div v-if="showPasskeyLogin || showOAuthLogin" class="space-y-3 pt-1">
-          <div class="flex items-center gap-3">
-            <div class="h-px flex-1 bg-border"></div>
-            <span class="text-label text-fg-muted">
-              {{ t('auth.oauthOrContinue') }}
-            </span>
-            <div class="h-px flex-1 bg-border"></div>
-          </div>
+        <div v-if="showPasskeyLogin || showOAuthLogin" class="space-y-3 border-t border-border pt-5">
+        <p class="text-label font-semibold text-fg-muted">
+          {{ t('auth.oauthOrContinue') }}
+        </p>
 
           <button
             v-if="showPasskeyLogin"

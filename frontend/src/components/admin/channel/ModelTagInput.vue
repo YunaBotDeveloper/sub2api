@@ -1,18 +1,18 @@
 <template>
   <div>
     <!-- Tags display -->
-    <div class="flex flex-wrap gap-1.5 rounded-lg border border-gray-200 bg-white p-2 dark:border-dark-600 dark:bg-dark-800 min-h-[2.5rem]">
+    <div class="flex min-h-[2.5rem] flex-wrap gap-1.5 rounded-sm border border-border-strong bg-surface p-2 focus-within:border-accent">
       <span
         v-for="(model, idx) in models"
         :key="idx"
-        class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-sm"
+        class="inline-flex items-center gap-1 rounded-sm px-2 py-0.5 font-mono text-label"
         :class="getPlatformTagClass(props.platform || '')"
       >
         {{ model }}
         <button
           type="button"
           @click="removeModel(idx)"
-          class="ml-0.5 rounded-full p-0.5 hover:bg-primary-200 dark:hover:bg-primary-800"
+          class="ml-0.5 rounded-sm p-0.5 hover:bg-accent-weak"
         >
           <Icon name="x" size="xs" />
         </button>
@@ -21,7 +21,7 @@
         ref="inputRef"
         v-model="inputValue"
         type="text"
-        class="flex-1 min-w-[120px] border-none bg-transparent text-sm outline-none placeholder:text-gray-400 dark:text-white"
+        class="flex-1 min-w-[120px] border-none bg-transparent text-sm outline-none font-mono text-fg placeholder:font-sans placeholder:text-fg-subtle"
         :placeholder="models.length === 0 ? placeholder : ''"
         @keydown.enter.prevent="addModel"
         @keydown.tab.prevent="addModel"
@@ -30,7 +30,7 @@
         @blur="addModel"
       />
     </div>
-    <p class="mt-1 text-xs text-gray-400">
+    <p class="mt-1 text-xs text-fg-subtle">
       {{ t('admin.channels.form.modelInputHint', 'Press Enter to add, supports paste for batch import.') }}
     </p>
   </div>

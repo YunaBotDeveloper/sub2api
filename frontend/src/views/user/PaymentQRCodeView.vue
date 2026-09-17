@@ -1,32 +1,56 @@
 <template>
   <AppLayout>
-    <div class="mx-auto flex max-w-md flex-col items-center space-y-6 py-8">
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-        {{ qrUrl ? scanTitle : t('payment.qr.payInNewWindow') }}
-      </h2>
-      <div v-if="qrUrl" class="relative rounded-lg bg-white p-6 shadow-lg dark:bg-dark-800">
-        <canvas ref="qrCanvas" class="mx-auto"></canvas>
-        <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <span class="rounded-full bg-gray-400 p-2 shadow ring-2 ring-white">
-            <img :src="paymentIcon" alt="" class="h-5 w-5 brightness-0 invert" />
-          </span>
+    <div class="mx-auto max-w-md space-y-4 py-4">
+      <div class="stub">
+        <!-- Details part -->
+        <div class="px-5 py-4">
+          <h2 class="text-h3 font-bold text-accent-strong">
+            {{ qrUrl ? scanTitle : t('payment.qr.payInNewWindow') }}
+          </h2>
+          <dl v-if="orderId" class="mt-3 divide-y divide-border border-t border-border text-body">
+            <div class="flex justify-between gap-4 py-2">
+              <dt class="text-fg-muted">{{ t('payment.orders.orderId') }}</dt>
+              <dd class="font-mono text-fg">#{{ orderId }}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="stub-perforation" />
+
+        <!-- Scan part -->
+        <div class="flex flex-col items-center gap-4 px-5 py-5">
+          <div v-if="qrUrl" class="relative border border-border-strong bg-white p-3">
+            <canvas ref="qrCanvas" class="mx-auto"></canvas>
+            <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <span class="rounded-sm bg-accent p-1.5 ring-2 ring-white">
+                <img :src="paymentIcon" alt="" class="h-5 w-5 brightness-0 invert" />
+              </span>
+            </div>
+          </div>
+          <div v-if="expired" class="flex flex-col items-center gap-4">
+            <span class="badge badge-danger px-2.5 py-1 text-label">{{ t('payment.qr.expired') }}</span>
+            <button class="btn btn-primary" @click="router.push('/purchase')">{{ t('payment.result.backToRecharge') }}</button>
+          </div>
+          <template v-else>
+            <div
+              class="flex w-full items-baseline justify-between gap-3 border border-border px-3 py-2"
+              :class="remainingSeconds > 0 && remainingSeconds <= 60 ? 'bg-meter-weak text-meter-ink' : ''"
+            >
+              <span class="text-meta font-medium" :class="remainingSeconds > 0 && remainingSeconds <= 60 ? '' : 'text-fg-muted'">
+                {{ qrUrl ? t('payment.qr.expiresIn') : t('payment.qr.payInNewWindowHint') }}
+              </span>
+              <span class="text-h2 font-bold tabular-nums">{{ countdownDisplay }}</span>
+            </div>
+            <p class="text-meta text-fg-subtle">{{ t('payment.qr.waitingPayment') }}</p>
+          </template>
+          <a v-if="payUrl && !qrUrl && !expired" :href="payUrl" target="_blank" rel="noopener noreferrer"
+            class="btn btn-primary w-full">
+            {{ t('payment.qr.openPayWindow') }}
+          </a>
         </div>
       </div>
-      <div v-if="expired" class="text-center">
-        <p class="text-lg font-medium text-danger-500">{{ t('payment.qr.expired') }}</p>
-        <button class="btn btn-primary mt-4" @click="router.push('/purchase')">{{ t('payment.result.backToRecharge') }}</button>
-      </div>
-      <div v-else class="text-center">
-        <p class="text-sm text-gray-500 dark:text-gray-400">{{ qrUrl ? t('payment.qr.expiresIn') : t('payment.qr.payInNewWindowHint') }}</p>
-        <p class="mt-1 text-2xl font-bold tabular-nums text-gray-900 dark:text-white">{{ countdownDisplay }}</p>
-        <p class="mt-2 text-sm text-gray-400 dark:text-gray-500">{{ t('payment.qr.waitingPayment') }}</p>
-      </div>
-      <a v-if="payUrl && !qrUrl && !expired" :href="payUrl" target="_blank" rel="noopener noreferrer"
-        class="btn btn-primary w-full py-3">
-        {{ t('payment.qr.openPayWindow') }}
-      </a>
       <!-- Cancel button -->
-      <button v-if="!expired && orderId" class="btn btn-secondary w-full" :disabled="cancelling" @click="handleCancel">
+      <button v-if="!expired && orderId" class="btn btn-ghost w-full" :disabled="cancelling" @click="handleCancel">
         {{ cancelling ? t('common.processing') : t('payment.qr.cancelOrder') }}
       </button>
     </div>

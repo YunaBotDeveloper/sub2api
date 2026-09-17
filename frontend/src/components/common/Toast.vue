@@ -6,24 +6,24 @@
       aria-atomic="true"
     >
       <TransitionGroup
-        enter-active-class="transition ease-out duration-300"
-        enter-from-class="opacity-0 translate-x-full"
+        enter-active-class="transition ease-out duration-200"
+        enter-from-class="opacity-0 translate-x-3"
         enter-to-class="opacity-100 translate-x-0"
-        leave-active-class="transition ease-in duration-200"
+        leave-active-class="transition ease-in duration-150"
         leave-from-class="opacity-100 translate-x-0"
-        leave-to-class="opacity-0 translate-x-full"
+        leave-to-class="opacity-0 translate-x-3"
       >
         <div
           v-for="toast in toasts"
           :key="toast.id"
           :class="[
-            'pointer-events-auto min-w-[320px] max-w-md overflow-hidden rounded-lg shadow-lg',
-            'bg-white dark:bg-dark-800',
-            'border-l-4',
+            'pointer-events-auto w-[calc(100vw-2rem)] max-w-md overflow-hidden rounded-sm shadow-overlay sm:w-auto sm:min-w-[320px]',
+            'border border-border-strong bg-surface',
+            'border-t-[3px]',
             getBorderColor(toast.type)
           ]"
         >
-          <div class="p-4">
+          <div class="px-4 py-3">
             <div class="flex items-start gap-3">
               <!-- Icon -->
               <div class="mt-0.5 flex-shrink-0">
@@ -37,15 +37,15 @@
 
               <!-- Content -->
               <div class="min-w-0 flex-1">
-                <p v-if="toast.title" class="text-sm font-semibold text-gray-900 dark:text-white">
+                <p v-if="toast.title" class="text-body font-semibold text-fg">
                   {{ toast.title }}
                 </p>
                 <p
                   :class="[
-                    'text-sm leading-relaxed',
+                    'text-body',
                     toast.title
-                      ? 'mt-1 text-gray-600 dark:text-gray-300'
-                      : 'text-gray-900 dark:text-white'
+                      ? 'mt-0.5 text-fg-muted'
+                      : 'text-fg'
                   ]"
                 >
                   {{ toast.message }}
@@ -55,7 +55,7 @@
               <!-- Close button -->
               <button
                 @click="removeToast(toast.id)"
-                class="-m-1 flex-shrink-0 rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-dark-700 dark:hover:text-gray-300"
+                class="-m-1 flex-shrink-0 rounded-sm p-1 text-fg-subtle transition-colors hover:bg-accent-weak hover:text-accent-strong"
                 aria-label="Close notification"
               >
                 <Icon name="x" size="sm" />
@@ -64,7 +64,7 @@
           </div>
 
           <!-- Progress bar -->
-          <div v-if="toast.duration" class="h-1 bg-gray-100 dark:bg-dark-700">
+          <div v-if="toast.duration" class="h-0.5 bg-surface-sunken">
             <div
               :class="['h-full toast-progress', getProgressBarColor(toast.type)]"
               :style="{ animationDuration: `${toast.duration}ms` }"
@@ -101,30 +101,30 @@ const getToastIconName = (type: string): 'checkCircle' | 'xCircle' | 'exclamatio
 
 const getIconColor = (type: string): string => {
   const colors: Record<string, string> = {
-    success: 'text-success-500',
-    error: 'text-danger-500',
-    warning: 'text-warning-500',
-    info: 'text-accent-500'
+    success: 'text-success',
+    error: 'text-danger',
+    warning: 'text-warning',
+    info: 'text-accent'
   }
   return colors[type] || colors.info
 }
 
 const getBorderColor = (type: string): string => {
   const colors: Record<string, string> = {
-    success: 'border-success-500',
-    error: 'border-danger-500',
-    warning: 'border-warning-500',
-    info: 'border-accent-500'
+    success: 'border-t-success',
+    error: 'border-t-danger',
+    warning: 'border-t-warning',
+    info: 'border-t-accent'
   }
   return colors[type] || colors.info
 }
 
 const getProgressBarColor = (type: string): string => {
   const colors: Record<string, string> = {
-    success: 'bg-success-500',
-    error: 'bg-danger-500',
-    warning: 'bg-warning-500',
-    info: 'bg-accent-500'
+    success: 'bg-success',
+    error: 'bg-danger',
+    warning: 'bg-warning',
+    info: 'bg-accent'
   }
   return colors[type] || colors.info
 }

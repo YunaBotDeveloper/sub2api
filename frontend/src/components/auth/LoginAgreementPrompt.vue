@@ -8,14 +8,14 @@
         id="login-agreement-consent"
         type="checkbox"
         :checked="accepted"
-        class="mt-[2px] h-4 w-4 flex-shrink-0 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-900"
+        class="mt-[2px] h-4 w-4 flex-shrink-0 rounded border-border-strong text-accent focus:ring-accent"
         @change="handleCheckboxChange"
       />
       <div class="min-w-0 flex-1">
-        <p class="text-[13px] leading-5 text-gray-600 dark:text-dark-300">
+        <p class="text-[13px] leading-5 text-fg-muted">
           <label
             for="login-agreement-consent"
-            class="cursor-pointer text-gray-700 dark:text-dark-200"
+            class="cursor-pointer text-fg"
           >
             {{ t('legal.loginAgreementPrompt.checkboxPrefix') }}
           </label>
@@ -24,7 +24,7 @@
               :to="documentRoute(doc)"
               target="_blank"
               rel="noopener noreferrer"
-              class="font-medium text-primary-600 underline-offset-4 transition hover:text-primary-700 hover:underline dark:text-primary-300 dark:hover:text-primary-200"
+              class="font-medium text-accent underline-offset-4 transition hover:text-accent-strong hover:underline"
             >
               {{ doc.title }}
             </RouterLink>
@@ -37,19 +37,19 @@
 
   <div
     v-else-if="!accepted && documents.length > 0"
-    class="rounded-lg border border-primary-100 bg-primary-50/70 p-3 text-sm text-primary-900 dark:border-primary-500/20 dark:bg-primary-500/10 dark:text-primary-100"
+    class="rounded-sm border border-accent/40 bg-accent-weak p-3 text-sm text-accent-strong"
   >
     <div class="flex items-start gap-3">
-      <Icon name="shield" size="sm" class="mt-0.5 flex-shrink-0 text-primary-600 dark:text-primary-300" />
+      <Icon name="shield" size="sm" class="mt-0.5 flex-shrink-0 text-accent" />
       <div class="min-w-0 flex-1">
         <p class="font-medium">{{ t('legal.loginAgreementPrompt.noticeTitle') }}</p>
-        <p class="mt-1 text-primary-700 dark:text-primary-200/80">
+        <p class="mt-1 text-accent-strong">
           {{ t('legal.loginAgreementPrompt.noticeDescription') }}
         </p>
       </div>
       <button
         type="button"
-        class="flex-shrink-0 rounded-md bg-primary-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-700"
+        class="flex-shrink-0 rounded-sm bg-accent px-3 py-1.5 text-xs font-medium text-white transition hover:bg-accent-strong"
         @click="emit('open')"
       >
         {{ t('legal.loginAgreementPrompt.viewTerms') }}
@@ -93,9 +93,9 @@
         :to="documentRoute(doc)"
         target="_blank"
         rel="noopener noreferrer"
-        class="group flex min-h-[72px] w-full items-center gap-3 rounded-lg border border-border bg-surface-sunken px-4 py-3 text-left transition hover:border-border-strong hover:bg-surface"
+        class="group flex min-h-[72px] w-full items-center gap-3 rounded-sm border border-border bg-surface-sunken px-4 py-3 text-left transition hover:border-border-strong hover:bg-surface"
       >
-        <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-border bg-surface text-fg-muted transition group-hover:text-accent">
+        <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-sm border border-border bg-surface text-fg-muted transition group-hover:text-accent">
           <Icon :name="documentIcon(index, doc.title)" size="sm" />
         </span>
         <span class="min-w-0 flex-1">

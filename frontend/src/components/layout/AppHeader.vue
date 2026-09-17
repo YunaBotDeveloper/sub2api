@@ -1,5 +1,5 @@
 <template>
-  <header class="sticky top-0 z-30 border-b border-border bg-surface">
+  <header class="sticky top-0 z-30 border-b-2 border-accent bg-surface">
     <div class="flex h-16 items-center justify-between gap-2 px-2 sm:px-4 md:px-6">
       <!-- Left: Mobile Menu Toggle + Page Title -->
       <div class="flex shrink-0 items-center gap-2 sm:gap-4">
@@ -12,7 +12,7 @@
         </button>
 
         <div class="hidden lg:block">
-          <h1 class="truncate text-h1 font-semibold text-fg">
+          <h1 class="truncate text-h2 font-bold text-fg">
             {{ pageTitle }}
           </h1>
           <p v-if="pageDescription" class="truncate text-meta text-fg-muted">
@@ -57,22 +57,11 @@
         <!-- Balance Display -->
         <div
           v-if="user"
-          class="group relative hidden items-center gap-2 rounded bg-accent-weak px-3 py-1.5 sm:flex"
+          class="group relative hidden items-center gap-2 border border-meter/60 bg-meter-weak py-1 pl-3 pr-2.5 sm:flex"
         >
-          <svg
-            class="h-4 w-4 text-accent-strong"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
-            />
-          </svg>
-          <span class="text-label font-semibold text-accent-strong">
+          <span class="absolute left-0 top-0 h-1.5 w-1.5 bg-meter" aria-hidden="true"></span>
+          <span class="text-meta font-medium text-meter-ink">{{ t('common.balance') }}</span>
+          <span class="text-label font-bold tabular-nums text-fg">
             {{ formatHeaderMoney(availableBalance) }}
           </span>
           <span
@@ -82,7 +71,7 @@
             {{ balanceFrozenLabel }}
           </span>
           <div
-            class="pointer-events-none absolute right-0 top-full mt-2 hidden w-56 rounded-lg border border-border bg-surface-raised p-3 text-meta shadow-overlay group-hover:block"
+            class="pointer-events-none absolute right-0 top-full mt-2 hidden w-56 rounded-sm border border-border-strong bg-surface-raised p-3 text-meta shadow-overlay group-hover:block"
           >
             <div class="flex items-center justify-between">
               <span class="text-fg-muted">{{ balanceAvailableText }}</span>
@@ -105,12 +94,12 @@
         <div v-if="user" class="relative" ref="dropdownRef">
           <button
             @click="toggleDropdown"
-            class="flex items-center gap-2 rounded p-1.5 transition-colors hover:bg-surface-sunken focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+            class="flex min-h-10 items-center gap-2 rounded-sm p-1.5 transition-colors hover:bg-accent-weak focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
             :aria-label="t('common.userMenu')"
             aria-haspopup="menu"
             :aria-expanded="dropdownOpen"
           >
-            <div class="flex h-8 w-8 items-center justify-center overflow-hidden rounded bg-accent text-label font-medium text-white dark:text-surface-sunken">
+            <div class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-sm bg-accent text-label font-medium text-white dark:text-surface-sunken">
               <img
                 v-if="avatarUrl"
                 :src="avatarUrl"
@@ -396,12 +385,12 @@ onBeforeUnmount(() => {
 <style scoped>
 .dropdown-enter-active,
 .dropdown-leave-active {
-  transition: all 0.2s ease;
+  transition: opacity 0.12s ease, transform 0.12s ease;
 }
 
 .dropdown-enter-from,
 .dropdown-leave-to {
   opacity: 0;
-  transform: scale(0.95) translateY(-4px);
+  transform: translateY(-4px);
 }
 </style>

@@ -1,35 +1,33 @@
 <template>
-  <div
-    class="stat-card !min-h-[6.5rem] !rounded-lg !border-0 !p-4 shadow-sm ring-1 ring-gray-900/5 dark:!bg-dark-800 dark:ring-dark-700"
-    :title="title || undefined"
-  >
+  <!-- 读数格：放进 .meter 容器时与相邻格共用印刷细线 -->
+  <div class="meter-cell min-h-[6.5rem]" :title="title || undefined">
+    <span class="meter-label flex items-center gap-1.5">
+      <span
+        v-if="resolvedState"
+        class="h-2 w-2 shrink-0 rounded-full"
+        :class="dotClass"
+        aria-hidden="true"
+      ></span>
+      {{ label }}
+    </span>
+    <strong
+      class="block overflow-visible whitespace-normal text-h2 font-bold leading-tight tabular-nums"
+      :class="stateClass"
+    >{{ value }}</strong>
     <div
-      v-if="resolvedState"
-      class="mt-1 h-2 w-2 shrink-0 rounded-full"
-      :class="dotClass"
-      aria-hidden="true"
-    ></div>
-    <div class="min-w-0 flex-1">
-      <span class="stat-label text-[10px] font-bold uppercase tracking-wider text-gray-400">{{ label }}</span>
-      <strong
-        class="stat-value mt-1 block overflow-visible text-xl tabular-nums leading-tight !text-clip !whitespace-normal"
-        :class="stateClass"
-      >{{ value }}</strong>
-      <div
-        v-if="detailParts.length > 1"
-        class="mt-1.5 flex flex-wrap gap-x-2 gap-y-0.5 text-[11px] leading-snug text-gray-400 dark:text-dark-400"
-      >
-        <span
-          v-for="(part, index) in detailParts"
-          :key="`${index}:${part}`"
-          class="whitespace-nowrap tabular-nums"
-        >{{ part }}</span>
-      </div>
-      <small
-        v-else-if="detail"
-        class="mt-1.5 block text-[11px] leading-snug text-gray-400 dark:text-dark-400"
-      >{{ detail }}</small>
+      v-if="detailParts.length > 1"
+      class="flex flex-wrap gap-x-2 gap-y-0.5 text-meta leading-snug text-fg-muted"
+    >
+      <span
+        v-for="(part, index) in detailParts"
+        :key="`${index}:${part}`"
+        class="whitespace-nowrap tabular-nums"
+      >{{ part }}</span>
     </div>
+    <small
+      v-else-if="detail"
+      class="meter-sub block whitespace-normal"
+    >{{ detail }}</small>
   </div>
 </template>
 
@@ -64,17 +62,17 @@ const missingValue = computed(() => {
 const resolvedState = computed(() => (missingValue.value ? undefined : props.state))
 
 const stateClass = computed(() => {
-  if (!resolvedState.value) return missingValue.value ? 'text-gray-500 dark:text-dark-400' : 'text-gray-900 dark:text-white'
-  if (resolvedState.value === 'healthy') return 'text-success-600 dark:text-success-400'
-  if (resolvedState.value === 'warning') return 'text-warning-600 dark:text-warning-400'
-  if (resolvedState.value === 'critical') return 'text-danger-600 dark:text-danger-400'
-  return 'text-gray-500 dark:text-dark-400'
+  if (!resolvedState.value) return missingValue.value ? 'text-fg-muted' : 'text-fg'
+  if (resolvedState.value === 'healthy') return 'text-success'
+  if (resolvedState.value === 'warning') return 'text-warning'
+  if (resolvedState.value === 'critical') return 'text-danger'
+  return 'text-fg-muted'
 })
 
 const dotClass = computed(() => {
-  if (resolvedState.value === 'healthy') return 'bg-success-500'
-  if (resolvedState.value === 'warning') return 'bg-warning-500'
-  if (resolvedState.value === 'critical') return 'bg-danger-500'
-  return 'bg-gray-300 dark:bg-dark-600'
+  if (resolvedState.value === 'healthy') return 'bg-success'
+  if (resolvedState.value === 'warning') return 'bg-warning'
+  if (resolvedState.value === 'critical') return 'bg-danger'
+  return 'bg-border'
 })
 </script>

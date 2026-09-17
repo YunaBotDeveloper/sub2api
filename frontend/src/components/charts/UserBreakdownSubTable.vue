@@ -1,9 +1,9 @@
 <template>
-  <div class="bg-gray-50/50 dark:bg-dark-700/30">
+  <div class="bg-surface-sunken">
     <div v-if="loading" class="flex items-center justify-center py-3">
       <LoadingSpinner />
     </div>
-    <div v-else-if="items.length === 0" class="py-2 text-center text-xs text-gray-400">
+    <div v-else-if="items.length === 0" class="py-2 text-center text-xs text-fg-subtle">
       {{ t('admin.dashboard.noDataAvailable') }}
     </div>
     <table v-else class="w-full text-xs">
@@ -11,24 +11,24 @@
         <tr
           v-for="user in items"
           :key="user.user_id"
-          class="border-t border-gray-100/50 dark:border-dark-700/50"
+          class="border-t border-border"
         >
-          <td class="max-w-[120px] truncate py-1 pl-6 text-gray-600 dark:text-gray-300" :title="user.email">
+          <td class="max-w-[120px] truncate py-1 pl-6 text-fg-muted" :title="user.email">
             {{ user.email || `User #${user.user_id}` }}
           </td>
-          <td class="py-1 text-right text-gray-500 dark:text-gray-400">
+          <td class="py-1 text-right text-fg-muted">
             {{ user.requests.toLocaleString() }}
           </td>
-          <td class="py-1 text-right text-gray-500 dark:text-gray-400">
+          <td class="py-1 text-right text-fg-muted">
             {{ formatTokens(user.total_tokens) }}
           </td>
-          <td class="py-1 text-right text-success-600 dark:text-success-400">
+          <td class="py-1 text-right text-success">
             ${{ formatCost(user.actual_cost) }}
           </td>
-          <td v-if="showAccountCost" class="py-1 text-right text-warning-500 dark:text-warning-400">
+          <td v-if="showAccountCost" class="py-1 text-right text-warning">
             ${{ formatCost(user.account_cost) }}
           </td>
-          <td class="py-1 pr-1 text-right text-gray-400 dark:text-gray-500">
+          <td class="py-1 pr-1 text-right text-fg-subtle">
             ${{ formatCost(user.cost) }}
           </td>
         </tr>

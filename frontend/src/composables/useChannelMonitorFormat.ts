@@ -33,7 +33,7 @@ import {
   CHECK_MODE_QUOTA_PROBE,
 } from '@/constants/channelMonitor'
 
-const NEUTRAL_BADGE = 'bg-gray-100 text-gray-800 dark:bg-dark-700 dark:text-gray-300'
+const NEUTRAL_BADGE = 'bg-surface-sunken text-fg-muted'
 
 /** Availability HSL hue multiplier: 0%=red(0) / 50%=yellow(60) / 100%=green(120). */
 const HSL_HUE_PER_PERCENT = 1.2
@@ -56,11 +56,11 @@ export function useChannelMonitorFormat() {
   function statusBadgeClass(s: MonitorStatus | ''): string {
     switch (s) {
       case STATUS_OPERATIONAL:
-        return 'bg-success-100 text-success-700 dark:bg-success-500/15 dark:text-success-300'
+        return 'bg-success-weak text-success-strong'
       case STATUS_DEGRADED:
-        return 'bg-warning-100 text-warning-700 dark:bg-warning-500/15 dark:text-warning-300'
+        return 'bg-warning-weak text-warning-strong'
       case STATUS_FAILED:
-        return 'bg-danger-100 text-danger-700 dark:bg-danger-500/15 dark:text-danger-300'
+        return 'bg-danger-weak text-danger-strong'
       case STATUS_ERROR:
       default:
         return NEUTRAL_BADGE
@@ -99,27 +99,27 @@ export function useChannelMonitorFormat() {
   function providerBadgeClass(p: Provider | string): string {
     switch (p) {
       case PROVIDER_OPENAI:
-        return 'bg-success-100 text-success-700 dark:bg-success-500/15 dark:text-success-300'
+        return 'bg-success-weak text-success-strong'
       case PROVIDER_ANTHROPIC:
-        return 'bg-warning-100 text-warning-700 dark:bg-warning-500/15 dark:text-warning-300'
+        return 'bg-warning-weak text-warning-strong'
       case PROVIDER_GEMINI:
-        return 'bg-accent-100 text-accent-700 dark:bg-accent-500/15 dark:text-accent-300'
+        return 'bg-accent-weak text-accent-strong'
       case PROVIDER_GROK:
-        return 'bg-gray-100 text-gray-700 dark:bg-gray-500/15 dark:text-gray-300'
+        return 'bg-surface-sunken text-fg-muted'
       // 配色与 utils/platformColors.ts 的平台色对齐：antigravity=purple /
       // kimi=pink / zhipu=indigo / deepseek=teal。
       case PROVIDER_ANTIGRAVITY:
-        return 'bg-gray-100 text-gray-700 dark:bg-gray-500/15 dark:text-gray-300'
+        return 'bg-surface-sunken text-fg-muted'
       case PROVIDER_KIMI:
-        return 'bg-gray-100 text-gray-700 dark:bg-gray-500/15 dark:text-gray-300'
+        return 'bg-surface-sunken text-fg-muted'
       case PROVIDER_ZHIPU:
-        return 'bg-accent-100 text-accent-700 dark:bg-accent-500/15 dark:text-accent-300'
+        return 'bg-accent-weak text-accent-strong'
       case PROVIDER_DEEPSEEK:
-        return 'bg-accent-100 text-accent-700 dark:bg-accent-500/15 dark:text-accent-300'
+        return 'bg-accent-weak text-accent-strong'
       case PROVIDER_MINIMAX:
-        return 'bg-danger-100 text-danger-700 dark:bg-danger-500/15 dark:text-danger-300'
+        return 'bg-danger-weak text-danger-strong'
       case PROVIDER_OPENCODE_GO:
-        return 'bg-warning-100 text-warning-800 dark:bg-warning-500/15 dark:text-warning-300'
+        return 'bg-warning-weak text-warning-strong'
       default:
         return NEUTRAL_BADGE
     }
@@ -134,7 +134,7 @@ export function useChannelMonitorFormat() {
     switch (m) {
       case CHECK_MODE_QUOTA:
       case CHECK_MODE_QUOTA_PROBE:
-        return 'bg-accent-100 text-accent-700 dark:bg-accent-500/15 dark:text-accent-300'
+        return 'bg-accent-weak text-accent-strong'
       case CHECK_MODE_PROBE:
       default:
         return NEUTRAL_BADGE
@@ -150,48 +150,48 @@ export function useChannelMonitorFormat() {
     switch (p) {
       case PROVIDER_OPENAI:
         return active
-          ? 'border-success-500 bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-300 dark:border-success-400'
-          : 'border-gray-200 bg-white text-gray-600 hover:border-success-300 hover:text-success-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-success-500/50'
+          ? 'border-success bg-success-weak text-success-strong'
+          : 'border-border bg-surface text-fg-muted hover:border-success hover:text-success-strong'
       case PROVIDER_ANTHROPIC:
         return active
-          ? 'border-warning-500 bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-300 dark:border-warning-400'
-          : 'border-gray-200 bg-white text-gray-600 hover:border-warning-300 hover:text-warning-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-warning-500/50'
+          ? 'border-warning bg-warning-weak text-warning-strong'
+          : 'border-border bg-surface text-fg-muted hover:border-warning hover:text-warning-strong'
       case PROVIDER_GEMINI:
         return active
-          ? 'border-accent-500 bg-accent-50 text-accent-700 dark:bg-accent-500/15 dark:text-accent-300 dark:border-accent-400'
-          : 'border-gray-200 bg-white text-gray-600 hover:border-accent-300 hover:text-accent-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-accent-500/50'
+          ? 'border-accent bg-accent-weak text-accent-strong'
+          : 'border-border bg-surface text-fg-muted hover:border-accent hover:text-accent-strong'
       case PROVIDER_GROK:
         return active
-          ? 'border-gray-500 bg-gray-50 text-gray-800 dark:bg-gray-500/15 dark:text-gray-200 dark:border-gray-400'
-          : 'border-gray-200 bg-white text-gray-600 hover:border-gray-400 hover:text-gray-800 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-gray-500/50'
+          ? 'border-border-strong bg-surface-sunken text-fg'
+          : 'border-border bg-surface text-fg-muted hover:border-border-strong hover:text-fg'
       case PROVIDER_ANTIGRAVITY:
         return active
-          ? 'border-gray-500 bg-gray-50 text-gray-700 dark:bg-gray-500/15 dark:text-gray-300 dark:border-gray-400'
-          : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:text-gray-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-gray-500/50'
+          ? 'border-border-strong bg-surface-sunken text-fg'
+          : 'border-border bg-surface text-fg-muted hover:border-border-strong hover:text-fg'
       case PROVIDER_KIMI:
         return active
-          ? 'border-gray-500 bg-gray-50 text-gray-700 dark:bg-gray-500/15 dark:text-gray-300 dark:border-gray-400'
-          : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:text-gray-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-gray-500/50'
+          ? 'border-border-strong bg-surface-sunken text-fg'
+          : 'border-border bg-surface text-fg-muted hover:border-border-strong hover:text-fg'
       case PROVIDER_ZHIPU:
         return active
-          ? 'border-accent-500 bg-accent-50 text-accent-700 dark:bg-accent-500/15 dark:text-accent-300 dark:border-accent-400'
-          : 'border-gray-200 bg-white text-gray-600 hover:border-accent-300 hover:text-accent-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-accent-500/50'
+          ? 'border-accent bg-accent-weak text-accent-strong'
+          : 'border-border bg-surface text-fg-muted hover:border-accent hover:text-accent-strong'
       case PROVIDER_DEEPSEEK:
         return active
-          ? 'border-accent-500 bg-accent-50 text-accent-700 dark:bg-accent-500/15 dark:text-accent-300 dark:border-accent-400'
-          : 'border-gray-200 bg-white text-gray-600 hover:border-accent-300 hover:text-accent-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-accent-500/50'
+          ? 'border-accent bg-accent-weak text-accent-strong'
+          : 'border-border bg-surface text-fg-muted hover:border-accent hover:text-accent-strong'
       case PROVIDER_MINIMAX:
         return active
-          ? 'border-danger-500 bg-danger-50 text-danger-700 dark:bg-danger-500/15 dark:text-danger-300 dark:border-danger-400'
-          : 'border-gray-200 bg-white text-gray-600 hover:border-danger-300 hover:text-danger-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-danger-500/50'
+          ? 'border-danger bg-danger-weak text-danger-strong'
+          : 'border-border bg-surface text-fg-muted hover:border-danger hover:text-danger-strong'
       case PROVIDER_OPENCODE_GO:
         return active
-          ? 'border-warning-500 bg-warning-50 text-warning-800 dark:bg-warning-500/15 dark:text-warning-300 dark:border-warning-400'
-          : 'border-gray-200 bg-white text-gray-600 hover:border-warning-300 hover:text-warning-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-warning-500/50'
+          ? 'border-warning bg-warning-weak text-warning-strong'
+          : 'border-border bg-surface text-fg-muted hover:border-warning hover:text-warning-strong'
       default:
         return active
-          ? 'border-gray-400 bg-gray-50 text-gray-700 dark:border-dark-500 dark:bg-dark-700 dark:text-gray-200'
-          : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400'
+          ? 'border-border-strong bg-surface-sunken text-fg'
+          : 'border-border bg-surface text-fg-muted hover:border-border-strong hover:text-fg'
     }
   }
 
@@ -257,26 +257,26 @@ export function hslForPct(pct: number | null | undefined): string | undefined {
 export function providerGradient(provider: string): string {
   switch (provider) {
     case PROVIDER_OPENAI:
-      return ' bg-success-50 dark:bg-success-500/10'
+      return ' bg-success-weak'
     case PROVIDER_ANTHROPIC:
-      return ' bg-warning-50 dark:bg-warning-500/10'
+      return ' bg-warning-weak'
     case PROVIDER_GEMINI:
-      return ' bg-accent-50 dark:bg-accent-500/10'
+      return ' bg-accent-weak'
     case PROVIDER_GROK:
-      return ' bg-gray-50 dark:bg-gray-500/10'
+      return ' bg-surface-sunken'
     case PROVIDER_ANTIGRAVITY:
-      return ' bg-gray-50 dark:bg-gray-500/10'
+      return ' bg-surface-sunken'
     case PROVIDER_KIMI:
-      return ' bg-gray-50 dark:bg-gray-500/10'
+      return ' bg-surface-sunken'
     case PROVIDER_ZHIPU:
-      return ' bg-accent-50 dark:bg-accent-500/10'
+      return ' bg-accent-weak'
     case PROVIDER_DEEPSEEK:
-      return ' bg-accent-50 dark:bg-accent-500/10'
+      return ' bg-accent-weak'
     case PROVIDER_MINIMAX:
-      return ' bg-danger-50 dark:bg-danger-500/10'
+      return ' bg-danger-weak'
     case PROVIDER_OPENCODE_GO:
-      return ' bg-warning-50 dark:bg-warning-500/10'
+      return ' bg-warning-weak'
     default:
-      return ' bg-gray-100 dark:bg-dark-700'
+      return ' bg-surface-sunken'
   }
 }

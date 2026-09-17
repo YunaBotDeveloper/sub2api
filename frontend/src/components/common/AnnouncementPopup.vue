@@ -12,8 +12,8 @@
       <div class="mb-4 flex flex-wrap items-center gap-3">
         <span class="badge badge-warning inline-flex items-center gap-1.5">
           <span class="relative flex h-2 w-2">
-            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-warning-500 opacity-75"></span>
-            <span class="relative inline-flex h-2 w-2 rounded-full bg-warning-500"></span>
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-meter opacity-75"></span>
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-meter"></span>
           </span>
           {{ t('announcements.unread') }}
         </span>
@@ -22,7 +22,7 @@
           <time>{{ formatRelativeWithDateTime(displayedAnnouncement.created_at) }}</time>
         </span>
       </div>
-      <div class="border-l-4 border-warning-500 pl-4">
+      <div class="border border-meter/40 pl-4">
         <div
           class="markdown-body prose prose-sm max-w-none dark:prose-invert"
           v-html="renderedContent"

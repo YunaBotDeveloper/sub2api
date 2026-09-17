@@ -166,9 +166,9 @@ function onNextPage() {
 </script>
 
 <template>
-  <section class="card p-4 md:p-5">
-    <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-      <h3 class="text-sm font-bold text-gray-900 dark:text-white">
+  <section class="card">
+    <div class="card-header flex flex-wrap items-center justify-between gap-3">
+      <h3 class="card-title">
         {{ t('admin.ops.openaiTokenStats.title') }}
       </h3>
       <div class="flex flex-wrap items-center gap-2">
@@ -199,18 +199,18 @@ function onNextPage() {
           >
             {{ t('admin.ops.openaiTokenStats.nextPage') }}
           </button>
-          <span class="text-xs text-gray-500 dark:text-gray-400">
+          <span class="text-meta tabular-nums text-fg-muted">
             {{ t('admin.ops.openaiTokenStats.pageInfo', { page, total: totalPages }) }}
           </span>
         </template>
       </div>
     </div>
 
-    <div v-if="errorMessage" class="mb-4 rounded-lg bg-danger-50 px-3 py-2 text-xs text-danger-600 dark:bg-danger-900/20 dark:text-danger-400">
+    <div v-if="errorMessage" class="border-b border-danger/40 bg-danger-weak px-5 py-2 text-meta text-danger-strong">
       {{ errorMessage }}
     </div>
 
-    <div v-if="loading" class="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+    <div v-if="loading" class="py-8 text-center text-body text-fg-muted">
       {{ t('admin.ops.loadingText') }}
     </div>
 
@@ -220,13 +220,11 @@ function onNextPage() {
       :description="t('admin.ops.openaiTokenStats.empty')"
     />
 
-    <div v-else class="space-y-3">
-      <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-dark-700">
-        <div class="max-h-[420px] overflow-auto">
-          <DataTable :columns="columns" :data="items" row-key="model" :sticky-first-column="false" />
-        </div>
+    <div v-else>
+      <div class="max-h-[420px] overflow-auto">
+        <DataTable :columns="columns" :data="items" row-key="model" :sticky-first-column="false" />
       </div>
-      <div v-if="viewMode === 'topn'" class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+      <div v-if="viewMode === 'topn'" class="card-footer text-meta tabular-nums text-fg-muted">
         {{ t('admin.ops.openaiTokenStats.totalModels', { total }) }}
       </div>
     </div>

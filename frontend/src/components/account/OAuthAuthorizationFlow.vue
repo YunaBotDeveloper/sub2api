@@ -1,17 +1,12 @@
 <template>
-  <div
-    class="rounded-lg border border-accent-200 bg-accent-50 p-4 dark:border-accent-700 dark:bg-accent-900/30"
-  >
+  <div>
       <div class="flex items-start gap-4">
-      <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-accent-500">
-        <Icon name="link" size="md" class="text-white" />
-      </div>
-      <div class="flex-1">
-        <h4 class="mb-3 font-semibold text-accent-900 dark:text-accent-200">{{ oauthTitle }}</h4>
+      <div class="min-w-0 flex-1">
+        <h4 class="bill-section-title mb-4">{{ oauthTitle }}</h4>
 
         <!-- Auth Method Selection -->
         <div v-if="showMethodSelection" class="mb-4">
-          <label class="mb-2 block text-sm font-medium text-accent-800 dark:text-accent-300">
+          <label class="mb-2 block text-meta font-medium text-fg-muted">
             {{ methodLabel }}
           </label>
           <div class="flex flex-wrap gap-4">
@@ -20,9 +15,9 @@
                 v-model="inputMethod"
                 type="radio"
                 value="manual"
-                class="text-accent-600 focus:ring-accent-500"
+                class="text-accent focus:ring-accent"
               />
-              <span class="text-sm text-accent-900 dark:text-accent-200">{{
+              <span class="text-sm text-fg">{{
                 t('admin.accounts.oauth.manualAuth')
               }}</span>
             </label>
@@ -31,9 +26,9 @@
                 v-model="inputMethod"
                 type="radio"
                 value="cookie"
-                class="text-accent-600 focus:ring-accent-500"
+                class="text-accent focus:ring-accent"
               />
-              <span class="text-sm text-accent-900 dark:text-accent-200">{{
+              <span class="text-sm text-fg">{{
                 t('admin.accounts.oauth.cookieAutoAuth')
               }}</span>
             </label>
@@ -42,9 +37,9 @@
                 v-model="inputMethod"
                 type="radio"
                 value="refresh_token"
-                class="text-accent-600 focus:ring-accent-500"
+                class="text-accent focus:ring-accent"
               />
-              <span class="text-sm text-accent-900 dark:text-accent-200">{{
+              <span class="text-sm text-fg">{{
                 t(getOAuthKey('refreshTokenAuth'))
               }}</span>
             </label>
@@ -53,9 +48,9 @@
                 v-model="inputMethod"
                 type="radio"
                 value="sso_cookie"
-                class="text-accent-600 focus:ring-accent-500"
+                class="text-accent focus:ring-accent"
               />
-              <span class="text-sm text-accent-900 dark:text-accent-200">{{
+              <span class="text-sm text-fg">{{
                 t(getOAuthKey('ssoCookieAuth'))
               }}</span>
             </label>
@@ -64,9 +59,9 @@
                 v-model="inputMethod"
                 type="radio"
                 value="email_password"
-                class="text-accent-600 focus:ring-accent-500"
+                class="text-accent focus:ring-accent"
               />
-              <span class="text-sm text-accent-900 dark:text-accent-200">{{
+              <span class="text-sm text-fg">{{
                 t(getOAuthKey('emailPasswordAuth'))
               }}</span>
             </label>
@@ -75,9 +70,9 @@
                 v-model="inputMethod"
                 type="radio"
                 value="mobile_refresh_token"
-                class="text-accent-600 focus:ring-accent-500"
+                class="text-accent focus:ring-accent"
               />
-              <span class="text-sm text-accent-900 dark:text-accent-200">{{
+              <span class="text-sm text-fg">{{
                 t('admin.accounts.oauth.openai.mobileRefreshTokenAuth')
               }}</span>
             </label>
@@ -86,9 +81,9 @@
                 v-model="inputMethod"
                 type="radio"
                 value="session_token"
-                class="text-accent-600 focus:ring-accent-500"
+                class="text-accent focus:ring-accent"
               />
-              <span class="text-sm text-accent-900 dark:text-accent-200">{{
+              <span class="text-sm text-fg">{{
                 t(getOAuthKey('sessionTokenAuth'))
               }}</span>
             </label>
@@ -97,9 +92,9 @@
                 v-model="inputMethod"
                 type="radio"
                 value="access_token"
-                class="text-accent-600 focus:ring-accent-500"
+                class="text-accent focus:ring-accent"
               />
-              <span class="text-sm text-accent-900 dark:text-accent-200">{{
+              <span class="text-sm text-fg">{{
                 t('admin.accounts.oauth.openai.accessTokenAuth')
               }}</span>
             </label>
@@ -108,9 +103,9 @@
                 v-model="inputMethod"
                 type="radio"
                 value="codex_session"
-                class="text-accent-600 focus:ring-accent-500"
+                class="text-accent focus:ring-accent"
               />
-              <span class="text-sm text-accent-900 dark:text-accent-200">{{
+              <span class="text-sm text-fg">{{
                 t('admin.accounts.oauth.openai.codexSessionAuth')
               }}</span>
             </label>
@@ -119,9 +114,9 @@
                 v-model="inputMethod"
                 type="radio"
                 value="agent_identity"
-                class="text-accent-600 focus:ring-accent-500"
+                class="text-accent focus:ring-accent"
               />
-              <span class="text-sm text-accent-900 dark:text-accent-200">{{
+              <span class="text-sm text-fg">{{
                 t('admin.accounts.oauth.openai.agentIdentityAuth')
               }}</span>
             </label>
@@ -130,9 +125,9 @@
                 v-model="inputMethod"
                 type="radio"
                 value="codex_pat"
-                class="text-accent-600 focus:ring-accent-500"
+                class="text-accent focus:ring-accent"
               />
-              <span class="text-sm text-accent-900 dark:text-accent-200">{{
+              <span class="text-sm text-fg">{{
                 t('admin.accounts.oauth.openai.codexPatAuth')
               }}</span>
             </label>
@@ -142,22 +137,22 @@
         <!-- Refresh Token Input (OpenAI / Antigravity / Mobile RT) -->
         <div v-if="inputMethod === 'refresh_token' || inputMethod === 'mobile_refresh_token'" class="space-y-4">
           <div
-            class="rounded-lg border border-accent-300 bg-white/80 p-4 dark:border-accent-600 dark:bg-gray-800/80"
+            class="border-t border-border pt-4"
           >
-            <p class="mb-3 text-sm text-accent-700 dark:text-accent-300">
+            <p class="mb-3 text-sm text-fg-muted">
               {{ t(getOAuthKey('refreshTokenDesc')) }}
             </p>
 
             <!-- Refresh Token Input -->
             <div class="mb-4">
               <label
-                class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
+                class="mb-2 flex items-center gap-2 text-sm font-semibold text-fg"
               >
-                <Icon name="key" size="sm" class="text-accent-500" />
+                <Icon name="key" size="sm" class="text-accent" />
                 Refresh Token
                 <span
                   v-if="parsedRefreshTokenCount > 1"
-                  class="rounded-full bg-accent-500 px-2 py-0.5 text-xs text-white"
+                  class="badge badge-primary"
                 >
                   {{ t('admin.accounts.oauth.keysCount', { count: parsedRefreshTokenCount }) }}
                 </span>
@@ -170,7 +165,7 @@
               ></textarea>
               <p
                 v-if="parsedRefreshTokenCount > 1"
-                class="mt-1 text-xs text-accent-600 dark:text-accent-400"
+                class="mt-1 text-xs text-accent"
               >
                 {{ t('admin.accounts.oauth.batchCreateAccounts', { count: parsedRefreshTokenCount }) }}
               </p>
@@ -179,9 +174,9 @@
             <!-- Error Message -->
             <div
               v-if="error"
-              class="mb-4 rounded-lg border border-danger-200 bg-danger-50 p-3 dark:border-danger-700 dark:bg-danger-900/30"
+              class="mb-4 border border-danger/40 bg-danger-weak px-3 py-2"
             >
-              <p class="whitespace-pre-line text-sm text-danger-600 dark:text-danger-400">
+              <p class="whitespace-pre-line text-sm text-danger">
                 {{ error }}
               </p>
             </div>
@@ -226,21 +221,21 @@
         <!-- SSO Cookie Input (Grok Web -> Grok Build) -->
         <div v-if="inputMethod === 'sso_cookie'" class="space-y-4">
           <div
-            class="rounded-lg border border-accent-300 bg-white/80 p-4 dark:border-accent-600 dark:bg-gray-800/80"
+            class="border-t border-border pt-4"
           >
-            <p class="mb-3 text-sm text-accent-700 dark:text-accent-300">
+            <p class="mb-3 text-sm text-fg-muted">
               {{ t(getOAuthKey('ssoCookieDesc')) }}
             </p>
 
             <div class="mb-4">
               <label
-                class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
+                class="mb-2 flex items-center gap-2 text-sm font-semibold text-fg"
               >
-                <Icon name="key" size="sm" class="text-accent-500" />
+                <Icon name="key" size="sm" class="text-accent" />
                 {{ t(getOAuthKey('ssoCookieLabel')) }}
                 <span
                   v-if="parsedSSOCount > 1"
-                  class="rounded-full bg-accent-500 px-2 py-0.5 text-xs text-white"
+                  class="badge badge-primary"
                 >
                   {{ t('admin.accounts.oauth.keysCount', { count: parsedSSOCount }) }}
                 </span>
@@ -252,16 +247,16 @@
                 :placeholder="t(getOAuthKey('ssoCookiePlaceholder'))"
                 spellcheck="false"
               ></textarea>
-              <p class="mt-1 text-xs text-accent-600 dark:text-accent-400">
+              <p class="mt-1 text-xs text-accent">
                 {{ t(getOAuthKey('ssoCookieHint')) }}
               </p>
             </div>
 
             <div
               v-if="error"
-              class="mb-4 rounded-lg border border-danger-200 bg-danger-50 p-3 dark:border-danger-700 dark:bg-danger-900/30"
+              class="mb-4 border border-danger/40 bg-danger-weak px-3 py-2"
             >
-              <p class="whitespace-pre-line text-sm text-danger-600 dark:text-danger-400">
+              <p class="whitespace-pre-line text-sm text-danger">
                 {{ error }}
               </p>
             </div>
@@ -301,20 +296,20 @@
         <!-- Grok email + password → ephemeral SSO → Build OAuth (password never stored) -->
         <div v-if="inputMethod === 'email_password'" class="space-y-4">
           <div
-            class="rounded-lg border border-accent-300 bg-white/80 p-4 dark:border-accent-600 dark:bg-gray-800/80"
+            class="border-t border-border pt-4"
           >
-            <p class="mb-3 text-sm text-accent-700 dark:text-accent-300">
+            <p class="mb-3 text-sm text-fg-muted">
               {{ t(getOAuthKey('emailPasswordDesc')) }}
             </p>
             <div class="mb-4">
               <label
-                class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
+                class="mb-2 flex items-center gap-2 text-sm font-semibold text-fg"
               >
-                <Icon name="user" size="sm" class="text-accent-500" />
+                <Icon name="user" size="sm" class="text-accent" />
                 {{ t(getOAuthKey('emailPasswordInputLabel')) }}
                 <span
                   v-if="parsedEmailPasswordCount > 1"
-                  class="rounded-full bg-accent-500 px-2 py-0.5 text-xs text-white"
+                  class="badge badge-primary"
                 >
                   {{ t('admin.accounts.oauth.keysCount', { count: parsedEmailPasswordCount }) }}
                 </span>
@@ -327,15 +322,15 @@
                 spellcheck="false"
                 autocomplete="off"
               ></textarea>
-              <p class="mt-1 text-xs text-accent-600 dark:text-accent-400">
+              <p class="mt-1 text-xs text-accent">
                 {{ t(getOAuthKey('emailPasswordHint')) }}
               </p>
             </div>
             <div
               v-if="error"
-              class="mb-4 rounded-lg border border-danger-200 bg-danger-50 p-3 dark:border-danger-700 dark:bg-danger-900/30"
+              class="mb-4 border border-danger/40 bg-danger-weak px-3 py-2"
             >
-              <p class="whitespace-pre-line text-sm text-danger-600 dark:text-danger-400">
+              <p class="whitespace-pre-line text-sm text-danger">
                 {{ error }}
               </p>
             </div>
@@ -374,21 +369,21 @@
         <!-- Codex auth.json / session credential batch import -->
         <div v-if="inputMethod === 'codex_session' || inputMethod === 'agent_identity'" class="space-y-4">
           <div
-            class="rounded-lg border border-accent-300 bg-white/80 p-4 dark:border-accent-600 dark:bg-gray-800/80"
+            class="border-t border-border pt-4"
           >
-            <p class="mb-3 text-sm text-accent-700 dark:text-accent-300">
+            <p class="mb-3 text-sm text-fg-muted">
               {{ t(isAgentIdentityInput ? 'admin.accounts.oauth.openai.agentIdentityDesc' : 'admin.accounts.oauth.openai.codexSessionDesc') }}
             </p>
 
             <div class="mb-4">
               <label
-                class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
+                class="mb-2 flex items-center gap-2 text-sm font-semibold text-fg"
               >
-                <Icon name="key" size="sm" class="text-accent-500" />
+                <Icon name="key" size="sm" class="text-accent" />
                 {{ t(isAgentIdentityInput ? 'admin.accounts.oauth.openai.agentIdentityInputLabel' : 'admin.accounts.oauth.openai.codexSessionInputLabel') }}
                 <span
                   v-if="parsedCodexSessionCount > 1"
-                  class="rounded-full bg-accent-500 px-2 py-0.5 text-xs text-white"
+                  class="badge badge-primary"
                 >
                   {{ t('admin.accounts.oauth.keysCount', { count: parsedCodexSessionCount }) }}
                 </span>
@@ -400,16 +395,16 @@
                 :placeholder="t(isAgentIdentityInput ? 'admin.accounts.oauth.openai.agentIdentityPlaceholder' : 'admin.accounts.oauth.openai.codexSessionPlaceholder')"
                 spellcheck="false"
               ></textarea>
-              <p class="mt-1 text-xs text-accent-600 dark:text-accent-400">
+              <p class="mt-1 text-xs text-accent">
                 {{ t(isAgentIdentityInput ? 'admin.accounts.oauth.openai.agentIdentityHint' : 'admin.accounts.oauth.openai.codexSessionHint') }}
               </p>
             </div>
 
             <div
               v-if="error"
-              class="mb-4 rounded-lg border border-danger-200 bg-danger-50 p-3 dark:border-danger-700 dark:bg-danger-900/30"
+              class="mb-4 border border-danger/40 bg-danger-weak px-3 py-2"
             >
-              <p class="whitespace-pre-line text-sm text-danger-600 dark:text-danger-400">
+              <p class="whitespace-pre-line text-sm text-danger">
                 {{ error }}
               </p>
             </div>
@@ -453,17 +448,17 @@
         <!-- Codex Personal Access Token -->
         <div v-if="inputMethod === 'codex_pat'" class="space-y-4">
           <div
-            class="rounded-lg border border-accent-300 bg-white/80 p-4 dark:border-accent-600 dark:bg-gray-800/80"
+            class="border-t border-border pt-4"
           >
-            <p class="mb-3 text-sm text-accent-700 dark:text-accent-300">
+            <p class="mb-3 text-sm text-fg-muted">
               {{ t('admin.accounts.oauth.openai.codexPatDesc') }}
             </p>
 
             <div class="mb-4">
               <label
-                class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
+                class="mb-2 flex items-center gap-2 text-sm font-semibold text-fg"
               >
-                <Icon name="key" size="sm" class="text-accent-500" />
+                <Icon name="key" size="sm" class="text-accent" />
                 {{ t('admin.accounts.oauth.openai.codexPatInputLabel') }}
               </label>
               <textarea
@@ -473,16 +468,16 @@
                 :placeholder="t('admin.accounts.oauth.openai.codexPatPlaceholder')"
                 spellcheck="false"
               ></textarea>
-              <p class="mt-1 text-xs text-accent-600 dark:text-accent-400">
+              <p class="mt-1 text-xs text-accent">
                 {{ t('admin.accounts.oauth.openai.codexPatHint') }}
               </p>
             </div>
 
             <div
               v-if="error"
-              class="mb-4 rounded-lg border border-danger-200 bg-danger-50 p-3 dark:border-danger-700 dark:bg-danger-900/30"
+              class="mb-4 border border-danger/40 bg-danger-weak px-3 py-2"
             >
-              <p class="whitespace-pre-line text-sm text-danger-600 dark:text-danger-400">
+              <p class="whitespace-pre-line text-sm text-danger">
                 {{ error }}
               </p>
             </div>
@@ -526,29 +521,29 @@
         <!-- Cookie Auto-Auth Form -->
         <div v-if="inputMethod === 'cookie'" class="space-y-4">
           <div
-            class="rounded-lg border border-accent-300 bg-white/80 p-4 dark:border-accent-600 dark:bg-gray-800/80"
+            class="border-t border-border pt-4"
           >
-            <p class="mb-3 text-sm text-accent-700 dark:text-accent-300">
+            <p class="mb-3 text-sm text-fg-muted">
               {{ t('admin.accounts.oauth.cookieAutoAuthDesc') }}
             </p>
 
             <!-- sessionKey Input -->
             <div class="mb-4">
               <label
-                class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
+                class="mb-2 flex items-center gap-2 text-sm font-semibold text-fg"
               >
-                <Icon name="key" size="sm" class="text-accent-500" />
+                <Icon name="key" size="sm" class="text-accent" />
                 {{ t('admin.accounts.oauth.sessionKey') }}
                 <span
                   v-if="parsedKeyCount > 1 && allowMultiple"
-                  class="rounded-full bg-accent-500 px-2 py-0.5 text-xs text-white"
+                  class="badge badge-primary"
                 >
                   {{ t('admin.accounts.oauth.keysCount', { count: parsedKeyCount }) }}
                 </span>
                 <button
                   v-if="showHelp"
                   type="button"
-                  class="text-accent-500 hover:text-accent-600"
+                  class="text-accent hover:text-accent-strong"
                   @click="showHelpDialog = !showHelpDialog"
                 >
                   <svg
@@ -578,7 +573,7 @@
               ></textarea>
               <p
                 v-if="parsedKeyCount > 1 && allowMultiple"
-                class="mt-1 text-xs text-accent-600 dark:text-accent-400"
+                class="mt-1 text-xs text-accent"
               >
                 {{ t('admin.accounts.oauth.batchCreateAccounts', { count: parsedKeyCount }) }}
               </p>
@@ -587,13 +582,13 @@
             <!-- Help Section -->
             <div
               v-if="showHelpDialog && showHelp"
-              class="mb-4 rounded-lg border border-warning-200 bg-warning-50 p-3 dark:border-warning-700 dark:bg-warning-900/30"
+              class="mb-4 border border-warning/40 bg-warning-weak px-3 py-2"
             >
-              <h5 class="mb-2 font-semibold text-warning-800 dark:text-warning-200">
+              <h5 class="mb-2 font-semibold text-warning-strong">
                 {{ t('admin.accounts.oauth.howToGetSessionKey') }}
               </h5>
               <ol
-                class="list-inside list-decimal space-y-1 text-xs text-warning-700 dark:text-warning-300"
+                class="list-inside list-decimal space-y-1 text-xs text-warning-strong"
               >
                 <li>{{ t('admin.accounts.oauth.step1') }}</li>
                 <li>{{ t('admin.accounts.oauth.step2') }}</li>
@@ -603,7 +598,7 @@
                 <li>{{ t('admin.accounts.oauth.step6') }}</li>
               </ol>
               <p
-                class="mt-2 text-xs text-warning-600 dark:text-warning-400"
+                class="mt-2 text-xs text-warning"
                 v-text="t('admin.accounts.oauth.sessionKeyFormat')"
               ></p>
             </div>
@@ -611,9 +606,9 @@
             <!-- Error Message -->
             <div
               v-if="error"
-              class="mb-4 rounded-lg border border-danger-200 bg-danger-50 p-3 dark:border-danger-700 dark:bg-danger-900/30"
+              class="mb-4 border border-danger/40 bg-danger-weak px-3 py-2"
             >
-              <p class="whitespace-pre-line text-sm text-danger-600 dark:text-danger-400">
+              <p class="whitespace-pre-line text-sm text-danger">
                 {{ error }}
               </p>
             </div>
@@ -656,23 +651,23 @@
         </div>
 
         <!-- Manual Authorization Flow -->
-        <div v-if="inputMethod === 'manual'" class="space-y-4">
-          <p class="mb-4 text-sm text-accent-800 dark:text-accent-300">
+        <div v-if="inputMethod === 'manual'">
+          <p class="mb-3 text-sm text-fg-muted">
             {{ oauthFollowSteps }}
           </p>
 
           <!-- Step 1: Generate Auth URL -->
           <div
-            class="rounded-lg border border-accent-300 bg-white/80 p-4 dark:border-accent-600 dark:bg-gray-800/80"
+            class="border-t border-border py-4"
           >
             <div class="flex items-start gap-3">
               <div
-                class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent-600 text-xs font-bold text-white"
+                class="w-6 flex-shrink-0 text-h3 font-bold tabular-nums text-accent-strong"
               >
                 1
               </div>
               <div class="flex-1">
-                <p class="mb-2 font-medium text-accent-900 dark:text-accent-200">
+                <p class="mb-2 font-semibold text-fg">
                   {{ oauthStep1GenerateUrl }}
                 </p>
                 <div v-if="showProjectId && platform === 'gemini'" class="mb-3">
@@ -682,7 +677,7 @@
                       href="https://console.cloud.google.com/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="inline-flex items-center gap-1 text-xs font-normal text-accent-500 hover:text-accent-600 dark:text-accent-400"
+                      class="inline-flex items-center gap-1 text-xs font-normal text-accent hover:text-accent-strong"
                     >
                       <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
@@ -696,7 +691,7 @@
                     class="input w-full font-mono text-sm"
                     :placeholder="t('admin.accounts.oauth.gemini.projectIdPlaceholder')"
                   />
-                  <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  <p class="mt-1 text-xs text-fg-muted">
                     {{ t('admin.accounts.oauth.gemini.projectIdHint') }}
                   </p>
                 </div>
@@ -736,7 +731,7 @@
                       :value="authUrl"
                       readonly
                       type="text"
-                      class="input flex-1 bg-gray-50 font-mono text-xs dark:bg-gray-700"
+                      class="input flex-1 bg-surface-sunken font-mono text-xs"
                     />
                     <button
                       type="button"
@@ -762,14 +757,14 @@
                         v-else
                         name="check"
                         size="sm"
-                        class="text-success-500"
+                        class="text-success"
                         :stroke-width="2"
                       />
                     </button>
                   </div>
                   <button
                     type="button"
-                    class="text-xs text-accent-600 hover:text-accent-700 dark:text-accent-400"
+                    class="text-xs text-accent hover:text-accent-strong"
                     @click="handleRegenerate"
                   >
                     <Icon name="refresh" size="xs" class="mr-1 inline" />
@@ -782,38 +777,38 @@
 
           <!-- Step 2: Open URL and authorize -->
           <div
-            class="rounded-lg border border-accent-300 bg-white/80 p-4 dark:border-accent-600 dark:bg-gray-800/80"
+            class="border-t border-border py-4"
           >
             <div class="flex items-start gap-3">
               <div
-                class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent-600 text-xs font-bold text-white"
+                class="w-6 flex-shrink-0 text-h3 font-bold tabular-nums text-accent-strong"
               >
                 2
               </div>
               <div class="flex-1">
-                <p class="mb-2 font-medium text-accent-900 dark:text-accent-200">
+                <p class="mb-2 font-semibold text-fg">
                   {{ oauthStep2OpenUrl }}
                 </p>
-                <p class="text-sm text-accent-700 dark:text-accent-300">
+                <p class="text-sm text-fg-muted">
                   {{ oauthOpenUrlDesc }}
                 </p>
                 <!-- Local callback notice -->
                 <div
                   v-if="showLocalCallbackNotice"
-                  class="mt-2 rounded border border-warning-300 bg-warning-50 p-3 dark:border-warning-700 dark:bg-warning-900/30"
+                  class="mt-2 border border-warning/40 bg-warning-weak px-3 py-2"
                 >
                   <p
-                    class="text-xs text-warning-800 dark:text-warning-300"
+                    class="text-xs text-warning-strong"
                     v-text="oauthImportantNotice"
                   ></p>
                 </div>
                 <!-- Proxy Warning (for non-OpenAI) -->
                 <div
                   v-else-if="showProxyWarning"
-                  class="mt-2 rounded border border-warning-300 bg-warning-50 p-3 dark:border-warning-700 dark:bg-warning-900/30"
+                  class="mt-2 border border-warning/40 bg-warning-weak px-3 py-2"
                 >
                   <p
-                    class="text-xs text-warning-800 dark:text-warning-300"
+                    class="text-xs text-warning-strong"
                     v-text="t('admin.accounts.oauth.proxyWarning')"
                   ></p>
                 </div>
@@ -823,25 +818,25 @@
 
           <!-- Step 3: Enter authorization code -->
           <div
-            class="rounded-lg border border-accent-300 bg-white/80 p-4 dark:border-accent-600 dark:bg-gray-800/80"
+            class="border-t border-border py-4"
           >
             <div class="flex items-start gap-3">
               <div
-                class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent-600 text-xs font-bold text-white"
+                class="w-6 flex-shrink-0 text-h3 font-bold tabular-nums text-accent-strong"
               >
                 3
               </div>
               <div class="flex-1">
-                <p class="mb-2 font-medium text-accent-900 dark:text-accent-200">
+                <p class="mb-2 font-semibold text-fg">
                   {{ oauthStep3EnterCode }}
                 </p>
                 <p
-                  class="mb-3 text-sm text-accent-700 dark:text-accent-300"
+                  class="mb-3 text-sm text-fg-muted"
                   v-text="oauthAuthCodeDesc"
                 ></p>
                 <div>
                   <label class="input-label">
-                    <Icon name="key" size="sm" class="mr-1 inline text-accent-500" />
+                    <Icon name="key" size="sm" class="mr-1 inline text-accent" />
                     {{ oauthAuthCode }}
                   </label>
                   <textarea
@@ -850,7 +845,7 @@
                     class="input w-full resize-none font-mono text-sm"
                     :placeholder="oauthAuthCodePlaceholder"
                   ></textarea>
-                  <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                  <p class="mt-2 text-xs text-fg-muted">
                     <Icon name="infoCircle" size="xs" class="mr-1 inline" />
                     {{ oauthAuthCodeHint }}
                   </p>
@@ -858,16 +853,16 @@
                   <!-- Gemini-specific state parameter warning -->
                   <div
                     v-if="platform === 'gemini'"
-                    class="mt-3 rounded-lg border-2 border-warning-400 bg-warning-50 p-3 dark:border-warning-600 dark:bg-warning-900/30"
+                    class="mt-3 border border-warning/40 bg-warning-weak px-3 py-2"
                   >
                     <div class="flex items-start gap-2">
                       <Icon
                         name="exclamationTriangle"
                         size="md"
-                        class="flex-shrink-0 text-warning-600 dark:text-warning-400"
+                        class="flex-shrink-0 text-warning"
                         :stroke-width="2"
                       />
-                      <div class="text-sm text-warning-800 dark:text-warning-300">
+                      <div class="text-sm text-warning-strong">
                         <p class="font-semibold">{{ $t('admin.accounts.oauth.gemini.stateWarningTitle') }}</p>
                         <p class="mt-1">{{ $t('admin.accounts.oauth.gemini.stateWarningDesc') }}</p>
                       </div>
@@ -878,9 +873,9 @@
                 <!-- Error Message -->
                 <div
                   v-if="error"
-                  class="mt-3 rounded-lg border border-danger-200 bg-danger-50 p-3 dark:border-danger-700 dark:bg-danger-900/30"
+                  class="mt-3 border border-danger/40 bg-danger-weak px-3 py-2"
                 >
-                  <p class="whitespace-pre-line text-sm text-danger-600 dark:text-danger-400">
+                  <p class="whitespace-pre-line text-sm text-danger">
                     {{ error }}
                   </p>
                 </div>

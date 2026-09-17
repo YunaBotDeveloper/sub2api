@@ -7,19 +7,14 @@
     @close="$emit('close')"
   >
     <div class="mb-6">
-      <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-danger-100 dark:bg-danger-900/30">
-        <svg class="h-6 w-6 text-danger-600 dark:text-danger-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-        </svg>
-      </div>
-      <p class="mt-4 text-center text-body text-fg-muted">
+      <p class="border border-danger/40 bg-danger-weak px-3 py-2 text-body text-danger-strong">
         {{ t('profile.totp.disableWarning') }}
       </p>
     </div>
 
     <!-- Loading verification method -->
     <div v-if="methodLoading" class="flex items-center justify-center py-8">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+      <div class="spinner h-8 w-8 text-accent"></div>
     </div>
 
     <form v-else @submit.prevent="handleDisable" class="space-y-4">

@@ -109,6 +109,39 @@ export default {
       description: '注册即可获得免费试用额度，体验一站式 AI 服务',
       button: '免费注册'
     },
+    connect: {
+      title: '将 CLI 指向本站',
+      hint: '先在控制台创建 API 密钥，再在工具中填写以下 Base URL。各系统的完整配置在密钥旁的使用说明中。'
+    },
+    billing: {
+      title: '计费方式',
+      description: '先充值余额。每次请求按 token 计量，按模型单价计费并从余额中扣除。',
+      meter: {
+        usage: '读数',
+        usageValue: '每次请求消耗的 token',
+        rate: '单价',
+        rateValue: '模型每百万 token 价格',
+        multiplier: '倍率',
+        multiplierValue: '密钥所属分组倍率',
+        charge: '扣费',
+        chargeValue: '从余额中扣除'
+      },
+      table: {
+        item: '计费项',
+        unit: '单位',
+        basis: '计价依据',
+        perMillion: '每百万 token'
+      },
+      lines: {
+        input: { item: '输入 token', basis: '模型输入单价' },
+        output: { item: '输出 token', basis: '模型输出单价' },
+        cacheWrite: { item: '缓存写入 token', basis: '模型缓存写入单价' },
+        cacheRead: { item: '缓存读取 token', basis: '模型缓存读取单价' },
+        total: { item: '单次请求费用', basis: '各项合计 × 分组倍率' }
+      },
+      note: '不同模型、不同分组价格不同。每笔扣费都可在使用记录中逐条查看。',
+      rateCardLink: '查看模型价目表'
+    },
     footer: {
       allRightsReserved: '保留所有权利。'
     }

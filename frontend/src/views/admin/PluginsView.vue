@@ -2,24 +2,18 @@
   <AppLayout>
     <div class="space-y-6">
       <section
-        class="flex flex-col gap-4 border-b border-gray-200 pb-5 dark:border-dark-700 sm:flex-row sm:items-end sm:justify-between"
+        class="page-header mb-0 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
       >
         <div class="min-w-0">
-          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+          <h2 class="page-title">
             {{ t("admin.plugins.title") }}
           </h2>
-          <p class="mt-1 max-w-3xl text-sm text-gray-500 dark:text-gray-400">
+          <p class="page-description max-w-3xl">
             {{ t("admin.plugins.description") }}
           </p>
-          <div
-            class="mt-3 flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-300"
-          >
-            <span class="rounded bg-gray-100 px-2 py-1 dark:bg-dark-700">{{
-              t("admin.plugins.onlyOpenAI")
-            }}</span>
-            <span class="rounded bg-gray-100 px-2 py-1 dark:bg-dark-700">{{
-              t("admin.plugins.noAccountCoupling")
-            }}</span>
+          <div class="mt-2 flex flex-wrap gap-2">
+            <span class="badge">{{ t("admin.plugins.onlyOpenAI") }}</span>
+            <span class="badge">{{ t("admin.plugins.noAccountCoupling") }}</span>
           </div>
         </div>
 
@@ -42,7 +36,7 @@
           </button>
           <button
             type="button"
-            class="btn btn-secondary"
+            class="btn btn-secondary btn-icon"
             :disabled="loading"
             :title="t('common.refresh')" :aria-label="t('common.refresh')"
             @click="loadPlugins"
@@ -53,136 +47,104 @@
         </div>
       </section>
 
-      <p class="text-xs text-gray-500 dark:text-gray-400">
-        {{ t("admin.plugins.uploadHint") }}
-      </p>
-
-      <div
-        class="border border-accent-200 bg-accent-50 px-4 py-3 text-sm text-accent-800 dark:border-accent-900/60 dark:bg-accent-950/30 dark:text-accent-200"
-      >
+      <div class="border border-accent/40 bg-accent-weak px-4 py-3 text-body text-accent-strong">
         <p>{{ t("admin.plugins.runtimeNotice") }}</p>
         <p class="mt-1">{{ t("admin.plugins.menuNotice") }}</p>
+        <p class="mt-2 border-t border-accent/30 pt-2 text-meta text-fg-muted">
+          {{ t("admin.plugins.uploadHint") }}
+        </p>
       </div>
 
       <div
         v-if="loading"
-        class="flex min-h-48 items-center justify-center text-sm text-gray-500"
+        class="flex min-h-48 items-center justify-center text-body text-fg-muted"
       >
         {{ t("common.loading") }}
       </div>
 
-      <div
-        v-else-if="plugins.length === 0"
-        class="flex min-h-56 flex-col items-center justify-center border border-dashed border-gray-300 px-6 text-center dark:border-dark-600"
-      >
-        <Icon name="cube" size="xl" class="text-gray-400" />
-        <p class="mt-3 font-medium text-gray-800 dark:text-gray-200">
+      <div v-else-if="plugins.length === 0" class="card empty-state">
+        <Icon name="cube" size="xl" class="empty-state-icon" />
+        <p class="empty-state-title">
           {{ t("admin.plugins.empty") }}
         </p>
-        <p class="mt-1 max-w-lg text-sm text-gray-500 dark:text-gray-400">
+        <p class="empty-state-description max-w-lg">
           {{ t("admin.plugins.emptyHint") }}
         </p>
       </div>
 
-      <div v-else class="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <article
-          v-for="plugin in plugins"
-          :key="plugin.id"
-          class="card overflow-hidden border border-gray-200 dark:border-dark-700"
-        >
-          <div
-            class="flex flex-wrap items-start justify-between gap-3 border-b border-gray-100 p-5 dark:border-dark-700"
+      <section v-else class="card">
+        <div class="card-header flex items-baseline justify-between gap-3">
+          <h3 class="card-title">{{ t("admin.plugins.title") }}</h3>
+          <span class="text-meta tabular-nums text-fg-muted">{{ plugins.length }}</span>
+        </div>
+        <ol class="divide-y divide-border">
+          <li
+            v-for="(plugin, index) in plugins"
+            :key="plugin.id"
+            class="grid grid-cols-1 gap-x-6 gap-y-4 px-5 py-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)]"
           >
+            <!-- Register entry: identity -->
+            <div class="flex min-w-0 gap-3">
+              <span class="w-6 shrink-0 pt-0.5 text-right text-meta tabular-nums text-fg-subtle">{{ index + 1 }}</span>
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="truncate text-h3 font-bold text-fg">
+                    {{ plugin.name }}
+                  </h3>
+                  <span class="font-mono text-meta text-fg-muted">v{{ plugin.version }}</span>
+                  <span class="badge" :class="stateClass(plugin.state)">
+                    {{ t(`admin.plugins.${plugin.state}`) }}
+                  </span>
+                </div>
+                <p class="mt-1 break-all text-meta text-fg-muted">
+                  <span class="font-mono">{{ plugin.plugin_key }}</span><span v-if="plugin.author"> · {{ plugin.author }}</span>
+                </p>
+                <p v-if="plugin.description" class="mt-2 text-body text-fg-muted">
+                  {{ plugin.description }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Compatibility -->
             <div class="min-w-0">
               <div class="flex flex-wrap items-center gap-2">
-                <h3
-                  class="truncate text-base font-semibold text-gray-900 dark:text-white"
-                >
-                  {{ plugin.name }}
-                </h3>
-                <span class="font-mono text-xs text-gray-500"
-                  >v{{ plugin.version }}</span
-                >
-                <span
-                  class="rounded px-2 py-0.5 text-xs font-medium"
-                  :class="stateClass(plugin.state)"
-                >
-                  {{ t(`admin.plugins.${plugin.state}`) }}
-                </span>
-              </div>
-              <p class="mt-1 text-xs text-gray-500">
-                {{ plugin.plugin_key
-                }}<span v-if="plugin.author"> · {{ plugin.author }}</span>
-              </p>
-              <p
-                v-if="plugin.description"
-                class="mt-2 text-sm text-gray-600 dark:text-gray-300"
-              >
-                {{ plugin.description }}
-              </p>
-            </div>
-            <button
-              type="button"
-              class="btn btn-secondary btn-sm"
-              @click="openConfiguration(plugin)"
-            >
-              <Icon name="cog" size="sm" />
-              {{ t("admin.plugins.configure") }}
-            </button>
-          </div>
-
-          <div class="grid grid-cols-1 gap-x-6 gap-y-4 p-5 md:grid-cols-2">
-            <div>
-              <p class="text-xs font-medium uppercase text-gray-500">
-                {{ t("admin.plugins.compatibility") }}
-              </p>
-              <div class="mt-2 flex items-center gap-2">
-                <span
-                  class="rounded px-2 py-0.5 text-xs font-medium"
-                  :class="compatibilityClass(plugin.compatibility.status)"
-                >
+                <span class="text-meta font-medium text-fg-muted">{{ t("admin.plugins.compatibility") }}</span>
+                <span class="badge" :class="compatibilityClass(plugin.compatibility.status)">
                   {{ t(`admin.plugins.${plugin.compatibility.status}`) }}
                 </span>
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{
-                  plugin.compatibility.message
-                }}</span>
               </div>
-              <dl
-                class="mt-3 grid grid-cols-[auto,1fr] gap-x-3 gap-y-1 text-xs"
-              >
-                <dt class="text-gray-500">
+              <p class="mt-1 text-meta text-fg-muted">
+                {{ plugin.compatibility.message }}
+              </p>
+              <dl class="mt-2 grid grid-cols-[auto,1fr] gap-x-3 border-t border-border pt-2 text-meta">
+                <dt class="text-fg-muted">
                   {{ t("admin.plugins.currentVersion") }}
                 </dt>
-                <dd class="font-mono text-gray-800 dark:text-gray-200">
+                <dd class="font-mono text-fg">
                   {{ plugin.compatibility.current_sub2api_version }}
                 </dd>
-                <dt class="text-gray-500">
+                <dt class="text-fg-muted">
                   {{ t("admin.plugins.requiredVersion") }}
                 </dt>
-                <dd class="font-mono text-gray-800 dark:text-gray-200">
+                <dd class="font-mono text-fg">
                   {{ plugin.compatibility.required_sub2api_version }}
                 </dd>
-                <dt class="text-gray-500">
+                <dt class="text-fg-muted">
                   {{ t("admin.plugins.recommendedVersion") }}
                 </dt>
-                <dd class="font-mono text-gray-800 dark:text-gray-200">
+                <dd class="font-mono text-fg">
                   {{ plugin.compatibility.recommended_sub2api_version || "-" }}
                 </dd>
               </dl>
             </div>
 
-            <div>
-              <p class="text-xs font-medium uppercase text-gray-500">
-                {{ t("admin.plugins.runtime") }}
-              </p>
-              <div class="mt-2 flex flex-wrap gap-2 text-xs">
+            <!-- Runtime, rollout, actions -->
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-meta font-medium text-fg-muted">{{ t("admin.plugins.runtime") }}</span>
                 <span
-                  class="rounded px-2 py-0.5"
-                  :class="
-                    plugin.runtime_healthy
-                      ? 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-300'
-                      : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
-                  "
+                  class="badge"
+                  :class="plugin.runtime_healthy ? 'badge-success' : 'badge-gray'"
                 >
                   {{
                     plugin.runtime_healthy
@@ -190,100 +152,93 @@
                       : t("admin.plugins.unhealthy")
                   }}
                 </span>
-                <span
-                  class="rounded bg-gray-100 px-2 py-0.5 text-gray-600 dark:bg-dark-700 dark:text-gray-300"
-                >
+                <span class="badge">
                   {{ t("admin.plugins.signature") }}:
                   {{ t(`admin.plugins.${plugin.signature_status}`) }}
                 </span>
               </div>
-              <p
-                v-if="plugin.last_error"
-                class="mt-3 break-words text-xs text-danger-600 dark:text-danger-400"
-              >
+              <p v-if="plugin.last_error" class="mt-1 break-words text-meta text-danger">
                 {{ plugin.last_error }}
               </p>
-              <p
-                v-else-if="plugin.runtime_message"
-                class="mt-3 break-words text-xs text-gray-500"
-              >
+              <p v-else-if="plugin.runtime_message" class="mt-1 break-words text-meta text-fg-muted">
                 {{ plugin.runtime_message }}
               </p>
-            </div>
 
-            <div class="md:col-span-2">
-              <label
-                class="flex items-center justify-between gap-4 text-xs font-medium text-gray-600 dark:text-gray-300"
-              >
-                <span>{{ t("admin.plugins.rollout") }}</span>
-                <span class="w-11 text-right font-mono"
-                  >{{
+              <div class="mt-2 border-t border-border pt-2">
+                <label class="flex items-center justify-between gap-4 text-meta font-medium text-fg-muted">
+                  <span>{{ t("admin.plugins.rollout") }}</span>
+                  <span class="w-11 text-right tabular-nums text-fg">{{
                     rolloutValues[plugin.id] ?? currentRollout(plugin)
-                  }}%</span
+                  }}%</span>
+                </label>
+                <input
+                  :value="rolloutValues[plugin.id] ?? currentRollout(plugin)"
+                  type="range"
+                  min="1"
+                  max="100"
+                  step="1"
+                  class="mt-1 w-full"
+                  :disabled="hasEnabledBinding(plugin)"
+                  @input="setRollout(plugin.id, $event)"
+                />
+              </div>
+
+              <div class="mt-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  @click="openConfiguration(plugin)"
                 >
-              </label>
-              <input
-                :value="rolloutValues[plugin.id] ?? currentRollout(plugin)"
-                type="range"
-                min="1"
-                max="100"
-                step="1"
-                class="mt-2 w-full accent-primary-600"
-                :disabled="hasEnabledBinding(plugin)"
-                @input="setRollout(plugin.id, $event)"
-              />
+                  <Icon name="cog" size="sm" />
+                  {{ t("admin.plugins.configure") }}
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  :disabled="busyID === plugin.id"
+                  @click="testPlugin(plugin)"
+                >
+                  <Icon name="beaker" size="sm" />
+                  {{ t("admin.plugins.test") }}
+                </button>
+                <button
+                  v-if="hasEnabledBinding(plugin)"
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  :disabled="busyID === plugin.id"
+                  @click="disablePlugin(plugin)"
+                >
+                  <Icon name="ban" size="sm" />
+                  {{ t("admin.plugins.disable") }}
+                </button>
+                <button
+                  v-else
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  :disabled="
+                    busyID === plugin.id ||
+                    plugin.state === 'starting' ||
+                    !plugin.compatibility.compatible
+                  "
+                  @click="enablePlugin(plugin)"
+                >
+                  <Icon name="play" size="sm" />
+                  {{ t("admin.plugins.enable") }}
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-danger btn-sm"
+                  :disabled="busyID === plugin.id || hasEnabledBinding(plugin)"
+                  @click="uninstallPlugin(plugin)"
+                >
+                  <Icon name="trash" size="sm" />
+                  {{ t("admin.plugins.uninstall") }}
+                </button>
+              </div>
             </div>
-          </div>
-
-          <div
-            class="flex flex-wrap justify-end gap-2 border-t border-gray-100 px-5 py-4 dark:border-dark-700"
-          >
-            <button
-              type="button"
-              class="btn btn-secondary btn-sm"
-              :disabled="busyID === plugin.id"
-              @click="testPlugin(plugin)"
-            >
-              <Icon name="beaker" size="sm" />
-              {{ t("admin.plugins.test") }}
-            </button>
-            <button
-              v-if="hasEnabledBinding(plugin)"
-              type="button"
-              class="btn btn-secondary btn-sm"
-              :disabled="busyID === plugin.id"
-              @click="disablePlugin(plugin)"
-            >
-              <Icon name="ban" size="sm" />
-              {{ t("admin.plugins.disable") }}
-            </button>
-            <button
-              v-else
-              type="button"
-              class="btn btn-primary btn-sm"
-              :disabled="
-                busyID === plugin.id ||
-                plugin.state === 'starting' ||
-                !plugin.compatibility.compatible
-              "
-              @click="enablePlugin(plugin)"
-            >
-              <Icon name="play" size="sm" />
-              {{ t("admin.plugins.enable") }}
-            </button>
-            <button
-              type="button"
-              class="btn btn-danger btn-sm"
-              :disabled="busyID === plugin.id || hasEnabledBinding(plugin)"
-              @click="uninstallPlugin(plugin)"
-            >
-              <Icon name="trash" size="sm" />
-              {{ t("admin.plugins.uninstall") }}
-            </button>
-          </div>
-        </article>
-      </div>
-
+          </li>
+        </ol>
+      </section>
       <BaseDialog
         :show="configPlugin !== null"
         :title="
@@ -293,12 +248,12 @@
         @close="closeConfiguration"
       >
         <div
-          class="relative min-h-[520px] overflow-hidden bg-gray-50 dark:bg-dark-900"
+          class="relative min-h-[520px] overflow-hidden bg-surface-sunken"
           :style="{ height: `${iframeHeight}px` }"
         >
           <div
             v-if="uiLoading"
-            class="absolute inset-0 z-10 flex items-center justify-center text-sm text-gray-500"
+            class="absolute inset-0 z-10 flex items-center justify-center text-sm text-fg-muted"
           >
             {{ t("admin.plugins.loadingUI") }}
           </div>
@@ -306,11 +261,11 @@
             v-if="uiError"
             class="absolute inset-0 z-20 flex flex-col items-center justify-center p-8 text-center"
           >
-            <Icon name="exclamationTriangle" size="xl" class="text-warning-500" />
-            <p class="mt-3 font-medium text-gray-800 dark:text-gray-200">
+            <Icon name="exclamationTriangle" size="xl" class="text-warning" />
+            <p class="mt-3 font-medium text-fg">
               {{ t("admin.plugins.uiUnavailable") }}
             </p>
-            <p class="mt-1 max-w-xl text-sm text-gray-500">{{ uiError }}</p>
+            <p class="mt-1 max-w-xl text-sm text-fg-muted">{{ uiError }}</p>
           </div>
           <iframe
             v-if="uiSession"
@@ -318,7 +273,7 @@
             :src="uiSession.url"
             sandbox="allow-scripts"
             referrerpolicy="no-referrer"
-            class="h-full w-full border-0 bg-white dark:bg-dark-900"
+            class="h-full w-full border-0 bg-surface"
             :title="
               t('admin.plugins.configTitle', { name: configPlugin?.name || '' })
             "
@@ -685,23 +640,18 @@ async function handleBridgeMessage(event: MessageEvent): Promise<void> {
 }
 
 function stateClass(state: PluginInstallation["state"]): string {
-  if (state === "enabled")
-    return "bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-300";
-  if (state === "error" || state === "incompatible")
-    return "bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300";
-  if (state === "starting")
-    return "bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300";
-  return "bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300";
+  if (state === "enabled") return "badge-success";
+  if (state === "error" || state === "incompatible") return "badge-danger";
+  if (state === "starting") return "badge-warning";
+  return "badge-gray";
 }
 
 function compatibilityClass(
   status: PluginInstallation["compatibility"]["status"],
 ): string {
-  if (status === "compatible")
-    return "bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-300";
-  if (status === "untested")
-    return "bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300";
-  return "bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300";
+  if (status === "compatible") return "badge-success";
+  if (status === "untested") return "badge-warning";
+  return "badge-danger";
 }
 
 onMounted(() => {

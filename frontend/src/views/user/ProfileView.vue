@@ -17,19 +17,13 @@
 
       <div
         v-if="contactInfo"
-        class="card border-primary-200 bg-primary-50 p-6 dark:bg-primary-900/20"
+        class="card flex flex-wrap items-baseline gap-x-4 gap-y-1 px-5 py-3"
       >
-        <div class="flex items-center gap-4">
-          <div class="rounded-xl bg-primary-100 p-3 text-primary-600">
-            <Icon name="chat" size="lg" />
-          </div>
-          <div>
-            <h3 class="font-semibold text-primary-800 dark:text-primary-200">
-              {{ t('common.contactSupport') }}
-            </h3>
-            <p class="text-sm font-medium">{{ contactInfo }}</p>
-          </div>
-        </div>
+        <h3 class="inline-flex items-center gap-2 text-label font-bold text-accent-strong">
+          <Icon name="chat" size="sm" class="text-accent" />
+          {{ t('common.contactSupport') }}
+        </h3>
+        <p class="text-body font-medium text-fg">{{ contactInfo }}</p>
       </div>
 
       <ProfilePasswordForm />

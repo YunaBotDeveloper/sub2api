@@ -2,8 +2,8 @@
   <section aria-labelledby="prompt-events-title" class="py-6">
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div>
-        <h2 id="prompt-events-title" class="text-base font-semibold text-gray-950 dark:text-white">{{ t('admin.promptAudit.events.title') }}</h2>
-        <p class="mt-1 text-sm text-gray-500 dark:text-dark-300">{{ t('admin.promptAudit.events.description') }}</p>
+        <h2 id="prompt-events-title" class="text-h3 font-bold text-accent-strong">{{ t('admin.promptAudit.events.title') }}</h2>
+        <p class="mt-1 text-body text-fg-muted">{{ t('admin.promptAudit.events.description') }}</p>
       </div>
       <div class="flex flex-wrap gap-2">
         <button type="button" class="btn btn-secondary btn-sm" :disabled="selectedIds.length === 0" @click="$emit('batch-delete')">
@@ -16,7 +16,7 @@
     </div>
 
     <form class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5" @submit.prevent="applyFilters">
-      <label class="text-xs text-gray-600 dark:text-dark-200">
+      <label class="text-meta font-medium text-fg-muted">
         <span>{{ t('admin.promptAudit.events.decision') }}</span>
         <select v-model="localFilters.decision" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.decision')" @change="filtersChanged">
           <option value="">{{ t('common.all') }}</option>
@@ -25,7 +25,7 @@
           <option value="critical">{{ t('admin.promptAudit.decisions.critical') }}</option>
         </select>
       </label>
-      <label class="text-xs text-gray-600 dark:text-dark-200">
+      <label class="text-meta font-medium text-fg-muted">
         <span>{{ t('admin.promptAudit.events.risk') }}</span>
         <select v-model="localFilters.risk_level" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.risk')" @change="filtersChanged">
           <option value="">{{ t('common.all') }}</option>
@@ -42,11 +42,11 @@
       <FilterInput v-model="localFilters.request_id" :label="t('admin.promptAudit.events.requestId')" @change="filtersChanged" />
       <FilterInput v-model="localFilters.prompt_hash" :label="t('admin.promptAudit.events.promptHash')" @change="filtersChanged" />
       <FilterInput v-model="localFilters.keyword" :label="t('admin.promptAudit.events.keyword')" @change="filtersChanged" />
-      <label class="text-xs text-gray-600 dark:text-dark-200">
+      <label class="text-meta font-medium text-fg-muted">
         <span>{{ t('admin.promptAudit.events.startAt') }}</span>
         <input v-model="localFilters.start_at" type="datetime-local" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.startAt')" @change="filtersChanged" />
       </label>
-      <label class="text-xs text-gray-600 dark:text-dark-200">
+      <label class="text-meta font-medium text-fg-muted">
         <span>{{ t('admin.promptAudit.events.endAt') }}</span>
         <input v-model="localFilters.end_at" type="datetime-local" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.endAt')" @change="filtersChanged" />
       </label>
@@ -55,45 +55,45 @@
         <button type="button" class="btn btn-ghost btn-sm" @click="resetFilters">{{ t('common.reset') }}</button>
       </div>
     </form>
-    <div v-if="error" role="alert" class="mt-4 rounded-lg bg-danger-50 px-4 py-3 text-sm text-danger-700 dark:bg-danger-950/30 dark:text-danger-300">{{ error }}</div>
-    <div class="mt-5 overflow-x-auto rounded-xl border border-gray-200 dark:border-dark-700/60">
-      <table class="min-w-[1120px] w-full text-left text-sm">
-        <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500 dark:bg-dark-900/70 dark:text-dark-400">
+    <div v-if="error" role="alert" class="mt-4 border border-danger/40 bg-danger-weak px-4 py-3 text-body text-danger-strong">{{ error }}</div>
+    <div class="table-container mt-5">
+      <table class="table min-w-[1120px] text-left">
+        <thead>
           <tr>
-            <th class="w-10 px-3 py-3"><input type="checkbox" :checked="allSelected" :aria-label="t('admin.promptAudit.events.selectAll')" @change="toggleAll" /></th>
-            <th class="px-3 py-3 font-medium">{{ t('admin.promptAudit.events.time') }}</th>
-            <th class="px-3 py-3 font-medium">{{ t('admin.promptAudit.events.identity') }}</th>
-            <th class="px-3 py-3 font-medium">{{ t('admin.promptAudit.events.group') }}</th>
-            <th class="px-3 py-3 font-medium">{{ t('admin.promptAudit.events.route') }}</th>
-            <th class="px-3 py-3 font-medium">{{ t('admin.promptAudit.events.result') }}</th>
-            <th class="px-3 py-3 font-medium">{{ t('admin.promptAudit.events.preview') }}</th>
-            <th class="px-3 py-3 text-right font-medium">{{ t('admin.promptAudit.common.actions') }}</th>
+            <th class="w-10 px-3 py-2"><input type="checkbox" :checked="allSelected" :aria-label="t('admin.promptAudit.events.selectAll')" @change="toggleAll" /></th>
+            <th class="px-3 py-2">{{ t('admin.promptAudit.events.time') }}</th>
+            <th class="px-3 py-2">{{ t('admin.promptAudit.events.identity') }}</th>
+            <th class="px-3 py-2">{{ t('admin.promptAudit.events.group') }}</th>
+            <th class="px-3 py-2">{{ t('admin.promptAudit.events.route') }}</th>
+            <th class="px-3 py-2">{{ t('admin.promptAudit.events.result') }}</th>
+            <th class="px-3 py-2">{{ t('admin.promptAudit.events.preview') }}</th>
+            <th class="px-3 py-2 text-right">{{ t('admin.promptAudit.common.actions') }}</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-100 bg-white dark:divide-dark-700 dark:bg-transparent">
-          <tr v-if="loading"><td colspan="8" class="px-4 py-12 text-center text-gray-500" aria-busy="true">{{ t('common.loading') }}</td></tr>
-          <tr v-else-if="events.length === 0"><td colspan="8" class="px-4 py-12 text-center text-gray-500">{{ t('admin.promptAudit.events.empty') }}</td></tr>
-          <tr v-for="event in events" v-else :key="event.id" :data-test="`event-${event.id}`" class="align-top hover:bg-gray-50/70 dark:hover:bg-dark-800/70">
+        <tbody>
+          <tr v-if="loading"><td colspan="8" class="px-4 py-12 text-center text-fg-muted" aria-busy="true">{{ t('common.loading') }}</td></tr>
+          <tr v-else-if="events.length === 0"><td colspan="8" class="px-4 py-12 text-center text-fg-muted">{{ t('admin.promptAudit.events.empty') }}</td></tr>
+          <tr v-for="event in events" v-else :key="event.id" :data-test="`event-${event.id}`" class="align-top">
             <td class="px-3 py-3"><input type="checkbox" :checked="selectedIds.includes(event.id)" :aria-label="t('admin.promptAudit.events.selectEvent', { id: event.id })" @change="toggleOne(event.id)" /></td>
-            <td class="whitespace-nowrap px-3 py-3 text-xs text-gray-600 dark:text-dark-300">{{ formatDate(event.created_at) }}</td>
+            <td class="whitespace-nowrap px-3 py-3 text-label tabular-nums text-fg-muted">{{ formatDate(event.created_at) }}</td>
             <td class="px-3 py-3">
               <CopyLine :label="t('admin.promptAudit.events.user')" :value="event.snapshot.username" />
               <CopyLine :label="t('admin.promptAudit.events.email')" :value="event.snapshot.user_email" />
               <CopyLine :label="t('admin.promptAudit.events.apiKey')" :value="event.snapshot.api_key_name" />
             </td>
-            <td class="px-3 py-3 text-gray-700 dark:text-dark-200">{{ event.snapshot.group_name || '—' }}</td>
+            <td class="px-3 py-3 text-fg">{{ event.snapshot.group_name || '—' }}</td>
             <td class="px-3 py-3">
-              <p class="font-medium text-gray-900 dark:text-white">{{ event.snapshot.endpoint }}</p>
-              <p class="mt-1 text-xs text-gray-500">{{ event.snapshot.model }} · {{ event.snapshot.protocol }} · {{ event.snapshot.stage || 'http' }}</p>
+              <p class="font-medium text-fg">{{ event.snapshot.endpoint }}</p>
+              <p class="mt-1 font-mono text-meta text-fg-muted">{{ event.snapshot.model }} · {{ event.snapshot.protocol }} · {{ event.snapshot.stage || 'http' }}</p>
             </td>
             <td class="px-3 py-3">
-              <span class="rounded-full px-2 py-0.5 text-xs font-medium" :class="decisionClass(event.decision)">{{ formatDecisionRisk(event.decision, event.risk_level) }}</span>
-              <p class="mt-2 max-w-48 truncate text-xs text-gray-500" :title="formatCategories(event.categories)">{{ formatCategories(event.categories) }}</p>
+              <span class="badge" :class="decisionClass(event.decision)">{{ formatDecisionRisk(event.decision, event.risk_level) }}</span>
+              <p class="mt-2 max-w-48 truncate text-meta text-fg-muted" :title="formatCategories(event.categories)">{{ formatCategories(event.categories) }}</p>
             </td>
-            <td class="max-w-xs px-3 py-3"><p class="line-clamp-2 break-words text-gray-600 dark:text-dark-300">{{ event.snapshot.redacted_preview || '—' }}</p></td>
+            <td class="max-w-xs px-3 py-3"><p class="line-clamp-2 break-words text-fg-muted">{{ event.snapshot.redacted_preview || '—' }}</p></td>
             <td class="whitespace-nowrap px-3 py-3 text-right">
               <button type="button" class="btn btn-ghost btn-sm" @click="$emit('view', event.id)">{{ t('common.view') }}</button>
-              <button type="button" class="btn btn-ghost btn-sm text-danger-600" @click="$emit('delete', event.id)">{{ t('common.delete') }}</button>
+              <button type="button" class="btn btn-ghost btn-sm text-danger" @click="$emit('delete', event.id)">{{ t('common.delete') }}</button>
             </td>
           </tr>
         </tbody>
@@ -134,7 +134,7 @@ const FilterInput = defineComponent({
   props: { modelValue: { type: String, required: true }, label: { type: String, required: true }, type: { type: String, default: 'text' } },
   emits: ['update:modelValue', 'change'],
   setup(componentProps, { emit: componentEmit }) {
-    return () => h('label', { class: 'text-xs text-gray-600 dark:text-dark-200' }, [
+    return () => h('label', { class: 'text-xs text-fg-muted' }, [
       h('span', componentProps.label),
       h('input', {
         value: componentProps.modelValue, type: componentProps.type, class: 'input mt-1 w-full', 'aria-label': componentProps.label,
@@ -149,10 +149,10 @@ const CopyLine = defineComponent({
   props: { label: { type: String, required: true }, value: { type: String, default: '' } },
   setup(componentProps) {
     return () => h('div', { class: 'flex max-w-56 items-center gap-1 text-xs' }, [
-      h('span', { class: 'w-16 flex-none text-gray-500 dark:text-dark-400' }, componentProps.label),
-      h('span', { class: 'min-w-0 flex-1 truncate text-gray-800 dark:text-dark-100' }, componentProps.value || '—'),
+      h('span', { class: 'w-16 flex-none text-fg-muted' }, componentProps.label),
+      h('span', { class: 'min-w-0 flex-1 truncate text-fg' }, componentProps.value || '—'),
       componentProps.value ? h('button', {
-        type: 'button', class: 'text-primary-600 hover:underline', 'aria-label': `${t('common.copy')} ${componentProps.label}`,
+        type: 'button', class: 'text-accent hover:underline', 'aria-label': `${t('common.copy')} ${componentProps.label}`,
         onClick: () => navigator.clipboard?.writeText(componentProps.value),
       }, t('common.copy')) : null,
     ])
@@ -184,9 +184,9 @@ function formatDate(value: string): string {
   return new Intl.DateTimeFormat(locale.value, { dateStyle: 'short', timeStyle: 'medium' }).format(new Date(value))
 }
 function decisionClass(decision: string): string {
-  if (decision === 'critical') return 'bg-danger-100 text-danger-700 dark:bg-danger-950/50 dark:text-danger-300'
-  if (decision === 'flag') return 'bg-warning-100 text-warning-700 dark:bg-warning-950/50 dark:text-warning-300'
-  return 'bg-success-100 text-success-700 dark:bg-success-950/50 dark:text-success-300'
+  if (decision === 'critical') return 'badge-danger'
+  if (decision === 'flag') return 'badge-warning'
+  return 'badge-success'
 }
 const DECISIONS = new Set(['pass', 'flag', 'critical'])
 const RISK_LEVELS = new Set(['low', 'medium', 'high', 'critical'])

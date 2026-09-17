@@ -1,126 +1,128 @@
 <template>
   <div class="space-y-4">
-    <!-- ═══ Terminal States: show result, user clicks to return ═══ -->
+    <!-- ═══ Terminal States: receipt with a stamp, user clicks to return ═══ -->
 
     <!-- Success -->
     <template v-if="outcome === 'success'">
-      <div class="card p-6">
-        <div class="flex flex-col items-center space-y-4 py-4">
-          <div class="flex h-16 w-16 items-center justify-center rounded-full bg-success-100 dark:bg-success-900/30">
-            <Icon name="check" size="lg" class="text-success-500" />
+      <div class="stub">
+        <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+          <p class="text-h3 font-bold text-accent-strong">{{ props.orderType === 'subscription' ? t('payment.result.subscriptionSuccess') : t('payment.result.success') }}</p>
+          <span class="badge badge-success px-2.5 py-1 text-label">
+            <Icon name="check" size="sm" />
+            {{ t('payment.status.paid') }}
+          </span>
+        </div>
+        <dl v-if="paidOrder" class="divide-y divide-border border-t border-border px-5 text-body">
+          <div class="flex justify-between gap-4 py-2">
+            <dt class="text-fg-muted">{{ t('payment.orders.orderId') }}</dt>
+            <dd class="font-mono text-fg">#{{ paidOrder.id }}</dd>
           </div>
-          <p class="text-lg font-bold text-gray-900 dark:text-white">{{ props.orderType === 'subscription' ? t('payment.result.subscriptionSuccess') : t('payment.result.success') }}</p>
-          <div v-if="paidOrder" class="w-full rounded-xl bg-gray-50 p-4 dark:bg-dark-800">
-            <div class="space-y-2 text-sm">
-              <div class="flex justify-between">
-                <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderId') }}</span>
-                <span class="font-medium text-gray-900 dark:text-white">#{{ paidOrder.id }}</span>
-              </div>
-              <div v-if="paidOrder.out_trade_no" class="flex justify-between">
-                <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderNo') }}</span>
-                <span class="font-medium text-gray-900 dark:text-white">{{ paidOrder.out_trade_no }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.amount') }}</span>
-                <span class="font-medium text-gray-900 dark:text-white">{{ formatCreditedAmount(paidOrder.amount) }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.payAmount') }}</span>
-                <span class="font-medium text-gray-900 dark:text-white">{{ formatGatewayAmount(paidOrder.pay_amount, paidOrder.currency) }}</span>
-              </div>
-            </div>
+          <div v-if="paidOrder.out_trade_no" class="flex justify-between gap-4 py-2">
+            <dt class="text-fg-muted">{{ t('payment.orders.orderNo') }}</dt>
+            <dd class="min-w-0 break-all text-right font-mono text-fg">{{ paidOrder.out_trade_no }}</dd>
           </div>
-          <button class="btn btn-primary" @click="handleDone">{{ t('common.confirm') }}</button>
+          <div class="flex justify-between gap-4 py-2">
+            <dt class="text-fg-muted">{{ t('payment.orders.amount') }}</dt>
+            <dd class="tabular-nums text-fg">{{ formatCreditedAmount(paidOrder.amount) }}</dd>
+          </div>
+          <div class="flex justify-between gap-4 py-2">
+            <dt class="text-fg-muted">{{ t('payment.orders.payAmount') }}</dt>
+            <dd class="font-bold tabular-nums text-fg">{{ formatGatewayAmount(paidOrder.pay_amount, paidOrder.currency) }}</dd>
+          </div>
+        </dl>
+        <div class="stub-perforation" />
+        <div class="px-5 py-4">
+          <button class="btn btn-primary w-full" @click="handleDone">{{ t('common.confirm') }}</button>
         </div>
       </div>
     </template>
 
     <!-- Cancelled -->
     <template v-else-if="outcome === 'cancelled'">
-      <div class="card p-6">
-        <div class="flex flex-col items-center space-y-4 py-4">
-          <div class="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-dark-700">
-            <svg class="h-8 w-8 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </div>
-          <p class="text-lg font-bold text-gray-900 dark:text-white">{{ t('payment.qr.cancelled') }}</p>
-          <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.qr.cancelledDesc') }}</p>
-          <button class="btn btn-primary" @click="handleDone">{{ t('common.confirm') }}</button>
+      <div class="stub">
+        <div class="space-y-2 px-5 py-5">
+          <span class="badge badge-gray px-2.5 py-1 text-label">{{ t('payment.qr.cancelled') }}</span>
+          <p class="text-body text-fg-muted">{{ t('payment.qr.cancelledDesc') }}</p>
+        </div>
+        <div class="stub-perforation" />
+        <div class="px-5 py-4">
+          <button class="btn btn-primary w-full" @click="handleDone">{{ t('common.confirm') }}</button>
         </div>
       </div>
     </template>
 
     <!-- Expired / Failed -->
     <template v-else-if="outcome === 'expired'">
-      <div class="card p-6">
-        <div class="flex flex-col items-center space-y-4 py-4">
-          <div class="flex h-16 w-16 items-center justify-center rounded-full bg-warning-100 dark:bg-warning-900/30">
-            <svg class="h-8 w-8 text-warning-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <p class="text-lg font-bold text-gray-900 dark:text-white">{{ t('payment.qr.expired') }}</p>
-          <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.qr.expiredDesc') }}</p>
-          <button class="btn btn-primary" @click="handleDone">{{ t('common.confirm') }}</button>
+      <div class="stub">
+        <div class="space-y-2 px-5 py-5">
+          <span class="badge badge-warning px-2.5 py-1 text-label">{{ t('payment.qr.expired') }}</span>
+          <p class="text-body text-fg-muted">{{ t('payment.qr.expiredDesc') }}</p>
+        </div>
+        <div class="stub-perforation" />
+        <div class="px-5 py-4">
+          <button class="btn btn-primary w-full" @click="handleDone">{{ t('common.confirm') }}</button>
         </div>
       </div>
     </template>
 
-    <!-- ═══ Active States: QR or Popup waiting ═══ -->
+    <!-- ═══ Active States: stub = order details / perforation / scan part ═══ -->
+    <template v-else>
+      <div class="stub">
+        <!-- Details part -->
+        <div class="px-5 pt-4">
+          <p class="text-h3 font-bold text-accent-strong">{{ showQRCode ? scanTitle : t('payment.qr.payInNewWindowHint') }}</p>
+          <p v-if="payAmount != null" class="mt-2 text-display font-bold tabular-nums text-fg">
+            {{ formatGatewayAmount(payAmount) }}
+          </p>
+        </div>
+        <dl class="mt-3 divide-y divide-border border-t border-border px-5 pb-1 text-body">
+          <div v-if="outTradeNo" class="flex justify-between gap-4 py-2">
+            <dt class="shrink-0 text-fg-muted">{{ t('payment.orders.orderNo') }}</dt>
+            <dd class="min-w-0 break-all text-right font-mono text-fg">{{ outTradeNo }}</dd>
+          </div>
+          <div v-else-if="orderId" class="flex justify-between gap-4 py-2">
+            <dt class="text-fg-muted">{{ t('payment.orders.orderId') }}</dt>
+            <dd class="font-mono text-fg">#{{ orderId }}</dd>
+          </div>
+          <div v-if="amount != null" class="flex justify-between gap-4 py-2">
+            <dt class="text-fg-muted">{{ t('payment.orders.amount') }}</dt>
+            <dd class="tabular-nums text-fg">{{ formatCreditedAmount(amount) }}</dd>
+          </div>
+        </dl>
 
-    <!-- QR Code Mode -->
-    <template v-else-if="showQRCode">
-      <div class="card p-6">
-        <div class="flex flex-col items-center space-y-4">
-          <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ scanTitle }}</p>
-          <div :class="['relative rounded-lg border-2 p-4', qrBorderClass]">
+        <div class="stub-perforation" />
+
+        <!-- Scan / hand-over part -->
+        <div class="flex flex-col items-center gap-4 px-5 py-5">
+          <div v-if="showQRCode" class="relative border border-border-strong bg-white p-3">
             <canvas ref="qrCanvas" class="mx-auto"></canvas>
             <!-- Brand logo overlay -->
             <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
-              <span :class="['rounded-full p-2 shadow ring-2 ring-white', qrLogoBgClass]">
+              <span class="rounded-sm bg-accent p-1.5 ring-2 ring-white">
                 <img :src="qrLogoIcon" alt="" class="h-5 w-5 brightness-0 invert" />
               </span>
             </div>
           </div>
-          <div class="flex flex-wrap items-center justify-center gap-2">
-            <button v-if="payUrl" class="btn btn-secondary text-sm" @click="reopenPopup">
-              {{ t('payment.qr.openPayWindow') }}
-            </button>
-            <button
-              data-test="save-payment-qr"
-              class="btn btn-secondary inline-flex items-center gap-2 text-sm"
-              @click="saveQRCode"
-            >
-              <Icon name="download" size="sm" />
-              {{ t('payment.qr.saveQRCode') }}
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="card p-4 text-center">
-        <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.qr.expiresIn') }}</p>
-        <p class="mt-1 text-2xl font-bold tabular-nums text-gray-900 dark:text-white">{{ countdownDisplay }}</p>
-        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{ t('payment.qr.waitingPayment') }}</p>
-      </div>
-      <button class="btn btn-secondary w-full" :disabled="cancelling" @click="handleCancel">
-        {{ cancelling ? t('common.processing') : t('payment.qr.cancelOrder') }}
-      </button>
-    </template>
+          <div v-else class="spinner h-8 w-8 text-accent"></div>
 
-    <!-- Waiting for Popup/Redirect Mode -->
-    <template v-else>
-      <div class="card p-6">
-        <div class="flex flex-col items-center space-y-4 py-4">
-          <div class="h-10 w-10 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.qr.payInNewWindowHint') }}</p>
-          <div class="flex flex-wrap items-center justify-center gap-2">
-            <button v-if="payUrl" class="btn btn-secondary text-sm" @click="reopenPopup">
+          <div
+            class="flex w-full items-baseline justify-between gap-3 border border-border px-3 py-2"
+            :class="remainingSeconds > 0 && remainingSeconds <= 60 ? 'bg-meter-weak text-meter-ink' : ''"
+          >
+            <span class="text-meta font-medium" :class="remainingSeconds > 0 && remainingSeconds <= 60 ? '' : 'text-fg-muted'">
+              {{ showQRCode ? t('payment.qr.expiresIn') : t('payment.qr.waitingPayment') }}
+            </span>
+            <span class="text-h2 font-bold tabular-nums">{{ countdownDisplay }}</span>
+          </div>
+          <p v-if="showQRCode" class="text-meta text-fg-subtle">{{ t('payment.qr.waitingPayment') }}</p>
+
+          <div class="flex w-full flex-wrap items-center justify-center gap-2">
+            <button v-if="payUrl" class="btn btn-secondary" @click="reopenPopup">
               {{ t('payment.qr.openPayWindow') }}
             </button>
             <button
               data-test="save-payment-qr"
-              class="btn btn-secondary inline-flex items-center gap-2 text-sm"
+              class="btn btn-secondary"
               @click="saveQRCode"
             >
               <Icon name="download" size="sm" />
@@ -129,11 +131,7 @@
           </div>
         </div>
       </div>
-      <div class="card p-4 text-center">
-        <p class="mt-1 text-2xl font-bold tabular-nums text-gray-900 dark:text-white">{{ countdownDisplay }}</p>
-        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{ t('payment.qr.waitingPayment') }}</p>
-      </div>
-      <button class="btn btn-secondary w-full" :disabled="cancelling" @click="handleCancel">
+      <button class="btn btn-ghost w-full" :disabled="cancelling" @click="handleCancel">
         {{ cancelling ? t('common.processing') : t('payment.qr.cancelOrder') }}
       </button>
     </template>
@@ -212,10 +210,6 @@ const VERIFY_RETRY_INTERVAL_MS = 15000
 const VERIFY_RETRY_MAX_ATTEMPTS = 6
 
 const showQRCode = computed(() => !!qrUrl.value)
-
-const qrBorderClass = computed(() => 'border-gray-200 bg-white dark:border-dark-600 dark:bg-dark-800')
-
-const qrLogoBgClass = computed(() => 'bg-gray-400')
 
 const qrLogoIcon = computed(() => paymentIcon)
 

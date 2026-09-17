@@ -15,90 +15,90 @@
         @rowClick="(row) => openDetail(row.id)"
       >
         <template #cell-model="{ row }">
-          <span v-if="row.model" class="text-sm font-medium text-gray-900 dark:text-white">{{ row.model }}</span>
-          <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
+          <span v-if="row.model" class="text-body font-medium text-fg">{{ row.model }}</span>
+          <span v-else class="text-body text-fg-subtle">-</span>
         </template>
 
         <template #cell-key_name="{ row }">
-          <div class="text-sm">
-            <span class="text-gray-900 dark:text-white">{{ row.key_name || '-' }}</span>
+          <div class="text-body">
+            <span class="text-fg">{{ row.key_name || '-' }}</span>
             <span
               v-if="row.key_deleted"
-              class="ml-1 inline-flex items-center rounded px-1 py-px text-[10px] font-medium leading-tight bg-danger-100 text-danger-600 ring-1 ring-inset ring-danger-200 dark:bg-danger-500/20 dark:text-danger-400 dark:ring-danger-500/30"
+              class="badge badge-danger ml-1"
             >{{ t('usage.errors.keyDeleted') }}</span>
           </div>
         </template>
 
         <template #cell-endpoint="{ row }">
-          <div class="max-w-[320px] text-xs">
-            <div class="break-all text-gray-700 dark:text-gray-300">
-              <span class="font-medium text-gray-500 dark:text-gray-400">{{ t('usage.inbound') }}:</span>
+          <div class="max-w-[320px] text-meta">
+            <div class="break-all font-mono text-fg">
+              <span class="font-sans font-medium text-fg-muted">{{ t('usage.inbound') }}:</span>
               <span class="ml-1">{{ row.inbound_endpoint?.trim() || '-' }}</span>
             </div>
           </div>
         </template>
 
         <template #cell-status="{ row }">
-          <span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium" :class="statusClass(row.status_code)">
+          <span class="badge tabular-nums" :class="statusClass(row.status_code)">
             {{ row.status_code || '-' }}
           </span>
         </template>
 
         <template #cell-category="{ row }">
-          <span class="text-sm text-gray-900 dark:text-white">{{ t('usage.errors.categories.' + row.category) }}</span>
+          <span class="text-body text-fg">{{ t('usage.errors.categories.' + row.category) }}</span>
         </template>
 
         <template #cell-message="{ row }">
           <span
             v-if="row.message"
-            class="block max-w-[280px] truncate text-sm text-gray-600 dark:text-gray-400"
+            class="block max-w-[280px] truncate text-body text-fg-muted"
             :title="row.message"
           >{{ row.message }}</span>
-          <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
+          <span v-else class="text-body text-fg-subtle">-</span>
         </template>
 
         <template #cell-group="{ row }">
           <span
             v-if="row.group_name"
-            class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium bg-accent-100 text-accent-800 dark:bg-accent-900 dark:text-accent-200"
+            class="badge badge-primary"
           >{{ row.group_name }}</span>
-          <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
+          <span v-else class="text-body text-fg-subtle">-</span>
         </template>
 
         <template #cell-type="{ row }">
           <span
             v-if="requestTypeBadge(row)"
-            class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium"
+            class="badge"
             :class="requestTypeBadge(row)!.className"
           >{{ requestTypeBadge(row)!.label }}</span>
-          <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
+          <span v-else class="text-body text-fg-subtle">-</span>
         </template>
 
         <template #cell-platform="{ row }">
-          <span class="text-sm text-gray-900 dark:text-white">{{ row.platform || '-' }}</span>
+          <span class="text-body text-fg">{{ row.platform || '-' }}</span>
         </template>
 
         <template #cell-client_ip="{ row }">
           <div @click.stop>
             <div v-if="row.client_ip">
-              <span class="text-sm font-mono text-gray-600 dark:text-gray-400">{{ row.client_ip }}</span>
+              <span class="text-body font-mono text-fg-muted">{{ row.client_ip }}</span>
               <IpGeoCell :ip="row.client_ip" />
             </div>
-            <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
+            <span v-else class="text-body text-fg-subtle">-</span>
           </div>
         </template>
 
         <template #cell-created_at="{ row }">
-          <span class="text-sm text-gray-600 dark:text-gray-400">{{ formatDateTime(row.created_at) }}</span>
+          <span class="text-body tabular-nums text-fg-muted">{{ formatDateTime(row.created_at) }}</span>
         </template>
 
         <template #cell-user_agent="{ row }">
           <span
             v-if="row.user_agent"
-            class="block max-w-[320px] truncate text-sm text-gray-600 dark:text-gray-400"
+            class="block max-w-[320px] truncate text-body text-fg-muted"
             :title="row.user_agent"
           >{{ row.user_agent }}</span>
-          <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
+          <span v-else class="text-body text-fg-subtle">-</span>
         </template>
 
         <template #empty><EmptyState :message="t('usage.errors.empty')" /></template>

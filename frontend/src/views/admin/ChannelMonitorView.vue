@@ -2,24 +2,21 @@
   <AppLayout>
     <div class="w-full min-w-0 space-y-6 pb-8">
       <header
-        class="page-header mb-0 rounded-lg bg-white p-5 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700 sm:p-6"
+        class="page-header mb-0"
       >
-        <h2 class="page-title flex items-center gap-2 text-xl font-black text-gray-900 dark:text-white">
-          <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-accent-50 text-accent-500 dark:bg-accent-900/30 dark:text-accent-400">
-            <Icon name="chart" size="sm" />
-          </span>
+        <h2 class="page-title">
           {{ t('admin.channelMonitor.title') }}
         </h2>
-        <p class="page-description mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+        <p class="page-description">
           {{
             isV1Mode
               ? t('channelMonitorV2.admin.descriptionV1')
               : t('channelMonitorV2.admin.descriptionV2')
           }}
         </p>
-        <div class="mt-4 border-t border-gray-100 pt-4 dark:border-dark-700">
+        <div class="mt-3">
           <div
-            class="tabs inline-flex w-full max-w-xl flex-wrap sm:w-auto"
+            class="tabs flex w-full flex-wrap"
             role="tablist"
             :aria-label="t('channelMonitorV2.admin.tabAria')"
           >
@@ -67,19 +64,19 @@
         <DataTable :columns="columns" :data="monitors" :loading="loading">
           <template #cell-name="{ row, value }">
             <div class="flex items-center gap-1.5">
-              <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+              <span class="font-medium text-fg">{{ value }}</span>
               <HelpTooltip v-if="row.api_key_decrypt_failed" :content="t('admin.channelMonitor.apiKeyDecryptFailed')">
-                <Icon name="exclamationTriangle" size="sm" class="text-danger-500" />
+                <Icon name="exclamationTriangle" size="sm" class="text-danger" />
               </HelpTooltip>
             </div>
           </template>
 
           <template #cell-provider="{ row }">
-            <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium" :class="providerBadgeClass(row.provider)">
+            <span class="badge" :class="providerBadgeClass(row.provider)">
               {{ providerLabel(row.provider) }}
             </span>
             <!-- 三种检测模式并列展示，quota 系配额数据源与纯探活一眼可分 -->
-            <span class="ml-1 inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium" :class="checkModeBadgeClass(row.check_mode)">
+            <span class="badge ml-1" :class="checkModeBadgeClass(row.check_mode)">
               {{ checkModeLabel(row.check_mode) }}
             </span>
           </template>
@@ -89,11 +86,11 @@
           </template>
 
           <template #cell-availability_7d="{ row }">
-            <span class="text-sm text-gray-900 dark:text-gray-100">{{ formatAvailability(row) }}</span>
+            <span class="text-sm font-semibold tabular-nums text-fg">{{ formatAvailability(row) }}</span>
           </template>
 
           <template #cell-latency="{ row }">
-            <span class="text-sm text-gray-900 dark:text-gray-100">{{ formatLatency(row.primary_latency_ms) }}</span>
+            <span class="text-sm tabular-nums text-fg">{{ formatLatency(row.primary_latency_ms) }}</span>
           </template>
 
           <template #cell-enabled="{ row }">
@@ -238,8 +235,8 @@ const columns = computed<Column[]>(() => [
   { key: 'name', label: t('admin.channelMonitor.columns.name'), sortable: false },
   { key: 'provider', label: t('admin.channelMonitor.columns.provider'), sortable: false },
   { key: 'primary_model', label: t('admin.channelMonitor.columns.primaryModel'), sortable: false },
-  { key: 'availability_7d', label: t('admin.channelMonitor.columns.availability7d'), sortable: false },
-  { key: 'latency', label: t('admin.channelMonitor.columns.latency'), sortable: false },
+  { key: 'availability_7d', label: t('admin.channelMonitor.columns.availability7d'), sortable: false, class: 'text-right' },
+  { key: 'latency', label: t('admin.channelMonitor.columns.latency'), sortable: false, class: 'text-right' },
   { key: 'enabled', label: t('admin.channelMonitor.columns.enabled'), sortable: false },
   { key: 'actions', label: t('admin.channelMonitor.columns.actions'), sortable: false },
 ])

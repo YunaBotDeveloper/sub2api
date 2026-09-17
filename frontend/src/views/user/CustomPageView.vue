@@ -4,7 +4,7 @@
       <div class="card flex-1 min-h-0 overflow-hidden">
         <div v-if="loading" class="flex h-full items-center justify-center py-12">
           <div
-            class="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent"
+            class="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent"
           ></div>
         </div>
 
@@ -13,15 +13,11 @@
           class="flex h-full items-center justify-center p-10 text-center"
         >
           <div class="max-w-md">
-            <div
-              class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-dark-700"
-            >
-              <Icon name="link" size="lg" class="text-gray-400" />
-            </div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+            <Icon name="link" size="lg" class="mx-auto mb-3 text-border-strong" />
+            <h3 class="text-h3 font-bold text-accent-strong">
               {{ t('customPage.notFoundTitle') }}
             </h3>
-            <p class="mt-2 text-sm text-gray-500 dark:text-dark-400">
+            <p class="mt-2 text-body text-fg-muted">
               {{ t('customPage.notFoundDesc') }}
             </p>
           </div>
@@ -64,7 +60,7 @@
             @click="tocVisible = true"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-            <span class="ml-1 text-xs">{{ t('customPage.tableOfContents') }}</span>
+            <span class="ml-1 text-meta">{{ t('customPage.tableOfContents') }}</span>
           </button>
 
           <!-- Content -->
@@ -79,15 +75,11 @@
         <!-- URL not configured -->
         <div v-else-if="!isValidUrl" class="flex h-full items-center justify-center p-10 text-center">
           <div class="max-w-md">
-            <div
-              class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-dark-700"
-            >
-              <Icon name="link" size="lg" class="text-gray-400" />
-            </div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+            <Icon name="link" size="lg" class="mx-auto mb-3 text-border-strong" />
+            <h3 class="text-h3 font-bold text-accent-strong">
               {{ t('customPage.notConfiguredTitle') }}
             </h3>
-            <p class="mt-2 text-sm text-gray-500 dark:text-dark-400">
+            <p class="mt-2 text-body text-fg-muted">
               {{ t('customPage.notConfiguredDesc') }}
             </p>
           </div>
@@ -463,7 +455,7 @@ onUnmounted(() => {
 }
 
 .toc-sidebar {
-  @apply flex flex-col h-full border-r border-gray-200 dark:border-dark-600 bg-gray-50 dark:bg-dark-800;
+  @apply flex flex-col h-full border-r border-border bg-surface;
   width: min(240px, 30%);
   min-width: 160px;
   max-width: 280px;
@@ -479,20 +471,20 @@ onUnmounted(() => {
     width: 70%;
     max-width: 240px;
     height: 100%;
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
   }
 }
 
 .toc-header {
-  @apply flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-dark-600;
+  @apply flex items-center justify-between px-4 py-3;
+  border-bottom: 2px solid rgb(var(--accent));
 }
 
 .toc-title {
-  @apply text-sm font-semibold text-gray-700 dark:text-dark-200;
+  @apply text-label font-bold text-accent-strong;
 }
 
 .toc-close-btn {
-  @apply p-1 rounded text-gray-400 hover:text-gray-600 dark:hover:text-dark-200 hover:bg-gray-200 dark:hover:bg-dark-600 transition-colors;
+  @apply p-1 rounded-sm text-fg-subtle hover:text-accent-strong hover:bg-accent-weak transition-colors;
 }
 
 .toc-nav {
@@ -500,12 +492,12 @@ onUnmounted(() => {
 }
 
 .toc-item {
-  @apply block px-2 py-1.5 text-sm rounded transition-colors truncate;
-  @apply text-gray-600 dark:text-dark-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-dark-600;
+  @apply block border-l border-transparent px-2 py-1.5 text-label transition-colors truncate;
+  @apply text-fg-muted hover:text-accent-strong hover:bg-accent-weak;
 }
 
 .toc-item.toc-active {
-  @apply text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 font-medium;
+  @apply border-l-accent text-accent-strong bg-accent-weak font-semibold;
 }
 
 .toc-level-1 { padding-left: 8px; }
@@ -514,22 +506,22 @@ onUnmounted(() => {
 .toc-level-4 { padding-left: 44px; }
 
 .toc-toggle-btn {
-  @apply absolute left-2 top-2 z-10 flex items-center px-2 py-1.5 rounded-md text-sm;
-  @apply bg-white dark:bg-dark-700 border border-gray-200 dark:border-dark-500;
-  @apply text-gray-600 dark:text-dark-300 hover:bg-gray-100 dark:hover:bg-dark-600;
-  @apply shadow-sm transition-colors cursor-pointer;
+  @apply absolute left-2 top-2 z-10 flex items-center px-2 py-1.5 rounded-sm text-label;
+  @apply bg-surface border border-border-strong;
+  @apply text-fg-muted hover:text-accent-strong hover:border-accent;
+  @apply transition-colors cursor-pointer;
 }
 
 .custom-embed-shell {
   @apply relative;
-  @apply h-full w-full overflow-hidden rounded-lg;
-  @apply bg-gray-50 dark:bg-dark-900;
+  @apply h-full w-full overflow-hidden;
+  @apply bg-surface-sunken;
   @apply p-0;
 }
 
 .custom-open-fab {
   @apply absolute right-3 top-3 z-10 w-max max-w-full touch-none select-none transition-colors;
-  @apply shadow-sm supports-[backdrop-filter]:bg-white/80 dark:supports-[backdrop-filter]:bg-dark-800/80;
+  @apply bg-surface;
 }
 
 .custom-embed-frame {
@@ -549,24 +541,24 @@ onUnmounted(() => {
   line-height: 1.7;
   color: inherit;
 }
-.markdown-page-content h1 { @apply text-3xl font-bold mt-8 mb-4 pb-2 border-b border-gray-200 dark:border-dark-600; }
-.markdown-page-content h2 { @apply text-2xl font-bold mt-6 mb-3; }
+.markdown-page-content h1 { @apply text-3xl font-bold text-accent-strong mt-8 mb-4 pb-2 border-b-2 border-accent; }
+.markdown-page-content h2 { @apply text-2xl font-bold text-accent-strong mt-6 mb-3; }
 .markdown-page-content h3 { @apply text-xl font-semibold mt-5 mb-2; }
 .markdown-page-content h4 { @apply text-lg font-semibold mt-4 mb-2; }
 .markdown-page-content p { @apply mb-4; }
 .markdown-page-content ul { @apply list-disc pl-6 mb-4; }
 .markdown-page-content ol { @apply list-decimal pl-6 mb-4; }
 .markdown-page-content li { @apply mb-1; }
-.markdown-page-content a { @apply text-primary-500 hover:text-primary-600 underline; }
-.markdown-page-content blockquote { @apply border-l-4 border-gray-300 dark:border-dark-500 pl-4 italic text-gray-600 dark:text-dark-300 my-4; }
-.markdown-page-content img { @apply max-w-full h-auto rounded-lg my-4; }
+.markdown-page-content a { @apply text-accent hover:text-accent-strong underline; }
+.markdown-page-content blockquote { @apply border border-accent/40 pl-4 text-fg-muted my-4; }
+.markdown-page-content img { @apply max-w-full h-auto rounded-sm my-4; }
 .markdown-page-content table { @apply w-full border-collapse my-4; }
-.markdown-page-content th { @apply border border-gray-300 dark:border-dark-500 px-3 py-2 bg-gray-50 dark:bg-dark-700 font-semibold text-left; }
-.markdown-page-content td { @apply border border-gray-300 dark:border-dark-500 px-3 py-2; }
-.markdown-page-content code { @apply bg-gray-100 dark:bg-dark-700 px-1.5 py-0.5 rounded text-sm font-mono; }
-.markdown-page-content pre { @apply bg-gray-900 dark:bg-dark-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 relative; }
-.markdown-page-content pre code { @apply bg-transparent p-0 text-inherit; }
-.markdown-page-content hr { @apply my-6 border-gray-200 dark:border-dark-600; }
+.markdown-page-content th { @apply border border-border px-3 py-2 bg-accent-weak text-accent-strong font-semibold text-left; border-bottom: 2px solid rgb(var(--accent)); }
+.markdown-page-content td { @apply border border-border px-3 py-2; }
+.markdown-page-content code { @apply bg-surface-sunken border border-border px-1 py-px rounded-sm text-sm font-mono; }
+.markdown-page-content pre { @apply bg-surface-sunken border border-border-strong text-fg p-4 rounded-sm overflow-x-auto my-4 relative; }
+.markdown-page-content pre code { @apply bg-transparent border-0 p-0 text-inherit; }
+.markdown-page-content hr { @apply my-6 border-border; }
 
 .copy-btn {
   position: absolute;
@@ -574,15 +566,15 @@ onUnmounted(() => {
   right: 8px;
   padding: 4px 10px;
   font-size: 12px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.15);
-  color: #e2e8f0;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  background: rgb(var(--surface));
+  color: rgb(var(--fg-muted));
+  border: 1px solid rgb(var(--border-strong));
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.2s, background 0.2s;
   font-family: inherit;
 }
-.copy-btn:hover { background: rgba(255, 255, 255, 0.25); }
+.copy-btn:hover { color: rgb(var(--accent-strong)); border-color: rgb(var(--accent)); }
 pre:hover .copy-btn { opacity: 1; }
 </style>

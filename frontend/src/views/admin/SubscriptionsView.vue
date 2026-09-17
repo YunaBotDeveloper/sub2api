@@ -14,7 +14,7 @@
               <Icon
                 name="search"
                 size="md"
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-fg-subtle"
               />
               <input
                 v-model="filterUserKeyword"
@@ -28,7 +28,7 @@
                 v-if="selectedFilterUser"
                 @click="clearFilterUser"
                 type="button"
-                class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                class="absolute right-2 top-1/2 -translate-y-1/2 text-fg-subtle hover:text-fg-muted"
                 :title="t('common.clear')" :aria-label="t('common.clear')"
               >
                 <Icon name="x" size="sm" :stroke-width="2" />
@@ -38,17 +38,17 @@
               <!-- design-system: raw overlay kept — anchored search-result dropdown, not a dialog -->
               <div
                 v-if="showFilterUserDropdown && (filterUserResults.length > 0 || filterUserKeyword)"
-                class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-700 dark:bg-dark-800"
+                class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-sm border border-border-strong bg-surface-raised shadow-overlay"
               >
                 <div
                   v-if="filterUserLoading"
-                  class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+                  class="px-4 py-3 text-sm text-fg-muted"
                 >
                   {{ t('common.loading') }}
                 </div>
                 <div
                   v-else-if="filterUserResults.length === 0 && filterUserKeyword"
-                  class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+                  class="px-4 py-3 text-sm text-fg-muted"
                 >
                   {{ t('common.noOptionsFound') }}
                 </div>
@@ -57,10 +57,10 @@
                   :key="user.id"
                   type="button"
                   @click="selectFilterUser(user)"
-                  class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-dark-700"
+                  class="w-full px-4 py-2 text-left text-sm hover:bg-accent-weak"
                 >
-                  <span class="font-medium text-gray-900 dark:text-white">{{ user.email }}</span>
-                  <span class="ml-2 text-gray-500 dark:text-gray-400">#{{ user.id }}</span>
+                  <span class="font-medium text-fg">{{ user.email }}</span>
+                  <span class="ml-2 font-mono text-meta text-fg-muted">#{{ user.id }}</span>
                 </button>
               </div>
             </div>
@@ -118,27 +118,27 @@
               <!-- design-system: raw overlay kept — anchored column-settings dropdown, not a dialog -->
               <div
                 v-if="showColumnDropdown"
-                class="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-700 dark:bg-dark-800"
+                class="dropdown right-0 mt-2 w-48 py-0"
               >
                 <div class="p-2">
                   <!-- User column mode selection -->
-                  <div class="mb-2 border-b border-gray-200 pb-2 dark:border-dark-700">
-                    <div class="px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400">
+                  <div class="mb-2 border-b border-border pb-2">
+                    <div class="px-3 py-1 text-xs font-medium text-fg-muted">
                       {{ t('admin.subscriptions.columns.user') }}
                     </div>
                     <button
                       @click="setUserColumnMode('email')"
-                      class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
+                      class="dropdown-item w-full justify-between rounded-sm px-3"
                     >
                       <span>{{ t('admin.users.columns.email') }}</span>
-                      <Icon v-if="userColumnMode === 'email'" name="check" size="sm" class="text-primary-500" />
+                      <Icon v-if="userColumnMode === 'email'" name="check" size="sm" class="text-accent" />
                     </button>
                     <button
                       @click="setUserColumnMode('username')"
-                      class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
+                      class="dropdown-item w-full justify-between rounded-sm px-3"
                     >
                       <span>{{ t('admin.users.columns.username') }}</span>
-                      <Icon v-if="userColumnMode === 'username'" name="check" size="sm" class="text-primary-500" />
+                      <Icon v-if="userColumnMode === 'username'" name="check" size="sm" class="text-accent" />
                     </button>
                   </div>
                   <!-- Other columns toggle -->
@@ -146,10 +146,10 @@
                     v-for="col in toggleableColumns"
                     :key="col.key"
                     @click="toggleColumn(col.key)"
-                    class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
+                    class="dropdown-item w-full justify-between rounded-sm px-3"
                   >
                     <span>{{ col.label }}</span>
-                    <Icon v-if="isColumnVisible(col.key)" name="check" size="sm" class="text-primary-500" />
+                    <Icon v-if="isColumnVisible(col.key)" name="check" size="sm" class="text-accent" />
                   </button>
                 </div>
               </div>
@@ -169,11 +169,11 @@
         </div>
         <div
           v-if="selectedCount > 0"
-          class="mt-3 space-y-2 rounded-xl border border-primary-200 bg-primary-50 p-3 dark:border-primary-800 dark:bg-primary-900/20"
+          class="mt-3 space-y-2 border-y-2 border-accent bg-accent-weak px-3 py-2"
           data-test="subscription-bulk-actions"
         >
           <div class="flex flex-wrap items-center gap-2">
-            <span class="mr-2 text-sm font-medium text-primary-800 dark:text-primary-200">
+            <span class="mr-2 text-sm font-bold tabular-nums text-accent-strong">
               {{ t('admin.subscriptions.bulk.selected', { count: selectedCount }) }}
             </span>
             <button
@@ -191,7 +191,7 @@
               {{ t('admin.subscriptions.bulk.clearSelection') }}
             </button>
           </div>
-          <p class="text-xs text-gray-600 dark:text-gray-400">{{ t('admin.subscriptions.bulk.selectionHint') }}</p>
+          <p class="text-xs text-fg-muted">{{ t('admin.subscriptions.bulk.selectionHint') }}</p>
         </div>
       </template>
 
@@ -213,19 +213,9 @@
         >
           <template #cell-user="{ row }">
             <div class="flex items-center gap-2">
-              <div
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30"
-              >
-                <span class="text-sm font-medium text-primary-700 dark:text-primary-300">
-                  {{ userColumnMode === 'email'
-                    ? (row.user?.email?.charAt(0).toUpperCase() || '?')
-                    : (row.user?.username?.charAt(0).toUpperCase() || '?')
-                  }}
-                </span>
-              </div>
               <RouterLink
                 :to="{ path: '/admin/usage', query: { user_id: row.user_id } }"
-                class="rounded font-medium text-gray-900 hover:text-primary-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:text-white dark:hover:text-primary-400 dark:focus-visible:ring-offset-dark-800"
+                class="rounded-sm font-medium text-fg hover:text-accent-strong hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
               >
                 {{ userColumnMode === 'email'
                   ? (row.user?.email || t('admin.redeem.userPrefix', { id: row.user_id }))
@@ -244,7 +234,7 @@
               :rate-multiplier="row.group.rate_multiplier"
               :show-rate="false"
             />
-            <span v-else class="text-sm text-gray-400 dark:text-dark-500">-</span>
+            <span v-else class="text-sm text-fg-subtle">-</span>
           </template>
 
           <template #cell-usage="{ row }">
@@ -253,9 +243,9 @@
               <div v-if="row.group?.daily_limit_usd" class="usage-row">
                 <div class="flex items-center gap-2">
                   <span class="usage-label">{{ t('admin.subscriptions.daily') }}</span>
-                  <div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-dark-600">
+                  <div class="progress flex-1">
                     <div
-                      class="h-1.5 rounded-full transition-all"
+                      class="progress-bar"
                       :class="getProgressClass(row.daily_usage_usd, row.group?.daily_limit_usd)"
                       :style="{
                         width: getProgressWidth(row.daily_usage_usd, row.group?.daily_limit_usd)
@@ -264,7 +254,7 @@
                   </div>
                   <span class="usage-amount">
                     ${{ row.daily_usage_usd?.toFixed(2) || '0.00' }}
-                    <span class="text-gray-400">/</span>
+                    <span class="text-fg-subtle">/</span>
                     ${{ row.group?.daily_limit_usd?.toFixed(2) }}
                   </span>
                 </div>
@@ -290,9 +280,9 @@
               <div v-if="row.group?.weekly_limit_usd" class="usage-row">
                 <div class="flex items-center gap-2">
                   <span class="usage-label">{{ t('admin.subscriptions.weekly') }}</span>
-                  <div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-dark-600">
+                  <div class="progress flex-1">
                     <div
-                      class="h-1.5 rounded-full transition-all"
+                      class="progress-bar"
                       :class="getProgressClass(row.weekly_usage_usd, row.group?.weekly_limit_usd)"
                       :style="{
                         width: getProgressWidth(row.weekly_usage_usd, row.group?.weekly_limit_usd)
@@ -301,7 +291,7 @@
                   </div>
                   <span class="usage-amount">
                     ${{ row.weekly_usage_usd?.toFixed(2) || '0.00' }}
-                    <span class="text-gray-400">/</span>
+                    <span class="text-fg-subtle">/</span>
                     ${{ row.group?.weekly_limit_usd?.toFixed(2) }}
                   </span>
                 </div>
@@ -327,9 +317,9 @@
               <div v-if="row.group?.monthly_limit_usd" class="usage-row">
                 <div class="flex items-center gap-2">
                   <span class="usage-label">{{ t('admin.subscriptions.monthly') }}</span>
-                  <div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-dark-600">
+                  <div class="progress flex-1">
                     <div
-                      class="h-1.5 rounded-full transition-all"
+                      class="progress-bar"
                       :class="getProgressClass(row.monthly_usage_usd, row.group?.monthly_limit_usd)"
                       :style="{
                         width: getProgressWidth(row.monthly_usage_usd, row.group?.monthly_limit_usd)
@@ -338,7 +328,7 @@
                   </div>
                   <span class="usage-amount">
                     ${{ row.monthly_usage_usd?.toFixed(2) || '0.00' }}
-                    <span class="text-gray-400">/</span>
+                    <span class="text-fg-subtle">/</span>
                     ${{ row.group?.monthly_limit_usd?.toFixed(2) }}
                   </span>
                 </div>
@@ -367,10 +357,10 @@
                   !row.group?.weekly_limit_usd &&
                   !row.group?.monthly_limit_usd
                 "
-                class="flex items-center gap-2 rounded-lg bg-success-50 px-3 py-2 dark:bg-success-900/20"
+                class="flex items-center"
               >
-                <span class="text-lg text-success-600 dark:text-success-400">∞</span>
-                <span class="text-xs font-medium text-success-700 dark:text-success-300">
+                <span class="badge badge-success">
+                  <span aria-hidden="true">∞</span>
                   {{ t('admin.subscriptions.unlimited') }}
                 </span>
               </div>
@@ -380,11 +370,11 @@
           <template #cell-expires_at="{ value }">
             <div v-if="value">
               <span
-                class="text-sm"
+                class="text-sm tabular-nums"
                 :class="
                   isExpiringSoon(value)
-                    ? 'text-warning-600 dark:text-warning-400'
-                    : 'text-gray-700 dark:text-gray-300'
+                    ? 'font-semibold text-warning'
+                    : 'text-fg'
                 "
               >
                 {{ formatDateTimeToMinute(value) }}
@@ -393,12 +383,12 @@
                 v-for="remainingExpiry in [formatRemainingExpiry(value)]"
                 :key="remainingExpiry ?? 'expired'"
               >
-                <div v-if="remainingExpiry" class="text-xs text-gray-500">
+                <div v-if="remainingExpiry" class="text-xs tabular-nums text-fg-muted">
                   {{ remainingExpiry }}
                 </div>
               </template>
             </div>
-            <span v-else class="text-sm text-gray-500">{{
+            <span v-else class="text-sm text-fg-muted">{{
               t('admin.subscriptions.noExpiration')
             }}</span>
           </template>
@@ -423,7 +413,7 @@
               <button
                 v-if="row.status === 'active' || row.status === 'expired'"
                 @click="handleExtend(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-accent-50 hover:text-accent-600 dark:hover:bg-accent-900/20 dark:hover:text-accent-400"
+                class="flex flex-col items-center gap-0.5 rounded-sm p-1.5 text-fg-muted transition-colors hover:bg-accent-weak hover:text-accent-strong"
               >
                 <Icon name="calendar" size="sm" />
                 <span class="text-xs">{{ t('admin.subscriptions.adjust') }}</span>
@@ -432,7 +422,7 @@
                 v-if="row.status === 'active'"
                 @click="handleResetQuota(row)"
                 :disabled="resettingQuota && resettingSubscription?.id === row.id"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-warning-50 hover:text-warning-600 dark:hover:bg-warning-900/20 dark:hover:text-warning-400 disabled:cursor-not-allowed disabled:opacity-50"
+                class="flex flex-col items-center gap-0.5 rounded-sm p-1.5 text-fg-muted transition-colors hover:bg-warning-weak hover:text-warning disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Icon name="refresh" size="sm" />
                 <span class="text-xs">{{ t('admin.subscriptions.resetQuota') }}</span>
@@ -440,7 +430,7 @@
               <button
                 v-if="row.status === 'active'"
                 @click="handleRevoke(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20 dark:hover:text-danger-400"
+                class="flex flex-col items-center gap-0.5 rounded-sm p-1.5 text-fg-muted transition-colors hover:bg-danger-weak hover:text-danger"
               >
                 <Icon name="ban" size="sm" />
                 <span class="text-xs">{{ t('admin.subscriptions.revoke') }}</span>
@@ -448,7 +438,7 @@
               <button
                 v-if="row.status === 'revoked'"
                 @click="handleRestore(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-success-50 hover:text-success-600 dark:hover:bg-success-900/20 dark:hover:text-success-400"
+                class="flex flex-col items-center gap-0.5 rounded-sm p-1.5 text-fg-muted transition-colors hover:bg-success-weak hover:text-success"
               >
                 <Icon name="refresh" size="sm" />
                 <span class="text-xs">{{ t('admin.subscriptions.restore') }}</span>
@@ -503,7 +493,7 @@
         @submit.prevent="handleAssignSubscription"
         class="space-y-5"
       >
-        <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+        <label class="flex items-center gap-2 text-sm text-fg">
           <input v-model="batchAssignEnabled" type="checkbox" :disabled="submitting" @change="resetAssignUsers" />
           {{ t('admin.subscriptions.batchAssign.enable') }}
         </label>
@@ -524,7 +514,7 @@
               v-if="selectedUser"
               @click="clearUserSelection"
               type="button"
-              class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-fg-subtle hover:text-fg-muted"
             >
               <Icon name="x" size="sm" :stroke-width="2" />
             </button>
@@ -532,17 +522,17 @@
             <!-- design-system: raw overlay kept — anchored search-result dropdown, not a dialog -->
             <div
               v-if="showUserDropdown && (userSearchResults.length > 0 || userSearchKeyword)"
-              class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-700 dark:bg-dark-800"
+              class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-sm border border-border-strong bg-surface-raised shadow-overlay"
             >
               <div
                 v-if="userSearchLoading"
-                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+                class="px-4 py-3 text-sm text-fg-muted"
               >
                 {{ t('common.loading') }}
               </div>
               <div
                 v-else-if="userSearchResults.length === 0 && userSearchKeyword"
-                class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400"
+                class="px-4 py-3 text-sm text-fg-muted"
               >
                 {{ t('common.noOptionsFound') }}
               </div>
@@ -552,20 +542,20 @@
                 type="button"
                 :disabled="submitting || (batchAssignEnabled && assignUsers.some((selected) => selected.id === user.id))"
                 @click="selectUser(user)"
-                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-dark-700"
+                class="w-full px-4 py-2 text-left text-sm hover:bg-accent-weak disabled:opacity-50"
               >
-                <span class="font-medium text-gray-900 dark:text-white">{{ user.email }}</span>
-                <span class="ml-2 text-gray-500 dark:text-gray-400">#{{ user.id }}</span>
+                <span class="font-medium text-fg">{{ user.email }}</span>
+                <span class="ml-2 font-mono text-meta text-fg-muted">#{{ user.id }}</span>
               </button>
             </div>
           </div>
           <div v-if="batchAssignEnabled && assignUsers.length > 0" class="mt-2 space-y-2" data-test="assign-users">
-            <p class="text-sm text-gray-600 dark:text-gray-400">
+            <p class="text-sm text-fg-muted">
               {{ t('admin.subscriptions.batchAssign.selected', { count: assignUsers.length }) }}
             </p>
-            <ul class="max-h-40 space-y-1 overflow-y-auto">
-              <li v-for="user in assignUsers" :key="user.id" class="flex items-center justify-between gap-2 rounded-lg bg-gray-50 px-3 py-1 text-sm dark:bg-dark-700">
-                <span class="truncate">{{ user.email }} <span class="text-gray-500">#{{ user.id }}</span></span>
+            <ul class="max-h-40 divide-y divide-border overflow-y-auto border-y border-border">
+              <li v-for="user in assignUsers" :key="user.id" class="flex items-center justify-between gap-2 px-1 py-1.5 text-sm">
+                <span class="truncate">{{ user.email }} <span class="font-mono text-meta text-fg-muted">#{{ user.id }}</span></span>
                 <button
                   type="button"
                   :disabled="submitting"
@@ -594,7 +584,7 @@
                 :subscription-type="(option as unknown as GroupOption).subscriptionType"
                 :rate-multiplier="(option as unknown as GroupOption).rate"
               />
-              <span v-else class="text-gray-400">{{ t('admin.subscriptions.selectGroup') }}</span>
+              <span v-else class="text-fg-subtle">{{ t('admin.subscriptions.selectGroup') }}</span>
             </template>
             <template #option="{ option, selected }">
               <GroupOptionItem
@@ -616,7 +606,7 @@
         </div>
         <div v-if="batchAssignResult" class="space-y-2 text-sm" role="status" data-test="batch-assign-result">
           <p>{{ t('admin.subscriptions.batchAssign.result', { success: batchAssignResult.success_count, failed: batchAssignResult.failed_count }) }}</p>
-          <ul v-if="batchAssignResult.errors.length" class="max-h-40 space-y-1 overflow-y-auto text-danger-600 dark:text-danger-400">
+          <ul v-if="batchAssignResult.errors.length" class="max-h-40 space-y-1 overflow-y-auto text-danger">
             <li v-for="(error, index) in batchAssignResult.errors" :key="index">{{ error }}</li>
           </ul>
           <p v-if="batchAssignResult.failed_count > 0" class="input-hint">{{ t('admin.subscriptions.batchAssign.retryHint') }}</p>
@@ -672,16 +662,16 @@
         @submit.prevent="handleExtendSubscription"
         class="space-y-5"
       >
-        <div class="rounded-lg bg-gray-50 p-4 dark:bg-dark-700">
-          <p class="text-sm text-gray-600 dark:text-gray-400">
+        <div class="border-b-2 border-accent pb-3">
+          <p class="text-sm text-fg-muted">
             {{ t('admin.subscriptions.adjustingFor') }}
-            <span class="font-medium text-gray-900 dark:text-white">{{
+            <span class="font-medium text-fg">{{
               extendingSubscription.user?.email
             }}</span>
           </p>
-          <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+          <p class="mt-1 text-sm text-fg-muted">
             {{ t('admin.subscriptions.currentExpiration') }}:
-            <span class="font-medium text-gray-900 dark:text-white">
+            <span class="font-medium tabular-nums text-fg">
               {{
                 extendingSubscription.expires_at
                   ? formatDateTimeToMinute(extendingSubscription.expires_at)
@@ -689,9 +679,9 @@
               }}
             </span>
           </p>
-          <p v-if="extendingSubscription.expires_at" class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+          <p v-if="extendingSubscription.expires_at" class="mt-1 text-sm text-fg-muted">
             {{ t('admin.subscriptions.remainingDays') }}:
-            <span class="font-medium text-gray-900 dark:text-white">
+            <span class="font-semibold tabular-nums text-fg">
               {{ getDaysRemaining(extendingSubscription.expires_at) ?? 0 }}
             </span>
           </p>
@@ -703,7 +693,7 @@
               v-model.number="extendForm.days"
               type="number"
               required
-              class="input text-center"
+              class="input text-right tabular-nums"
               :placeholder="t('admin.subscriptions.adjustDaysPlaceholder')"
             />
           </div>
@@ -768,15 +758,15 @@
       close-on-click-outside
       @close="showGuideModal = false"
     >
-      <p class="mb-5 text-sm text-gray-500 dark:text-gray-400">{{ t('admin.subscriptions.guide.subtitle') }}</p>
+      <p class="mb-5 text-sm text-fg-muted">{{ t('admin.subscriptions.guide.subtitle') }}</p>
 
       <!-- Step 1 -->
       <div class="mb-5">
-        <h3 class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-          <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">1</span>
+        <h3 class="mb-2 flex items-baseline gap-2 border-b border-border pb-1 text-h3 font-bold text-accent-strong">
+          <span class="w-6 tabular-nums">1.</span>
           {{ t('admin.subscriptions.guide.step1.title') }}
         </h3>
-        <ol class="ml-8 list-decimal space-y-1 text-sm text-gray-600 dark:text-gray-300">
+        <ol class="ml-8 list-decimal space-y-1 text-sm text-fg-muted">
           <li>{{ t('admin.subscriptions.guide.step1.line1') }}</li>
           <li>{{ t('admin.subscriptions.guide.step1.line2') }}</li>
           <li>{{ t('admin.subscriptions.guide.step1.line3') }}</li>
@@ -785,7 +775,7 @@
           <router-link
             to="/admin/groups"
             @click="showGuideModal = false"
-            class="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+            class="inline-flex items-center gap-1 text-sm font-medium text-accent hover:text-accent-strong"
           >
             {{ t('admin.subscriptions.guide.step1.link') }}
             <Icon name="arrowRight" size="xs" />
@@ -795,11 +785,11 @@
 
       <!-- Step 2 -->
       <div class="mb-5">
-        <h3 class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-          <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">2</span>
+        <h3 class="mb-2 flex items-baseline gap-2 border-b border-border pb-1 text-h3 font-bold text-accent-strong">
+          <span class="w-6 tabular-nums">2.</span>
           {{ t('admin.subscriptions.guide.step2.title') }}
         </h3>
-        <ol class="ml-8 list-decimal space-y-1 text-sm text-gray-600 dark:text-gray-300">
+        <ol class="ml-8 list-decimal space-y-1 text-sm text-fg-muted">
           <li>{{ t('admin.subscriptions.guide.step2.line1') }}</li>
           <li>{{ t('admin.subscriptions.guide.step2.line2') }}</li>
           <li>{{ t('admin.subscriptions.guide.step2.line3') }}</li>
@@ -808,17 +798,17 @@
 
       <!-- Step 3 -->
       <div class="mb-5">
-        <h3 class="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-          <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">3</span>
+        <h3 class="mb-2 flex items-baseline gap-2 border-b border-border pb-1 text-h3 font-bold text-accent-strong">
+          <span class="w-6 tabular-nums">3.</span>
           {{ t('admin.subscriptions.guide.step3.title') }}
         </h3>
-        <div class="ml-8 overflow-hidden rounded-lg border border-gray-200 dark:border-dark-600">
+        <div class="table-container ml-8">
           <!-- design-system: raw table kept — key/value guide table, not a row list -->
-          <table class="w-full text-sm">
+          <table class="table">
             <tbody>
-              <tr v-for="(row, i) in guideActionRows" :key="i" class="border-b border-gray-100 dark:border-dark-700 last:border-0">
-                <td class="whitespace-nowrap bg-gray-50 px-3 py-2 font-medium text-gray-700 dark:bg-dark-700 dark:text-gray-300">{{ row.action }}</td>
-                <td class="px-3 py-2 text-gray-600 dark:text-gray-400">{{ row.desc }}</td>
+              <tr v-for="(row, i) in guideActionRows" :key="i">
+                <th scope="row" class="w-px">{{ row.action }}</th>
+                <td class="text-fg-muted">{{ row.desc }}</td>
               </tr>
             </tbody>
           </table>
@@ -826,7 +816,7 @@
       </div>
 
       <!-- Tip -->
-      <div class="rounded-lg bg-accent-50 p-3 text-xs text-accent-700 dark:bg-accent-900/20 dark:text-accent-300">
+      <div class="border border-accent/40 pl-3 text-xs text-fg-muted">
         {{ t('admin.subscriptions.guide.tip') }}
       </div>
 
@@ -1529,12 +1519,12 @@ const getProgressWidth = (used: number | null | undefined, limit: number | null)
 }
 
 const getProgressClass = (used: number | null | undefined, limit: number | null): string => {
-  if (!limit || limit === 0) return 'bg-gray-400'
+  if (!limit || limit === 0) return 'bg-border-strong'
   const usedValue = used ?? 0
   const percentage = (usedValue / limit) * 100
-  if (percentage >= 90) return 'bg-danger-500'
-  if (percentage >= 70) return 'bg-warning-500'
-  return 'bg-success-500'
+  if (percentage >= 90) return 'bg-danger'
+  if (percentage >= 70) return 'bg-warning'
+  return ''
 }
 
 const formatResetDuration = (parts: RemainingDurationParts): string => {
@@ -1631,14 +1621,14 @@ onUnmounted(() => {
 }
 
 .usage-label {
-  @apply w-10 flex-shrink-0 text-xs font-medium text-gray-500 dark:text-gray-400;
+  @apply w-10 flex-shrink-0 text-xs font-medium text-fg-muted;
 }
 
 .usage-amount {
-  @apply whitespace-nowrap text-xs tabular-nums text-gray-600 dark:text-gray-300;
+  @apply min-w-[7.5rem] whitespace-nowrap text-right text-xs font-medium tabular-nums text-fg;
 }
 
 .reset-info {
-  @apply flex items-center gap-1 pl-12 text-[10px] text-accent-600 dark:text-accent-400;
+  @apply flex items-center gap-1 pl-12 text-[10px] tabular-nums text-fg-subtle;
 }
 </style>

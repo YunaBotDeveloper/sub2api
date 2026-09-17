@@ -1,40 +1,34 @@
 <template>
-  <div class="card p-4">
-    <h3 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
-      {{ t('payment.admin.topUsers') }}
-    </h3>
+  <section class="card">
+    <div class="card-header">
+      <h3 class="card-title">{{ t('payment.admin.topUsers') }}</h3>
+    </div>
     <div
       v-if="!hasUsers(props.users)"
-      class="flex h-32 items-center justify-center text-sm text-gray-500 dark:text-gray-400"
+      class="flex h-32 items-center justify-center text-body text-fg-muted"
     >
       {{ t('payment.admin.noData') }}
     </div>
-    <div v-else class="space-y-2">
-      <div v-for="[currency, currencyUsers] in sortedUsers(props.users)" :key="currency" class="space-y-2">
-        <p class="text-xs font-semibold text-gray-500 dark:text-gray-400">{{ currency }}</p>
-        <div
-          v-for="(user, idx) in currencyUsers"
-          :key="user.user_id"
-          class="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-gray-50 dark:hover:bg-dark-700"
-        >
-          <div class="flex items-center gap-3">
-            <span
-              :class="[
-                'flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold',
-                rankClass(idx),
-              ]"
-            >
-              {{ idx + 1 }}
-            </span>
-            <span class="text-sm text-gray-700 dark:text-gray-300">{{ user.email }}</span>
-          </div>
-          <span class="text-sm font-medium text-gray-900 dark:text-white">
-            {{ formatMoney(currency, user.amount) }}
-          </span>
-        </div>
-      </div>
+    <div v-else class="overflow-x-auto">
+      <table class="table">
+        <template v-for="[currency, currencyUsers] in sortedUsers(props.users)" :key="currency">
+          <thead>
+            <tr>
+              <th class="w-10 text-right">#</th>
+              <th colspan="2">{{ currency }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(user, idx) in currencyUsers" :key="user.user_id">
+              <td class="text-right tabular-nums" :class="rankClass(idx)">{{ idx + 1 }}</td>
+              <td class="max-w-[14rem] truncate">{{ user.email }}</td>
+              <td class="text-right font-semibold tabular-nums">{{ formatMoney(currency, user.amount) }}</td>
+            </tr>
+          </tbody>
+        </template>
+      </table>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -47,11 +41,9 @@ const props = defineProps<{
   users: Record<string, TopUserPaymentStats[]>
 }>()
 
+// 名次列：前三名加粗，其余淡色
 function rankClass(idx: number): string {
-  if (idx === 0) return 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400'
-  if (idx === 1) return 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
-  if (idx === 2) return 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400'
-  return 'bg-gray-100 text-gray-500 dark:bg-dark-700 dark:text-gray-400'
+  return idx < 3 ? 'font-bold text-accent-strong' : 'text-fg-muted'
 }
 
 function hasUsers(usersByCurrency: Record<string, TopUserPaymentStats[]>): boolean {

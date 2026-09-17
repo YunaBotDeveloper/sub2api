@@ -1,12 +1,12 @@
 <template>
-  <div class="inline-flex flex-col gap-0.5 text-xs font-medium">
+  <div class="inline-flex flex-col items-start gap-1 text-meta font-medium">
     <!-- Row 1: Platform + Type -->
-    <div class="inline-flex items-center overflow-hidden rounded-md">
-      <span :class="['inline-flex items-center gap-1 px-2 py-1', platformClass]">
+    <div class="inline-flex items-stretch overflow-hidden rounded-sm border border-border-strong">
+      <span :class="['inline-flex items-center gap-1 px-1.5 py-0.5', platformClass]">
         <PlatformIcon :platform="platform" size="xs" />
         <span>{{ platformLabel }}</span>
       </span>
-      <span :class="['inline-flex items-center gap-1 px-1.5 py-1', typeClass]">
+      <span :class="['inline-flex items-center gap-1 border-l border-border-strong px-1.5 py-0.5', typeClass]">
         <!-- OAuth icon -->
         <svg
           v-if="type === 'oauth'"
@@ -31,8 +31,8 @@
       </span>
     </div>
     <!-- Row 2: Plan type + Privacy mode (only if either exists) -->
-    <div v-if="planLabel || privacyBadge" class="inline-flex items-center overflow-hidden rounded-md">
-      <span v-if="planLabel" :class="['inline-flex items-center gap-1 px-1.5 py-1', planBadgeClass]">
+    <div v-if="planLabel || privacyBadge" class="inline-flex items-center gap-1">
+      <span v-if="planLabel" :class="['inline-flex items-center gap-1 rounded-sm border px-1.5 py-px', planBadgeClass]">
         <GrokFreeIcon
           v-if="isGrokFreePlan"
           data-testid="grok-free-plan-icon"
@@ -48,7 +48,7 @@
       </span>
       <span
         v-if="privacyBadge"
-        :class="['inline-flex items-center gap-1 px-1.5 py-1', privacyBadge.class]"
+        :class="['inline-flex items-center gap-1 rounded-sm border px-1.5 py-px', privacyBadge.class]"
         :title="privacyBadge.title"
       >
         <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -58,7 +58,7 @@
       </span>
     </div>
     <!-- Row 3: Subscription expiration (non-free paid accounts only) -->
-    <div v-if="expiresLabel" class="text-[10px] leading-tight text-gray-400 dark:text-gray-500 pl-0.5" :title="subscriptionExpiresAt">
+    <div v-if="expiresLabel" class="text-meta leading-tight tabular-nums text-fg-subtle" :title="subscriptionExpiresAt">
       {{ expiresLabel }}
     </div>
   </div>
@@ -175,102 +175,50 @@ const planIconName = computed<'bolt' | null>(() => {
   return null
 })
 
-const platformClass = computed(() => {
-  if (props.platform === 'anthropic') {
-    return 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400'
-  }
-  if (props.platform === 'openai') {
-    return 'bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400'
-  }
-  if (props.platform === 'antigravity') {
-    return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-  }
-  if (props.platform === 'grok') {
-    return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
-  }
-  if (props.platform === 'kimi') {
-    return 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-  }
-  if (props.platform === 'zhipu') {
-    return 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400'
-  }
-  if (props.platform === 'deepseek') {
-    return 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400'
-  }
-  if (props.platform === 'minimax') {
-    return 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400'
-  }
-  return 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400'
-})
+// 平台由品牌图标区分；印章本身只用中性票面色，避免把 success/warning/danger 当装饰色
+const platformClass = computed(() => 'bg-surface text-fg')
 
-const typeClass = computed(() => {
-  if (props.platform === 'anthropic') {
-    return 'bg-warning-100 text-warning-600 dark:bg-warning-900/30 dark:text-warning-400'
-  }
-  if (props.platform === 'openai') {
-    return 'bg-success-100 text-success-600 dark:bg-success-900/30 dark:text-success-400'
-  }
-  if (props.platform === 'antigravity') {
-    return 'bg-gray-100 text-gray-600 dark:bg-gray-900/30 dark:text-gray-400'
-  }
-  if (props.platform === 'grok') {
-    return 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'
-  }
-  if (props.platform === 'kimi') {
-    return 'bg-gray-100 text-gray-600 dark:bg-gray-900/30 dark:text-gray-400'
-  }
-  if (props.platform === 'zhipu') {
-    return 'bg-accent-100 text-accent-600 dark:bg-accent-900/30 dark:text-accent-400'
-  }
-  if (props.platform === 'deepseek') {
-    return 'bg-accent-100 text-accent-600 dark:bg-accent-900/30 dark:text-accent-400'
-  }
-  if (props.platform === 'minimax') {
-    return 'bg-danger-100 text-danger-600 dark:bg-danger-900/30 dark:text-danger-400'
-  }
-  return 'bg-accent-100 text-accent-600 dark:bg-accent-900/30 dark:text-accent-400'
-})
+const typeClass = computed(() => 'bg-surface-sunken text-fg-muted')
 
+// 套餐印章：free=灰、plus/SuperGrok=浅蓝底、team=蓝色描边、pro=警示色、异常=危险色，互相可分
+const neutralPlanClass = 'border-border-strong bg-surface-sunken text-fg-muted'
 const planBadgeClass = computed(() => {
   if (normalizedPlanType.value === 'abnormal') {
-    return 'bg-danger-100 text-danger-600 dark:bg-danger-900/30 dark:text-danger-400'
+    return 'border-danger/60 bg-danger-weak text-danger-strong'
   }
-  // Free stays muted gray; paid Grok tiers get distinct colors.
   if (
     normalizedPlanType.value === 'free' ||
     normalizedPlanType.value === 'basic' ||
     normalizedPlanType.value === 'xbasic'
   ) {
-    return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+    return neutralPlanClass
   }
   if (props.platform === 'grok' && normalizedPlanType.value) {
-    // Heavy / SuperGrok Heavy → purple
+    // Heavy / SuperGrok Heavy → neutral
     if (normalizedPlanType.value.includes('heavy')) {
-      return 'bg-gray-100 text-gray-600 dark:bg-gray-900/30 dark:text-gray-300'
+      return neutralPlanClass
     }
-    // SuperGrok → cyan
+    // SuperGrok → accent
     if (normalizedPlanType.value.includes('supergrok')) {
-      return 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300'
+      return 'border-accent/60 bg-accent-weak text-accent-strong'
     }
-    // Any other non-free Grok plan (future tiers) → amber so it still stands out
-    return 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300'
+    // Any other non-free Grok plan (future tiers) → warning so it still stands out
+    return 'border-warning/60 bg-warning-weak text-warning-strong'
   }
-  // OpenAI / other paid plan labels: keep readable distinction from free gray
   if (normalizedPlanType.value === 'plus') {
-    return 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300'
+    return 'border-accent/60 bg-accent-weak text-accent-strong'
   }
-  // 三档必须互相可分：plus=accent、team=primary、pro=warning，free/basic 留给 gray。
   if (normalizedPlanType.value === 'team' || normalizedPlanType.value === 'selfservebusinessprolite') {
-    return 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'
+    return 'border-accent bg-surface text-accent-strong'
   }
   if (
     normalizedPlanType.value === 'pro' ||
     normalizedPlanType.value === 'chatgptpro' ||
     normalizedPlanType.value === 'prolite'
   ) {
-    return 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300'
+    return 'border-warning/60 bg-warning-weak text-warning-strong'
   }
-  return typeClass.value
+  return 'border-border-strong bg-surface text-fg-muted'
 })
 
 // Subscription expiration label (non-free only)
@@ -304,16 +252,16 @@ const privacyBadge = computed(() => {
   switch (props.privacyMode) {
     // OpenAI states
     case 'training_off':
-      return { label: 'Private', icon: shieldCheck, title: t('admin.accounts.privacyTrainingOff'), class: 'bg-success-100 text-success-600 dark:bg-success-900/30 dark:text-success-400' }
+      return { label: 'Private', icon: shieldCheck, title: t('admin.accounts.privacyTrainingOff'), class: 'border-success/60 bg-success-weak text-success-strong' }
     case 'training_set_cf_blocked':
-      return { label: 'CF', icon: shieldX, title: t('admin.accounts.privacyCfBlocked'), class: 'bg-warning-100 text-warning-600 dark:bg-warning-900/30 dark:text-warning-400' }
+      return { label: 'CF', icon: shieldX, title: t('admin.accounts.privacyCfBlocked'), class: 'border-warning/60 bg-warning-weak text-warning-strong' }
     case 'training_set_failed':
-      return { label: 'Fail', icon: shieldX, title: t('admin.accounts.privacyFailed'), class: 'bg-danger-100 text-danger-600 dark:bg-danger-900/30 dark:text-danger-400' }
+      return { label: 'Fail', icon: shieldX, title: t('admin.accounts.privacyFailed'), class: 'border-danger/60 bg-danger-weak text-danger-strong' }
     // Antigravity states
     case 'privacy_set':
-      return { label: 'Private', icon: shieldCheck, title: t('admin.accounts.privacyAntigravitySet'), class: 'bg-success-100 text-success-600 dark:bg-success-900/30 dark:text-success-400' }
+      return { label: 'Private', icon: shieldCheck, title: t('admin.accounts.privacyAntigravitySet'), class: 'border-success/60 bg-success-weak text-success-strong' }
     case 'privacy_set_failed':
-      return { label: 'Fail', icon: shieldX, title: t('admin.accounts.privacyAntigravityFailed'), class: 'bg-danger-100 text-danger-600 dark:bg-danger-900/30 dark:text-danger-400' }
+      return { label: 'Fail', icon: shieldX, title: t('admin.accounts.privacyAntigravityFailed'), class: 'border-danger/60 bg-danger-weak text-danger-strong' }
     default:
       return null
   }

@@ -1,10 +1,7 @@
 <template>
-  <section
-    class="overflow-hidden rounded-lg border bg-white shadow-card dark:bg-dark-800/50"
-    :class="[platformBorderStrongClass(group.platform)]"
-  >
+  <section class="card">
     <!-- 分组头部:名称/平台/倍率徽章/专属/订阅徽章 + 描述 -->
-    <header class="border-b border-gray-100 px-5 py-4 dark:border-dark-700/60">
+    <header class="card-header">
       <div class="flex flex-wrap items-center gap-2">
         <GroupBadge
           :name="group.name"
@@ -18,56 +15,42 @@
           :peak-rate-multiplier="group.peak_rate_multiplier"
           always-show-rate
         />
-        <span
-          v-if="group.is_exclusive"
-          class="inline-flex items-center gap-1 rounded-md bg-gray-50 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-900/20 dark:text-gray-400"
-        >
+        <span v-if="group.is_exclusive" class="badge badge-gray">
           <Icon name="shield" size="xs" class="h-3 w-3" />
           {{ t('modelPlaza.badges.exclusive') }}
         </span>
-        <span
-          v-if="group.subscription_type === 'subscription'"
-          class="inline-flex items-center rounded-md bg-gray-50 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-900/20 dark:text-gray-400"
-        >
+        <span v-if="group.subscription_type === 'subscription'" class="badge badge-primary">
           {{ t('modelPlaza.badges.subscription') }}
         </span>
       </div>
-      <p v-if="group.description" class="mt-2 text-sm text-gray-500 dark:text-dark-400">
+      <p v-if="group.description" class="mt-2 max-w-[75ch] text-body text-fg-muted">
         {{ group.description }}
       </p>
-      <p
-        v-if="peakNote"
-        class="mt-1.5 inline-flex items-center gap-1 text-xs text-warning-600 dark:text-warning-400"
-      >
+      <p v-if="peakNote" class="mt-1.5 flex items-center gap-1 text-meta font-medium text-warning">
         <Icon name="clock" size="xs" class="h-3 w-3" />
         {{ peakNote }}
       </p>
-      <p
-        v-if="longContextNote"
-        class="mt-1.5 flex items-center gap-1 text-xs text-gray-500 dark:text-dark-400"
-      >
+      <p v-if="longContextNote" class="mt-1.5 flex items-center gap-1 text-meta text-fg-muted">
         <Icon name="infoCircle" size="xs" class="h-3 w-3" />
         {{ longContextNote }}
       </p>
     </header>
 
-    <!-- 模型价格表:整行(含 hover 底色/分区底色)顶到卡片边缘,左右留白由表格首列/末列的 padding 提供 -->
-    <div>
-      <PlazaModelPricingTable
-        v-if="group.models.length > 0"
-        :models="group.models"
-        :platform="group.platform"
-        :rate-multiplier="group.rate_multiplier"
-        :user-rate-multiplier="group.user_rate_multiplier ?? null"
-        :image-rate-independent="group.image_rate_independent"
-        :image-rate-multiplier="group.image_rate_multiplier"
-        :peak-window="peakWindow"
-        :peak-rate-multiplier="group.peak_rate_multiplier"
-      />
-      <p v-else class="px-5 py-4 text-center text-sm text-gray-400 dark:text-dark-500">
-        {{ t('modelPlaza.detail.noModels') }}
-      </p>
-    </div>
+    <!-- 模型价格表:印刷网格,边缘由分节边框提供 -->
+    <PlazaModelPricingTable
+      v-if="group.models.length > 0"
+      :models="group.models"
+      :platform="group.platform"
+      :rate-multiplier="group.rate_multiplier"
+      :user-rate-multiplier="group.user_rate_multiplier ?? null"
+      :image-rate-independent="group.image_rate_independent"
+      :image-rate-multiplier="group.image_rate_multiplier"
+      :peak-window="peakWindow"
+      :peak-rate-multiplier="group.peak_rate_multiplier"
+    />
+    <p v-else class="px-5 py-4 text-center text-body text-fg-subtle">
+      {{ t('modelPlaza.detail.noModels') }}
+    </p>
   </section>
 </template>
 
@@ -79,7 +62,6 @@ import GroupBadge from '@/components/common/GroupBadge.vue'
 import PlazaModelPricingTable from './PlazaModelPricingTable.vue'
 import type { ModelPlazaGroup } from '@/api/modelPlaza'
 import type { GroupPlatform, SubscriptionType } from '@/types'
-import { platformBorderStrongClass } from '@/utils/platformColors'
 import { hasPeakRate, formatPeakRateWindow, serverTimezoneLabel } from '@/utils/peak-rate'
 import { useAppStore } from '@/stores/app'
 

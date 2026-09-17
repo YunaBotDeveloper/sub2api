@@ -16,9 +16,7 @@ describe('channel-monitor-v2 design system structure', () => {
   it('user ChannelStatus V2 shell uses page-header, card, btn, tabs utilities', () => {
     // Route wrapper may switch V1/V2; design chrome lives on the V2 implementation.
     const src = read('views/user/ChannelStatusV2View.vue')
-    expect(src).toContain('page-header')
-    expect(src).toContain('page-title')
-    expect(src).toContain('class="card')
+    // Page chrome (header band / cards) is owned by the view redesign; keep structural contracts only.
     expect(src).toContain('btn btn-secondary')
     expect(src).toContain('class="tab')
     expect(src).toContain('tab-active')
@@ -28,9 +26,8 @@ describe('channel-monitor-v2 design system structure', () => {
     expect(src).toContain('clearFilters')
     expect(src).toContain('healthModeOptions')
     expect(src).toContain("'cache'")
-    // Ops elevation: rounded-lg + ring surfaces
-    expect(src).toContain('rounded-lg')
-    expect(src).toContain('ring-1 ring-gray-900/5')
+    // Bill world: no floating rounded/ring panels
+    expect(src).not.toContain('ring-1 ring-gray-900/5')
     // Overview-first KPI strip before primary viz
     expect(src.indexOf('summaryAria')).toBeLessThan(src.indexOf('MonitorTrendChart'))
     // No page-level fixed min-width that forces viewport horizontal scroll
@@ -54,32 +51,31 @@ describe('channel-monitor-v2 design system structure', () => {
     expect(src).toMatch(/max-h-\[min\(42vh/)
     expect(src).toContain('overflow-auto')
     expect(src).toContain('pulse-tooltip')
-    expect(src).toContain('rounded-lg')
-    expect(src).toContain('ring-1 ring-gray-900/5')
+    expect(src).not.toContain('ring-1 ring-gray-900/5')
     expect(src).not.toContain('modal-overlay')
     expect(src).not.toContain('modal-content')
   })
 
-  it('MetricCell uses stat-card utility', () => {
+  it('MetricCell renders as a meter reading cell', () => {
     const src = read('features/channel-monitor-v2/MetricCell.vue')
-    expect(src).toContain('stat-card')
-    expect(src).toContain('stat-label')
-    expect(src).toContain('stat-value')
-    expect(src).toContain('rounded-lg')
+    expect(src).toContain('meter-cell')
+    expect(src).toContain('meter-label')
+    expect(src).toContain('tabular-nums')
+    expect(src).not.toContain('rounded-lg')
   })
 
   it('MonitorTrendChart uses Ops chart shell tokens', () => {
     const src = read('features/channel-monitor-v2/MonitorTrendChart.vue')
     expect(src).toContain('class="card')
-    expect(src).toContain('rounded-lg')
-    expect(src).toContain('ring-1 ring-gray-900/5')
+    expect(src).toContain('card-title')
+    expect(src).toContain('useChartTheme')
     expect(src).toContain('EmptyState')
     expect(src).toContain('min-h-[360px]')
   })
 
-  it('FilterMultiSelect uses rounded-xl input chrome and dropdown utility', () => {
+  it('FilterMultiSelect uses select trigger chrome and dropdown utility', () => {
     const src = read('features/channel-monitor-v2/FilterMultiSelect.vue')
-    expect(src).toContain('rounded-xl')
+    expect(src).toContain('select-trigger')
     expect(src).toContain('dropdown')
     expect(src).toContain('dropdown-item')
   })

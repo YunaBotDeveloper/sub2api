@@ -1,11 +1,11 @@
 <template>
-  <section aria-labelledby="prompt-runtime-title" class="border-b border-gray-200 py-6 dark:border-dark-700/60">
+  <section aria-labelledby="prompt-runtime-title" class="border-b border-border py-6">
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div>
-        <h2 id="prompt-runtime-title" class="text-base font-semibold text-gray-950 dark:text-white">
+        <h2 id="prompt-runtime-title" class="text-h3 font-bold text-accent-strong">
           {{ t('admin.promptAudit.runtime.title') }}
         </h2>
-        <p class="mt-1 text-sm text-gray-500 dark:text-dark-300">
+        <p class="mt-1 text-body text-fg-muted">
           {{ t('admin.promptAudit.runtime.description') }}
         </p>
       </div>
@@ -14,33 +14,33 @@
       </button>
     </div>
 
-    <div v-if="error" role="alert" class="mt-5 rounded-lg bg-danger-50 px-4 py-3 text-sm text-danger-700 dark:bg-danger-950/30 dark:text-danger-300">
+    <div v-if="error" role="alert" class="mt-5 border border-danger/40 bg-danger-weak px-4 py-3 text-body text-danger-strong">
       {{ error }}
     </div>
-    <div v-else-if="loading && !runtime" class="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6" aria-busy="true">
-      <div v-for="index in 6" :key="index" class="h-16 animate-pulse rounded-xl bg-gray-100 dark:bg-dark-800" />
+    <div v-else-if="loading && !runtime" class="meter mt-5" aria-busy="true">
+      <div v-for="index in 6" :key="index" class="meter-cell"><div class="skeleton h-10 w-full" /></div>
     </div>
     <template v-else-if="runtime">
-      <dl class="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        <div v-for="item in statusItems" :key="item.label" class="rounded-xl border border-gray-100 bg-gray-50/80 px-3 py-3 dark:border-dark-700/60 dark:bg-dark-900/40">
-          <dt class="text-xs text-gray-500 dark:text-dark-400">{{ item.label }}</dt>
-          <dd class="mt-1.5 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+      <dl class="meter mt-5">
+        <div v-for="item in statusItems" :key="item.label" class="meter-cell">
+          <dt class="meter-label">{{ item.label }}</dt>
+          <dd class="flex min-w-0 items-center gap-2 text-h3 font-bold tabular-nums text-fg">
             <span v-if="item.dot" class="h-2 w-2 shrink-0 rounded-full" :class="item.dot" />
             <span class="min-w-0 truncate">{{ item.value }}</span>
           </dd>
         </div>
       </dl>
 
-      <div class="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1.4fr)_minmax(220px,0.6fr)]">
-        <div class="rounded-xl border border-gray-100 px-4 py-3 dark:border-dark-700/60 dark:bg-dark-900/20">
-          <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ t('admin.promptAudit.runtime.guardMetrics') }}</h3>
-          <div class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <div v-for="metric in guardMetricItems" :key="metric.label" class="rounded-lg bg-gray-50 px-2.5 py-2 dark:bg-dark-900/60">
-              <p class="text-[11px] text-gray-500 dark:text-dark-400">{{ metric.label }}</p>
-              <p class="mt-0.5 text-sm font-semibold tabular-nums text-gray-900 dark:text-white">{{ metric.value }}</p>
+      <div class="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(220px,0.6fr)]">
+        <div>
+          <h3 class="text-label font-bold text-accent-strong">{{ t('admin.promptAudit.runtime.guardMetrics') }}</h3>
+          <div class="meter mt-2">
+            <div v-for="metric in guardMetricItems" :key="metric.label" class="meter-cell py-2">
+              <p class="meter-label">{{ metric.label }}</p>
+              <p class="text-h3 font-bold tabular-nums text-fg">{{ metric.value }}</p>
             </div>
           </div>
-          <p class="mt-3 text-xs leading-5 text-gray-500 dark:text-dark-400">
+          <p class="mt-3 text-meta leading-5 tabular-nums text-fg-muted">
             {{ t('admin.promptAudit.runtime.queueBreakdown', {
               queued: runtime.queue.queued,
               processing: runtime.queue.processing,
@@ -48,20 +48,20 @@
               done: runtime.queue.done,
               failed: runtime.queue.failed,
             }) }}
-            <span class="mx-1.5 text-gray-300 dark:text-dark-600">·</span>
+            <span class="mx-1.5 text-fg-subtle">·</span>
             {{ t('admin.promptAudit.runtime.deliveryTotals', { enqueued: runtime.enqueued_total, dropped: runtime.dropped_total, processed: runtime.processed_total, failed: runtime.failed_total }) }}
           </p>
         </div>
-        <div class="rounded-xl border border-gray-100 px-4 py-3 dark:border-dark-700/60 dark:bg-dark-900/20">
-          <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ t('admin.promptAudit.runtime.latest') }}</h3>
-          <p class="mt-2 text-sm text-gray-600 dark:text-dark-300">
+        <div class="border-t border-border pt-4 lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
+          <h3 class="text-label font-bold text-accent-strong">{{ t('admin.promptAudit.runtime.latest') }}</h3>
+          <p class="mt-2 text-body tabular-nums text-fg-muted">
             {{ runtime.last_processed_at ? formatDate(runtime.last_processed_at) : t('admin.promptAudit.common.never') }}
           </p>
-          <p v-if="runtime.last_error_code" class="mt-1 break-words text-sm text-danger-600 dark:text-danger-300">
+          <p v-if="runtime.last_error_code" class="mt-1 break-words text-body text-danger">
             {{ runtime.last_error_code }}<span v-if="runtime.last_error_message"> · {{ runtime.last_error_message }}</span>
           </p>
           <div v-if="Object.keys(runtime.endpoints).length" class="mt-3 flex flex-wrap gap-2">
-            <span v-for="(probe, id) in runtime.endpoints" :key="id" class="rounded-md px-2 py-1 text-xs" :class="probe.ok ? 'bg-success-50 text-success-700 dark:bg-success-950/40 dark:text-success-300' : 'bg-danger-50 text-danger-700 dark:bg-danger-950/40 dark:text-danger-300'">
+            <span v-for="(probe, id) in runtime.endpoints" :key="id" class="badge tabular-nums" :class="probe.ok ? 'badge-success' : 'badge-danger'">
               {{ id }} · {{ probe.status }} · {{ probe.latency_ms }} ms
             </span>
           </div>
@@ -113,9 +113,9 @@ function formatDate(value: string): string {
 }
 
 function statusDot(status: string): string {
-  if (status === 'running') return 'bg-success-500'
+  if (status === 'running') return 'bg-success'
   if (status === 'disabled') return 'bg-gray-400'
-  if (status === 'degraded') return 'bg-warning-500'
-  return 'bg-danger-500'
+  if (status === 'degraded') return 'bg-warning'
+  return 'bg-danger'
 }
 </script>

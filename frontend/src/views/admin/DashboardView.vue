@@ -7,97 +7,103 @@
       </div>
 
       <template v-else-if="stats">
-        <!-- Row 1: Core Stats -->
-        <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <StatCard :label="t('admin.dashboard.apiKeys')" :value="stats.total_api_keys" icon="key">
-            <template #sub>{{ stats.active_api_keys }} {{ t('common.active') }}</template>
-          </StatCard>
-          <StatCard :label="t('admin.dashboard.accounts')" :value="stats.total_accounts" icon="server">
+        <!-- 读数：上期 → 本期 → 今日用量（本期 = 累计，上期 = 累计 − 今日） -->
+        <div class="meter">
+          <StatCard
+            v-for="reading in tokenReadings"
+            :key="reading.key"
+            :label="reading.label"
+            :value="formatTokens(reading.tokens)"
+            :current="reading.current"
+          >
             <template #sub>
-              {{ stats.normal_accounts }} {{ t('common.active') }}
-              <span v-if="stats.error_accounts > 0" class="ml-1 text-danger">
-                {{ stats.error_accounts }} {{ t('common.error') }}
-              </span>
+              <span class="font-semibold" :title="t('admin.dashboard.actual')">${{ formatCost(reading.actual) }}</span>
+              <span class="text-fg-subtle">/</span>
+              <span :title="t('admin.dashboard.accountCost')">${{ formatCost(reading.account) }}</span>
+              <span class="text-fg-subtle">/</span>
+              <span :title="t('admin.dashboard.standard')">${{ formatCost(reading.standard) }}</span>
             </template>
           </StatCard>
-          <StatCard
-            :label="t('admin.dashboard.todayRequests')"
-            :value="stats.today_requests"
-            icon="chart"
-            :sub="`${t('common.total')}: ${formatNumber(stats.total_requests)}`"
-          />
-          <StatCard
-            :label="t('admin.dashboard.users')"
-            :value="`+${stats.today_new_users}`"
-            icon="userPlus"
-            tone="success"
-            :sub="`${t('common.total')}: ${formatNumber(stats.total_users)}`"
-          />
         </div>
 
-        <!-- Row 2: Token Stats -->
-        <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <StatCard :label="t('admin.dashboard.todayTokens')" :value="formatTokens(stats.today_tokens)" icon="cube">
-            <template #sub>
-              <span class="text-success" :title="t('admin.dashboard.actual')">${{ formatCost(stats.today_actual_cost) }}</span>
-              <span class="text-fg-subtle"> / </span>
-              <span class="text-warning" :title="t('admin.dashboard.accountCost')">${{ formatCost(stats.today_account_cost) }}</span>
-              <span class="text-fg-subtle"> / </span>
-              <span :title="t('admin.dashboard.standard')">${{ formatCost(stats.today_cost) }}</span>
-            </template>
-          </StatCard>
-          <StatCard :label="t('admin.dashboard.totalTokens')" :value="formatTokens(stats.total_tokens)" icon="database">
-            <template #sub>
-              <span class="text-success" :title="t('admin.dashboard.actual')">${{ formatCost(stats.total_actual_cost) }}</span>
-              <span class="text-fg-subtle"> / </span>
-              <span class="text-warning" :title="t('admin.dashboard.accountCost')">${{ formatCost(stats.total_account_cost) }}</span>
-              <span class="text-fg-subtle"> / </span>
-              <span :title="t('admin.dashboard.standard')">${{ formatCost(stats.total_cost) }}</span>
-            </template>
-          </StatCard>
-          <StatCard :label="t('admin.dashboard.performance')" icon="bolt">
-            <template #value>
-              <p class="stat-value">
-                {{ formatTokens(stats.rpm) }}
-                <span class="font-sans text-label font-normal text-fg-muted">RPM</span>
-              </p>
-            </template>
-            <template #sub>{{ formatTokens(stats.tpm) }} TPM</template>
-          </StatCard>
-          <StatCard
-            :label="t('admin.dashboard.avgResponse')"
-            :value="formatDuration(stats.average_duration_ms)"
-            icon="clock"
-            :sub="`${stats.active_users} ${t('admin.dashboard.activeUsers')}`"
-          />
-        </div>
-
+        <!-- 其余指标：印刷登记表 -->
+        <section class="card">
+          <dl class="grid grid-cols-1 px-5 text-body md:grid-cols-2 md:gap-x-10">
+            <div class="flex items-baseline justify-between gap-4 border-b border-border py-2">
+              <dt class="text-fg-muted">{{ t('admin.dashboard.apiKeys') }}</dt>
+              <dd class="text-right tabular-nums text-fg">
+                {{ formatNumber(stats.total_api_keys) }}
+                <span class="text-meta text-fg-muted">· {{ formatNumber(stats.active_api_keys) }} {{ t('common.active') }}</span>
+              </dd>
+            </div>
+            <div class="flex items-baseline justify-between gap-4 border-b border-border py-2">
+              <dt class="text-fg-muted">{{ t('admin.dashboard.accounts') }}</dt>
+              <dd class="text-right tabular-nums text-fg">
+                {{ formatNumber(stats.total_accounts) }}
+                <span class="text-meta text-fg-muted">· {{ formatNumber(stats.normal_accounts) }} {{ t('common.active') }}</span>
+                <span v-if="stats.error_accounts > 0" class="text-meta text-danger">
+                  · {{ formatNumber(stats.error_accounts) }} {{ t('common.error') }}
+                </span>
+              </dd>
+            </div>
+            <div class="flex items-baseline justify-between gap-4 border-b border-border py-2">
+              <dt class="text-fg-muted">{{ t('admin.dashboard.users') }}</dt>
+              <dd class="text-right tabular-nums text-fg">
+                {{ formatNumber(stats.total_users) }}
+                <span class="text-meta text-success">+{{ formatNumber(stats.today_new_users) }}</span>
+              </dd>
+            </div>
+            <div class="flex items-baseline justify-between gap-4 border-b border-border py-2">
+              <dt class="text-fg-muted">{{ t('admin.dashboard.activeUsers') }}</dt>
+              <dd class="text-right tabular-nums text-fg">{{ formatNumber(stats.active_users) }}</dd>
+            </div>
+            <div class="flex items-baseline justify-between gap-4 border-b border-border py-2">
+              <dt class="text-fg-muted">{{ t('admin.dashboard.todayRequests') }}</dt>
+              <dd class="text-right tabular-nums text-fg">{{ formatNumber(stats.today_requests) }}</dd>
+            </div>
+            <div class="flex items-baseline justify-between gap-4 border-b border-border py-2">
+              <dt class="text-fg-muted">{{ t('admin.dashboard.totalRequests') }}</dt>
+              <dd class="text-right tabular-nums text-fg">{{ formatNumber(stats.total_requests) }}</dd>
+            </div>
+            <div class="flex items-baseline justify-between gap-4 border-b border-border py-2 md:border-b-0">
+              <dt class="text-fg-muted">{{ t('admin.dashboard.performance') }}</dt>
+              <dd class="text-right tabular-nums text-fg">
+                {{ formatTokens(stats.rpm) }} <span class="text-meta text-fg-muted">RPM</span>
+                · {{ formatTokens(stats.tpm) }} <span class="text-meta text-fg-muted">TPM</span>
+              </dd>
+            </div>
+            <div class="flex items-baseline justify-between gap-4 py-2">
+              <dt class="text-fg-muted">{{ t('admin.dashboard.avgResponse') }}</dt>
+              <dd class="text-right tabular-nums text-fg">{{ formatDuration(stats.average_duration_ms) }}</dd>
+            </div>
+          </dl>
+        </section>
 
         <!-- Quick Actions -->
         <section class="card">
           <div class="card-header">
-            <h2 class="text-h2 font-semibold text-fg">
+            <h2 class="card-title">
               {{ t('admin.dashboard.quickActions') }}
             </h2>
           </div>
-          <div class="grid grid-cols-1 gap-2 p-4 md:grid-cols-2">
+          <div class="grid grid-cols-1 divide-y divide-border md:grid-cols-2 md:divide-x md:divide-y-0">
             <button
               v-for="action in quickActions"
               :key="action.to"
               type="button"
-              class="group flex items-center gap-3 rounded-lg border border-border p-3 text-left transition-colors hover:border-border-strong hover:bg-surface-sunken focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+              class="group flex min-h-[40px] items-center gap-3 px-5 py-3 text-left transition-colors hover:bg-accent-weak focus:outline-none focus-visible:bg-accent-weak"
               @click="router.push(action.to)"
             >
-              <Icon :name="action.icon" size="md" class="shrink-0 text-fg-muted" aria-hidden="true" />
+              <Icon :name="action.icon" size="sm" class="shrink-0 text-accent" aria-hidden="true" />
               <span class="min-w-0 flex-1">
-                <span class="block truncate text-body font-medium text-fg">
+                <span class="block truncate text-body font-semibold text-fg group-hover:text-accent-strong">
                   {{ t(action.title) }}
                 </span>
                 <span class="block truncate text-meta text-fg-muted">
                   {{ t(action.desc) }}
                 </span>
               </span>
-              <Icon name="chevronRight" size="sm" class="shrink-0 text-fg-subtle group-hover:text-fg" aria-hidden="true" />
+              <Icon name="chevronRight" size="sm" class="shrink-0 text-fg-subtle group-hover:text-accent-strong" aria-hidden="true" />
             </button>
           </div>
         </section>
@@ -105,7 +111,7 @@
         <!-- Charts Section -->
         <div class="space-y-6">
           <!-- Date Range Filter -->
-          <div class="card flex flex-wrap items-center gap-3 p-4">
+          <div class="flex flex-wrap items-center gap-3 border-y border-border bg-surface px-4 py-2">
             <div class="flex flex-wrap items-center gap-2">
               <span class="text-label font-medium text-fg-muted">{{ t('admin.dashboard.timeRange') }}</span>
               <DateRangePicker
@@ -151,10 +157,10 @@
           <!-- User Usage Trend (Full Width) -->
           <section class="card">
             <div class="card-header flex items-center justify-between gap-3">
-              <h2 class="text-h2 font-semibold text-fg">
+              <h2 class="card-title">
                 {{ t('admin.dashboard.recentUsage') }}
               </h2>
-              <span class="text-meta text-fg-muted">Top {{ rankingLimit }}</span>
+              <span class="text-meta font-medium tabular-nums text-fg-muted">Top {{ rankingLimit }}</span>
             </div>
             <div class="card-body">
               <div class="h-64">
@@ -210,6 +216,7 @@ import {
   Filler
 } from 'chart.js'
 import { Line } from 'vue-chartjs'
+import { useChartTheme, withAlpha } from '@/components/charts/chartTheme'
 
 // Register Chart.js components
 ChartJS.register(
@@ -279,15 +286,11 @@ const granularityOptions = computed(() => [
   { value: 'hour', label: t('admin.dashboard.hour') }
 ])
 
-// Dark mode detection
-const isDarkMode = computed(() => {
-  return document.documentElement.classList.contains('dark')
-})
-
-// Chart colors
+// Chart colors (bill palette, follows .dark)
+const chartTheme = useChartTheme()
 const chartColors = computed(() => ({
-  text: isDarkMode.value ? '#e5e7eb' : '#374151',
-  grid: isDarkMode.value ? '#374151' : '#e5e7eb'
+  text: chartTheme.value.fgMuted,
+  grid: chartTheme.value.border
 }))
 
 // Line chart options (for user trend chart)
@@ -312,6 +315,7 @@ const lineOptions = computed(() => ({
       }
     },
     tooltip: {
+      ...chartTheme.value.tooltip,
       itemSort: (a: any, b: any) => {
         const aValue = typeof a?.raw === 'number' ? a.raw : Number(a?.parsed?.y ?? 0)
         const bValue = typeof b?.raw === 'number' ? b.raw : Number(b?.parsed?.y ?? 0)
@@ -383,26 +387,13 @@ const userTrendChartData = computed(() => {
   })
 
   const sortedDates = Array.from(allDates).sort()
-  const colors = [
-    '#3b82f6',
-    '#10b981',
-    '#f59e0b',
-    '#ef4444',
-    '#8b5cf6',
-    '#ec4899',
-    '#14b8a6',
-    '#f97316',
-    '#6366f1',
-    '#84cc16',
-    '#06b6d4',
-    '#a855f7'
-  ]
+  const theme = chartTheme.value
 
   const datasets = Array.from(userGroups.values()).map((group, idx) => ({
     label: group.name,
     data: sortedDates.map((date) => group.data.get(date) || 0),
-    borderColor: colors[idx % colors.length],
-    backgroundColor: `${colors[idx % colors.length]}20`,
+    borderColor: theme.seriesColor(idx),
+    backgroundColor: withAlpha(theme.seriesColor(idx), 0.12),
     fill: false,
     tension: 0.3
   }))
@@ -411,6 +402,43 @@ const userTrendChartData = computed(() => {
     labels: sortedDates,
     datasets
   }
+})
+
+// 读数条：上期（累计 − 今日）→ 本期（累计，当前读数）→ 今日用量
+const tokenReadings = computed(() => {
+  const s = stats.value
+  if (!s) return []
+  const n = toFiniteNumber
+  const before = (total: unknown, today: unknown) => Math.max(n(total) - n(today), 0)
+  return [
+    {
+      key: 'previous',
+      label: t('admin.dashboard.beforeToday'),
+      current: false,
+      tokens: before(s.total_tokens, s.today_tokens),
+      actual: before(s.total_actual_cost, s.today_actual_cost),
+      account: before(s.total_account_cost, s.today_account_cost),
+      standard: before(s.total_cost, s.today_cost)
+    },
+    {
+      key: 'current',
+      label: t('admin.dashboard.totalTokens'),
+      current: true,
+      tokens: n(s.total_tokens),
+      actual: n(s.total_actual_cost),
+      account: n(s.total_account_cost),
+      standard: n(s.total_cost)
+    },
+    {
+      key: 'today',
+      label: t('admin.dashboard.todayTokens'),
+      current: false,
+      tokens: n(s.today_tokens),
+      actual: n(s.today_actual_cost),
+      account: n(s.today_account_cost),
+      standard: n(s.today_cost)
+    }
+  ]
 })
 
 // Format helpers

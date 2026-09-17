@@ -1,24 +1,24 @@
 <template>
-  <div class="mt-3 flex items-end justify-between">
-    <div class="text-[11px] uppercase tracking-widest text-gray-400">
+  <div class="mt-2 flex items-baseline justify-between gap-2">
+    <div class="truncate text-meta font-medium text-fg-muted">
       {{ windowLabel }}
     </div>
     <div class="flex items-baseline gap-0.5">
       <span
-        class="text-3xl font-bold tabular-nums leading-none"
+        class="text-h2 font-bold tabular-nums leading-none"
         :style="colorStyle"
       >
         {{ displayValue }}
       </span>
       <span
-        class="text-base font-semibold leading-none"
+        class="text-label font-semibold leading-none"
         :style="colorStyle"
       >%</span>
     </div>
   </div>
   <div
     v-if="samplesLabel"
-    class="mt-1 text-[11px] text-gray-400 text-right"
+    class="mt-0.5 text-right text-meta text-fg-subtle"
   >
     {{ samplesLabel }}
   </div>
@@ -44,6 +44,6 @@ const displayValue = computed(() => {
 
 const colorStyle = computed(() => {
   const colour = hslForPct(props.value)
-  return colour ? { color: colour } : { color: 'rgb(156 163 175)' }
+  return colour ? { color: colour } : { color: 'rgb(var(--fg-subtle))' }
 })
 </script>

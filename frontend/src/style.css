@@ -1,57 +1,69 @@
+@import './styles/fonts.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ============ 设计令牌（openspec: rebuild-frontend-design-system） ============
+/* ============ 设计令牌：Metered Utility Bill ============
  * 以 RGB 三元组存储，供 tailwind.config.js 里的 rgb(var(--x) / <alpha-value>) 使用。
- * 明暗切换只改这里，模板里不需要 dark: 前缀。
+ * 明暗切换只改这里，模板里不需要 dark: 前缀。设计说明见 DESIGN.md。
  */
 @layer base {
   :root {
+    /* 账单纸：白色票面，页面底色带一点蓝灰 */
     --surface: 255 255 255;
-    --surface-sunken: 246 247 249;
+    --surface-sunken: 243 246 250;
     --surface-raised: 255 255 255;
-    --border: 227 230 234;
-    --border-strong: 201 207 214;
-    --fg: 18 22 28;
-    --fg-muted: 91 102 115;
-    --fg-subtle: 110 120 133;
-    /* teal-700：白字对比 4.9:1（teal-600 只有 3.7:1，不满足 AA） */
-    --accent: 15 118 110;
-    --accent-weak: 230 245 243;
-    --accent-strong: 17 94 89;
-    --success: 21 127 75;
-    --success-weak: 231 244 236;
-    --success-strong: 17 102 60;
+    /* 印刷网格线：蓝灰细线 */
+    --border: 214 223 234;
+    --border-strong: 158 178 204;
+    --fg: 32 36 42;
+    --fg-muted: 84 96 112;
+    --fg-subtle: 104 116 132;
+    /* 账单蓝 #1F4E8C：白字对比 8.2:1 */
+    --accent: 31 78 140;
+    --accent-weak: 231 238 247;
+    --accent-strong: 22 58 107;
+    /* 电表黄：仅标记当前读数 / 需要注意 */
+    --meter: 242 194 48;
+    --meter-weak: 253 243 208;
+    --meter-ink: 92 69 0;
+    --success: 21 115 71;
+    --success-weak: 229 243 235;
+    --success-strong: 15 90 55;
     --warning: 168 90 0;
     --warning-weak: 253 241 224;
     --warning-strong: 134 72 0;
-    --danger: 192 57 47;
-    --danger-weak: 251 234 232;
-    --danger-strong: 154 46 38;
+    --danger: 180 35 24;
+    --danger-weak: 251 233 231;
+    --danger-strong: 142 27 18;
   }
 
+  /* 夜间账单：深墨蓝票面 */
   .dark {
-    --surface: 15 19 25;
-    --surface-sunken: 10 13 18;
-    --surface-raised: 22 27 34;
-    --border: 38 45 54;
-    --border-strong: 57 66 78;
-    --fg: 230 234 239;
-    --fg-muted: 154 166 178;
-    --fg-subtle: 107 119 135;
-    --accent: 45 212 191;
-    --accent-weak: 19 46 44;
-    --accent-strong: 94 234 212;
-    --success: 52 211 153;
+    --surface: 17 24 36;
+    --surface-sunken: 11 16 25;
+    --surface-raised: 22 31 46;
+    --border: 38 51 71;
+    --border-strong: 64 84 112;
+    --fg: 232 236 242;
+    --fg-muted: 160 172 190;
+    --fg-subtle: 125 139 160;
+    --accent: 122 166 224;
+    --accent-weak: 26 40 64;
+    --accent-strong: 165 196 238;
+    --meter: 242 194 48;
+    --meter-weak: 52 42 12;
+    --meter-ink: 246 212 104;
+    --success: 74 196 132;
     --success-weak: 16 44 34;
-    --success-strong: 110 231 183;
-    --warning: 251 191 36;
+    --success-strong: 124 220 168;
+    --warning: 240 180 60;
     --warning-weak: 48 36 12;
-    --warning-strong: 252 211 77;
-    --danger: 248 113 113;
-    --danger-weak: 52 22 22;
-    --danger-strong: 252 165 165;
+    --warning-strong: 248 206 110;
+    --danger: 240 110 100;
+    --danger-weak: 56 22 22;
+    --danger-strong: 250 160 150;
   }
 
   * {
@@ -68,14 +80,21 @@
   }
 
   body {
-    @apply bg-surface-sunken text-fg text-body;
+    @apply bg-surface-sunken font-sans text-fg text-body;
     @apply min-h-screen;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
   }
 
   /* 数值默认等宽对齐，避免自动刷新时列宽跳动 */
   .tabular,
   .stat-value,
-  .num {
+  .num,
+  td {
     font-variant-numeric: tabular-nums;
   }
 
@@ -122,7 +141,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-transparent;
+    @apply rounded-none bg-transparent;
     transition: background-color 0.2s ease;
   }
 
@@ -131,22 +150,44 @@
   }
 
   *:hover::-webkit-scrollbar-thumb:hover {
-    @apply bg-fg-subtle;
+    @apply bg-accent;
   }
 
-  /* 选中文本样式 */
+  /* 选中文本：荧光笔黄 */
   ::selection {
-    @apply bg-accent/20 text-fg;
+    @apply bg-meter/40 text-fg;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 2px;
+  }
+
+  input,
+  textarea {
+    caret-color: rgb(var(--accent));
+  }
+
+  input[type='checkbox'],
+  input[type='radio'],
+  input[type='range'],
+  progress {
+    accent-color: rgb(var(--accent));
   }
 }
 
 @layer components {
-  /* ============ 按钮样式 ============ */
+  /* ============================================================
+   * 账单分节 + 印刷表格 + 电表读数 + 撕角存根
+   * 规则：没有阴影卡片、没有图标色块；层级靠线的粗细、字重和字号。
+   * ============================================================ */
+
+  /* ============ 按钮 ============ */
   .btn {
     @apply inline-flex items-center justify-center gap-2;
-    @apply rounded border px-3.5 py-2 text-label font-medium;
+    @apply rounded-sm border px-3.5 py-2 text-label font-semibold;
     @apply transition-colors duration-150 ease-out;
-    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-surface;
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface;
     @apply disabled:cursor-not-allowed disabled:opacity-50;
   }
 
@@ -157,13 +198,13 @@
   }
 
   .btn-secondary {
-    @apply border-border bg-surface text-fg;
-    @apply hover:border-border-strong hover:bg-surface-sunken;
+    @apply border-border-strong bg-surface text-fg;
+    @apply hover:border-accent hover:text-accent-strong;
   }
 
   .btn-ghost {
     @apply border-transparent bg-transparent text-fg-muted;
-    @apply hover:bg-surface-sunken hover:text-fg;
+    @apply hover:bg-accent-weak hover:text-accent-strong;
   }
 
   .btn-danger {
@@ -184,7 +225,7 @@
     @apply dark:text-surface-sunken;
   }
 
-  /* 支付品牌按钮：品牌色是协议要求，保留纯色，去掉彩色阴影 */
+  /* 支付品牌按钮：品牌色是协议要求 */
   .btn-stripe {
     @apply border-[#635bff] bg-[#635bff] text-white hover:bg-[#5851ea];
   }
@@ -203,28 +244,28 @@
   }
 
   .btn-sm {
-    @apply rounded px-2.5 py-1.5 text-meta;
+    @apply rounded-sm px-2.5 py-1.5 text-meta;
   }
 
   .btn-md {
-    @apply rounded px-3.5 py-2 text-label;
+    @apply rounded-sm px-3.5 py-2 text-label;
   }
 
   .btn-lg {
-    @apply rounded-lg px-5 py-2.5 text-body;
+    @apply rounded-sm px-5 py-2.5 text-body;
   }
 
   .btn-icon {
-    @apply rounded p-2;
+    @apply rounded-sm p-2;
   }
 
-  /* ============ 输入框样式 ============ */
+  /* ============ 输入框：票据填写栏 ============ */
   .input {
-    @apply w-full rounded border border-border bg-surface px-3 py-2 text-body text-fg;
+    @apply w-full rounded-sm border border-border-strong bg-surface px-3 py-2 text-body text-fg;
     @apply placeholder:text-fg-subtle;
     @apply transition-colors duration-150;
-    @apply focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/25;
-    @apply disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-fg-muted;
+    @apply focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent;
+    @apply disabled:cursor-not-allowed disabled:border-border disabled:bg-surface-sunken disabled:text-fg-muted;
   }
 
   .dark .input[type='date'],
@@ -236,11 +277,11 @@
   }
 
   .input-error {
-    @apply border-danger focus:border-danger focus:ring-danger/25;
+    @apply border-danger focus:border-danger focus:ring-danger;
   }
 
   .input-label {
-    @apply mb-1.5 block text-label font-medium text-fg;
+    @apply mb-1.5 block text-label font-semibold text-fg;
   }
 
   .input-hint {
@@ -248,10 +289,9 @@
   }
 
   .input-error-text {
-    @apply mt-1 text-meta text-danger;
+    @apply mt-1 text-meta font-medium text-danger;
   }
 
-  /* Hide number input spinner buttons for cleaner UI */
   input[type='number']::-webkit-inner-spin-button,
   input[type='number']::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -262,24 +302,33 @@
     -moz-appearance: textfield;
   }
 
-  /* ============ 卡片样式（边框代替阴影） ============ */
+  /* ============ 账单分节（取代卡片） ============
+   * 白色票面 + 顶部 2px 账单蓝规线 + 细线边。没有圆角大卡片，没有阴影。
+   */
   .card {
-    @apply rounded-lg border border-border bg-surface-raised;
+    @apply rounded-none border border-border bg-surface;
+    border-top: 2px solid rgb(var(--accent));
   }
 
   .card-hover {
     @apply transition-colors duration-150 hover:border-border-strong;
   }
 
-  /* 旧玻璃效果类：统一收敛到普通卡片 */
   .glass,
   .glass-card,
   .card-glass {
-    @apply rounded-lg border border-border bg-surface-raised;
+    @apply rounded-none border border-border bg-surface;
+    border-top: 2px solid rgb(var(--accent));
   }
 
   .card-header {
-    @apply border-b border-border px-5 py-3.5;
+    @apply border-b border-border px-5 py-3;
+  }
+
+  .card-header h2,
+  .card-header h3,
+  .card-title {
+    @apply text-h3 font-bold text-accent-strong;
   }
 
   .card-body {
@@ -287,38 +336,100 @@
   }
 
   .card-footer {
-    @apply border-t border-border px-5 py-3.5;
+    @apply border-t border-border bg-surface-sunken px-5 py-3;
   }
 
-  /* ============ 统计卡片 ============ */
+  /* 账单分节标题（不在卡片里时使用） */
+  .bill-section-title {
+    @apply flex items-baseline justify-between gap-3 pb-2 text-h3 font-bold text-accent-strong;
+    border-bottom: 2px solid rgb(var(--accent));
+  }
+
+  /* ============ 电表读数 ============
+   * .meter               一行读数格（余额 / 本期 / 用量 / 金额），格间为印刷细线
+   * .meter-cell          单格
+   * .meter-cell-current  本期读数：黄色底 + 左上角黄色方块
+   */
+  .meter {
+    @apply grid border border-border;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 1px;
+    background-color: rgb(var(--border));
+  }
+
+  .meter-cell {
+    @apply relative flex min-w-0 flex-col gap-1 bg-surface px-4 py-3;
+  }
+
+  /* StatCard 单独使用（不在 .meter 里）时补一圈边 */
+  :not(.meter) > .stat-meter {
+    @apply border border-border;
+  }
+
+  .meter-label {
+    @apply truncate text-meta font-medium text-fg-muted;
+  }
+
+  .meter-value {
+    @apply truncate text-h1 font-bold tracking-tight text-fg;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .meter-sub {
+    @apply truncate text-meta text-fg-muted;
+  }
+
+  .meter-cell-current {
+    @apply bg-meter-weak;
+  }
+
+  .meter-cell-current::before {
+    content: '';
+    @apply absolute left-0 top-0 h-2 w-2 bg-meter;
+  }
+
+  /* 手机上本次读数（数字方格较宽）独占一行，避免截断 */
+  @media (max-width: 639px) {
+    .meter-cell-current {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .meter-cell-current .meter-label,
+  .meter-cell-current .meter-sub {
+    @apply text-meter-ink;
+  }
+
+  /* ============ 统计卡片（旧组件兼容，渲染为读数格） ============ */
   .stat-card {
-    @apply card p-5;
-    @apply flex items-start gap-4;
+    @apply relative flex min-w-0 items-start gap-3 border border-border bg-surface px-4 py-3;
   }
 
   .stat-icon {
-    @apply h-10 w-10 rounded;
-    @apply flex items-center justify-center;
-    @apply bg-surface-sunken text-fg-muted;
+    @apply flex h-5 w-5 flex-shrink-0 items-center justify-center text-accent;
+  }
+
+  .stat-icon svg {
+    @apply h-4 w-4;
   }
 
   .stat-icon-primary,
   .stat-icon-success,
   .stat-icon-warning,
   .stat-icon-danger {
-    @apply bg-surface-sunken text-fg-muted;
+    @apply bg-transparent text-accent;
   }
 
   .stat-value {
-    @apply truncate font-mono text-h1 font-semibold text-fg;
+    @apply truncate text-h1 font-bold tracking-tight text-fg;
   }
 
   .stat-label {
-    @apply text-label text-fg-muted;
+    @apply text-meta font-medium text-fg-muted;
   }
 
   .stat-trend {
-    @apply mt-1 flex items-center gap-1 text-meta font-medium;
+    @apply mt-1 flex items-center gap-1 text-meta font-semibold;
   }
 
   .stat-trend-up {
@@ -329,25 +440,39 @@
     @apply text-danger;
   }
 
-  /* ============ 表格样式 ============ */
+  /* ============ 印刷表格：蓝色表头带 + 全网格细线 ============ */
   .table-container {
-    @apply overflow-x-auto rounded-lg border border-border;
+    @apply overflow-x-auto border border-border bg-surface;
   }
 
   .table {
-    @apply w-full text-body;
+    @apply w-full border-collapse text-body;
   }
 
   .table th {
-    @apply px-4 py-2.5 text-left text-label font-medium;
-    @apply bg-surface-sunken text-fg-muted;
-    @apply border-b border-border;
+    @apply whitespace-nowrap px-3 py-2 text-left text-label font-semibold;
+    @apply bg-accent-weak text-accent-strong;
+    @apply border-b-2 border-r border-b-accent border-r-border;
+  }
+
+  /* 表头的对齐工具类要能盖过上面的 text-left */
+  .table th.text-right {
+    text-align: right;
+  }
+
+  .table th.text-center {
+    text-align: center;
   }
 
   .table td {
-    @apply px-4 py-2.5;
+    @apply px-3 py-2;
     @apply text-fg;
-    @apply border-b border-border;
+    @apply border-b border-r border-border;
+  }
+
+  .table th:last-child,
+  .table td:last-child {
+    @apply border-r-0;
   }
 
   .table tr:last-child td {
@@ -356,40 +481,119 @@
 
   .table tbody tr {
     @apply transition-colors duration-100;
-    @apply hover:bg-surface-sunken;
+    @apply hover:bg-accent-weak/50;
   }
 
-  /* ============ 徽章样式 ============ */
+  /* 合计行：双线在上 */
+  .table tfoot td,
+  .table .row-total td {
+    @apply font-bold;
+    border-top: 3px double rgb(var(--fg));
+  }
+
+  /* ============ 状态印章 ============ */
   .badge {
-    @apply inline-flex items-center gap-1;
-    @apply rounded-sm px-2 py-0.5 text-meta font-medium;
+    @apply inline-flex items-center gap-1 whitespace-nowrap;
+    @apply rounded-sm border px-1.5 py-px text-meta font-semibold;
+    @apply border-border-strong bg-transparent text-fg-muted;
   }
 
   .badge-primary {
-    @apply bg-accent-weak text-accent-strong;
+    @apply border-accent/60 bg-accent-weak text-accent-strong;
   }
 
   .badge-success {
-    @apply bg-success-weak text-success-strong;
+    @apply border-success/60 bg-success-weak text-success-strong;
   }
 
   .badge-warning {
-    @apply bg-warning-weak text-warning-strong;
+    @apply border-warning/60 bg-warning-weak text-warning-strong;
   }
 
   .badge-danger {
-    @apply bg-danger-weak text-danger-strong;
+    @apply border-danger/60 bg-danger-weak text-danger-strong;
   }
 
   .badge-gray,
   .badge-purple {
-    @apply bg-surface-sunken text-fg-muted;
+    @apply border-border-strong bg-surface-sunken text-fg-muted;
+  }
+
+  /* ============ 撕角存根（充值 / 兑换 / 密钥显示） ============
+   * <div class="stub"> 上半部 <div class="stub-perforation" /> 下半部 </div>
+   */
+  .stub {
+    @apply relative border border-border-strong bg-surface;
+  }
+
+  .stub-perforation {
+    @apply relative h-0;
+    border-top: 2px dashed rgb(var(--border-strong));
+  }
+
+  .stub-perforation::before,
+  .stub-perforation::after {
+    content: '';
+    @apply absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border border-border-strong bg-surface-sunken;
+  }
+
+  .stub-perforation::before {
+    left: -0.5625rem;
+    clip-path: inset(0 0 0 50%);
+  }
+
+  .stub-perforation::after {
+    right: -0.5625rem;
+    clip-path: inset(0 50% 0 0);
+  }
+
+  /* 竖向撕线：左侧虚线 + 上下两个半圆缺口（手机上改为顶部横向撕线） */
+  .stub-edge {
+    @apply relative;
+    border-left: 2px dashed rgb(var(--surface));
+  }
+
+  .stub-edge::before,
+  .stub-edge::after {
+    content: '';
+    @apply absolute h-3 w-3 rounded-full bg-surface-sunken;
+    left: -0.4375rem;
+  }
+
+  .stub-edge::before {
+    top: -0.375rem;
+  }
+
+  .stub-edge::after {
+    bottom: -0.375rem;
+  }
+
+  @media (max-width: 639px) {
+    .stub-edge {
+      border-left: 0;
+      border-top: 2px dashed rgb(var(--surface));
+    }
+
+    .stub-edge::before,
+    .stub-edge::after {
+      top: -0.4375rem;
+      bottom: auto;
+    }
+
+    .stub-edge::before {
+      left: -0.375rem;
+    }
+
+    .stub-edge::after {
+      left: auto;
+      right: -0.375rem;
+    }
   }
 
   /* ============ 下拉菜单 ============ */
   .dropdown {
     @apply absolute z-50;
-    @apply rounded-lg border border-border bg-surface-raised;
+    @apply rounded-sm border border-border-strong bg-surface-raised;
     @apply shadow-overlay;
     @apply py-1;
     @apply origin-top-right animate-scale-in;
@@ -397,22 +601,23 @@
 
   .dropdown-item {
     @apply px-3 py-2 text-body text-fg;
-    @apply hover:bg-surface-sunken;
+    @apply hover:bg-accent-weak hover:text-accent-strong;
     @apply cursor-pointer transition-colors;
     @apply flex items-center gap-2;
   }
 
-  /* ============ 模态框 ============ */
+  /* ============ 模态框：一张票据 ============ */
   .modal-overlay {
     @apply fixed inset-0 z-50;
-    @apply bg-black/50;
+    @apply bg-[rgb(12_20_33/0.55)];
     @apply flex items-center justify-center p-2 sm:p-4;
   }
 
   .modal-content {
     @apply w-full;
     @apply max-h-[95vh] sm:max-h-[90vh];
-    @apply rounded-lg border border-border bg-surface-raised shadow-overlay;
+    @apply rounded-sm border border-border-strong bg-surface shadow-overlay;
+    border-top: 3px solid rgb(var(--accent));
     @apply flex flex-col;
   }
 
@@ -424,7 +629,7 @@
   }
 
   .modal-title {
-    @apply text-h2 font-semibold text-fg;
+    @apply text-h2 font-bold text-fg;
   }
 
   .modal-body {
@@ -434,13 +639,12 @@
   }
 
   .modal-footer {
-    @apply border-t border-border px-4 py-3;
-    @apply sm:px-6 sm:py-4;
+    @apply border-t border-border bg-surface-sunken px-4 py-3;
+    @apply sm:px-6 sm:py-3;
     @apply flex items-center justify-end gap-3;
     @apply flex-shrink-0;
   }
 
-  /* 防止body滚动的工具类 */
   body.modal-open {
     overflow: hidden;
   }
@@ -459,7 +663,7 @@
   }
 
   .modal-enter-active .modal-content {
-    transition: transform 150ms ease-out, opacity 150ms ease-out;
+    transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), opacity 150ms ease-out;
   }
 
   .modal-leave-active .modal-content {
@@ -468,27 +672,28 @@
 
   .modal-enter-from .modal-content,
   .modal-leave-to .modal-content {
-    transform: scale(0.98);
+    transform: translateY(8px);
     opacity: 0;
   }
 
   .modal-enter-to .modal-content,
   .modal-leave-from .modal-content {
-    transform: scale(1);
+    transform: translateY(0);
     opacity: 1;
   }
 
   /* ============ Dialog ============ */
   .dialog-overlay {
     @apply fixed inset-0 z-50;
-    @apply bg-black/40 dark:bg-black/60;
+    @apply bg-[rgb(12_20_33/0.55)];
     @apply flex items-center justify-center p-4;
   }
 
   .dialog-container {
     @apply flex w-full flex-col;
     @apply max-h-[90vh];
-    @apply rounded-lg border border-border bg-surface-raised shadow-overlay;
+    @apply rounded-sm border border-border-strong bg-surface shadow-overlay;
+    border-top: 3px solid rgb(var(--accent));
   }
 
   .dialog-header {
@@ -501,38 +706,38 @@
   }
 
   .dialog-footer {
-    @apply border-t border-border px-6 py-4;
+    @apply border-t border-border px-6 py-3;
     @apply bg-surface-sunken;
     @apply flex items-center justify-end gap-3;
   }
 
-  /* ============ Toast 通知 ============ */
+  /* ============ Toast：顶部色规线的小票 ============ */
   .toast {
     @apply fixed right-4 top-4 z-[100];
     @apply min-w-[320px] max-w-md;
-    @apply rounded-lg border border-border bg-surface-raised shadow-overlay;
-    @apply border-l-4;
+    @apply rounded-sm border border-border-strong bg-surface shadow-overlay;
+    border-top-width: 3px;
     @apply p-4;
     @apply animate-slide-in-right;
   }
 
   .toast-success {
-    @apply border-l-success;
+    @apply border-t-success;
   }
 
   .toast-error {
-    @apply border-l-danger;
+    @apply border-t-danger;
   }
 
   .toast-warning {
-    @apply border-l-warning;
+    @apply border-t-warning;
   }
 
   .toast-info {
-    @apply border-l-accent;
+    @apply border-t-accent;
   }
 
-  /* ============ 侧边栏 ============ */
+  /* ============ 侧边栏：账单目录 ============ */
   .sidebar {
     @apply fixed inset-y-0 left-0 z-40;
     @apply w-64 bg-surface;
@@ -543,51 +748,53 @@
   }
 
   .sidebar-header {
-    @apply h-16 px-6;
+    @apply h-16 px-5;
     @apply flex items-center gap-3;
-    @apply border-b border-border;
+    border-bottom: 2px solid rgb(var(--accent));
     transition:
       padding 0.2s ease,
       gap 0.2s ease;
   }
 
   .sidebar-nav {
-    @apply flex-1 overflow-y-auto px-3 py-4;
+    @apply flex-1 overflow-y-auto px-2 py-3;
   }
 
   .sidebar-link {
-    @apply flex items-center gap-3 rounded py-2;
+    @apply flex items-center gap-3 rounded-sm py-2;
     @apply overflow-hidden;
     @apply text-label font-medium;
     @apply text-fg-muted;
     @apply transition-colors duration-150;
-    @apply hover:bg-surface-sunken hover:text-fg;
+    @apply hover:bg-accent-weak hover:text-accent-strong;
     padding-left: 1.0625rem;
     padding-right: 0.875rem;
   }
 
   .sidebar-link-active {
-    @apply bg-accent-weak text-accent-strong;
-    @apply hover:bg-accent-weak hover:text-accent-strong;
+    @apply bg-accent font-semibold text-white;
+    @apply hover:bg-accent-strong hover:text-white;
+    @apply dark:text-surface-sunken dark:hover:text-surface-sunken;
   }
 
   .sidebar-section {
-    @apply mb-6;
+    @apply mb-5;
   }
 
   .sidebar-section-title {
-    @apply mb-2 px-3;
-    @apply text-meta font-semibold uppercase tracking-wider;
-    @apply text-fg-subtle;
+    @apply mb-1.5 border-b border-border px-3 pb-1.5;
+    @apply text-meta font-bold;
+    @apply text-accent-strong;
   }
 
   /* ============ 页面头部 ============ */
   .page-header {
-    @apply mb-6;
+    @apply mb-6 pb-3;
+    border-bottom: 2px solid rgb(var(--accent));
   }
 
   .page-title {
-    @apply text-h1 font-semibold text-fg;
+    @apply text-h1 font-bold text-fg;
   }
 
   .page-description {
@@ -601,12 +808,12 @@
   }
 
   .empty-state-icon {
-    @apply mb-4 h-12 w-12;
-    @apply text-fg-subtle;
+    @apply mb-3 h-10 w-10;
+    @apply text-border-strong;
   }
 
   .empty-state-title {
-    @apply mb-1 text-h3 font-medium text-fg;
+    @apply mb-1 text-h3 font-semibold text-fg;
   }
 
   .empty-state-description {
@@ -620,7 +827,7 @@
   }
 
   .skeleton {
-    @apply animate-pulse rounded bg-surface-sunken;
+    @apply animate-pulse rounded-sm bg-accent-weak;
   }
 
   /* ============ 分隔线 ============ */
@@ -628,26 +835,32 @@
     @apply my-4 h-px bg-border;
   }
 
-  /* ============ 标签页 ============ */
+  /* ============ 标签页：账单页签（下划线） ============ */
   .tabs {
-    @apply flex gap-1 p-1;
-    @apply rounded-lg bg-surface-sunken;
+    @apply flex gap-0 border-b border-border;
   }
 
   .tab {
-    @apply rounded px-3 py-1.5 text-label font-medium;
+    @apply -mb-px border-b-2 border-transparent px-3 py-2 text-label font-semibold;
     @apply text-fg-muted;
     @apply transition-colors duration-150;
-    @apply hover:text-fg;
+    @apply hover:text-accent-strong;
   }
 
   .tab-active {
-    @apply border border-border bg-surface-raised text-fg;
+    @apply border-b-accent text-accent-strong;
   }
 
-  /* ============ 进度条 ============ */
+  /* ============ 进度条：分度尺 ============ */
   .progress {
-    @apply h-2 overflow-hidden rounded-full bg-surface-sunken;
+    @apply relative h-2 overflow-hidden rounded-none border border-border bg-surface-sunken;
+    background-image: repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent calc(10% - 1px),
+      rgb(var(--border)) calc(10% - 1px),
+      rgb(var(--border)) 10%
+    );
   }
 
   .progress-bar {
@@ -676,21 +889,21 @@
     @apply translate-x-5;
   }
 
-  /* ============ 代码块 ============ */
+  /* ============ 代码 ============ */
   .code {
     @apply font-mono text-label;
-    @apply bg-surface-sunken;
-    @apply rounded-sm px-1.5 py-0.5;
-    @apply text-accent-strong;
+    @apply border border-border bg-surface-sunken;
+    @apply rounded-sm px-1 py-px;
+    @apply text-fg;
   }
 
   .code-block {
     @apply font-mono text-label;
-    @apply bg-gray-900 text-gray-100;
-    @apply overflow-x-auto rounded-lg p-4;
+    @apply border border-border-strong bg-surface-sunken text-fg;
+    @apply overflow-x-auto rounded-sm p-4;
   }
 
-  /* ============ Tour Description ============ */
+  /* ============ Tour ============ */
   .tour-step-description {
     @apply space-y-3 text-body leading-relaxed text-fg;
   }
@@ -708,30 +921,28 @@
   }
 
   .tour-info-box {
-    @apply rounded border-l-4 border-accent bg-accent-weak px-3 py-2 text-meta text-accent-strong;
+    @apply rounded-sm border border-accent/40 bg-accent-weak px-3 py-2 text-meta text-accent-strong;
   }
 
   .tour-success-box {
-    @apply rounded border-l-4 border-success bg-success-weak px-3 py-2 text-meta text-success-strong;
+    @apply rounded-sm border border-success/40 bg-success-weak px-3 py-2 text-meta text-success-strong;
   }
 
   .tour-warning-box {
-    @apply rounded border-l-4 border-warning bg-warning-weak px-3 py-2 text-meta text-warning-strong;
+    @apply rounded-sm border border-warning/40 bg-warning-weak px-3 py-2 text-meta text-warning-strong;
   }
 
   .tour-error-box {
-    @apply rounded border-l-4 border-danger bg-danger-weak px-3 py-2 text-meta text-danger-strong;
+    @apply rounded-sm border border-danger/40 bg-danger-weak px-3 py-2 text-meta text-danger-strong;
   }
 
-  /* ============ 表格页面布局优化 ============ */
-  /* 表格容器 - 默认仅支持水平滚动 */
+  /* ============ 表格页面布局 ============ */
   .table-wrapper {
     overflow-x: auto;
   }
 
-  /* 表头固定时用底边框区分 */
   .table-wrapper thead.sticky {
-    box-shadow: 0 1px 0 0 rgb(var(--border));
+    box-shadow: 0 2px 0 0 rgb(var(--accent));
   }
 }
 

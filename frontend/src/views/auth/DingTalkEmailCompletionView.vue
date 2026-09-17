@@ -1,11 +1,11 @@
 <template>
   <AuthLayout>
     <div class="space-y-6">
-      <div class="text-center">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+      <div>
+        <h2 class="text-h2 font-bold text-accent-strong">
           {{ t('auth.dingtalk.createAccountTitle') }}
         </h2>
-        <p class="mt-2 text-sm text-gray-500 dark:text-dark-400">
+        <p class="mt-1 text-body text-fg-muted">
           {{ t('auth.oauthFlow.createAccountHint') }}
         </p>
       </div>

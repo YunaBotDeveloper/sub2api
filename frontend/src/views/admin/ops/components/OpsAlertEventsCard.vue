@@ -329,19 +329,19 @@ watch(historyRange, () => {
 
 function severityBadgeClass(severity: string | undefined): string {
   const s = String(severity || '').trim().toLowerCase()
-  if (s === 'p0' || s === 'critical') return 'bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300'
-  if (s === 'p1' || s === 'warning') return 'bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300'
-  if (s === 'p2' || s === 'info') return 'bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300'
-  if (s === 'p3') return 'bg-gray-100 text-gray-700 dark:bg-dark-700 dark:text-gray-300'
-  return 'bg-gray-100 text-gray-700 dark:bg-dark-700 dark:text-gray-300'
+  if (s === 'p0' || s === 'critical') return 'badge-danger'
+  if (s === 'p1' || s === 'warning') return 'badge-warning'
+  if (s === 'p2' || s === 'info') return 'badge-primary'
+  if (s === 'p3') return 'badge-gray'
+  return 'badge-gray'
 }
 
 function statusBadgeClass(status: string | undefined): string {
   const s = String(status || '').trim().toLowerCase()
-  if (s === 'firing') return 'bg-danger-50 text-danger-700 ring-danger-600/20 dark:bg-danger-900/30 dark:text-danger-300 dark:ring-danger-500/30'
-  if (s === 'resolved') return 'bg-success-50 text-success-700 ring-success-600/20 dark:bg-success-900/30 dark:text-success-300 dark:ring-success-500/30'
-  if (s === 'manual_resolved') return 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-900/30 dark:text-gray-300 dark:ring-gray-500/30'
-  return 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-900/30 dark:text-gray-300 dark:ring-gray-500/30'
+  if (s === 'firing') return 'badge-danger'
+  if (s === 'resolved') return 'badge-success'
+  if (s === 'manual_resolved') return 'badge-gray'
+  return 'badge-gray'
 }
 
 function formatStatusLabel(status: string | undefined): string {
@@ -374,11 +374,11 @@ const historyColumns = computed<Column[]>(() => [
 </script>
 
 <template>
-  <div class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
+  <div class="card p-5">
     <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
       <div>
-        <h3 class="text-sm font-bold text-gray-900 dark:text-white">{{ t('admin.ops.alertEvents.title') }}</h3>
-        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('admin.ops.alertEvents.description') }}</p>
+        <h3 class="text-body font-bold text-accent-strong">{{ t('admin.ops.alertEvents.title') }}</h3>
+        <p class="mt-1 text-xs text-fg-muted">{{ t('admin.ops.alertEvents.description') }}</p>
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
@@ -387,7 +387,7 @@ const historyColumns = computed<Column[]>(() => [
         <Select :model-value="status" :options="statusOptions" class="w-[110px]" @change="status = String($event || '')" />
         <Select :model-value="emailSent" :options="emailSentOptions" class="w-[110px]" @change="emailSent = String($event || '')" />
         <button
-          class="flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-700 transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
+          class="btn btn-secondary btn-sm"
           :disabled="loading"
           @click="loadFirstPage"
         >
@@ -399,7 +399,7 @@ const historyColumns = computed<Column[]>(() => [
       </div>
     </div>
 
-    <div v-if="loading" class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+    <div v-if="loading" class="flex items-center gap-2 text-sm text-fg-muted">
       <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -407,11 +407,11 @@ const historyColumns = computed<Column[]>(() => [
       {{ t('admin.ops.alertEvents.loading') }}
     </div>
 
-    <div v-else-if="empty" class="rounded-xl border border-dashed border-gray-200 p-8 text-center text-sm text-gray-500 dark:border-dark-700 dark:text-gray-400">
+    <div v-else-if="empty" class="border-y border-border py-8 text-center text-sm text-fg-muted">
       {{ t('admin.ops.alertEvents.empty') }}
     </div>
 
-    <div v-else class="overflow-hidden rounded-xl border border-gray-200 dark:border-dark-700">
+    <div v-else class="table-container">
       <div class="max-h-[600px] overflow-y-auto" @scroll="onScroll">
         <DataTable :columns="columns" :data="events" row-key="id" clickable-rows :sticky-first-column="false" @rowClick="openDetail">
           <template #cell-fired_at="{ row }">
@@ -419,10 +419,10 @@ const historyColumns = computed<Column[]>(() => [
           </template>
           <template #cell-severity="{ row }">
             <div class="flex items-center gap-2">
-              <span class="rounded-full px-2 py-1 text-meta font-bold" :class="severityBadgeClass(String(row.severity || ''))">
+              <span class="badge" :class="severityBadgeClass(String(row.severity || ''))">
                 {{ row.severity || '-' }}
               </span>
-              <span class="inline-flex items-center rounded-full px-2 py-1 text-meta font-bold ring-1 ring-inset" :class="statusBadgeClass(row.status)">
+              <span class="badge" :class="statusBadgeClass(row.status)">
                 {{ formatStatusLabel(row.status) }}
               </span>
             </div>
@@ -454,13 +454,13 @@ const historyColumns = computed<Column[]>(() => [
                 v-if="row.email_sent"
                 name="checkCircle"
                 size="sm"
-                class="text-success-600 dark:text-success-400"
+                class="text-success"
               />
               <Icon
                 v-else
                 name="ban"
                 size="sm"
-                class="text-gray-400 dark:text-gray-500"
+                class="text-fg-subtle"
               />
               <span class="text-meta font-bold text-fg-muted">
                 {{ row.email_sent ? t('admin.ops.alertEvents.table.emailSent') : t('admin.ops.alertEvents.table.emailIgnored') }}
@@ -468,14 +468,14 @@ const historyColumns = computed<Column[]>(() => [
             </span>
           </template>
         </DataTable>
-        <div v-if="loadingMore" class="flex items-center justify-center gap-2 py-3 text-xs text-gray-500 dark:text-gray-400">
+        <div v-if="loadingMore" class="flex items-center justify-center gap-2 py-3 text-xs text-fg-muted">
           <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
           {{ t('admin.ops.alertEvents.loading') }}
         </div>
-        <div v-else-if="!hasMore && events.length > 0" class="py-3 text-center text-xs text-gray-400">
+        <div v-else-if="!hasMore && events.length > 0" class="py-3 text-center text-xs text-fg-subtle">
           -
         </div>
       </div>
@@ -488,37 +488,37 @@ const historyColumns = computed<Column[]>(() => [
       :close-on-click-outside="true"
       @close="closeDetail"
     >
-      <div v-if="detailLoading" class="flex items-center justify-center py-10 text-sm text-gray-500 dark:text-gray-400">
+      <div v-if="detailLoading" class="flex items-center justify-center py-10 text-sm text-fg-muted">
         {{ t('admin.ops.alertEvents.detail.loading') }}
       </div>
 
-      <div v-else-if="!selected" class="py-10 text-center text-sm text-gray-500 dark:text-gray-400">
+      <div v-else-if="!selected" class="py-10 text-center text-sm text-fg-muted">
         {{ t('admin.ops.alertEvents.detail.empty') }}
       </div>
 
       <div v-else class="space-y-5">
-        <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
+        <div class="border-t border-border pt-3">
           <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <div class="flex flex-wrap items-center gap-2">
-                <span class="inline-flex items-center rounded-full px-2 py-1 text-[10px] font-bold" :class="severityBadgeClass(String(selected.severity || ''))">
+                <span class="badge" :class="severityBadgeClass(String(selected.severity || ''))">
                   {{ selected.severity || '-' }}
                 </span>
-                <span class="inline-flex items-center rounded-full px-2 py-1 text-[10px] font-bold ring-1 ring-inset" :class="statusBadgeClass(selected.status)">
+                <span class="badge" :class="statusBadgeClass(selected.status)">
                   {{ formatStatusLabel(selected.status) }}
                 </span>
               </div>
-              <div class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">
+              <div class="mt-2 text-sm font-semibold text-fg">
                 {{ selected.title || '-' }}
               </div>
-              <div v-if="selected.description" class="mt-1 whitespace-pre-wrap text-xs text-gray-600 dark:text-gray-300">
+              <div v-if="selected.description" class="mt-1 whitespace-pre-wrap text-xs text-fg-muted">
                 {{ selected.description }}
               </div>
             </div>
 
             <div class="flex flex-wrap gap-2">
-              <div class="flex items-center gap-2 rounded-lg bg-white px-2 py-1 ring-1 ring-gray-200 dark:bg-dark-800 dark:ring-dark-700">
-                <span class="text-[11px] font-bold text-gray-600 dark:text-gray-300">{{ t('admin.ops.alertEvents.detail.silence') }}</span>
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] font-bold text-fg-muted">{{ t('admin.ops.alertEvents.detail.silence') }}</span>
                 <Select
                   :model-value="silenceDuration"
                   :options="silenceDurationOptions"
@@ -540,27 +540,27 @@ const historyColumns = computed<Column[]>(() => [
         </div>
 
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
-              <div class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ t('admin.ops.alertEvents.detail.firedAt') }}</div>
-              <div class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDateTime(selected.fired_at || selected.created_at) }}</div>
+            <div class="border-t border-border pt-3">
+              <div class="text-meta font-medium text-fg-muted">{{ t('admin.ops.alertEvents.detail.firedAt') }}</div>
+              <div class="mt-1 text-sm font-medium text-fg">{{ formatDateTime(selected.fired_at || selected.created_at) }}</div>
             </div>
-            <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
-              <div class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ t('admin.ops.alertEvents.detail.resolvedAt') }}</div>
-              <div class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selected.resolved_at ? formatDateTime(selected.resolved_at) : '-' }}</div>
+            <div class="border-t border-border pt-3">
+              <div class="text-meta font-medium text-fg-muted">{{ t('admin.ops.alertEvents.detail.resolvedAt') }}</div>
+              <div class="mt-1 text-sm font-medium text-fg">{{ selected.resolved_at ? formatDateTime(selected.resolved_at) : '-' }}</div>
             </div>
-            <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
-              <div class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ t('admin.ops.alertEvents.detail.ruleId') }}</div>
+            <div class="border-t border-border pt-3">
+              <div class="text-meta font-medium text-fg-muted">{{ t('admin.ops.alertEvents.detail.ruleId') }}</div>
               <div class="mt-1 flex flex-wrap items-center gap-2">
-                <div class="font-mono text-sm font-bold text-gray-900 dark:text-white">#{{ selected.rule_id }}</div>
+                <div class="font-mono text-sm font-bold text-fg">#{{ selected.rule_id }}</div>
                 <a
-                  class="inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-[11px] font-bold text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 dark:bg-dark-800 dark:text-gray-200 dark:ring-dark-700 dark:hover:bg-dark-700"
+                  class="btn btn-secondary btn-sm"
                   :href="`/admin/ops?open_alert_rules=1&alert_rule_id=${selected.rule_id}`"
                 >
                   <Icon name="externalLink" size="xs" />
                   {{ t('admin.ops.alertEvents.detail.viewRule') }}
                 </a>
                 <a
-                  class="inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-[11px] font-bold text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 dark:bg-dark-800 dark:text-gray-200 dark:ring-dark-700 dark:hover:bg-dark-700"
+                  class="btn btn-secondary btn-sm"
                   :href="`/admin/ops?platform=${encodeURIComponent(getDimensionString(selected,'platform')||'')}&group_id=${selected.dimensions?.group_id || ''}&error_type=request&open_error_details=1`"
                 >
                   <Icon name="externalLink" size="xs" />
@@ -568,9 +568,9 @@ const historyColumns = computed<Column[]>(() => [
                 </a>
               </div>
             </div>
-            <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
-              <div class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ t('admin.ops.alertEvents.detail.dimensions') }}</div>
-              <div class="mt-1 text-sm text-gray-900 dark:text-white">
+            <div class="border-t border-border pt-3">
+              <div class="text-meta font-medium text-fg-muted">{{ t('admin.ops.alertEvents.detail.dimensions') }}</div>
+              <div class="mt-1 text-sm text-fg">
                 <div v-if="getDimensionString(selected, 'platform')">platform={{ getDimensionString(selected, 'platform') }}</div>
                 <div v-if="selected.dimensions?.group_id">group_id={{ selected.dimensions.group_id }}</div>
                 <div v-if="getDimensionString(selected, 'region')">region={{ getDimensionString(selected, 'region') }}</div>
@@ -579,28 +579,28 @@ const historyColumns = computed<Column[]>(() => [
           </div>
 
 
-        <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-800">
+        <div class="border-t border-border pt-4">
           <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div class="text-sm font-bold text-gray-900 dark:text-white">{{ t('admin.ops.alertEvents.detail.historyTitle') }}</div>
-              <div class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ t('admin.ops.alertEvents.detail.historyHint') }}</div>
+              <div class="text-body font-bold text-accent-strong">{{ t('admin.ops.alertEvents.detail.historyTitle') }}</div>
+              <div class="mt-0.5 text-xs text-fg-muted">{{ t('admin.ops.alertEvents.detail.historyHint') }}</div>
             </div>
             <Select :model-value="historyRange" :options="historyRangeOptions" class="w-[140px]" @change="historyRange = String($event || '7d')" />
           </div>
 
-          <div v-if="historyLoading" class="py-6 text-center text-xs text-gray-500 dark:text-gray-400">
+          <div v-if="historyLoading" class="py-6 text-center text-xs text-fg-muted">
             {{ t('admin.ops.alertEvents.detail.historyLoading') }}
           </div>
-          <div v-else-if="history.length === 0" class="py-6 text-center text-xs text-gray-500 dark:text-gray-400">
+          <div v-else-if="history.length === 0" class="py-6 text-center text-xs text-fg-muted">
             {{ t('admin.ops.alertEvents.detail.historyEmpty') }}
           </div>
-          <div v-else class="overflow-hidden rounded-lg border border-border">
+          <div v-else class="table-container">
             <DataTable :columns="historyColumns" :data="history" row-key="id" :sticky-first-column="false">
               <template #cell-fired_at="{ row }">
                 {{ formatDateTime(row.fired_at || row.created_at) }}
               </template>
               <template #cell-status="{ row }">
-                <span class="inline-flex items-center rounded-full px-2 py-1 text-meta font-bold ring-1 ring-inset" :class="statusBadgeClass(row.status)">
+                <span class="badge" :class="statusBadgeClass(row.status)">
                   {{ formatStatusLabel(row.status) }}
                 </span>
               </template>

@@ -3,7 +3,7 @@
     <!-- Site Settings -->
     <div class="card">
       <div class="card-header">
-        <h3 class="text-h3 font-semibold text-fg">
+        <h3 class="card-title">
           {{ t("admin.settings.site.title") }}
         </h3>
         <p class="mt-1 text-meta text-fg-muted">
@@ -13,7 +13,7 @@
       <div class="card-body space-y-6">
         <!-- Backend Mode -->
         <div
-          class="flex items-center justify-between gap-4 rounded-lg border border-warning/30 bg-warning-weak p-4"
+          class="flex items-center justify-between gap-4 border border-warning/40 bg-warning-weak px-4 py-3"
         >
           <div>
             <h4 class="text-label font-medium text-fg">
@@ -144,7 +144,7 @@
             <div
               v-for="(ep, index) in form.custom_endpoints"
               :key="index"
-              class="rounded-lg border border-border p-4"
+              class="border-t border-border pt-4"
             >
               <div class="mb-3 flex items-center justify-between">
                 <span
@@ -158,7 +158,7 @@
                 </span>
                 <button
                   type="button"
-                  class="rounded p-1 text-danger transition-colors hover:bg-danger-weak hover:text-danger-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+                  class="rounded-sm p-1 text-danger transition-colors hover:bg-danger-weak hover:text-danger-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                   :aria-label="t('admin.settings.site.customEndpoints.remove')"
                   @click="removeEndpoint(index)"
                 >
@@ -241,7 +241,7 @@
 
           <button
             type="button"
-            class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border-strong px-4 py-2.5 text-label font-medium text-fg-muted transition-colors hover:border-accent hover:text-accent-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+            class="mt-3 flex min-h-[40px] w-full items-center justify-center gap-2 border border-dashed border-border-strong px-4 py-2.5 text-label font-medium text-fg-muted transition-colors hover:border-accent hover:text-accent-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             @click="addEndpoint"
           >
             <svg
@@ -369,7 +369,7 @@
     <!-- Custom Menu Items -->
     <div class="card">
       <div class="card-header">
-        <h3 class="text-h3 font-semibold text-fg">
+        <h3 class="card-title">
           {{ t("admin.settings.customMenu.title") }}
         </h3>
         <p class="mt-1 text-meta text-fg-muted">
@@ -381,7 +381,7 @@
         <div
           v-for="(item, index) in form.custom_menu_items"
           :key="item.id || index"
-          class="rounded-lg border border-border p-4"
+          class="border-t border-border pt-4"
         >
           <div class="mb-3 flex items-center justify-between">
             <span
@@ -396,7 +396,7 @@
               <button
                 v-if="index > 0"
                 type="button"
-                class="rounded p-1 text-fg-subtle transition-colors hover:bg-surface-sunken hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+                class="rounded-sm p-1 text-fg-subtle transition-colors hover:bg-surface-sunken hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 :title="t('admin.settings.customMenu.moveUp')" :aria-label="t('admin.settings.customMenu.moveUp')"
                 @click="moveMenuItem(index, -1)"
               >
@@ -418,7 +418,7 @@
               <button
                 v-if="index < form.custom_menu_items.length - 1"
                 type="button"
-                class="rounded p-1 text-fg-subtle transition-colors hover:bg-surface-sunken hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+                class="rounded-sm p-1 text-fg-subtle transition-colors hover:bg-surface-sunken hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 :title="t('admin.settings.customMenu.moveDown')" :aria-label="t('admin.settings.customMenu.moveDown')"
                 @click="moveMenuItem(index, 1)"
               >
@@ -439,7 +439,7 @@
               <!-- Delete -->
               <button
                 type="button"
-                class="rounded p-1 text-danger transition-colors hover:bg-danger-weak hover:text-danger-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+                class="rounded-sm p-1 text-danger transition-colors hover:bg-danger-weak hover:text-danger-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 :title="t('admin.settings.customMenu.remove')" :aria-label="t('admin.settings.customMenu.remove')"
                 @click="removeMenuItem(index)"
               >
@@ -514,7 +514,7 @@
 
             <!-- Token passthrough (security sensitive, full width) -->
             <div
-              class="rounded border border-warning/30 bg-warning-weak p-3 sm:col-span-2"
+              class="border border-warning/40 bg-warning-weak px-3 py-2 sm:col-span-2"
             >
               <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0">
@@ -569,7 +569,7 @@
         <!-- Add button -->
         <button
           type="button"
-          class="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border-strong px-4 py-2.5 text-label font-medium text-fg-muted transition-colors hover:border-accent hover:text-accent-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+          class="flex min-h-[40px] w-full items-center justify-center gap-2 border border-dashed border-border-strong px-4 py-2.5 text-label font-medium text-fg-muted transition-colors hover:border-accent hover:text-accent-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           @click="addMenuItem"
         >
           <svg
@@ -593,7 +593,7 @@
     <!-- Custom Page iframe host allowlist -->
     <div class="card">
       <div class="card-header">
-        <h3 class="text-h3 font-semibold text-fg">
+        <h3 class="card-title">
           {{ t("admin.settings.customPageIframe.title") }}
         </h3>
         <p class="mt-1 text-meta text-fg-muted">
@@ -613,7 +613,7 @@
           >
             <button
               type="button"
-              class="tab inline-flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+              class="tab inline-flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               :class="
                 customPageIframeMode === 'default'
                   ? 'tab-active'
@@ -626,7 +626,7 @@
             </button>
             <button
               type="button"
-              class="tab inline-flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+              class="tab inline-flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               :class="
                 customPageIframeMode === 'custom'
                   ? 'tab-active'
@@ -642,12 +642,12 @@
 
         <!-- Which of the three states is actually in effect -->
         <div
-          class="rounded border p-3 text-body"
+          class="border px-3 py-2 text-body"
           :class="
             customPageIframeState === 'lockdown'
-              ? 'border-danger/30 bg-danger-weak text-danger-strong'
+              ? 'border-danger/40 bg-danger-weak text-danger-strong'
               : customPageIframeState === 'allowlist'
-                ? 'border-success/30 bg-success-weak text-success-strong'
+                ? 'border-success/40 bg-success-weak text-success-strong'
                 : 'border-border bg-surface-sunken text-fg'
           "
           data-testid="custom-page-iframe-state"

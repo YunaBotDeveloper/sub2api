@@ -1,14 +1,14 @@
 <template>
   <div class="space-y-4">
-    <button type="button" :disabled="disabled" class="btn btn-secondary w-full" @click="startLogin">
+    <button type="button" :disabled="disabled" class="flex min-h-11 w-full items-center gap-3 border-y border-border bg-surface px-3 py-2.5 text-left text-body font-semibold text-fg transition-colors hover:bg-accent-weak hover:text-accent-strong focus:outline-none focus-visible:bg-accent-weak disabled:cursor-not-allowed disabled:opacity-50" @click="startLogin">
       <svg
-        class="icon mr-2"
+        class="icon shrink-0"
         viewBox="0 0 16 16"
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
         width="1em"
         height="1em"
-        style="color: rgb(233, 84, 32); width: 20px; height: 20px"
+        style="color: rgb(233, 84, 32); width: 16px; height: 16px"
         aria-hidden="true"
       >
         <g id="linuxdo_icon" data-name="linuxdo_icon">
@@ -30,11 +30,11 @@
     </button>
 
     <div v-if="showDivider" class="flex items-center gap-3">
-      <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
-      <span class="text-xs text-gray-500 dark:text-dark-400">
+      <div class="h-px flex-1 bg-border"></div>
+      <span class="text-meta text-fg-muted">
         {{ t('auth.oauthOrContinue') }}
       </span>
-      <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
+      <div class="h-px flex-1 bg-border"></div>
     </div>
   </div>
 </template>

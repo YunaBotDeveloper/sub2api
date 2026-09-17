@@ -1389,10 +1389,10 @@ export function useGroupsView() {
     }
     const ratio = used / limit;
     if (ratio >= 1) {
-      return "font-semibold text-danger-600 dark:text-danger-400";
+      return "font-semibold text-danger";
     }
     if (ratio >= 0.8) {
-      return "font-semibold text-warning-600 dark:text-warning-400";
+      return "font-semibold text-warning";
     }
     return "font-medium text-gray-700 dark:text-gray-300";
   };

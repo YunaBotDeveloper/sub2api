@@ -5,25 +5,25 @@
     width="normal"
     @close="$emit('close')"
   >
-    <div class="space-y-2">
+    <div class="divide-y divide-border border-y border-border">
       <div
         v-for="r in results"
         :key="r.model"
-        class="flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-dark-600"
+        class="flex items-center justify-between gap-3 py-2 text-sm"
       >
         <div class="flex flex-col">
-          <span class="font-medium text-gray-900 dark:text-white">{{ formatMonitorModel(r.model) }}</span>
-          <span v-if="r.message" class="text-xs text-gray-500 dark:text-gray-400">{{ r.message }}</span>
+          <span class="font-mono font-medium text-fg">{{ formatMonitorModel(r.model) }}</span>
+          <span v-if="r.message" class="text-xs text-fg-muted">{{ r.message }}</span>
           <MonitorQuotaView :snapshot="r.quota" class="mt-1" />
         </div>
         <div class="flex items-center gap-2">
           <span
-            class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px]"
+            class="badge"
             :class="statusBadgeClass(r.status)"
           >
             {{ statusLabel(r.status) }}
           </span>
-          <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatLatency(r.latency_ms) }} ms</span>
+          <span class="min-w-[4.5rem] text-right text-label font-semibold tabular-nums text-fg">{{ formatLatency(r.latency_ms) }} ms</span>
         </div>
       </div>
     </div>

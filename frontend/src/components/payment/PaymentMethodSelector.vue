@@ -1,11 +1,12 @@
 <template>
   <div>
-    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+    <label class="input-label">
       {{ t('payment.paymentMethod') }}
     </label>
+    <!-- Ruled rows: one line per payment method -->
     <div
       data-testid="payment-method-grid"
-      class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
+      class="divide-y divide-border border border-border"
     >
       <button
         v-for="method in sortedMethods"
@@ -14,28 +15,33 @@
         :title="methodLabel(method)"
         :disabled="!method.available"
         :class="[
-          'relative flex h-[60px] min-w-0 flex-col items-center justify-center rounded-lg border px-3 transition-all',
+          'relative flex min-h-[52px] w-full min-w-0 items-center gap-3 px-3 py-2 text-left transition-colors',
           !method.available
-            ? 'cursor-not-allowed border-gray-200 bg-gray-50 opacity-50 dark:border-dark-700 dark:bg-dark-800/50'
+            ? 'cursor-not-allowed bg-surface-sunken text-fg-subtle opacity-60'
             : selected === method.type
-              ? methodSelectedClass(method.type)
-              : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-200 dark:hover:border-dark-500',
+              ? 'bg-accent-weak text-accent-strong ring-1 ring-inset ring-accent'
+              : 'bg-surface text-fg hover:bg-accent-weak/50',
         ]"
         @click="method.available && emit('select', method.type)"
       >
-        <span class="flex w-full min-w-0 items-center justify-center gap-2">
-          <img :src="methodIcon(method.type)" :alt="methodLabel(method)" class="h-7 w-7 shrink-0 object-contain" />
-          <span class="flex min-w-0 flex-col items-start leading-none">
-            <span data-testid="payment-method-label" class="block w-full truncate text-base font-semibold">
-              {{ methodLabel(method) }}
-            </span>
-            <span
-              v-if="method.fee_rate > 0"
-              class="text-[10px] tracking-wide text-gray-500 dark:text-dark-400"
-            >
-              {{ t('payment.fee') }} {{ method.fee_rate }}%
-            </span>
-          </span>
+        <span
+          aria-hidden="true"
+          :class="[
+            'flex h-4 w-4 shrink-0 items-center justify-center border-2',
+            selected === method.type && method.available ? 'border-accent' : 'border-border-strong',
+          ]"
+        >
+          <span v-if="selected === method.type && method.available" class="h-2 w-2 bg-accent" />
+        </span>
+        <img :src="methodIcon(method.type)" :alt="methodLabel(method)" class="h-6 w-6 shrink-0 object-contain" />
+        <span data-testid="payment-method-label" class="block min-w-0 flex-1 truncate text-body font-semibold">
+          {{ methodLabel(method) }}
+        </span>
+        <span
+          v-if="method.fee_rate > 0"
+          class="shrink-0 text-meta tabular-nums text-fg-muted"
+        >
+          {{ t('payment.fee') }} {{ method.fee_rate }}%
         </span>
       </button>
     </div>
@@ -89,12 +95,4 @@ function methodLabel(method: PaymentMethodOption): string {
   return method.display_name || t(`payment.methods.${method.type}`, method.type)
 }
 
-function methodSelectedClass(type: string): string {
-  switch (type) {
-    case SEPAY_BANK_TRANSFER:
-      return 'border-accent-600 bg-accent-50 text-gray-900 shadow-sm dark:bg-accent-950 dark:text-gray-100'
-    default:
-      return 'border-primary-500 bg-primary-50 text-gray-900 shadow-sm dark:bg-primary-950 dark:text-gray-100'
-  }
-}
 </script>

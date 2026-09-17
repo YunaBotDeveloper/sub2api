@@ -3,18 +3,18 @@
     <!-- Payment System Settings -->
     <div class="card">
       <div
-        class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
+        class="card-header"
       >
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+        <h2 class="card-title">
           {{ t("admin.settings.payment.title") }}
         </h2>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p class="mt-1 text-sm text-fg-muted">
           {{ t("admin.settings.payment.description") }}
           <a
             :href="paymentGuideHref"
             target="_blank"
             rel="noopener noreferrer"
-            class="ml-2 inline-flex items-center text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+            class="ml-2 inline-flex items-center text-accent hover:text-accent-strong"
           >
             <svg
               class="mr-0.5 h-3.5 w-3.5"
@@ -33,14 +33,14 @@
           </a>
         </p>
       </div>
-      <div class="space-y-4 p-6">
+      <div class="card-body space-y-4">
         <!-- Enable toggle -->
         <div class="flex items-center justify-between">
           <div>
-            <label class="font-medium text-gray-900 dark:text-white">{{
+            <label class="font-medium text-fg">{{
               t("admin.settings.payment.enabled")
             }}</label>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p class="text-sm text-fg-muted">
               {{ t("admin.settings.payment.enabledHint") }}
             </p>
           </div>
@@ -76,7 +76,7 @@
                 t("admin.settings.payment.preview")
               }}</label>
               <div
-                class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-600 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300"
+                class="border-y border-border px-0 py-2 text-sm text-fg-muted"
               >
                 {{
                   (form.payment_product_name_prefix || "Sub2API") +
@@ -162,7 +162,7 @@
                 min="0.01"
                 class="input"
               />
-              <p class="mt-0.5 text-xs text-gray-400">
+              <p class="mt-0.5 text-xs text-fg-subtle">
                 {{
                   t(
                     "admin.settings.payment.balanceRechargeMultiplierHint",
@@ -170,7 +170,7 @@
                 }}
               </p>
               <p
-                class="mt-1 text-xs font-medium text-primary-600 dark:text-primary-400"
+                class="mt-1 text-xs font-medium text-accent"
               >
                 {{
                   t("admin.settings.payment.balanceRechargePreview", {
@@ -204,7 +204,7 @@
                   )
                 "
               />
-              <p class="mt-0.5 text-xs text-gray-400">
+              <p class="mt-0.5 text-xs text-fg-subtle">
                 {{
                   t("admin.settings.payment.subscriptionUsdToCnyRateHint")
                 }}
@@ -238,16 +238,16 @@
                   class="input pr-8"
                 />
                 <span
-                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400"
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-fg-subtle"
                   >%</span
                 >
               </div>
-              <p class="mt-0.5 text-xs text-gray-400">
+              <p class="mt-0.5 text-xs text-fg-subtle">
                 {{ t("admin.settings.payment.rechargeFeeRateHint") }}
               </p>
               <p
                 v-if="(Number(form.payment_recharge_fee_rate) || 0) > 0"
-                class="mt-1 text-xs font-medium text-primary-600 dark:text-primary-400"
+                class="mt-1 text-xs font-medium text-accent"
               >
                 {{
                   t("admin.settings.payment.rechargeFeePreview", {
@@ -272,11 +272,11 @@
                   class="input pr-8"
                 />
                 <span
-                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400"
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-fg-subtle"
                   >%</span
                 >
               </div>
-              <p class="mt-0.5 text-xs text-gray-400">
+              <p class="mt-0.5 text-xs text-fg-subtle">
                 {{ t("admin.settings.payment.exchangeRateMarkupHint") }}
               </p>
             </div>
@@ -292,14 +292,14 @@
                 max="720"
                 class="input"
               />
-              <p class="mt-0.5 text-xs text-gray-400">
+              <p class="mt-0.5 text-xs text-fg-subtle">
                 {{ t("admin.settings.payment.exchangeRateMaxAgeHint") }}
               </p>
             </div>
             <div>
               <label class="input-label"
                 >{{ t("admin.settings.payment.orderTimeout") }}
-                <span class="text-danger-500">*</span></label
+                <span class="text-danger">*</span></label
               ><input
                 v-model.number="form.payment_order_timeout_minutes"
                 type="number"
@@ -307,7 +307,7 @@
                 class="input"
                 required
               />
-              <p class="mt-0.5 text-xs text-gray-400">
+              <p class="mt-0.5 text-xs text-fg-subtle">
                 {{ t("admin.settings.payment.orderTimeoutHint") }}
               </p>
             </div>
@@ -343,10 +343,10 @@
                 <button
                   type="button"
                   :class="[
-                    'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                    'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2',
                     form.payment_cancel_rate_limit_enabled
-                      ? 'bg-primary-500'
-                      : 'bg-gray-300 dark:bg-dark-600',
+                      ? 'bg-accent'
+                      : 'bg-border-strong',
                   ]"
                   @click="
                     form.payment_cancel_rate_limit_enabled =
@@ -355,7 +355,7 @@
                 >
                   <span
                     :class="[
-                      'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                      'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-surface ring-0 transition duration-200 ease-in-out',
                       form.payment_cancel_rate_limit_enabled
                         ? 'translate-x-5'
                         : 'translate-x-0',
@@ -372,8 +372,8 @@
                   :class="[
                     'text-sm whitespace-nowrap',
                     form.payment_cancel_rate_limit_enabled
-                      ? 'text-gray-700 dark:text-gray-300'
-                      : 'text-gray-400 dark:text-gray-600',
+                      ? 'text-fg'
+                      : 'text-fg-subtle',
                   ]"
                   >{{
                     t("admin.settings.payment.cancelRateLimitEvery")
@@ -397,8 +397,8 @@
                   :class="[
                     'text-sm whitespace-nowrap',
                     form.payment_cancel_rate_limit_enabled
-                      ? 'text-gray-700 dark:text-gray-300'
-                      : 'text-gray-400 dark:text-gray-600',
+                      ? 'text-fg'
+                      : 'text-fg-subtle',
                   ]"
                   >{{
                     t("admin.settings.payment.cancelRateLimitAllowMax")
@@ -416,8 +416,8 @@
                   :class="[
                     'text-sm whitespace-nowrap',
                     form.payment_cancel_rate_limit_enabled
-                      ? 'text-gray-700 dark:text-gray-300'
-                      : 'text-gray-400 dark:text-gray-600',
+                      ? 'text-fg'
+                      : 'text-fg-subtle',
                   ]"
                   >{{
                     t("admin.settings.payment.cancelRateLimitTimes")
@@ -438,22 +438,22 @@
                 type="button"
                 @click="togglePaymentType(pt.value)"
                 :class="[
-                  'rounded-lg border px-3 py-1.5 text-sm font-medium transition-all',
+                  'rounded-sm border px-3 py-1.5 text-sm font-medium transition-all',
                   isPaymentTypeEnabled(pt.value)
-                    ? 'border-primary-500 bg-primary-500 text-white shadow-sm'
-                    : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400 hover:bg-gray-50 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300 dark:hover:border-dark-500',
+                    ? 'border-accent bg-accent text-white'
+                    : 'border-border-strong bg-surface text-fg-muted hover:border-border-strong hover:bg-accent-weak',
                 ]"
               >
                 {{ pt.label }}
               </button>
             </div>
-            <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">
+            <p class="mt-2 text-xs text-fg-subtle">
               {{ t("admin.settings.payment.enabledPaymentTypesHint") }}
               <a
                 :href="paymentMethodsHref"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="ml-1 text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300"
+                class="ml-1 text-accent hover:text-accent-strong"
               >
                 {{ t("admin.settings.payment.findProvider") }}
                 <svg

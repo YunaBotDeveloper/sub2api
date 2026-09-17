@@ -28,8 +28,8 @@
             :api-base-url="publicSettings?.api_base_url || ''"
             :custom-endpoints="publicSettings?.custom_endpoints || []"
           />
-          <div v-if="selectedIds.length" class="flex flex-wrap items-center gap-3 text-sm">
-            <span class="text-gray-600 dark:text-gray-300">
+          <div v-if="selectedIds.length" class="flex flex-wrap items-center gap-3 border border-meter/40 bg-meter-weak py-1.5 pl-3 pr-2 text-label">
+            <span class="text-fg-muted">
               {{ t('keys.bulkEdit.selectedCount', { count: selectedIds.length }) }}
             </span>
             <button
@@ -168,7 +168,7 @@
                 type="button"
                 :ref="(el) => setGroupButtonRef(row.id, el)"
                 @click="openGroupSelector(row)"
-                class="-mx-2 -my-1 flex cursor-pointer items-center gap-2 rounded px-2 py-1 transition-colors hover:bg-surface-sunken focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+                class="-mx-2 -my-1 flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1 transition-colors hover:bg-surface-sunken focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
                 :title="t('keys.clickToChangeGroup')"
                 :aria-expanded="groupSelectorKeyId === row.id"
                 aria-haspopup="listbox"
@@ -210,7 +210,7 @@
           <template #cell-current_concurrency="{ value }">
             <span
               :class="[
-                'font-mono text-body tabular-nums',
+                'text-body tabular-nums',
                 (value ?? 0) > 0 ? 'font-medium text-fg' : 'text-fg-subtle'
               ]"
             >
@@ -222,13 +222,13 @@
             <div class="min-w-[9rem] space-y-0.5 text-body">
               <div class="flex items-baseline justify-between gap-3">
                 <span class="text-meta text-fg-muted">{{ t('keys.today') }}</span>
-                <span class="font-mono tabular-nums text-fg">
+                <span class="tabular-nums text-fg">
                   ${{ (usageStats[row.id]?.today_actual_cost ?? 0).toFixed(4) }}
                 </span>
               </div>
               <div class="flex items-baseline justify-between gap-3">
                 <span class="text-meta text-fg-muted">{{ t('keys.total') }}</span>
-                <span class="font-mono tabular-nums text-fg">
+                <span class="tabular-nums text-fg">
                   ${{ (usageStats[row.id]?.total_actual_cost ?? 0).toFixed(4) }}
                 </span>
               </div>
@@ -236,7 +236,7 @@
               <div v-if="row.quota > 0" class="pt-1">
                 <div class="flex items-baseline justify-between gap-3">
                   <span class="text-meta text-fg-muted">{{ t('keys.quota') }}</span>
-                  <span :class="['font-mono tabular-nums', usageTextClass(row.quota_used, row.quota)]">
+                  <span :class="['tabular-nums', usageTextClass(row.quota_used, row.quota)]">
                     ${{ row.quota_used?.toFixed(2) || '0.00' }} / ${{ row.quota?.toFixed(2) }}
                   </span>
                 </div>
@@ -264,7 +264,7 @@
               >
                 <div class="flex items-baseline justify-between gap-3 text-meta">
                   <span class="text-fg-muted">{{ w.label }}</span>
-                  <span :class="['font-mono tabular-nums', usageTextClass(w.used, w.limit)]">
+                  <span :class="['tabular-nums', usageTextClass(w.used, w.limit)]">
                     ${{ w.used.toFixed(2) }}/${{ w.limit.toFixed(2) }}
                   </span>
                 </div>
@@ -451,31 +451,29 @@
                 @change="selectCreateProvider(provider.value)"
               />
               <span
-                class="flex h-full flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white px-2 py-3 text-center transition-colors peer-checked:border-primary-500 peer-checked:bg-primary-50/60 peer-checked:ring-1 peer-checked:ring-primary-500 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary-500 peer-disabled:opacity-40 dark:border-dark-600 dark:bg-dark-800 dark:peer-checked:border-primary-500 dark:peer-checked:bg-primary-500/10"
-                :class="provider.count > 0 && 'hover:border-primary-300 dark:hover:border-primary-700'"
+                class="flex h-full min-h-[44px] flex-col items-center gap-1.5 rounded-sm border border-border-strong bg-surface px-2 py-2.5 text-center transition-colors peer-checked:border-accent peer-checked:bg-accent-weak peer-checked:ring-1 peer-checked:ring-accent peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent peer-disabled:opacity-40"
+                :class="provider.count > 0 && 'hover:border-accent'"
               >
-                <span class="flex h-8 items-center justify-center gap-1.5" aria-hidden="true">
-                  <span
+                <span class="flex h-6 items-center justify-center gap-1.5" aria-hidden="true">
+                  <PlatformIcon
                     v-for="platform in KEY_GROUP_PROVIDER_ICONS[provider.value]"
                     :key="platform"
-                    class="flex h-8 w-8 items-center justify-center rounded-lg"
-                    :class="platformBadgeLightClass(platform)"
-                  >
-                    <PlatformIcon :platform="platform" size="lg" />
-                  </span>
+                    :platform="platform"
+                    size="md"
+                  />
                 </span>
-                <span class="text-sm font-semibold text-gray-800 dark:text-gray-100">{{ provider.label }}</span>
+                <span class="text-label font-semibold text-fg">{{ provider.label }}</span>
               </span>
               <span
                 v-if="createProvider === provider.value"
-                class="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary-500 text-white"
+                class="absolute right-0 top-0 flex h-4 w-4 items-center justify-center bg-accent text-white dark:text-surface-sunken"
                 aria-hidden="true"
               >
                 <Icon name="check" size="xs" :stroke-width="3" />
               </span>
             </label>
           </div>
-          <p class="mt-2 text-xs leading-5 text-gray-500 dark:text-gray-400" aria-live="polite">
+          <p class="input-hint mt-2" aria-live="polite">
             {{ groups.length === 0 ? t('common.noGroupsAvailable') : t(`keys.providerHints.${createProvider}`) }}
           </p>
         </fieldset>
@@ -659,7 +657,7 @@
             <div v-if="showEditModal && selectedKey && selectedKey.quota > 0">
               <label class="input-label">{{ t('keys.quotaUsed') }}</label>
               <div class="flex items-center gap-2">
-                <div class="flex-1 rounded border border-border bg-surface-sunken px-3 py-2 font-mono text-body tabular-nums">
+                <div class="flex-1 border-b border-border py-2 text-body tabular-nums">
                   <span class="font-medium text-fg">
                     ${{ selectedKey.quota_used?.toFixed(4) || '0.0000' }}
                   </span>
@@ -721,7 +719,7 @@
               <!-- Usage info (edit mode only) -->
               <div v-if="showEditModal && selectedKey && selectedKey.rate_limit_5h > 0" class="mt-2">
                 <div class="flex items-center gap-2">
-                  <div class="flex-1 rounded border border-border bg-surface-sunken px-3 py-2 font-mono text-body tabular-nums">
+                  <div class="flex-1 border-b border-border py-2 text-body tabular-nums">
                     <span :class="[
                       'font-medium',
                       selectedKey.usage_5h >= selectedKey.rate_limit_5h ? 'text-danger' :
@@ -767,7 +765,7 @@
               <!-- Usage info (edit mode only) -->
               <div v-if="showEditModal && selectedKey && selectedKey.rate_limit_1d > 0" class="mt-2">
                 <div class="flex items-center gap-2">
-                  <div class="flex-1 rounded border border-border bg-surface-sunken px-3 py-2 font-mono text-body tabular-nums">
+                  <div class="flex-1 border-b border-border py-2 text-body tabular-nums">
                     <span :class="[
                       'font-medium',
                       selectedKey.usage_1d >= selectedKey.rate_limit_1d ? 'text-danger' :
@@ -813,7 +811,7 @@
               <!-- Usage info (edit mode only) -->
               <div v-if="showEditModal && selectedKey && selectedKey.rate_limit_7d > 0" class="mt-2">
                 <div class="flex items-center gap-2">
-                  <div class="flex-1 rounded border border-border bg-surface-sunken px-3 py-2 font-mono text-body tabular-nums">
+                  <div class="flex-1 border-b border-border py-2 text-body tabular-nums">
                     <span :class="[
                       'font-medium',
                       selectedKey.usage_7d >= selectedKey.rate_limit_7d ? 'text-danger' :
@@ -1044,26 +1042,26 @@
           <button
             type="button"
             @click="handleCcsClientSelect('claude')"
-            class="card card-hover flex flex-col items-center gap-2 p-4 hover:border-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+            class="flex flex-col items-start gap-1 rounded-sm border border-border-strong bg-surface p-3 text-left transition-colors hover:border-accent hover:bg-accent-weak focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
           >
-            <Icon name="terminal" size="xl" class="text-fg-muted" aria-hidden="true" />
-            <span class="text-h3 font-medium text-fg">{{
+            <span class="flex items-center gap-2 text-body font-semibold text-accent-strong">
+              <Icon name="terminal" size="sm" aria-hidden="true" />{{
               t('keys.ccsClientSelect.claudeCode')
             }}</span>
-            <span class="text-label text-fg-muted">{{
+            <span class="text-meta text-fg-muted">{{
               t('keys.ccsClientSelect.claudeCodeDesc')
             }}</span>
           </button>
           <button
             type="button"
             @click="handleCcsClientSelect('gemini')"
-            class="card card-hover flex flex-col items-center gap-2 p-4 hover:border-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+            class="flex flex-col items-start gap-1 rounded-sm border border-border-strong bg-surface p-3 text-left transition-colors hover:border-accent hover:bg-accent-weak focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
           >
-            <Icon name="sparkles" size="xl" class="text-fg-muted" aria-hidden="true" />
-            <span class="text-h3 font-medium text-fg">{{
+            <span class="flex items-center gap-2 text-body font-semibold text-accent-strong">
+              <Icon name="sparkles" size="sm" aria-hidden="true" />{{
               t('keys.ccsClientSelect.geminiCli')
             }}</span>
-            <span class="text-label text-fg-muted">{{
+            <span class="text-meta text-fg-muted">{{
               t('keys.ccsClientSelect.geminiCliDesc')
             }}</span>
           </button>
@@ -1084,7 +1082,7 @@
         v-if="groupSelectorKeyId !== null && dropdownPosition"
         ref="dropdownRef"
         role="listbox"
-        class="fixed z-[100000020] w-max max-w-[calc(100vw-16px)] overflow-hidden rounded-lg border border-border bg-surface-raised shadow-overlay animate-scale-in sm:min-w-[380px]"
+        class="fixed z-[100000020] w-max max-w-[calc(100vw-16px)] overflow-hidden rounded-sm border border-border-strong bg-surface-raised shadow-overlay animate-scale-in sm:min-w-[380px]"
         style="pointer-events: auto !important;"
         :style="{
           top: dropdownPosition.top !== undefined ? dropdownPosition.top + 'px' : undefined,
@@ -1121,7 +1119,7 @@
               (!selectedKeyForGroup?.group_id && option.value === null)
             "
             :class="[
-              'flex w-full items-center justify-between rounded px-3 py-2.5 text-body transition-colors',
+              'flex w-full items-center justify-between rounded-sm px-3 py-2.5 text-body transition-colors',
               'focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/50',
               selectedKeyForGroup?.group_id === option.value ||
               (!selectedKeyForGroup?.group_id && option.value === null)
@@ -1189,7 +1187,6 @@ import type { BatchApiKeyUsageStats } from '@/api/usage'
 import { formatDateTime } from '@/utils/format'
 import { maskApiKey } from '@/utils/maskApiKey'
 import PlatformIcon from '@/components/common/PlatformIcon.vue'
-import { platformBadgeLightClass } from '@/utils/platformColors'
 import { KEY_GROUP_PROVIDERS, KEY_GROUP_PROVIDER_ICONS, getKeyGroupProvider, type KeyGroupProvider } from '@/utils/keyGroupProviders'
 import {
   buildCcSwitchImportDeeplink,

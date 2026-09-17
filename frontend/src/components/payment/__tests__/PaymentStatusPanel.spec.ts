@@ -220,7 +220,7 @@ describe('PaymentStatusPanel', () => {
     await flushPromises()
     expect(wrapper.text()).toContain('payment.qr.openPayWindow')
 
-    await wrapper.get('button.btn.btn-secondary.text-sm').trigger('click')
+    await wrapper.findAll('button').find(b => b.text() === 'payment.qr.openPayWindow')!.trigger('click')
     expect(openSpy).toHaveBeenCalledWith(
       'https://pay.example.com/session/42',
       'paymentPopup',

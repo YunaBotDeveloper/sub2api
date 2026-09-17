@@ -1,31 +1,25 @@
 <template>
   <div
     :class="[
-      'group relative rounded-lg border transition-all',
-      enabled ? 'border-gray-200 dark:border-dark-600' : 'border-gray-200 bg-gray-50 opacity-50 dark:border-dark-700 dark:bg-dark-800/50',
+      'group relative',
+      !enabled && 'bg-surface-sunken opacity-50',
     ]"
     :title="!enabled ? t('admin.settings.payment.typeDisabled') + ' — ' + t('admin.settings.payment.enableTypesFirst') : undefined"
   >
     <div :class="[
-      'flex items-center justify-between px-4 py-2.5',
+      'flex flex-wrap items-center justify-between gap-3 py-2.5',
       !enabled && 'pointer-events-none',
     ]">
-      <!-- Left: icon + name + key badge + type badges -->
-      <div class="flex items-center gap-3">
-        <div :class="[
-          'rounded-md p-1.5',
-          provider.enabled && enabled ? 'bg-success-100 dark:bg-success-900/30' : 'bg-gray-100 dark:bg-dark-700',
-        ]">
-          <Icon
-            name="server"
-            size="sm"
-            :class="provider.enabled && enabled ? 'text-success-600 dark:text-success-400' : 'text-gray-400'"
-          />
-        </div>
-        <span class="text-sm font-medium text-gray-900 dark:text-white">{{ provider.name }}</span>
-        <span class="text-xs text-gray-400 dark:text-gray-500">{{ keyLabel }}</span>
-        <span v-if="provider.payment_mode" class="text-xs text-gray-400 dark:text-gray-500">· {{ modeLabel }}</span>
-        <span v-if="enabled && availableTypes.length" class="text-xs text-gray-300 dark:text-gray-600">|</span>
+      <!-- Left: status dot + name + key + type stamps -->
+      <div class="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+        <span
+          :class="['h-2 w-2 shrink-0 rounded-full', provider.enabled && enabled ? 'bg-success' : 'bg-border-strong']"
+          aria-hidden="true"
+        />
+        <span class="text-body font-semibold text-fg">{{ provider.name }}</span>
+        <span class="text-meta text-fg-muted">{{ keyLabel }}</span>
+        <span v-if="provider.payment_mode" class="text-meta text-fg-muted">· {{ modeLabel }}</span>
+        <span v-if="enabled && availableTypes.length" class="text-meta text-border-strong">|</span>
         <div v-if="enabled" class="flex items-center gap-1">
           <button
             v-for="pt in availableTypes"
@@ -33,10 +27,10 @@
             type="button"
             @click="emit('toggleType', pt.value)"
             :class="[
-              'rounded px-2 py-0.5 text-xs font-medium transition-all',
+              'badge transition-colors',
               isSelected(pt.value)
-                ? 'bg-primary-500 text-white'
-                : 'bg-gray-100 text-gray-400 dark:bg-dark-700 dark:text-gray-500',
+                ? 'badge-primary'
+                : 'text-fg-subtle hover:border-accent hover:text-accent-strong',
             ]"
           >{{ pt.label }}</button>
         </div>
@@ -45,14 +39,14 @@
       <!-- Right: toggles + actions -->
       <div class="flex items-center gap-4">
         <ToggleSwitch :label="t('common.enabled')" :checked="provider.enabled" @toggle="emit('toggleField', 'enabled')" />
-        <div class="flex items-center gap-2 border-l border-gray-200 pl-3 dark:border-dark-600">
-          <button type="button" @click="emit('edit')" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-accent-50 hover:text-accent-600 dark:hover:bg-accent-900/20 dark:hover:text-accent-400">
+        <div class="flex items-center gap-2 border-l border-border pl-3">
+          <button type="button" @click="emit('edit')" class="flex flex-col items-center gap-0.5 rounded-sm p-1.5 text-fg-muted transition-colors hover:bg-accent-weak hover:text-accent-strong">
             <Icon name="edit" size="sm" />
-            <span class="text-xs">{{ t('common.edit') }}</span>
+            <span class="text-meta">{{ t('common.edit') }}</span>
           </button>
-          <button type="button" @click="emit('delete')" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20 dark:hover:text-danger-400">
+          <button type="button" @click="emit('delete')" class="flex flex-col items-center gap-0.5 rounded-sm p-1.5 text-fg-muted transition-colors hover:bg-danger-weak hover:text-danger">
             <Icon name="trash" size="sm" />
-            <span class="text-xs">{{ t('common.delete') }}</span>
+            <span class="text-meta">{{ t('common.delete') }}</span>
           </button>
         </div>
       </div>

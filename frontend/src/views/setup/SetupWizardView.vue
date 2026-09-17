@@ -1,71 +1,40 @@
 <template>
-  <div
-    class="flex min-h-screen items-center justify-center bg-gray-50 p-4 dark:bg-dark-900"
-  >
-    <div class="w-full max-w-2xl">
-      <!-- Logo & Title -->
-      <div class="mb-8 text-center">
-        <div
-          class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-lg bg-primary-500 shadow-lg"
-        >
-          <Icon name="cog" size="xl" class="text-white" />
-        </div>
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ t('setup.title') }}</h1>
-        <p class="mt-2 text-gray-500 dark:text-dark-400">{{ t('setup.description') }}</p>
+  <div class="flex min-h-screen items-start justify-center bg-surface-sunken p-4 sm:items-center sm:p-8">
+    <div class="w-full max-w-3xl border border-border bg-surface" style="border-top: 4px solid rgb(var(--accent))">
+      <!-- Title band -->
+      <div class="border-b border-border px-5 py-5 sm:px-8">
+        <h1 class="text-h1 font-bold text-accent-strong">{{ t('setup.title') }}</h1>
+        <p class="mt-1 text-body text-fg-muted">{{ t('setup.description') }}</p>
       </div>
 
-      <!-- Progress Steps -->
-      <div class="mb-8">
-        <div class="flex items-center justify-center">
-          <template v-for="(step, index) in steps" :key="step.id">
-            <div class="flex items-center">
-              <div
-                :class="[
-                  'flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all',
-                  currentStep > index
-                    ? 'bg-primary-500 text-white'
-                    : currentStep === index
-                      ? 'bg-primary-500 text-white ring-4 ring-primary-100 dark:ring-primary-900'
-                      : 'bg-gray-200 text-gray-500 dark:bg-dark-700 dark:text-dark-400'
-                ]"
-              >
-                <Icon
-                  v-if="currentStep > index"
-                  name="check"
-                  size="md"
-                  :stroke-width="2"
-                />
-                <span v-else>{{ index + 1 }}</span>
-              </div>
-              <span
-                class="ml-2 hidden text-sm font-medium sm:inline"
-                :class="
-                  currentStep >= index
-                    ? 'text-gray-900 dark:text-white'
-                    : 'text-gray-400 dark:text-dark-500'
-                "
-              >
-                {{ step.title }}
-              </span>
-            </div>
-            <div
-              v-if="index < steps.length - 1"
-              class="mx-2 h-0.5 w-6 sm:mx-3 sm:w-12"
-              :class="currentStep > index ? 'bg-primary-500' : 'bg-gray-200 dark:bg-dark-700'"
-            ></div>
-          </template>
-        </div>
-      </div>
+      <!-- Step register: the sequence is real, so steps are numbered -->
+      <ol class="meter border-x-0 border-t-0" style="grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr))">
+        <li
+          v-for="(step, index) in steps"
+          :key="step.id"
+          class="meter-cell"
+          :class="{ 'meter-cell-current': currentStep === index }"
+          :aria-current="currentStep === index ? 'step' : undefined"
+        >
+          <span class="flex items-center gap-1.5 text-meta font-semibold tabular-nums" :class="currentStep > index ? 'text-success' : currentStep === index ? 'text-meter-ink' : 'text-fg-subtle'">
+            <Icon v-if="currentStep > index" name="check" size="xs" :stroke-width="2.5" />
+            {{ String(index + 1).padStart(2, '0') }}
+          </span>
+          <span class="truncate text-body font-semibold" :class="currentStep >= index ? 'text-fg' : 'text-fg-subtle'">
+            {{ step.title }}
+          </span>
+        </li>
+      </ol>
 
       <!-- Step Content -->
-      <div class="rounded-lg bg-white p-8 shadow-xl dark:bg-dark-800">
+      <div class="px-5 py-6 sm:px-8">
         <!-- Step 1: Database -->
         <div v-if="currentStep === 0" class="space-y-6">
-          <div class="mb-6 text-center">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+          <div class="border-b-2 border-accent pb-2">
+            <h2 class="text-h2 font-bold text-accent-strong">
               {{ t('setup.database.title') }}
             </h2>
-            <p class="mt-1 text-sm text-gray-500 dark:text-dark-400">
+            <p class="mt-1 text-body text-fg-muted">
               {{ t('setup.database.description') }}
             </p>
           </div>
@@ -91,12 +60,12 @@
             </div>
           </div>
 
-          <div class="flex items-center justify-between rounded-xl border border-gray-200 p-3 dark:border-dark-700">
+          <div class="flex items-center justify-between gap-4 border-y border-border py-3">
             <div>
-              <p class="text-sm font-medium text-gray-900 dark:text-white">
+              <p class="text-body font-medium text-fg">
                 {{ t("setup.redis.enableTls") }}
               </p>
-              <p class="text-xs text-gray-500 dark:text-dark-400">
+              <p class="text-meta text-fg-muted">
                 {{ t("setup.redis.enableTlsHint") }}
               </p>
             </div>
@@ -155,7 +124,7 @@
           >
             <svg
               v-if="testingDb"
-              class="-ml-1 mr-2 h-4 w-4 animate-spin"
+              class="h-4 w-4 animate-spin"
               fill="none"
               viewBox="0 0 24 24"
             >
@@ -173,7 +142,7 @@
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
             </svg>
-            <Icon v-else-if="dbConnected" name="check" size="md" class="mr-2 text-success-500" :stroke-width="2" />
+            <Icon v-else-if="dbConnected" name="check" size="md" class="text-success" :stroke-width="2" />
             {{
               testingDb
                 ? t('setup.status.testing')
@@ -186,11 +155,11 @@
 
         <!-- Step 2: Redis -->
         <div v-if="currentStep === 1" class="space-y-6">
-          <div class="mb-6 text-center">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+          <div class="border-b-2 border-accent pb-2">
+            <h2 class="text-h2 font-bold text-accent-strong">
               {{ t('setup.redis.title') }}
             </h2>
-            <p class="mt-1 text-sm text-gray-500 dark:text-dark-400">
+            <p class="mt-1 text-body text-fg-muted">
               {{ t('setup.redis.description') }}
             </p>
           </div>
@@ -246,12 +215,12 @@
             </div>
           </div>
 
-          <div class="flex items-center justify-between rounded-xl border border-gray-200 p-3 dark:border-dark-700">
+          <div class="flex items-center justify-between gap-4 border-y border-border py-3">
             <div>
-              <p class="text-sm font-medium text-gray-900 dark:text-white">
+              <p class="text-body font-medium text-fg">
                 {{ t("setup.redis.enableTls") }}
               </p>
-              <p class="text-xs text-gray-500 dark:text-dark-400">
+              <p class="text-meta text-fg-muted">
                 {{ t("setup.redis.enableTlsHint") }}
               </p>
             </div>
@@ -265,7 +234,7 @@
           >
             <svg
               v-if="testingRedis"
-              class="-ml-1 mr-2 h-4 w-4 animate-spin"
+              class="h-4 w-4 animate-spin"
               fill="none"
               viewBox="0 0 24 24"
             >
@@ -287,7 +256,7 @@
               v-else-if="redisConnected"
               name="check"
               size="md"
-              class="mr-2 text-success-500"
+              class="text-success"
               :stroke-width="2"
             />
             {{
@@ -302,11 +271,11 @@
 
         <!-- Step 3: Admin -->
         <div v-if="currentStep === 2" class="space-y-6">
-          <div class="mb-6 text-center">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+          <div class="border-b-2 border-accent pb-2">
+            <h2 class="text-h2 font-bold text-accent-strong">
               {{ t('setup.admin.title') }}
             </h2>
-            <p class="mt-1 text-sm text-gray-500 dark:text-dark-400">
+            <p class="mt-1 text-body text-fg-muted">
               {{ t('setup.admin.description') }}
             </p>
           </div>
@@ -350,65 +319,57 @@
 
         <!-- Step 4: Complete -->
         <div v-if="currentStep === 3" class="space-y-6">
-          <div class="mb-6 text-center">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+          <div class="border-b-2 border-accent pb-2">
+            <h2 class="text-h2 font-bold text-accent-strong">
               {{ t('setup.ready.title') }}
             </h2>
-            <p class="mt-1 text-sm text-gray-500 dark:text-dark-400">
+            <p class="mt-1 text-body text-fg-muted">
               {{ t('setup.ready.description') }}
             </p>
           </div>
 
-          <div class="space-y-4">
-            <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-700">
-              <h3 class="mb-2 text-sm font-medium text-gray-500 dark:text-dark-400">
-                {{ t('setup.ready.database') }}
-              </h3>
-              <p class="text-gray-900 dark:text-white">
+          <dl class="divide-y divide-border border-y border-border">
+            <div class="grid gap-1 py-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-4">
+              <dt class="text-meta font-medium text-fg-muted">{{ t('setup.ready.database') }}</dt>
+              <dd class="break-all font-mono text-label text-fg">
                 {{ formData.database.user }}@{{ formData.database.host }}:{{
                   formData.database.port
                 }}/{{ formData.database.dbname }}
-              </p>
+              </dd>
             </div>
-
-            <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-700">
-              <h3 class="mb-2 text-sm font-medium text-gray-500 dark:text-dark-400">
-                {{ t('setup.ready.redis') }}
-              </h3>
-              <p class="text-gray-900 dark:text-white">
+            <div class="grid gap-1 py-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-4">
+              <dt class="text-meta font-medium text-fg-muted">{{ t('setup.ready.redis') }}</dt>
+              <dd class="break-all font-mono text-label text-fg">
                 {{ formData.redis.host }}:{{ formData.redis.port }}
-              </p>
+              </dd>
             </div>
-
-            <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-700">
-              <h3 class="mb-2 text-sm font-medium text-gray-500 dark:text-dark-400">
-                {{ t('setup.ready.adminEmail') }}
-              </h3>
-              <p class="text-gray-900 dark:text-white">{{ formData.admin.email }}</p>
+            <div class="grid gap-1 py-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-4">
+              <dt class="text-meta font-medium text-fg-muted">{{ t('setup.ready.adminEmail') }}</dt>
+              <dd class="break-all text-body text-fg">{{ formData.admin.email }}</dd>
             </div>
-          </div>
+          </dl>
         </div>
 
         <!-- Error Message -->
         <div
           v-if="errorMessage"
-          class="mt-6 rounded-xl border border-danger-200 bg-danger-50 p-4 dark:border-danger-800/50 dark:bg-danger-900/20"
+          class="mt-6 border border-danger/60 bg-danger-weak px-4 py-3"
         >
           <div class="flex items-start gap-3">
-            <Icon name="exclamationCircle" size="md" class="flex-shrink-0 text-danger-500" />
-            <p class="text-sm text-danger-700 dark:text-danger-400">{{ errorMessage }}</p>
+            <Icon name="exclamationCircle" size="md" class="flex-shrink-0 text-danger" />
+            <p class="text-body text-danger-strong">{{ errorMessage }}</p>
           </div>
         </div>
 
         <!-- Success Message -->
         <div
           v-if="installSuccess"
-          class="mt-6 rounded-xl border border-success-200 bg-success-50 p-4 dark:border-success-800/50 dark:bg-success-900/20"
+          class="mt-6 border border-success/60 bg-success-weak px-4 py-3"
         >
           <div class="flex items-start gap-3">
             <svg
               v-if="!serviceReady"
-              class="h-5 w-5 flex-shrink-0 animate-spin text-success-500"
+              class="h-5 w-5 flex-shrink-0 animate-spin text-success"
               fill="none"
               viewBox="0 0 24 24"
             >
@@ -426,12 +387,12 @@
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
             </svg>
-            <Icon v-else name="checkCircle" size="md" class="flex-shrink-0 text-success-500" />
+            <Icon v-else name="checkCircle" size="md" class="flex-shrink-0 text-success" />
             <div>
-              <p class="text-sm font-medium text-success-700 dark:text-success-400">
+              <p class="text-body font-medium text-success-strong">
                 {{ t('setup.status.completed') }}
               </p>
-              <p class="mt-1 text-sm text-success-600 dark:text-success-500">
+              <p class="mt-1 text-body text-success-strong">
                 {{
                   serviceReady
                     ? t('setup.status.redirecting')
@@ -441,15 +402,16 @@
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Navigation Buttons -->
-        <div class="mt-8 flex justify-between">
+      <!-- Navigation Buttons -->
+      <div class="flex justify-between gap-3 border-t border-border bg-surface-sunken px-5 py-4 sm:px-8">
           <button
             v-if="currentStep > 0 && !installSuccess"
             @click="currentStep--"
             class="btn btn-secondary"
           >
-            <Icon name="chevronLeft" size="sm" class="mr-2" :stroke-width="2" />
+            <Icon name="chevronLeft" size="sm" :stroke-width="2" />
             {{ t('common.back') }}
           </button>
           <div v-else></div>
@@ -461,7 +423,7 @@
             class="btn btn-primary"
           >
             {{ t('common.next') }}
-            <Icon name="chevronRight" size="sm" class="ml-2" :stroke-width="2" />
+            <Icon name="chevronRight" size="sm" :stroke-width="2" />
           </button>
 
           <button
@@ -472,7 +434,7 @@
           >
             <svg
               v-if="installing"
-              class="-ml-1 mr-2 h-4 w-4 animate-spin"
+              class="h-4 w-4 animate-spin"
               fill="none"
               viewBox="0 0 24 24"
             >
@@ -492,7 +454,6 @@
             </svg>
             {{ installing ? t('setup.status.installing') : t('setup.status.completeInstallation') }}
           </button>
-        </div>
       </div>
     </div>
   </div>

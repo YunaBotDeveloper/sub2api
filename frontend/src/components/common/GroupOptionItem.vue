@@ -16,7 +16,7 @@
       <!-- Row 2: description with top spacing -->
       <span
         v-if="description"
-        class="mt-1.5 w-full whitespace-pre-line [overflow-wrap:anywhere] text-left text-xs leading-relaxed text-gray-500 dark:text-gray-400 line-clamp-3"
+        class="mt-1.5 w-full whitespace-pre-line [overflow-wrap:anywhere] text-left text-xs leading-relaxed text-fg-muted line-clamp-3"
       >
         {{ description }}
       </span>
@@ -37,7 +37,7 @@
         </span>
         <span
           v-if="hasPeakRate"
-          class="inline-flex items-center whitespace-nowrap rounded-full bg-warning-50 px-3 py-1 text-xs font-semibold text-warning-700 dark:bg-warning-900/20 dark:text-warning-300"
+          class="inline-flex items-center whitespace-nowrap rounded-full bg-warning-weak px-3 py-1 text-xs font-semibold text-warning-strong"
           :title="peakRateTitle"
         >
           {{ peakRateText }}
@@ -46,7 +46,7 @@
       <!-- Checkmark -->
       <svg
         v-if="showCheckmark && selected"
-        class="h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400"
+        class="h-4 w-4 shrink-0 text-accent"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -127,13 +127,13 @@ const peakRateTitle = computed(() => {
 const ratePillClass = computed(() => {
   switch (props.platform) {
     case 'anthropic':
-      return 'bg-warning-50 text-warning-700 dark:bg-warning-900/20 dark:text-warning-400'
+      return 'bg-warning-weak text-warning-strong'
     case 'openai':
-      return 'bg-success-50 text-success-700 dark:bg-success-900/20 dark:text-success-400'
+      return 'bg-success-weak text-success-strong'
     case 'gemini':
-      return 'bg-accent-50 text-accent-700 dark:bg-accent-900/20 dark:text-accent-400'
+      return 'bg-accent-weak text-accent-strong'
     default: // antigravity and others
-      return 'bg-gray-50 text-gray-700 dark:bg-gray-900/20 dark:text-gray-400'
+      return 'bg-surface-sunken text-fg'
   }
 })
 </script>

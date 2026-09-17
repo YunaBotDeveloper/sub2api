@@ -1,6 +1,6 @@
 <template>
   <span
-    class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+    class="badge"
     :class="statusClass"
   >
     {{ statusLabel }}
@@ -19,19 +19,19 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const statusMap: Record<OrderStatus, { key: string; class: string }> = {
-  PENDING: { key: 'payment.status.pending', class: 'bg-warning-100 text-warning-800 dark:bg-warning-900/30 dark:text-warning-400' },
-  PAID: { key: 'payment.status.paid', class: 'bg-accent-100 text-accent-800 dark:bg-accent-900/30 dark:text-accent-400' },
-  RECHARGING: { key: 'payment.status.recharging', class: 'bg-accent-100 text-accent-800 dark:bg-accent-900/30 dark:text-accent-400' },
-  COMPLETED: { key: 'payment.status.completed', class: 'bg-success-100 text-success-800 dark:bg-success-900/30 dark:text-success-400' },
-  EXPIRED: { key: 'payment.status.expired', class: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400' },
-  CANCELLED: { key: 'payment.status.cancelled', class: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400' },
-  FAILED: { key: 'payment.status.failed', class: 'bg-danger-100 text-danger-800 dark:bg-danger-900/30 dark:text-danger-400' },
-  REFUND_REQUESTED: { key: 'payment.status.refund_requested', class: 'bg-warning-100 text-warning-800 dark:bg-warning-900/30 dark:text-warning-400' },
-  REFUNDING: { key: 'payment.status.refunding', class: 'bg-warning-100 text-warning-800 dark:bg-warning-900/30 dark:text-warning-400' },
-  REFUND_PENDING: { key: 'payment.status.refund_pending', class: 'bg-warning-100 text-warning-800 dark:bg-warning-900/30 dark:text-warning-400' },
-  REFUNDED: { key: 'payment.status.refunded', class: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400' },
-  PARTIALLY_REFUNDED: { key: 'payment.status.partially_refunded', class: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400' },
-  REFUND_FAILED: { key: 'payment.status.refund_failed', class: 'bg-danger-100 text-danger-800 dark:bg-danger-900/30 dark:text-danger-400' },
+  PENDING: { key: 'payment.status.pending', class: 'badge-warning' },
+  PAID: { key: 'payment.status.paid', class: 'badge-primary' },
+  RECHARGING: { key: 'payment.status.recharging', class: 'badge-primary' },
+  COMPLETED: { key: 'payment.status.completed', class: 'badge-success' },
+  EXPIRED: { key: 'payment.status.expired', class: 'badge-gray' },
+  CANCELLED: { key: 'payment.status.cancelled', class: 'badge-gray' },
+  FAILED: { key: 'payment.status.failed', class: 'badge-danger' },
+  REFUND_REQUESTED: { key: 'payment.status.refund_requested', class: 'badge-warning' },
+  REFUNDING: { key: 'payment.status.refunding', class: 'badge-warning' },
+  REFUND_PENDING: { key: 'payment.status.refund_pending', class: 'badge-warning' },
+  REFUNDED: { key: 'payment.status.refunded', class: 'badge-gray' },
+  PARTIALLY_REFUNDED: { key: 'payment.status.partially_refunded', class: 'badge-gray' },
+  REFUND_FAILED: { key: 'payment.status.refund_failed', class: 'badge-danger' },
 }
 
 const statusLabel = computed(() => {
@@ -41,6 +41,6 @@ const statusLabel = computed(() => {
 
 const statusClass = computed(() => {
   const entry = statusMap[props.status]
-  return entry?.class ?? 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
+  return entry?.class ?? 'badge-gray'
 })
 </script>

@@ -20,210 +20,210 @@ export type Platform =
 
 // ── Badge (bg + text + border, for inline badges with border) ───────
 const BADGE: Record<Platform, string> = {
-  anthropic: 'bg-warning-500/10 text-warning-600 border-warning-500/30 dark:text-warning-400',
-  openai: 'bg-success-500/10 text-success-600 border-success-500/30 dark:text-success-400',
-  antigravity: 'bg-gray-500/10 text-gray-600 border-gray-500/30 dark:text-gray-400',
-  gemini: 'bg-accent-500/10 text-accent-600 border-accent-500/30 dark:text-accent-400',
-  grok: 'bg-gray-800/10 text-gray-800 border-gray-800/30 dark:bg-gray-500/10 dark:text-gray-200 dark:border-gray-500/30',
-  kimi: 'bg-gray-500/10 text-gray-600 border-gray-500/30 dark:text-gray-400',
-  zhipu: 'bg-accent-500/10 text-accent-600 border-accent-500/30 dark:text-accent-400',
-  deepseek: 'bg-accent-500/10 text-accent-600 border-accent-500/30 dark:text-accent-400',
-  minimax: 'bg-danger-500/10 text-danger-600 border-danger-500/30 dark:text-danger-400',
-  opencode_go: 'bg-warning-500/10 text-warning-700 border-warning-500/30 dark:text-warning-300',
-  composite: 'bg-accent-500/10 text-accent-700 border-accent-500/30 dark:text-accent-300',
+  anthropic: 'bg-surface-sunken text-fg border-border-strong',
+  openai: 'bg-surface-sunken text-fg border-border-strong',
+  antigravity: 'bg-surface-sunken text-fg border-border-strong',
+  gemini: 'bg-surface-sunken text-fg border-border-strong',
+  grok: 'bg-surface-sunken text-fg border-border-strong',
+  kimi: 'bg-surface-sunken text-fg border-border-strong',
+  zhipu: 'bg-surface-sunken text-fg border-border-strong',
+  deepseek: 'bg-surface-sunken text-fg border-border-strong',
+  minimax: 'bg-surface-sunken text-fg border-border-strong',
+  opencode_go: 'bg-surface-sunken text-fg border-border-strong',
+  composite: 'bg-surface-sunken text-fg border-border-strong',
 }
-const BADGE_DEFAULT = 'bg-gray-500/10 text-gray-600 border-gray-500/30 dark:text-gray-400'
+const BADGE_DEFAULT = 'bg-surface-sunken text-fg border-border-strong'
 
 // ── Light badge (softer bg, no border) ──────────────────────────────
 const BADGE_LIGHT: Record<Platform, string> = {
-  anthropic: 'bg-warning-500/10 text-warning-600 dark:bg-warning-500/10 dark:text-warning-300',
-  openai: 'bg-success-500/10 text-success-600 dark:bg-success-500/10 dark:text-success-300',
-  antigravity: 'bg-gray-500/10 text-gray-600 dark:bg-gray-500/10 dark:text-gray-300',
-  gemini: 'bg-accent-500/10 text-accent-600 dark:bg-accent-500/10 dark:text-accent-300',
-  grok: 'bg-gray-800/10 text-gray-800 dark:bg-gray-500/10 dark:text-gray-200',
-  kimi: 'bg-gray-500/10 text-gray-600 dark:bg-gray-500/10 dark:text-gray-300',
-  zhipu: 'bg-accent-500/10 text-accent-600 dark:bg-accent-500/10 dark:text-accent-300',
-  deepseek: 'bg-accent-500/10 text-accent-600 dark:bg-accent-500/10 dark:text-accent-300',
-  minimax: 'bg-danger-500/10 text-danger-600 dark:bg-danger-500/10 dark:text-danger-300',
-  opencode_go: 'bg-warning-500/10 text-warning-700 dark:bg-warning-500/10 dark:text-warning-300',
-  composite: 'bg-accent-500/10 text-accent-700 dark:bg-accent-500/10 dark:text-accent-300',
+  anthropic: 'bg-surface-sunken text-fg',
+  openai: 'bg-surface-sunken text-fg',
+  antigravity: 'bg-surface-sunken text-fg',
+  gemini: 'bg-surface-sunken text-fg',
+  grok: 'bg-surface-sunken text-fg',
+  kimi: 'bg-surface-sunken text-fg',
+  zhipu: 'bg-surface-sunken text-fg',
+  deepseek: 'bg-surface-sunken text-fg',
+  minimax: 'bg-surface-sunken text-fg',
+  opencode_go: 'bg-surface-sunken text-fg',
+  composite: 'bg-surface-sunken text-fg',
 }
 
 // ── Border ──────────────────────────────────────────────────────────
 const BORDER: Record<Platform, string> = {
-  anthropic: 'border-warning-500/20 dark:border-warning-500/20',
-  openai: 'border-success-500/20 dark:border-success-500/20',
-  antigravity: 'border-gray-500/20 dark:border-gray-500/20',
-  gemini: 'border-accent-500/20 dark:border-accent-500/20',
-  grok: 'border-gray-800/20 dark:border-gray-500/20',
-  kimi: 'border-gray-500/20 dark:border-gray-500/20',
-  zhipu: 'border-accent-500/20 dark:border-accent-500/20',
-  deepseek: 'border-accent-500/20 dark:border-accent-500/20',
-  minimax: 'border-danger-500/20 dark:border-danger-500/20',
-  opencode_go: 'border-warning-500/20 dark:border-warning-500/20',
-  composite: 'border-accent-500/20 dark:border-accent-500/20',
+  anthropic: 'border-border',
+  openai: 'border-border',
+  antigravity: 'border-border',
+  gemini: 'border-border',
+  grok: 'border-border',
+  kimi: 'border-border',
+  zhipu: 'border-border',
+  deepseek: 'border-border',
+  minimax: 'border-border',
+  opencode_go: 'border-border',
+  composite: 'border-border',
 }
-const BORDER_DEFAULT = 'border-gray-200 dark:border-dark-700'
+const BORDER_DEFAULT = 'border-border'
 
 // ── Border strong (higher-contrast platform tint, e.g. plaza group cards) ──
 const BORDER_STRONG: Record<Platform, string> = {
-  anthropic: 'border-warning-500/35 dark:border-warning-500/30',
-  openai: 'border-success-500/35 dark:border-success-500/30',
-  antigravity: 'border-gray-500/35 dark:border-gray-500/30',
-  gemini: 'border-accent-500/35 dark:border-accent-500/30',
-  grok: 'border-gray-800/35 dark:border-gray-500/35',
-  kimi: 'border-gray-500/35 dark:border-gray-500/30',
-  zhipu: 'border-accent-500/35 dark:border-accent-500/30',
-  deepseek: 'border-accent-500/35 dark:border-accent-500/30',
-  minimax: 'border-danger-500/35 dark:border-danger-500/30',
-  opencode_go: 'border-warning-500/35 dark:border-warning-500/30',
-  composite: 'border-accent-500/35 dark:border-accent-500/30',
+  anthropic: 'border-border-strong',
+  openai: 'border-border-strong',
+  antigravity: 'border-border-strong',
+  gemini: 'border-border-strong',
+  grok: 'border-border-strong',
+  kimi: 'border-border-strong',
+  zhipu: 'border-border-strong',
+  deepseek: 'border-border-strong',
+  minimax: 'border-border-strong',
+  opencode_go: 'border-border-strong',
+  composite: 'border-border-strong',
 }
-const BORDER_STRONG_DEFAULT = 'border-gray-300 dark:border-dark-600'
+const BORDER_STRONG_DEFAULT = 'border-border-strong'
 
 // ── Accent (single raw color per platform; consumers derive washes/tints
 //    from it via CSS color-mix, e.g. plaza paid-price zone) ──
 const ACCENT: Record<Platform, string> = {
-  anthropic: '#f97316', // warning-500
-  openai: '#22c55e', // success-500
-  antigravity: '#a855f7', // gray-500
-  gemini: '#3b82f6', // accent-500
-  grok: '#71717a', // gray-500
-  kimi: '#ec4899', // gray-500
-  zhipu: '#6366f1', // accent-500
-  deepseek: '#14b8a6', // accent-500
-  minimax: '#f43f5e', // danger-500
-  opencode_go: '#f59e0b', // warning-500
-  composite: '#06b6d4', // accent-500
+  anthropic: 'rgb(var(--accent))',
+  openai: 'rgb(var(--accent))',
+  antigravity: 'rgb(var(--accent))',
+  gemini: 'rgb(var(--accent))',
+  grok: 'rgb(var(--accent))',
+  kimi: 'rgb(var(--accent))',
+  zhipu: 'rgb(var(--accent))',
+  deepseek: 'rgb(var(--accent))',
+  minimax: 'rgb(var(--accent))',
+  opencode_go: 'rgb(var(--accent))',
+  composite: 'rgb(var(--accent))',
 }
-const ACCENT_DEFAULT = '#14b8a6' // primary-500 (teal)
+const ACCENT_DEFAULT = 'rgb(var(--accent))'
 
 // ── Accent bar (gradient) ───────────────────────────────────────────
 const ACCENT_BAR: Record<Platform, string> = {
-  anthropic: ' bg-warning-400',
-  openai: ' bg-success-400',
-  antigravity: ' bg-gray-400',
-  gemini: ' bg-accent-400',
-  grok: ' bg-gray-700',
-  kimi: ' bg-gray-400',
-  zhipu: ' bg-accent-400',
-  deepseek: ' bg-accent-400',
-  minimax: ' bg-danger-400',
-  opencode_go: ' bg-warning-400',
-  composite: ' bg-gray-500',
+  anthropic: ' bg-accent',
+  openai: ' bg-accent',
+  antigravity: ' bg-accent',
+  gemini: ' bg-accent',
+  grok: ' bg-accent',
+  kimi: ' bg-accent',
+  zhipu: ' bg-accent',
+  deepseek: ' bg-accent',
+  minimax: ' bg-accent',
+  opencode_go: ' bg-accent',
+  composite: ' bg-accent',
 }
-const ACCENT_BAR_DEFAULT = ' bg-primary-400'
+const ACCENT_BAR_DEFAULT = ' bg-accent'
 
 // ── Text (price, icon) ─────────────────────────────────────────────
 const TEXT: Record<Platform, string> = {
-  anthropic: 'text-warning-600 dark:text-warning-400',
-  openai: 'text-success-600 dark:text-success-400',
-  antigravity: 'text-gray-600 dark:text-gray-400',
-  gemini: 'text-accent-600 dark:text-accent-400',
-  grok: 'text-gray-800 dark:text-gray-200',
-  kimi: 'text-gray-600 dark:text-gray-400',
-  zhipu: 'text-accent-600 dark:text-accent-400',
-  deepseek: 'text-accent-600 dark:text-accent-400',
-  minimax: 'text-danger-600 dark:text-danger-400',
-  opencode_go: 'text-warning-700 dark:text-warning-300',
-  composite: 'text-accent-700 dark:text-accent-300',
+  anthropic: 'text-fg',
+  openai: 'text-fg',
+  antigravity: 'text-fg',
+  gemini: 'text-fg',
+  grok: 'text-fg',
+  kimi: 'text-fg',
+  zhipu: 'text-fg',
+  deepseek: 'text-fg',
+  minimax: 'text-fg',
+  opencode_go: 'text-fg',
+  composite: 'text-fg',
 }
-const TEXT_DEFAULT = 'text-primary-600 dark:text-primary-400'
+const TEXT_DEFAULT = 'text-fg'
 
 // ── Icon (check mark etc.) ──────────────────────────────────────────
 const ICON: Record<Platform, string> = {
-  anthropic: 'text-warning-500 dark:text-warning-400',
-  openai: 'text-success-500 dark:text-success-400',
-  antigravity: 'text-gray-500 dark:text-gray-400',
-  gemini: 'text-accent-500 dark:text-accent-400',
-  grok: 'text-gray-800 dark:text-gray-200',
-  kimi: 'text-gray-500 dark:text-gray-400',
-  zhipu: 'text-accent-500 dark:text-accent-400',
-  deepseek: 'text-accent-500 dark:text-accent-400',
-  minimax: 'text-danger-500 dark:text-danger-400',
-  opencode_go: 'text-warning-500 dark:text-warning-300',
-  composite: 'text-accent-600 dark:text-accent-300',
+  anthropic: 'text-accent',
+  openai: 'text-accent',
+  antigravity: 'text-accent',
+  gemini: 'text-accent',
+  grok: 'text-accent',
+  kimi: 'text-accent',
+  zhipu: 'text-accent',
+  deepseek: 'text-accent',
+  minimax: 'text-accent',
+  opencode_go: 'text-accent',
+  composite: 'text-accent',
 }
-const ICON_DEFAULT = 'text-primary-500 dark:text-primary-400'
+const ICON_DEFAULT = 'text-accent'
 
 // ── Button (solid bg) ───────────────────────────────────────────────
 const BUTTON: Record<Platform, string> = {
-  anthropic: 'bg-warning-500 text-white hover:bg-warning-600 active:bg-warning-700 dark:bg-warning-500/80 dark:hover:bg-warning-500',
-  openai: 'bg-success-600 text-white hover:bg-success-700 active:bg-success-800 dark:bg-success-600/80 dark:hover:bg-success-600',
-  antigravity: 'bg-gray-500 text-white hover:bg-gray-600 active:bg-gray-700 dark:bg-gray-500/80 dark:hover:bg-gray-500',
-  gemini: 'bg-accent-500 text-white hover:bg-accent-600 active:bg-accent-700 dark:bg-accent-500/80 dark:hover:bg-accent-500',
-  grok: 'bg-gray-800 text-white hover:bg-gray-900 active:bg-black dark:bg-gray-700 dark:hover:bg-gray-600',
-  kimi: 'bg-gray-500 text-white hover:bg-gray-600 active:bg-gray-700 dark:bg-gray-500/80 dark:hover:bg-gray-500',
-  zhipu: 'bg-accent-500 text-white hover:bg-accent-600 active:bg-accent-700 dark:bg-accent-500/80 dark:hover:bg-accent-500',
-  deepseek: 'bg-accent-500 text-white hover:bg-accent-600 active:bg-accent-700 dark:bg-accent-500/80 dark:hover:bg-accent-500',
-  minimax: 'bg-danger-500 text-white hover:bg-danger-600 active:bg-danger-700 dark:bg-danger-500/80 dark:hover:bg-danger-500',
-  opencode_go: 'bg-warning-500 text-white hover:bg-warning-600 active:bg-warning-700 dark:bg-warning-500/80 dark:hover:bg-warning-500',
-  composite: 'bg-accent-700 text-white hover:bg-accent-800 active:bg-accent-900 dark:bg-accent-600 dark:hover:bg-accent-500',
+  anthropic: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
+  openai: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
+  antigravity: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
+  gemini: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
+  grok: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
+  kimi: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
+  zhipu: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
+  deepseek: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
+  minimax: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
+  opencode_go: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
+  composite: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
 }
-const BUTTON_DEFAULT = 'bg-primary-500 text-white hover:bg-primary-600 dark:bg-primary-600 dark:hover:bg-primary-500'
+const BUTTON_DEFAULT = 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken'
 
 // ── Discount badge ──────────────────────────────────────────────────
 const DISCOUNT: Record<Platform, string> = {
-  anthropic: 'bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-300',
-  openai: 'bg-success-100 text-success-700 dark:bg-success-900/40 dark:text-success-300',
-  antigravity: 'bg-gray-100 text-gray-700 dark:bg-gray-900/40 dark:text-gray-300',
-  gemini: 'bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300',
-  grok: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
-  kimi: 'bg-gray-100 text-gray-700 dark:bg-gray-900/40 dark:text-gray-300',
-  zhipu: 'bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300',
-  deepseek: 'bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300',
-  minimax: 'bg-danger-100 text-danger-700 dark:bg-danger-900/40 dark:text-danger-300',
-  opencode_go: 'bg-warning-100 text-warning-800 dark:bg-warning-900/40 dark:text-warning-300',
-  composite: 'bg-accent-100 text-accent-800 dark:bg-accent-900/40 dark:text-accent-300',
+  anthropic: 'bg-danger-weak text-danger-strong',
+  openai: 'bg-danger-weak text-danger-strong',
+  antigravity: 'bg-danger-weak text-danger-strong',
+  gemini: 'bg-danger-weak text-danger-strong',
+  grok: 'bg-danger-weak text-danger-strong',
+  kimi: 'bg-danger-weak text-danger-strong',
+  zhipu: 'bg-danger-weak text-danger-strong',
+  deepseek: 'bg-danger-weak text-danger-strong',
+  minimax: 'bg-danger-weak text-danger-strong',
+  opencode_go: 'bg-danger-weak text-danger-strong',
+  composite: 'bg-danger-weak text-danger-strong',
 }
-const DISCOUNT_DEFAULT = 'bg-danger-100 text-danger-700 dark:bg-danger-900/40 dark:text-danger-300'
+const DISCOUNT_DEFAULT = 'bg-danger-weak text-danger-strong'
 
 // ── Header gradient (subscription confirm) ─────────────────────────
 const GRADIENT: Record<Platform, string> = {
-  anthropic: 'bg-warning-500',
-  openai: 'bg-success-500',
-  antigravity: 'bg-gray-500',
-  gemini: 'bg-accent-500',
-  grok: 'bg-gray-700',
-  kimi: 'bg-gray-500',
-  zhipu: 'bg-accent-500',
-  deepseek: 'bg-accent-500',
-  minimax: 'bg-danger-500',
-  opencode_go: 'bg-warning-500',
-  composite: 'bg-gray-600',
+  anthropic: 'bg-accent',
+  openai: 'bg-accent',
+  antigravity: 'bg-accent',
+  gemini: 'bg-accent',
+  grok: 'bg-accent',
+  kimi: 'bg-accent',
+  zhipu: 'bg-accent',
+  deepseek: 'bg-accent',
+  minimax: 'bg-accent',
+  opencode_go: 'bg-accent',
+  composite: 'bg-accent',
 }
-const GRADIENT_DEFAULT = 'bg-primary-500'
+const GRADIENT_DEFAULT = 'bg-accent'
 
 // ── Header text (light text on gradient bg) ────────────────────────
 const GRADIENT_TEXT: Record<Platform, string> = {
-  anthropic: 'text-warning-100',
-  openai: 'text-success-100',
-  antigravity: 'text-gray-100',
-  gemini: 'text-accent-100',
-  grok: 'text-gray-100',
-  kimi: 'text-gray-100',
-  zhipu: 'text-accent-100',
-  deepseek: 'text-accent-100',
-  minimax: 'text-danger-100',
-  opencode_go: 'text-warning-100',
-  composite: 'text-accent-100',
+  anthropic: 'text-white',
+  openai: 'text-white',
+  antigravity: 'text-white',
+  gemini: 'text-white',
+  grok: 'text-white',
+  kimi: 'text-white',
+  zhipu: 'text-white',
+  deepseek: 'text-white',
+  minimax: 'text-white',
+  opencode_go: 'text-white',
+  composite: 'text-white',
 }
-const GRADIENT_TEXT_DEFAULT = 'text-primary-100'
+const GRADIENT_TEXT_DEFAULT = 'text-white'
 
 const GRADIENT_SUBTEXT: Record<Platform, string> = {
-  anthropic: 'text-warning-200',
-  openai: 'text-success-200',
-  antigravity: 'text-gray-200',
-  gemini: 'text-accent-200',
-  grok: 'text-gray-300',
-  kimi: 'text-gray-200',
-  zhipu: 'text-accent-200',
-  deepseek: 'text-accent-200',
-  minimax: 'text-danger-200',
-  opencode_go: 'text-warning-200',
-  composite: 'text-accent-200',
+  anthropic: 'text-white/80',
+  openai: 'text-white/80',
+  antigravity: 'text-white/80',
+  gemini: 'text-white/80',
+  grok: 'text-white/80',
+  kimi: 'text-white/80',
+  zhipu: 'text-white/80',
+  deepseek: 'text-white/80',
+  minimax: 'text-white/80',
+  opencode_go: 'text-white/80',
+  composite: 'text-white/80',
 }
-const GRADIENT_SUBTEXT_DEFAULT = 'text-primary-200'
+const GRADIENT_SUBTEXT_DEFAULT = 'text-white/80'
 
 // ── Public API ──────────────────────────────────────────────────────
 

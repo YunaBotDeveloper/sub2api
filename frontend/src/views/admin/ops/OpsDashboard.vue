@@ -1,9 +1,9 @@
 <template>
-  <component :is="isFullscreen ? 'div' : AppLayout" :class="isFullscreen ? 'flex min-h-screen flex-col justify-center bg-gray-50 dark:bg-dark-950' : ''">
+  <component :is="isFullscreen ? 'div' : AppLayout" :class="isFullscreen ? 'flex min-h-screen flex-col justify-center bg-surface-sunken' : ''">
     <div :class="[isFullscreen ? 'p-4 md:p-6' : '', 'space-y-6 pb-12']">
       <div
         v-if="errorMessage"
-        class="rounded-lg bg-danger-50 p-4 text-sm text-danger-600 dark:bg-danger-900/20 dark:text-danger-400"
+        class="border border-danger/40 border-t-2 border-t-danger bg-danger-weak px-4 py-3 text-body text-danger-strong"
       >
         {{ errorMessage }}
       </div>

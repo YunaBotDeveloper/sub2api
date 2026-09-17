@@ -50,14 +50,14 @@
         >
           <template #cell-code="{ value }">
             <div class="flex items-center space-x-2">
-              <code class="font-mono text-sm text-gray-900 dark:text-gray-100">{{ value }}</code>
+              <code class="font-mono text-sm font-medium tracking-wide text-fg">{{ value }}</code>
               <button
                 @click="copyToClipboard(value)"
                 :class="[
                   'flex items-center transition-colors',
                   copiedCode === value
-                    ? 'text-success-500'
-                    : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+                    ? 'text-success'
+                    : 'text-fg-subtle hover:text-fg-muted'
                 ]"
                 :title="copiedCode === value ? t('admin.promo.copied') : t('keys.copyToClipboard')" :aria-label="copiedCode === value ? t('admin.promo.copied') : t('keys.copyToClipboard')"
               >
@@ -75,13 +75,13 @@
           </template>
 
           <template #cell-bonus_amount="{ value }">
-            <span class="text-sm font-medium text-gray-900 dark:text-white">
+            <span class="text-sm font-semibold tabular-nums text-fg">
               ${{ value.toFixed(2) }}
             </span>
           </template>
 
           <template #cell-usage="{ row }">
-            <span class="text-sm text-gray-600 dark:text-gray-300">
+            <span class="text-sm tabular-nums text-fg-muted">
               {{ row.used_count }} / {{ row.max_uses === 0 ? '∞' : row.max_uses }}
             </span>
           </template>
@@ -98,13 +98,13 @@
           </template>
 
           <template #cell-expires_at="{ value }">
-            <span class="text-sm text-gray-500 dark:text-dark-400">
+            <span class="text-sm tabular-nums text-fg-muted">
               {{ value ? formatDateTime(value) : t('admin.promo.neverExpires') }}
             </span>
           </template>
 
           <template #cell-created_at="{ value }">
-            <span class="text-sm text-gray-500 dark:text-dark-400">
+            <span class="text-sm tabular-nums text-fg-muted">
               {{ formatDateTime(value) }}
             </span>
           </template>
@@ -113,28 +113,28 @@
             <div class="flex items-center space-x-1">
               <button
                 @click="copyRegisterLink(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-success-50 hover:text-success-600 dark:hover:bg-success-900/20 dark:hover:text-success-400"
+                class="flex flex-col items-center gap-0.5 rounded-sm p-1.5 text-fg-muted transition-colors hover:bg-accent-weak hover:text-accent-strong"
                 :title="t('admin.promo.copyRegisterLink')" :aria-label="t('admin.promo.copyRegisterLink')"
               >
                 <Icon name="link" size="sm" />
               </button>
               <button
                 @click="handleViewUsages(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-accent-50 hover:text-accent-600 dark:hover:bg-accent-900/20 dark:hover:text-accent-400"
+                class="flex flex-col items-center gap-0.5 rounded-sm p-1.5 text-fg-muted transition-colors hover:bg-accent-weak hover:text-accent-strong"
                 :title="t('admin.promo.viewUsages')" :aria-label="t('admin.promo.viewUsages')"
               >
                 <Icon name="eye" size="sm" />
               </button>
               <button
                 @click="handleEdit(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-dark-600 dark:hover:text-gray-300"
+                class="flex flex-col items-center gap-0.5 rounded-sm p-1.5 text-fg-muted transition-colors hover:bg-accent-weak hover:text-accent-strong"
                 :title="t('common.edit')" :aria-label="t('common.edit')"
               >
                 <Icon name="edit" size="sm" />
               </button>
               <button
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20 dark:hover:text-danger-400"
+                class="flex flex-col items-center gap-0.5 rounded-sm p-1.5 text-fg-muted transition-colors hover:bg-danger-weak hover:text-danger"
                 :title="t('common.delete')" :aria-label="t('common.delete')"
               >
                 <Icon name="trash" size="sm" />
@@ -167,7 +167,7 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.code') }}
-            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('admin.promo.autoGenerate') }})</span>
+            <span class="ml-1 text-xs font-normal text-fg-subtle">({{ t('admin.promo.autoGenerate') }})</span>
           </label>
           <input
             v-model="createForm.code"
@@ -190,7 +190,7 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.maxUses') }}
-            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('admin.promo.zeroUnlimited') }})</span>
+            <span class="ml-1 text-xs font-normal text-fg-subtle">({{ t('admin.promo.zeroUnlimited') }})</span>
           </label>
           <input
             v-model.number="createForm.max_uses"
@@ -202,7 +202,7 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.expiresAt') }}
-            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('common.optional') }})</span>
+            <span class="ml-1 text-xs font-normal text-fg-subtle">({{ t('common.optional') }})</span>
           </label>
           <input
             v-model="createForm.expires_at_str"
@@ -213,7 +213,7 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.notes') }}
-            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('common.optional') }})</span>
+            <span class="ml-1 text-xs font-normal text-fg-subtle">({{ t('common.optional') }})</span>
           </label>
           <textarea
             v-model="createForm.notes"
@@ -265,7 +265,7 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.maxUses') }}
-            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('admin.promo.zeroUnlimited') }})</span>
+            <span class="ml-1 text-xs font-normal text-fg-subtle">({{ t('admin.promo.zeroUnlimited') }})</span>
           </label>
           <input
             v-model.number="editForm.max_uses"
@@ -281,7 +281,7 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.expiresAt') }}
-            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('common.optional') }})</span>
+            <span class="ml-1 text-xs font-normal text-fg-subtle">({{ t('common.optional') }})</span>
           </label>
           <input
             v-model="editForm.expires_at_str"
@@ -292,7 +292,7 @@
         <div>
           <label class="input-label">
             {{ t('admin.promo.notes') }}
-            <span class="ml-1 text-xs font-normal text-gray-400">({{ t('common.optional') }})</span>
+            <span class="ml-1 text-xs font-normal text-fg-subtle">({{ t('common.optional') }})</span>
           </label>
           <textarea
             v-model="editForm.notes"
@@ -321,35 +321,34 @@
       @close="showUsagesDialog = false"
     >
       <div v-if="usagesLoading" class="flex items-center justify-center py-8">
-        <Icon name="refresh" size="lg" class="animate-spin text-gray-400" />
+        <Icon name="refresh" size="lg" class="animate-spin text-fg-subtle" />
       </div>
-      <div v-else-if="usages.length === 0" class="py-8 text-center text-gray-500 dark:text-gray-400">
+      <div v-else-if="usages.length === 0" class="py-8 text-center text-fg-muted">
         {{ t('admin.promo.noUsages') }}
       </div>
-      <div v-else class="space-y-3">
+      <div v-else>
+        <div class="divide-y divide-border border-y border-border">
         <div
           v-for="usage in usages"
           :key="usage.id"
-          class="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-dark-600"
+          class="flex items-center justify-between gap-3 px-1 py-2.5"
         >
-          <div class="flex items-center gap-3">
-            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-success-100 dark:bg-success-900/30">
-              <Icon name="user" size="sm" class="text-success-600 dark:text-success-400" />
-            </div>
+          <div class="min-w-0">
             <div>
-              <p class="text-sm font-medium text-gray-900 dark:text-white">
+              <p class="text-sm font-medium text-fg">
                 {{ usage.user?.email || t('admin.promo.userPrefix', { id: usage.user_id }) }}
               </p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">
+              <p class="text-xs tabular-nums text-fg-muted">
                 {{ formatDateTime(usage.used_at) }}
               </p>
             </div>
           </div>
           <div class="text-right">
-            <span class="text-sm font-medium text-success-600 dark:text-success-400">
+            <span class="text-sm font-semibold tabular-nums text-fg">
               +${{ usage.bonus_amount.toFixed(2) }}
             </span>
           </div>
+        </div>
         </div>
         <!-- Usages Pagination -->
         <div v-if="usagesTotal > usagesPageSize" class="mt-4">
@@ -479,8 +478,8 @@ const statusOptions = computed(() => [
 
 const columns = computed<Column[]>(() => [
   { key: 'code', label: t('admin.promo.columns.code') },
-  { key: 'bonus_amount', label: t('admin.promo.columns.bonusAmount'), sortable: true },
-  { key: 'usage', label: t('admin.promo.columns.usage') },
+  { key: 'bonus_amount', label: t('admin.promo.columns.bonusAmount'), sortable: true, class: 'text-right' },
+  { key: 'usage', label: t('admin.promo.columns.usage'), class: 'text-right' },
   { key: 'status', label: t('admin.promo.columns.status'), sortable: true },
   { key: 'expires_at', label: t('admin.promo.columns.expiresAt'), sortable: true },
   { key: 'created_at', label: t('admin.promo.columns.createdAt'), sortable: true },

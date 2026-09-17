@@ -69,7 +69,7 @@
             <input
               data-test="select-all-codes"
               type="checkbox"
-              class="h-4 w-4 cursor-pointer rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+              class="h-4 w-4 cursor-pointer rounded-sm border-border-strong text-accent focus:ring-accent"
               :checked="allVisibleSelected"
               @click.stop
               @change="toggleSelectAllVisible($event)"
@@ -80,7 +80,7 @@
             <input
               data-test="select-code"
               type="checkbox"
-              class="h-4 w-4 cursor-pointer rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+              class="h-4 w-4 cursor-pointer rounded-sm border-border-strong text-accent focus:ring-accent"
               :checked="selectedCodeIds.has(row.id)"
               @click.stop
               @change="toggleSelectRow(row.id, $event)"
@@ -89,14 +89,14 @@
 
           <template #cell-code="{ value }">
             <div class="flex items-center space-x-2">
-              <code class="font-mono text-sm text-gray-900 dark:text-gray-100">{{ value }}</code>
+              <code class="font-mono text-sm font-medium tracking-wide text-fg">{{ value }}</code>
               <button
                 @click="copyToClipboard(value)"
                 :class="[
                   'flex items-center transition-colors',
                   copiedCode === value
-                    ? 'text-success-500'
-                    : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+                    ? 'text-success'
+                    : 'text-fg-subtle hover:text-fg-muted'
                 ]"
                 :title="copiedCode === value ? t('admin.redeem.copied') : t('keys.copyToClipboard')" :aria-label="copiedCode === value ? t('admin.redeem.copied') : t('keys.copyToClipboard')"
               >
@@ -129,11 +129,11 @@
           </template>
 
           <template #cell-value="{ value, row }">
-            <span class="text-sm font-medium text-gray-900 dark:text-white">
+            <span class="text-sm font-semibold tabular-nums text-fg">
               <template v-if="row.type === 'balance'">${{ value.toFixed(2) }}</template>
               <template v-else-if="row.type === 'subscription'">
                 {{ row.validity_days || 30 }} {{ t('admin.redeem.days') }}
-                <span v-if="row.group" class="ml-1 text-xs text-gray-500 dark:text-gray-400"
+                <span v-if="row.group" class="ml-1 text-xs text-fg-muted"
                   >({{ row.group.name }})</span
                 >
               </template>
@@ -157,13 +157,13 @@
           </template>
 
           <template #cell-used_by="{ value, row }">
-            <span class="text-sm text-gray-500 dark:text-dark-400">
+            <span class="text-sm text-fg-muted">
               {{ row.user?.email || (value ? t('admin.redeem.userPrefix', { id: value }) : '-') }}
             </span>
           </template>
 
           <template #cell-used_at="{ value }">
-            <span class="text-sm text-gray-500 dark:text-dark-400">{{
+            <span class="text-sm tabular-nums text-fg-muted">{{
               value ? formatDateTime(value) : '-'
             }}</span>
           </template>
@@ -171,10 +171,10 @@
           <template #cell-expires_at="{ value, row }">
             <span
               :class="[
-                'text-sm',
+                'text-sm tabular-nums',
                 row.status === 'expired'
-                  ? 'text-danger-600 dark:text-danger-400'
-                  : 'text-gray-500 dark:text-dark-400'
+                  ? 'text-danger'
+                  : 'text-fg-muted'
               ]"
             >
               {{ value ? formatDateTime(value) : t('admin.redeem.neverExpires') }}
@@ -186,7 +186,7 @@
               <button
                 v-if="row.status === 'unused'"
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-900/20 dark:hover:text-danger-400"
+                class="flex flex-col items-center gap-0.5 rounded-sm p-1.5 text-fg-muted transition-colors hover:bg-danger-weak hover:text-danger"
               >
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -198,7 +198,7 @@
                 </svg>
                 <span class="text-xs">{{ t('common.delete') }}</span>
               </button>
-              <span v-else class="text-gray-400 dark:text-dark-500">-</span>
+              <span v-else class="text-fg-subtle">-</span>
             </div>
           </template>
         </DataTable>
@@ -207,15 +207,15 @@
       <template #pagination>
         <div
           v-if="selectedCount > 0"
-          class="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-primary-50 p-3 dark:bg-primary-900/20"
+          class="mb-4 flex flex-wrap items-center justify-between gap-3 border-y-2 border-accent bg-accent-weak px-3 py-2"
         >
-          <span class="text-sm font-medium text-primary-900 dark:text-primary-100">
+          <span class="text-sm font-bold tabular-nums text-accent-strong">
             {{ t('admin.redeem.selectedCount', { count: selectedCount }) }}
           </span>
           <div class="flex flex-wrap items-center gap-2">
             <button
               type="button"
-              class="text-xs font-medium text-primary-700 hover:text-primary-800 dark:text-primary-300 dark:hover:text-primary-200"
+              class="text-xs font-medium text-accent hover:text-accent-strong"
               @click="clearSelectedCodes"
             >
               {{ t('admin.redeem.clearSelection') }}
@@ -304,8 +304,8 @@
               />
             </div>
             <!-- 邀请码类型：显示提示信息 -->
-            <div v-if="generateForm.type === 'invitation'" class="rounded-lg bg-accent-50 p-3 dark:bg-accent-900/20">
-              <p class="text-sm text-accent-700 dark:text-accent-300">
+            <div v-if="generateForm.type === 'invitation'" class="border border-accent/40 pl-3">
+              <p class="text-sm text-fg-muted">
                 {{ t('admin.redeem.invitationHint') }}
               </p>
             </div>
@@ -326,7 +326,7 @@
                       :subscription-type="(option as unknown as GroupOption).subscriptionType"
                       :rate-multiplier="(option as unknown as GroupOption).rate"
                     />
-                    <span v-else class="text-gray-400">{{
+                    <span v-else class="text-fg-subtle">{{
                       t('admin.redeem.selectGroupPlaceholder')
                     }}</span>
                   </template>
@@ -363,10 +363,10 @@
                   type="button"
                   @click="generateForm.expiry_option = option.value"
                   :class="[
-                    'rounded-lg border px-3 py-2 text-sm transition-colors',
+                    'rounded-sm border px-3 py-2 text-sm font-medium transition-colors',
                     generateForm.expiry_option === option.value
-                      ? 'border-primary-500 bg-primary-50 text-primary-700 dark:border-primary-400 dark:bg-primary-900/20 dark:text-primary-300'
-                      : 'border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-dark-600 dark:text-gray-300 dark:hover:bg-dark-700'
+                      ? 'border-accent bg-accent-weak text-accent-strong'
+                      : 'border-border-strong text-fg hover:bg-accent-weak/50'
                   ]"
                 >
                   {{ option.label }}
@@ -418,12 +418,12 @@
 
           <form data-test="batch-update-form" class="space-y-4" @submit.prevent="handleBatchUpdate">
             <div class="space-y-2">
-              <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label class="flex items-center gap-2 text-sm font-medium text-fg">
                 <input
                   data-test="batch-field-status"
                   v-model="batchUpdateForm.update_status"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  class="h-4 w-4 rounded-sm border-border-strong text-accent focus:ring-accent"
                 />
                 {{ t('admin.redeem.batchFields.status') }}
               </label>
@@ -436,11 +436,11 @@
             </div>
 
             <div class="space-y-2">
-              <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label class="flex items-center gap-2 text-sm font-medium text-fg">
                 <input
                   v-model="batchUpdateForm.update_expires_at"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  class="h-4 w-4 rounded-sm border-border-strong text-accent focus:ring-accent"
                 />
                 {{ t('admin.redeem.batchFields.expiresAt') }}
               </label>
@@ -459,12 +459,12 @@
             </div>
 
             <div class="space-y-2">
-              <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label class="flex items-center gap-2 text-sm font-medium text-fg">
                 <input
                   data-test="batch-field-notes"
                   v-model="batchUpdateForm.update_notes"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  class="h-4 w-4 rounded-sm border-border-strong text-accent focus:ring-accent"
                 />
                 {{ t('admin.redeem.batchFields.notes') }}
               </label>
@@ -479,11 +479,11 @@
             </div>
 
             <div class="space-y-2">
-              <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label class="flex items-center gap-2 text-sm font-medium text-fg">
                 <input
                   v-model="batchUpdateForm.update_group_id"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  class="h-4 w-4 rounded-sm border-border-strong text-accent focus:ring-accent"
                 />
                 {{ t('admin.redeem.batchFields.group') }}
               </label>
@@ -518,16 +518,21 @@
       close-on-click-outside
       @close="closeResultDialog"
     >
-      <div class="mb-3 flex items-center gap-2 text-body text-fg-muted">
-        <Icon name="check" size="sm" class="text-success" />
-        {{ t('admin.redeem.codesCreated', { count: generatedCodes.length }) }}
+      <div class="stub">
+        <div class="flex items-center gap-2 px-4 py-3 text-body font-semibold text-fg">
+          <Icon name="check" size="sm" class="text-success" />
+          <span class="tabular-nums">{{ t('admin.redeem.codesCreated', { count: generatedCodes.length }) }}</span>
+        </div>
+        <div class="stub-perforation" aria-hidden="true" />
+        <div class="px-4 py-3">
+          <textarea
+            readonly
+            :value="generatedCodesText"
+            :style="{ height: textareaHeight }"
+            class="w-full resize-none border-0 bg-transparent p-0 font-mono text-body leading-6 tracking-wide text-fg focus:outline-none"
+          ></textarea>
+        </div>
       </div>
-      <textarea
-        readonly
-        :value="generatedCodesText"
-        :style="{ height: textareaHeight }"
-        class="w-full resize-none rounded-lg border border-border bg-surface-sunken p-3 font-mono text-body text-fg focus:outline-none"
-      ></textarea>
       <template #footer>
         <button
           @click="copyGeneratedCodes"
@@ -670,7 +675,7 @@ const columns = computed<Column[]>(() => [
   { key: 'select', label: '' },
   { key: 'code', label: t('admin.redeem.columns.code') },
   { key: 'type', label: t('admin.redeem.columns.type'), sortable: true },
-  { key: 'value', label: t('admin.redeem.columns.value'), sortable: true },
+  { key: 'value', label: t('admin.redeem.columns.value'), sortable: true, class: 'text-right' },
   { key: 'status', label: t('admin.redeem.columns.status'), sortable: true },
   { key: 'used_by', label: t('admin.redeem.columns.usedBy') },
   { key: 'used_at', label: t('admin.redeem.columns.usedAt'), sortable: true },
