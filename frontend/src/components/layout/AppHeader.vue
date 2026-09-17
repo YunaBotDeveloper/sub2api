@@ -1,6 +1,7 @@
 <template>
   <header class="sticky top-0 z-30 border-b-2 border-accent bg-surface">
-    <div class="flex h-16 items-center justify-between gap-2 px-2 sm:px-4 md:px-6">
+    <!-- 62px + 2px 蓝色规线 = 64px，与侧边栏抬头的规线对齐成一条线 -->
+    <div class="flex h-[62px] items-center justify-between gap-2 px-2 sm:px-4 md:px-6">
       <!-- Left: Mobile Menu Toggle + Page Title -->
       <div class="flex shrink-0 items-center gap-2 sm:gap-4">
         <button
