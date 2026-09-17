@@ -85,6 +85,9 @@ interface AccountRow {
   overload_remaining_sec?: number
   has_error: boolean
   error_message?: string
+  // 调度器信号（仅 OpenAI 高级调度器有样本时存在）
+  scheduler_error_rate?: number
+  scheduler_ttft_ms?: number
 }
 
 // 用户行数据
@@ -209,7 +212,9 @@ const accountRows = computed((): AccountRow[] => {
         is_overloaded: avail.is_overloaded || false,
         overload_remaining_sec: avail.overload_remaining_sec,
         has_error: avail.has_error || false,
-        error_message: avail.error_message || ''
+        error_message: avail.error_message || '',
+        scheduler_error_rate: avail.scheduler_error_rate,
+        scheduler_ttft_ms: avail.scheduler_ttft_ms
       }
     })
     .filter((row): row is NonNullable<typeof row> => row !== null)
@@ -218,6 +223,9 @@ const accountRows = computed((): AccountRow[] => {
     // 优先显示异常账号
     if (a.has_error !== b.has_error) return a.has_error ? -1 : 1
     if (a.is_rate_limited !== b.is_rate_limited) return a.is_rate_limited ? -1 : 1
+    // 调度器错误率高的优先暴露
+    const errDiff = (b.scheduler_error_rate ?? 0) - (a.scheduler_error_rate ?? 0)
+    if (errDiff !== 0) return errDiff
     // 然后按负载排序
     return b.load_percentage - a.load_percentage
   })
@@ -316,6 +324,13 @@ function getLoadTextClass(loadPct: number): string {
   if (loadPct >= 90) return 'text-danger'
   if (loadPct >= 70) return 'text-warning'
   if (loadPct >= 50) return 'text-warning'
+  return 'text-success'
+}
+
+// 阈值沿用 codex2api 健康分层：≥30% risky，≥5% warm
+function getErrorRateTextClass(rate: number): string {
+  if (rate >= 0.3) return 'text-danger'
+  if (rate >= 0.05) return 'text-warning'
   return 'text-success'
 }
 
@@ -480,6 +495,18 @@ watch(
               </div>
               <div class="truncate text-fg-subtle">
                 {{ row.group_name }}
+              </div>
+              <div
+                v-if="row.scheduler_error_rate !== undefined"
+                class="mt-0.5 flex items-center gap-2 tabular-nums"
+                :title="t('admin.ops.accountAvailability.schedulerSignalsHint')"
+              >
+                <span :class="getErrorRateTextClass(row.scheduler_error_rate)">
+                  {{ t('admin.ops.accountAvailability.schedulerErrorRate', { rate: (row.scheduler_error_rate * 100).toFixed(1) }) }}
+                </span>
+                <span v-if="row.scheduler_ttft_ms !== undefined" class="text-fg-muted">
+                  {{ t('admin.ops.accountAvailability.schedulerTtft', { ms: Math.round(row.scheduler_ttft_ms) }) }}
+                </span>
               </div>
             </div>
             <div class="flex shrink-0 items-center gap-2">

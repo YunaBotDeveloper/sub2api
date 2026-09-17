@@ -391,6 +391,8 @@ export interface AccountAvailability {
   overload_remaining_sec?: number
   has_error: boolean
   error_message?: string
+  scheduler_error_rate?: number
+  scheduler_ttft_ms?: number
 }
 
 export interface OpsAccountAvailabilityStatsResponse {

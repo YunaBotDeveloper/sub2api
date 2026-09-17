@@ -288,6 +288,31 @@ func (s *openAIAccountRuntimeStats) snapshot(accountID int64) (errorRate float64
 	return errorRate, ttftValue, true
 }
 
+// signals 返回账号的 EWMA 错误率与 TTFT（ms）；无样本时均为 nil。
+func (s *openAIAccountRuntimeStats) signals(accountID int64) (errorRate *float64, ttftMs *float64) {
+	if s == nil {
+		return nil, nil
+	}
+	if _, ok := s.accounts.Load(accountID); !ok {
+		return nil, nil
+	}
+	rate, ttft, hasTTFT := s.snapshot(accountID)
+	errorRate = &rate
+	if hasTTFT {
+		ttftMs = &ttft
+	}
+	return errorRate, ttftMs
+}
+
+// schedulerRuntimeStats 返回高级调度器的运行时统计；未启用高级调度时为 nil。
+// 经由 getOpenAIAccountScheduler 的 sync.Once 读取，避免与惰性初始化竞争。
+func (s *OpenAIGatewayService) schedulerRuntimeStats(ctx context.Context) *openAIAccountRuntimeStats {
+	if s.getOpenAIAccountScheduler(ctx) == nil {
+		return nil
+	}
+	return s.openaiAccountStats
+}
+
 func (s *openAIAccountRuntimeStats) size() int {
 	if s == nil {
 		return 0

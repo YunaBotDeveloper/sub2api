@@ -41,6 +41,11 @@ func (s *OpsService) GetAccountAvailabilityStats(ctx context.Context, platformFi
 	now := time.Now()
 	collectedAt := now
 
+	var openAIStats *openAIAccountRuntimeStats
+	if s.openAIGatewayService != nil {
+		openAIStats = s.openAIGatewayService.schedulerRuntimeStats(ctx)
+	}
+
 	platform := make(map[string]*PlatformAvailability)
 	group := make(map[int64]*GroupAvailability)
 	account := make(map[int64]*AccountAvailability)
@@ -149,6 +154,9 @@ func (s *OpsService) GetAccountAvailabilityStats(ctx context.Context, platformFi
 		}
 		if isTempUnsched && acc.TempUnschedulableUntil != nil {
 			item.TempUnschedulableUntil = acc.TempUnschedulableUntil
+		}
+		if acc.Platform == PlatformOpenAI {
+			item.SchedulerErrorRate, item.SchedulerTTFTMs = openAIStats.signals(acc.ID)
 		}
 
 		account[acc.ID] = item

@@ -793,7 +793,10 @@ export default {
       accountAvailability: {
         available: 'Available',
         unavailable: 'Unavailable',
-        accountError: 'Error'
+        accountError: 'Error',
+        schedulerErrorRate: 'Err {rate}%',
+        schedulerTtft: 'TTFT {ms}ms',
+        schedulerSignalsHint: 'OpenAI advanced scheduler signals on this instance (EWMA error rate / time to first token)'
       },
       tooltips: {
         totalRequests: 'Total number of requests (including both successful and failed requests) in the selected time window.',

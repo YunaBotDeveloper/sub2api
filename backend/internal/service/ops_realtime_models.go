@@ -89,4 +89,8 @@ type AccountAvailability struct {
 	OverloadRemainingSec   *int64     `json:"overload_remaining_sec"`
 	ErrorMessage           string     `json:"error_message"`
 	TempUnschedulableUntil *time.Time `json:"temp_unschedulable_until,omitempty"`
+
+	// OpenAI 高级调度器的内存信号（按实例、EWMA α=0.2）；无样本时省略。
+	SchedulerErrorRate *float64 `json:"scheduler_error_rate,omitempty"`
+	SchedulerTTFTMs    *float64 `json:"scheduler_ttft_ms,omitempty"`
 }
