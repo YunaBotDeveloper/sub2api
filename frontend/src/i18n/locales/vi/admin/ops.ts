@@ -793,7 +793,10 @@ export default {
       accountAvailability: {
         available: 'Khả dụng',
         unavailable: 'Không khả dụng',
-        accountError: 'Lỗi'
+        accountError: 'Lỗi',
+        schedulerErrorRate: 'Lỗi {rate}%',
+        schedulerTtft: 'TTFT {ms}ms',
+        schedulerSignalsHint: 'Tín hiệu bộ điều phối nâng cao OpenAI trên instance này (tỉ lệ lỗi EWMA / thời gian đến token đầu tiên)'
       },
       tooltips: {
         totalRequests: 'Tổng số request (bao gồm cả request thành công và thất bại) trong khoảng thời gian đã chọn.',

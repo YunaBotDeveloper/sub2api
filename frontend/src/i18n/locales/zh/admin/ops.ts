@@ -794,7 +794,10 @@ export default {
       accountAvailability: {
         available: '可用',
         unavailable: '不可用',
-        accountError: '异常'
+        accountError: '异常',
+        schedulerErrorRate: '错误率 {rate}%',
+        schedulerTtft: '首字 {ms}ms',
+        schedulerSignalsHint: '本实例 OpenAI 高级调度器信号（EWMA 错误率 / 首字延迟）'
       },
       tooltips: {
         totalRequests: '当前时间窗口内的总请求数和Token消耗量。',
