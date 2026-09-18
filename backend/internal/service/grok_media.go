@@ -653,9 +653,13 @@ func (s *OpenAIGatewayService) ForwardGrokMedia(
 
 	// The CLI proxy does not return images for these accounts; the web imagine
 	// WebSocket does. Accounts without a stored sso_token keep the REST path.
-	if endpoint == GrokMediaEndpointImagesGenerations &&
-		strings.TrimSpace(account.GetCredential(grokImagineSSOCredKey)) != "" {
-		return s.forwardGrokImagineImages(ctx, c, account, requestID, body, contentType, startTime)
+	if strings.TrimSpace(account.GetCredential(grokImagineSSOCredKey)) != "" {
+		switch endpoint {
+		case GrokMediaEndpointImagesGenerations:
+			return s.forwardGrokImagineImages(ctx, c, account, requestID, body, contentType, startTime)
+		case GrokMediaEndpointImagesEdits:
+			return s.forwardGrokImagineEdit(ctx, c, account, requestID, body, contentType, startTime)
+		}
 	}
 
 	token, _, err := s.getRequestCredential(ctx, c, account)

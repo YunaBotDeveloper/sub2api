@@ -356,7 +356,19 @@ func (s *OpenAIGatewayService) forwardGrokImagineImages(
 	if collector.moderated {
 		return nil, fmt.Errorf("grok imagine rejected the prompt as moderated")
 	}
-	images := collector.results()
+	return writeGrokImagineResult(c, requestID, info, collector.results(), body, startTime)
+}
+
+// writeGrokImagineResult renders images as an OpenAI images response and
+// builds the forward result shared by the web generate and edit paths.
+func writeGrokImagineResult(
+	c *gin.Context,
+	requestID string,
+	info GrokMediaRequestInfo,
+	images []grokImagineImage,
+	body []byte,
+	startTime time.Time,
+) (*OpenAIForwardResult, error) {
 	respBody, err := buildGrokImagineImagesResponse(images, grokImagineResponseFormat(body))
 	if err != nil {
 		return nil, err
