@@ -486,8 +486,9 @@ func grokSSOImportCredentials(built map[string]any, reqCredentials map[string]an
 	// Strip any sensitive keys that might have slipped in via older callers.
 	for k := range credentials {
 		if service.IsSensitiveCredentialKey(k) {
-			// Keep only keys produced by BuildAccountCredentials (tokens).
-			if k == "access_token" || k == "refresh_token" || k == "id_token" {
+			// Keep only keys produced by BuildAccountCredentials (tokens, plus
+			// the sso cookie the web imagine WebSocket authenticates with).
+			if k == "access_token" || k == "refresh_token" || k == "id_token" || k == "sso_token" {
 				continue
 			}
 			delete(credentials, k)

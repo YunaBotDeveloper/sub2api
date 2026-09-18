@@ -12,8 +12,11 @@ func SanitizeStoredCredentials(platform string, creds map[string]any) map[string
 		return nil
 	}
 	_ = platform
+	// sso_token is deliberately kept: the Grok web imagine WebSocket
+	// authenticates with the sso cookie, so it must survive account updates.
+	// It stays in SensitiveCredentialKeys and is never echoed to clients.
 	for _, key := range []string{
-		"password", "sso_token", "sso", "sso-rw", "clearTextPassword", "cookie",
+		"password", "sso", "sso-rw", "clearTextPassword", "cookie",
 	} {
 		delete(creds, key)
 	}

@@ -135,10 +135,15 @@ type GrokTokenInfo struct {
 	TeamID            string `json:"team_id,omitempty"`
 	SubscriptionTier  string `json:"subscription_tier,omitempty"`
 	EntitlementStatus string `json:"entitlement_status,omitempty"`
+	// SSOToken is persisted (encrypted, with credentials) because the web
+	// imagine WebSocket authenticates with the sso cookie rather than the
+	// Build OAuth token. json:"-" keeps it out of every admin API response.
+	SSOToken string `json:"-"`
 }
 
-// GrokPasswordLoginResult is an ephemeral password-login outcome.
-// SSOToken is never persisted and must only feed ConvertSSOToBuild.
+// GrokPasswordLoginResult is a password-login outcome. The password itself is
+// never persisted; SSOToken feeds ConvertSSOToBuild and is then stored with the
+// account credentials for the web imagine WebSocket.
 type GrokPasswordLoginResult struct {
 	Email    string `json:"email,omitempty"`
 	SSOToken string `json:"sso_token"`
@@ -256,7 +261,10 @@ func (s *GrokOAuthService) ValidateSSOToken(ctx context.Context, ssoToken string
 	if err := validateGrokTokenResponse(tokenResp); err != nil {
 		return nil, err
 	}
-	return s.tokenInfoFromResponse(tokenResp, xai.DefaultClientID, nil), nil
+	info := s.tokenInfoFromResponse(tokenResp, xai.DefaultClientID, nil)
+	// Kept for the web imagine WebSocket, which the Build token cannot reach.
+	info.SSOToken = ssoToken
+	return info, nil
 }
 
 // ConvertFromSSO is the batch-import entry point; same semantics as ValidateSSOToken.
@@ -264,8 +272,9 @@ func (s *GrokOAuthService) ConvertFromSSO(ctx context.Context, ssoToken string, 
 	return s.ValidateSSOToken(ctx, ssoToken, proxyID)
 }
 
-// AuthorizePassword logs in with email/password, converts the resulting SSO cookie
-// to Build OAuth, and returns OAuth tokens only. Password and raw SSO are never persisted.
+// AuthorizePassword logs in with email/password and converts the resulting SSO
+// cookie to Build OAuth. The password is never persisted; the SSO cookie is
+// stored with the credentials because the web imagine path authenticates with it.
 func (s *GrokOAuthService) AuthorizePassword(ctx context.Context, email, password string, proxyID *int64) (*GrokTokenInfo, error) {
 	if !s.passwordAuthEnabled() {
 		return nil, infraerrors.New(http.StatusForbidden, "GROK_OAUTH_PASSWORD_AUTH_DISABLED", "Grok password authorization is disabled")
@@ -379,6 +388,9 @@ func (s *GrokOAuthService) BuildAccountCredentials(tokenInfo *GrokTokenInfo) map
 	}
 	if tokenInfo.EntitlementStatus != "" {
 		creds["entitlement_status"] = tokenInfo.EntitlementStatus
+	}
+	if tokenInfo.SSOToken != "" {
+		creds[grokImagineSSOCredKey] = tokenInfo.SSOToken
 	}
 	creds["base_url"] = xai.DefaultCLIBaseURL
 	return creds
