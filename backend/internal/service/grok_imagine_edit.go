@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/tidwall/gjson"
 )
 
@@ -166,35 +165,15 @@ func buildGrokImagineEditBody(prompt string, assetIDs []string) ([]byte, error) 
 	})
 }
 
-// grokWebRequest sends one cookie-authenticated request to grok.com with the
-// headers its web client sends.
-func grokWebRequest(ctx context.Context, client *http.Client, ssoToken, method, url string, body []byte) (*http.Response, error) {
-	var reader io.Reader
-	if body != nil {
-		reader = bytes.NewReader(body)
-	}
-	req, err := http.NewRequestWithContext(ctx, method, url, reader)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Cookie", "sso="+ssoToken)
-	req.Header.Set("Origin", grokImagineOrigin)
-	req.Header.Set("Referer", grokWebReferer)
-	req.Header.Set("User-Agent", grokImagineUserAgent)
-	req.Header.Set("Accept", "*/*")
-	req.Header.Set("x-statsig-id", grokWebStatsigID)
-	req.Header.Set("x-xai-request-id", uuid.NewString())
-	if body != nil {
-		req.Header.Set("Content-Type", "application/json")
-	}
-	return client.Do(req)
-}
-
 // grokWebStatusError turns a non-2xx grok.com response into an error; auth,
 // Cloudflare and rate-limit rejections fail over like a failed WS handshake.
 func grokWebStatusError(c *gin.Context, resp *http.Response, stage string) error {
+	message := "grok image edit " + stage + " failed"
+	if isCloudflareChallenge(resp) {
+		message += ": blocked by Cloudflare challenge (set gateway.grok.flaresolverr_url)"
+	}
 	body, _ := io.ReadAll(io.LimitReader(resp.Body, 4<<10))
-	setOpsUpstreamError(c, resp.StatusCode, "grok image edit "+stage+" failed", truncateString(string(body), 512))
+	setOpsUpstreamError(c, resp.StatusCode, message, truncateString(string(body), 512))
 	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden || resp.StatusCode == http.StatusTooManyRequests {
 		return &UpstreamFailoverError{
 			StatusCode:   resp.StatusCode,
@@ -237,6 +216,10 @@ func (s *OpenAIGatewayService) forwardGrokImagineEdit(
 	if err != nil {
 		return nil, err
 	}
+	web := &grokWebSession{client: client, ssoToken: ssoToken, proxyURL: proxyRawURL}
+	if s.cfg != nil {
+		web.solverURL = strings.TrimSpace(s.cfg.Gateway.Grok.FlareSolverrURL)
+	}
 	upstreamCtx, releaseUpstreamCtx := detachUpstreamContext(ctx)
 	defer releaseUpstreamCtx()
 	reqCtx, cancel := context.WithTimeout(upstreamCtx, grokImagineTimeout)
@@ -253,7 +236,7 @@ func (s *OpenAIGatewayService) forwardGrokImagineEdit(
 		if err != nil {
 			return nil, err
 		}
-		resp, err := grokWebRequest(reqCtx, client, ssoToken, http.MethodPost, grokWebUploadURL, payload)
+		resp, err := web.do(reqCtx, http.MethodPost, grokWebUploadURL, payload)
 		if err != nil {
 			return nil, fmt.Errorf("upload grok edit image: %w", err)
 		}
@@ -278,7 +261,7 @@ func (s *OpenAIGatewayService) forwardGrokImagineEdit(
 	if err != nil {
 		return nil, err
 	}
-	resp, err := grokWebRequest(reqCtx, client, ssoToken, http.MethodPost, grokWebConversationURL, editBody)
+	resp, err := web.do(reqCtx, http.MethodPost, grokWebConversationURL, editBody)
 	if err != nil {
 		return nil, fmt.Errorf("send grok image edit: %w", err)
 	}
@@ -301,7 +284,7 @@ func (s *OpenAIGatewayService) forwardGrokImagineEdit(
 	// callers (like Image Studio) get the bytes fetched here.
 	if grokImagineResponseFormat(body) == "b64_json" {
 		for i := range images {
-			blob, err := fetchGrokWebAsset(reqCtx, client, ssoToken, images[i].URL)
+			blob, err := fetchGrokWebAsset(reqCtx, web, images[i].URL)
 			if err != nil {
 				return nil, err
 			}
@@ -312,8 +295,8 @@ func (s *OpenAIGatewayService) forwardGrokImagineEdit(
 	return writeGrokImagineResult(c, requestID, info, images, body, startTime)
 }
 
-func fetchGrokWebAsset(ctx context.Context, client *http.Client, ssoToken, url string) (string, error) {
-	resp, err := grokWebRequest(ctx, client, ssoToken, http.MethodGet, url, nil)
+func fetchGrokWebAsset(ctx context.Context, web *grokWebSession, url string) (string, error) {
+	resp, err := web.do(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return "", fmt.Errorf("download grok edited image: %w", err)
 	}
