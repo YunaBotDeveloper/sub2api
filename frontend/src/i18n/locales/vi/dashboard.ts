@@ -794,6 +794,7 @@ export default {
     days: ' ngày',
     codeRedeemSuccess: 'Đổi mã thành công!',
     failedToRedeem: 'Không thể đổi mã. Vui lòng kiểm tra mã và thử lại.',
+    historyLoadFailed: 'Không thể tải lịch sử. Vui lòng thử lại.',
     userRefreshFailed: 'Đổi mã thành công nhưng không thể làm mới thông tin tài khoản.',
     subscriptionRefreshFailed: 'Đổi mã thành công nhưng không thể làm mới trạng thái gói đăng ký.',
     pleaseEnterCode: 'Vui lòng nhập mã đổi thưởng'
