@@ -900,6 +900,10 @@ export default {
 	  autoPause5hDisabled: 'Disable 5h auto-pause',
 	  autoPause7dDisabled: 'Disable 7d auto-pause',
 	  autoPauseDisabledHint: 'When enabled, this account is never auto-paused (even if a global default threshold is configured).',
+	  codexCredits: {
+	    title: 'Use Codex credits when quota is exhausted',
+	    hint: 'Keeps scheduling this account past the 5h/7d pause thresholds while upstream reports available Codex credits (paid). A real upstream 429 still pauses it.'
+	  },
 	  autoResetCredit: {
 	    title: 'Automatically use reset credits',
 	    hint: 'Uses the earliest-expiring available credit only when actual usage reaches a threshold. Off by default; the account remains paused if no credit is available or reset fails.',

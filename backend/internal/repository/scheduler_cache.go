@@ -1025,6 +1025,12 @@ func filterSchedulerExtra(extra map[string]any) map[string]any {
 		"codex_5h_reset_after_seconds",
 		"codex_7d_reset_after_seconds",
 		"codex_usage_updated_at",
+		// Codex credits bypass for threshold/auto-pause runs on this projection.
+		"codex_credits_enabled",
+		"codex_credits_has_credits",
+		"codex_credits_unlimited",
+		"codex_credits_balance",
+		"codex_rate_limit_reached_type",
 		"auto_pause_5h_threshold",
 		"auto_pause_7d_threshold",
 		"auto_pause_5h_disabled",

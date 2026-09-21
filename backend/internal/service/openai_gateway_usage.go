@@ -1017,12 +1017,49 @@ func ParseCodexRateLimitHeaders(headers http.Header) *OpenAICodexUsageSnapshot {
 		hasData = true
 	}
 
+	// Credits only ride along with a usage snapshot; they never create one alone.
 	if !hasData {
 		return nil
 	}
+	hasCredits, errHas := strconv.ParseBool(strings.TrimSpace(headers.Get("x-codex-credits-has-credits")))
+	unlimited, errUnlimited := strconv.ParseBool(strings.TrimSpace(headers.Get("x-codex-credits-unlimited")))
+	if errHas == nil && errUnlimited == nil {
+		snapshot.CreditsHasCredits = &hasCredits
+		snapshot.CreditsUnlimited = &unlimited
+		balance := strings.TrimSpace(headers.Get("x-codex-credits-balance"))
+		snapshot.CreditsBalance = &balance
+	}
+	// Per-response field: absent on a usage response means "not reached".
+	reachedType := strings.TrimSpace(headers.Get("x-codex-rate-limit-reached-type"))
+	snapshot.RateLimitReachedType = &reachedType
 
 	snapshot.UpdatedAt = time.Now().Format(time.RFC3339)
 	return snapshot
+}
+
+const openAICodexCreditsEnabledExtraKey = "codex_credits_enabled"
+
+// openAICodexCreditsCoverQuota reports whether an exhausted/paused plan window
+// may be bypassed because the admin opted in and upstream still reports usable
+// Codex credits. A real upstream 429 still blocks the account as usual.
+func openAICodexCreditsCoverQuota(account *Account) bool {
+	if account == nil || !account.IsOpenAIOAuth() || !resolveAccountExtraBool(account.Extra, openAICodexCreditsEnabledExtraKey) {
+		return false
+	}
+	switch strings.ToLower(strings.TrimSpace(stringValue(account.Extra["codex_rate_limit_reached_type"]))) {
+	case "workspace_owner_credits_depleted", "workspace_member_credits_depleted",
+		"workspace_owner_usage_limit_reached", "workspace_member_usage_limit_reached":
+		return false
+	}
+	if resolveAccountExtraBool(account.Extra, "codex_credits_unlimited") {
+		return true
+	}
+	if balance := strings.TrimSpace(stringValue(account.Extra["codex_credits_balance"])); balance != "" {
+		if v, err := strconv.ParseFloat(balance, 64); err != nil || v <= 0 {
+			return false
+		}
+	}
+	return resolveAccountExtraBool(account.Extra, "codex_credits_has_credits")
 }
 
 func codexSnapshotBaseTime(snapshot *OpenAICodexUsageSnapshot, fallback time.Time) time.Time {
@@ -1082,6 +1119,18 @@ func buildCodexUsageExtraUpdates(snapshot *OpenAICodexUsageSnapshot, fallbackNow
 		updates["codex_primary_over_secondary_percent"] = *snapshot.PrimaryOverSecondaryPercent
 	}
 	updates["codex_usage_updated_at"] = baseTime.Format(time.RFC3339)
+	if snapshot.CreditsHasCredits != nil {
+		updates["codex_credits_has_credits"] = *snapshot.CreditsHasCredits
+	}
+	if snapshot.CreditsUnlimited != nil {
+		updates["codex_credits_unlimited"] = *snapshot.CreditsUnlimited
+	}
+	if snapshot.CreditsBalance != nil {
+		updates["codex_credits_balance"] = *snapshot.CreditsBalance
+	}
+	if snapshot.RateLimitReachedType != nil {
+		updates["codex_rate_limit_reached_type"] = *snapshot.RateLimitReachedType
+	}
 
 	// 归一化到 5h/7d 规范字段
 	if normalized := snapshot.Normalize(); normalized != nil {

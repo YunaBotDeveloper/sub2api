@@ -970,6 +970,10 @@ export default {
 	  autoPause5hDisabled: '禁用 5h 自动暂停',
 	  autoPause7dDisabled: '禁用 7d 自动暂停',
 	  autoPauseDisabledHint: '开启后该账号永不进入自动暂停（即使全局默认阈值已配置）。',
+	  codexCredits: {
+	    title: '额度耗尽时使用 Codex 积分',
+	    hint: '上游仍报告有可用 Codex 积分（付费）时，越过 5h/7d 暂停阈值继续调度该账号。上游真实 429 仍会暂停。'
+	  },
 	  autoResetCredit: {
 	    title: '自动使用重置卡',
 	    hint: '仅在实际用量达到阈值时使用最早到期的可用卡；默认关闭。无卡或失败时账号保持暂停。',

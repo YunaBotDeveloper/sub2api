@@ -130,7 +130,13 @@ type OpenAICodexUsageSnapshot struct {
 	SecondaryResetAfterSeconds  *int     `json:"secondary_reset_after_seconds,omitempty"`
 	SecondaryWindowMinutes      *int     `json:"secondary_window_minutes,omitempty"`
 	PrimaryOverSecondaryPercent *float64 `json:"primary_over_secondary_percent,omitempty"`
-	UpdatedAt                   string   `json:"updated_at,omitempty"`
+	// Codex usage credits (x-codex-credits-*). Upstream spends them automatically
+	// once the plan windows are exhausted.
+	CreditsHasCredits    *bool   `json:"credits_has_credits,omitempty"`
+	CreditsUnlimited     *bool   `json:"credits_unlimited,omitempty"`
+	CreditsBalance       *string `json:"credits_balance,omitempty"`
+	RateLimitReachedType *string `json:"rate_limit_reached_type,omitempty"`
+	UpdatedAt            string  `json:"updated_at,omitempty"`
 }
 
 // NormalizedCodexLimits contains normalized 5h/7d rate limit data
