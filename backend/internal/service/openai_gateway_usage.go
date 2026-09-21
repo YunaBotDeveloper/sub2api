@@ -1051,15 +1051,26 @@ func openAICodexCreditsCoverQuota(account *Account) bool {
 		"workspace_owner_usage_limit_reached", "workspace_member_usage_limit_reached":
 		return false
 	}
-	if resolveAccountExtraBool(account.Extra, "codex_credits_unlimited") {
+	// Per-response header state wins; the /wham/usage snapshot (refresh button)
+	// covers accounts that are paused and therefore see no responses.
+	credits := account.Extra
+	if _, ok := credits["codex_credits_has_credits"]; !ok {
+		snapshot, _ := account.Extra[openaiQuotaCreditsKey].(map[string]any)
+		credits, _ = snapshot["credits"].(map[string]any)
+	}
+	if resolveAccountExtraBool(credits, "codex_credits_unlimited") || resolveAccountExtraBool(credits, "unlimited") {
 		return true
 	}
-	if balance := strings.TrimSpace(stringValue(account.Extra["codex_credits_balance"])); balance != "" {
+	balance := strings.TrimSpace(stringValue(credits["codex_credits_balance"]))
+	if balance == "" {
+		balance = strings.TrimSpace(stringValue(credits["balance"]))
+	}
+	if balance != "" {
 		if v, err := strconv.ParseFloat(balance, 64); err != nil || v <= 0 {
 			return false
 		}
 	}
-	return resolveAccountExtraBool(account.Extra, "codex_credits_has_credits")
+	return resolveAccountExtraBool(credits, "codex_credits_has_credits") || resolveAccountExtraBool(credits, "has_credits")
 }
 
 func codexSnapshotBaseTime(snapshot *OpenAICodexUsageSnapshot, fallback time.Time) time.Time {

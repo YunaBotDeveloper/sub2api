@@ -228,6 +228,14 @@ export default {
      },
 
     riskControl: {
+      engine: 'Engine kiểm duyệt',
+      activeEngine: 'Engine đang dùng: {engine}',
+      engineUnavailable: 'Engine đang dùng không có Key khả dụng. Kiểm duyệt API không hoạt động; các lần kiểm tra lỗi sẽ được cho qua theo chính sách hiện tại.',
+      typeSafeNotice: 'TypeSafe AI chỉ kiểm duyệt văn bản. Hình ảnh không được gửi và không được kiểm duyệt. Ngưỡng chưa được hiệu chỉnh; đổi engine không tắt chặn dùng chung, thông báo hay tự động cấm.',
+      typeSafeThresholds: 'Ngưỡng mặc định giống OpenAI nhưng điểm số không tương đương. Hãy điều chỉnh từng danh mục theo kết quả kiểm duyệt thực tế.',
+      auditSource: 'Nguồn kiểm duyệt',
+      skippedImages: 'Ảnh chưa kiểm duyệt: {count}',
+      legacyAuditSource: 'OpenAI (không ghi lại phiên bản model kiểm duyệt)',
       title: 'Kiểm soát rủi ro',
       description: 'Cấu hình kiểm duyệt nội dung và xem lại bản ghi kiểm toán',
       loadFailed: 'Không thể tải kiểm soát rủi ro',

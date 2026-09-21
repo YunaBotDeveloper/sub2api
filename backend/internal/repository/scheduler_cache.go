@@ -1031,6 +1031,7 @@ func filterSchedulerExtra(extra map[string]any) map[string]any {
 		"codex_credits_unlimited",
 		"codex_credits_balance",
 		"codex_rate_limit_reached_type",
+		"codex_credits_snapshot",
 		"auto_pause_5h_threshold",
 		"auto_pause_7d_threshold",
 		"auto_pause_5h_disabled",

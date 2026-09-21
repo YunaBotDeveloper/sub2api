@@ -39,4 +39,14 @@ func TestOpenAICodexCreditsBypassQuotaPause(t *testing.T) {
 	account.Extra["codex_credits_balance"] = "5"
 	account.Extra["codex_rate_limit_reached_type"] = "workspace_owner_credits_depleted"
 	require.False(t, openAICodexCreditsCoverQuota(account))
+
+	// Paused account without header state falls back to the /wham/usage snapshot.
+	credits := map[string]any{"has_credits": true, "unlimited": false, "balance": "9750.0000000000"}
+	snapshotOnly := &Account{ID: 2, Platform: PlatformOpenAI, Type: AccountTypeOAuth, Extra: map[string]any{
+		openAICodexCreditsEnabledExtraKey: true,
+		openaiQuotaCreditsKey:             map[string]any{"credits": credits, "fetched_at": float64(1)},
+	}}
+	require.True(t, openAICodexCreditsCoverQuota(snapshotOnly))
+	credits["balance"] = "0"
+	require.False(t, openAICodexCreditsCoverQuota(snapshotOnly))
 }
