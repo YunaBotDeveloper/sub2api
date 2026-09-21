@@ -152,6 +152,10 @@ var duplicateAccountDiscardedExtraKeys = map[string]struct{}{
 	"codex_7d_reset_after_seconds":         {},
 	"codex_7d_window_minutes":              {},
 	"codex_7d_reset_at":                    {},
+	"codex_credits_has_credits":            {},
+	"codex_credits_unlimited":              {},
+	"codex_credits_balance":                {},
+	"codex_rate_limit_reached_type":        {},
 }
 
 func duplicateAccountExtra(value map[string]any) (map[string]any, error) {

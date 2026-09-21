@@ -53,6 +53,9 @@ func EvaluateAccountSchedulingThreshold(account *Account, thresholds map[string]
 	var winner *accountSchedulingThresholdCandidate
 	switch decision.Platform {
 	case PlatformOpenAI:
+		if openAICodexCreditsCoverQuota(account) {
+			return decision
+		}
 		winner = pickLatestResetSchedulingCandidate(openAIThresholdCandidates(account, now), threshold, now)
 	case PlatformAnthropic:
 		winner = pickLatestResetSchedulingCandidate(anthropicThresholdCandidates(account), threshold, now)

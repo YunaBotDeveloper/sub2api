@@ -900,6 +900,10 @@ export default {
 	  autoPause5hDisabled: 'Tắt tự động tạm dừng 5h',
 	  autoPause7dDisabled: 'Tắt tự động tạm dừng 7d',
 	  autoPauseDisabledHint: 'Khi bật, tài khoản này không bao giờ bị tự động tạm dừng (kể cả khi đã cấu hình ngưỡng mặc định toàn cục).',
+	  codexCredits: {
+	    title: 'Dùng credit Codex khi hết hạn mức',
+	    hint: 'Vẫn xếp lịch tài khoản vượt ngưỡng tạm dừng 5h/7d khi upstream báo còn credit Codex (có tính phí). Nếu upstream trả 429 thật thì vẫn tạm dừng.'
+	  },
 	  autoResetCredit: {
 	    title: 'Tự động dùng credit đặt lại',
 	    hint: 'Chỉ dùng credit khả dụng hết hạn sớm nhất khi mức sử dụng thực tế đạt ngưỡng. Tắt theo mặc định; tài khoản vẫn bị tạm dừng nếu không có credit hoặc đặt lại thất bại.',

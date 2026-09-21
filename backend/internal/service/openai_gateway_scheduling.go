@@ -519,6 +519,16 @@ func grokQuotaSnapshotStaleForPause(snapshot *xai.QuotaSnapshot, now time.Time) 
 }
 
 func shouldAutoPauseOpenAIAccountByQuota(ctx context.Context, account *Account) (bool, openAIQuotaAutoPauseDecision) {
+	pause, decision := shouldAutoPauseOpenAIAccountByQuotaWindows(ctx, account)
+	// Opted-in Codex credits cover the exhausted window. Reset-card notifications
+	// inside still fire, so a free reset card is preferred over paid credits.
+	if pause && openAICodexCreditsCoverQuota(account) {
+		return false, openAIQuotaAutoPauseDecision{}
+	}
+	return pause, decision
+}
+
+func shouldAutoPauseOpenAIAccountByQuotaWindows(ctx context.Context, account *Account) (bool, openAIQuotaAutoPauseDecision) {
 	if account == nil || !account.IsOpenAI() {
 		return false, openAIQuotaAutoPauseDecision{}
 	}
