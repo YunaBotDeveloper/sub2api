@@ -64,9 +64,16 @@ var schedulerNeutralExtraKeyPrefixes = []string{
 }
 
 var schedulerNeutralExtraKeys = map[string]struct{}{
-	"codex_usage_updated_at":     {},
-	"grok_billing_snapshot":      {},
-	"session_window_utilization": {},
+	"codex_usage_updated_at": {},
+	"codex_credits_snapshot": {},
+	// Per-response Codex credit headers; codex_credits_enabled stays durable.
+	"codex_credits_has_credits":     {},
+	"codex_credits_unlimited":       {},
+	"codex_credits_balance":         {},
+	"codex_rate_limit_reached_type": {},
+	"codex_referral_snapshot":       {},
+	"grok_billing_snapshot":         {},
+	"session_window_utilization":    {},
 }
 
 const postgresParameterBatchSize = 50000
