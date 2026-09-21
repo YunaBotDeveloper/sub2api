@@ -1590,6 +1590,11 @@ export default {
         estimatedTotalCostTooltip: 'Ước tính tổng chi phí khi sử dụng 100%, dựa trên chi phí và mức sử dụng của cửa sổ hiện tại'
       },
       openaiReferral: {
+        grant: '{who}: +{amount} {type}',
+        grantReferrer: 'Bạn',
+        grantReferee: 'Người được mời',
+        grantResetCredit: 'lượt đặt lại',
+        grantCredits: 'credit',
         available: 'Lượt mời còn lại',
         invite: 'Mời người dùng',
         fromAccount: 'Tài khoản mời:',

@@ -43,6 +43,7 @@ describe('OpenAIReferralCell', () => {
     expect(refreshOpenAIReferrals).toHaveBeenCalledWith(1)
     expect(wrapper.text()).toContain('Test account')
     expect(wrapper.text()).toContain('Test eligibility rule')
+    expect(wrapper.find('[data-testid="referral-grants"]').exists()).toBe(false)
     expect(wrapper.get('[data-testid="referral-send"]').attributes('disabled')).toBeDefined()
     expect(sendOpenAIReferralInvite).not.toHaveBeenCalled()
     wrapper.unmount()
@@ -136,6 +137,24 @@ describe('OpenAIReferralCell', () => {
     resolve({ eligibility, cache_persisted: true })
     await flushPromises()
     expect(wrapper.get('[data-testid="referral-count"]').text()).toContain('—')
+    wrapper.unmount()
+  })
+
+  it('shows reward grants returned by upstream', async () => {
+    vi.mocked(refreshOpenAIReferrals).mockResolvedValue({
+      eligibility: { ...eligibility, grants: [
+        { grant_type: 'codex_credits', amount: 1000, recipient: 'referrer' },
+        { grant_type: 'rate_limit_reset_credit', amount: 1, recipient: 'referee' },
+      ] },
+      cache_persisted: true,
+    })
+    const wrapper = mountCell()
+    await open(wrapper)
+    const grants = wrapper.get('[data-testid="referral-grants"]').findAll('li').map(li => li.text())
+    expect(grants[0]).toContain('grantReferrer')
+    expect(grants[0]).toContain('grantCredits')
+    expect(grants[1]).toContain('grantReferee')
+    expect(grants[1]).toContain('grantResetCredit')
     wrapper.unmount()
   })
 })

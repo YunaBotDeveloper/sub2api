@@ -1590,6 +1590,11 @@ export default {
         estimatedTotalCostTooltip: 'Estimated total cost at 100% utilization, based on current window cost and utilization'
       },
       openaiReferral: {
+        grant: '{who}: +{amount} {type}',
+        grantReferrer: 'You',
+        grantReferee: 'Invitee',
+        grantResetCredit: 'reset credits',
+        grantCredits: 'credits',
         available: 'Invites left',
         invite: 'Invite user',
         fromAccount: 'Inviting account:',
