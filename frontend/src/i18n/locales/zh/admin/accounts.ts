@@ -504,6 +504,11 @@ export default {
         estimatedTotalCostTooltip: '根据当前窗口费用和使用率估算达到 100% 使用率时的总费用'
       },
       openaiReferral: {
+        grant: '{who}：+{amount} {type}',
+        grantReferrer: '你',
+        grantReferee: '被邀请人',
+        grantResetCredit: '次重置',
+        grantCredits: '积分',
         available: '可邀请',
         invite: '邀请用户',
         fromAccount: '邀请账号：',

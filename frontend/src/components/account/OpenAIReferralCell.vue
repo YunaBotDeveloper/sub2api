@@ -50,6 +50,9 @@
             <li v-for="(rule, index) in eligibility.rules" :key="index">{{ rule }}</li>
           </ul>
         </div>
+        <ul v-if="eligibility?.grants?.length" class="space-y-1 text-sm font-medium text-success" data-testid="referral-grants">
+          <li v-for="(grant, index) in eligibility.grants" :key="index">{{ grantLabel(grant) }}</li>
+        </ul>
         <p v-if="fresh && (!eligibility?.should_show || count === null || count <= 0)" class="text-sm text-warning-strong">
           {{ t('admin.accounts.openaiReferral.unavailable') }}
         </p>
@@ -123,6 +126,14 @@ const countTitle = computed(() => {
 })
 const programLabel = computed(() => t(eligibility.value?.program_id === 'codex_referral_workspace'
   ? 'admin.accounts.openaiReferral.workspace' : 'admin.accounts.openaiReferral.personal'))
+// Upstream reward grants, e.g. {grant_type: 'rate_limit_reset_credit', amount: 1, recipient: 'referrer'}.
+// Unknown grant types fall back to the raw upstream name.
+const grantLabel = (grant: NonNullable<OpenAIReferralEligibility['grants']>[number]) => t('admin.accounts.openaiReferral.grant', {
+  who: t(grant.recipient === 'referrer' ? 'admin.accounts.openaiReferral.grantReferrer' : 'admin.accounts.openaiReferral.grantReferee'),
+  amount: grant.amount.toLocaleString(),
+  type: grant.grant_type === 'rate_limit_reset_credit' ? t('admin.accounts.openaiReferral.grantResetCredit')
+    : grant.grant_type.includes('credit') ? t('admin.accounts.openaiReferral.grantCredits') : grant.grant_type,
+})
 const needsConsent = computed(() => eligibility.value?.requires_explicit_confirmation !== false)
 const canSend = computed(() => fresh.value && !isShadow.value && !loading.value && !sending.value
   && eligibility.value?.should_show === true && count.value !== null && count.value > 0
