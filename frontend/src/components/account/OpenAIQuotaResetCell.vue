@@ -65,7 +65,7 @@
       <button
         type="button"
         data-testid="codex-credits"
-        class="inline-flex max-w-full items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 transition-colors hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-emerald-400 dark:hover:bg-emerald-900/30"
+        class="inline-flex max-w-full items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium text-success transition-colors hover:bg-success-weak disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="loading || resetting"
         :title="creditsButtonTitle"
         @click="handleQuery()"
@@ -76,7 +76,7 @@
       <OpenAIReferralCell :account="account" />
     </div>
 
-    <div v-if="creditsCacheWarning" class="text-[10px] text-amber-600 dark:text-amber-400">
+    <div v-if="creditsCacheWarning" class="text-[10px] text-warning-strong">
       {{ t('admin.accounts.openaiQuotaReset.pointsCachePersistFailed') }}
     </div>
 

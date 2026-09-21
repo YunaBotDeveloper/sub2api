@@ -355,7 +355,7 @@
                 <label class="input-label">{{ t('admin.riskControl.engine') }}</label>
                 <Select data-test="audit-engine-select" :model-value="configForm.engine" :options="engineOptions" :disabled="apiKeyTesting || saving" @update:model-value="switchEngine" />
               </div>
-              <div v-if="configForm.engine === 'typesafe'" class="lg:col-span-2 text-sm text-amber-700 dark:text-amber-300" role="status">
+              <div v-if="configForm.engine === 'typesafe'" class="lg:col-span-2 text-sm text-warning-strong" role="status">
                 {{ t('admin.riskControl.typeSafeNotice') }}
               </div>
               <div>
@@ -867,7 +867,7 @@
 
           <div v-else-if="activeSettingsTab === 'riskThresholds'" class="space-y-5">
             <p class="text-sm font-medium">{{ engineLabel(configForm.engine) }}</p>
-            <p v-if="configForm.engine === 'typesafe'" class="text-sm text-amber-700 dark:text-amber-300">{{ t('admin.riskControl.typeSafeThresholds') }}</p>
+            <p v-if="configForm.engine === 'typesafe'" class="text-sm text-warning-strong">{{ t('admin.riskControl.typeSafeThresholds') }}</p>
             <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <h3 class="text-h3 font-bold text-accent-strong">{{ t('admin.riskControl.riskThresholds') }}</h3>
