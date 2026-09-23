@@ -135,7 +135,7 @@
       </div>
 
       <!-- Schedule Config -->
-      <div class="card p-5">
+      <div class="card p-5" data-testid="backup-schedule">
         <div class="card-header -mx-5 -mt-5 mb-4">
           <h3 class="card-title">
             {{ t('admin.backup.schedule.title') }}
@@ -154,19 +154,27 @@
             <input v-model="scheduleForm.cron_expr" class="input w-full" placeholder="0 2 * * *" />
             <p class="input-hint">{{ t('admin.backup.schedule.cronHint') }}</p>
           </div>
+          <h4 class="mt-2 text-sm font-medium text-fg md:col-span-2">{{ t('admin.backup.schedule.ordinaryRetention') }}</h4>
           <div>
             <label class="input-label">{{ t('admin.backup.schedule.retainDays') }}</label>
-            <input v-model.number="scheduleForm.retain_days" type="number" min="0" class="input w-full" />
+            <input v-model.number="scheduleForm.retain_days" data-testid="backup-retain-days" type="number" min="0" step="1" class="input w-full" />
             <p class="input-hint">{{ t('admin.backup.schedule.retainDaysHint') }}</p>
           </div>
           <div>
             <label class="input-label">{{ t('admin.backup.schedule.retainCount') }}</label>
-            <input v-model.number="scheduleForm.retain_count" type="number" min="0" class="input w-full" />
+            <input v-model.number="scheduleForm.retain_count" data-testid="backup-retain-count" type="number" min="0" step="1" class="input w-full" />
             <p class="input-hint">{{ t('admin.backup.schedule.retainCountHint') }}</p>
           </div>
         </div>
+        <p class="input-hint mt-2">{{ t('admin.backup.schedule.ordinaryHint') }}</p>
+        <BackupArchiveSettings v-model="archiveForm" />
+        <p v-if="scheduleValidationError" class="mt-3 text-sm text-danger" role="alert">{{ scheduleValidationError }}</p>
+        <div class="mt-4 border border-border bg-surface-sunken p-3 text-sm text-fg" aria-live="polite">
+          <p class="font-medium">{{ t('admin.backup.schedule.preview') }}</p>
+          <p class="text-fg-muted">{{ retentionPreview }}</p>
+        </div>
         <div class="card-footer -mx-5 -mb-5 mt-5 flex justify-end">
-          <button type="button" class="btn btn-primary btn-sm" :disabled="savingSchedule" @click="saveSchedule">
+          <button type="button" class="btn btn-primary btn-sm" :disabled="savingSchedule || !!scheduleValidationError" @click="saveSchedule">
             {{ savingSchedule ? t('common.loading') : t('common.save') }}
           </button>
         </div>
@@ -212,6 +220,16 @@
                 ? t(`admin.backup.progress.${row.progress}`)
                 : t(`admin.backup.status.${row.status}`) }}
             </span>
+          </template>
+          <template #cell-file_name="{ row }">
+            {{ row.file_name }}
+            <span v-if="row.monthly_archive" class="badge badge-primary ml-1">{{ t('admin.backup.archive.badge') }}</span>
+            <div v-if="row.monthly_archive" class="mt-1 text-meta text-fg-muted">{{ row.monthly_archive.dates.join(' / ') }}</div>
+          </template>
+          <template #cell-expires_at="{ row }">
+            {{ row.monthly_archive
+              ? row.monthly_archive.retain_count === 0 ? t('admin.backup.archive.forever') : t('admin.backup.archive.retainLatest', { count: row.monthly_archive.retain_count })
+              : row.expires_at ? formatDate(row.expires_at) : t('admin.backup.neverExpire') }}
           </template>
           <template #cell-parts="{ row }">
             {{ row.parts?.length || (row.status === 'running' ? '-' : 1) }}
@@ -373,6 +391,7 @@ import { useAppStore } from '@/stores'
 import type {
   BackupS3Config,
   BackupScheduleConfig,
+  BackupMonthlyArchiveConfig,
   BackupRecord,
   BackupDownloadPart,
   ImageStorageConfig,
@@ -382,6 +401,7 @@ import TotpStepUpDialog from '@/components/auth/TotpStepUpDialog.vue'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import type { Column } from '@/components/common/types'
+import BackupArchiveSettings from '@/components/admin/BackupArchiveSettings.vue'
 
 const { t } = useI18n()
 const appStore = useAppStore()
@@ -441,6 +461,42 @@ const scheduleForm = ref<BackupScheduleConfig>({
   retain_count: 10,
 })
 const savingSchedule = ref(false)
+const archiveForm = ref<BackupMonthlyArchiveConfig>({ enabled: false, days: [1], include_month_end: false, retain_count: 0 })
+// Disabling hides the archive parameters, so a save while disabled keeps the
+// persisted parameters and only turns the rule off.
+const savedArchive = ref<BackupMonthlyArchiveConfig>(cloneArchive(archiveForm.value))
+const archivePayload = computed<BackupMonthlyArchiveConfig>(() =>
+  archiveForm.value.enabled ? cloneArchive(archiveForm.value) : { ...cloneArchive(savedArchive.value), enabled: false },
+)
+function cloneArchive(config: BackupMonthlyArchiveConfig): BackupMonthlyArchiveConfig {
+  return { ...config, days: [...config.days] }
+}
+const scheduleValidationError = computed(() => {
+  const counts = [scheduleForm.value.retain_days, scheduleForm.value.retain_count]
+  if (archiveForm.value.enabled) counts.push(archiveForm.value.retain_count)
+  if (!counts.every(value => Number.isSafeInteger(value) && value >= 0)) {
+    return t('admin.backup.archive.invalidRetention')
+  }
+  if (archiveForm.value.enabled && !archiveForm.value.days.length && !archiveForm.value.include_month_end) {
+    return t('admin.backup.archive.selectDates')
+  }
+  return ''
+})
+const retentionPreview = computed(() => {
+  if (scheduleValidationError.value) return scheduleValidationError.value
+  const { retain_days: days, retain_count: count } = scheduleForm.value
+  const ordinary = days > 0 && count > 0
+    ? t('admin.backup.schedule.previewBoth', { days, count })
+    : days > 0 ? t('admin.backup.schedule.previewDays', { days })
+      : count > 0 ? t('admin.backup.schedule.previewCount', { count }) : t('admin.backup.schedule.previewUnlimited')
+  if (!archiveForm.value.enabled) return ordinary
+  const dates = [
+    ...[...archiveForm.value.days].sort((a, b) => a - b).map(day => t('admin.backup.archive.day', { day })),
+    ...(archiveForm.value.include_month_end ? [t('admin.backup.archive.monthEnd')] : []),
+  ].join(', ')
+  const retention = archiveForm.value.retain_count === 0 ? t('admin.backup.archive.forever') : t('admin.backup.archive.retainLatest', { count: archiveForm.value.retain_count })
+  return `${ordinary} ${t('admin.backup.archive.preview', { dates, retention })}`
+})
 
 // Backups
 const backups = ref<BackupRecord[]>([])
@@ -457,11 +513,7 @@ const backupColumns = computed<Column[]>(() => [
   { key: 'file_name', label: t('admin.backup.columns.fileName') },
   { key: 'size_bytes', label: t('admin.backup.columns.size'), formatter: (value) => formatSize(value) },
   { key: 'parts', label: t('admin.backup.columns.parts') },
-  {
-    key: 'expires_at',
-    label: t('admin.backup.columns.expiresAt'),
-    formatter: (value) => (value ? formatDate(value) : t('admin.backup.neverExpire')),
-  },
+  { key: 'expires_at', label: t('admin.backup.columns.expiresAt') },
   {
     key: 'triggered_by',
     label: t('admin.backup.columns.triggeredBy'),
@@ -694,18 +746,28 @@ async function loadSchedule() {
     scheduleForm.value = {
       enabled: cfg.enabled,
       cron_expr: cfg.cron_expr || '0 2 * * *',
-      retain_days: cfg.retain_days || 14,
-      retain_count: cfg.retain_count || 10,
+      retain_days: cfg.retain_days ?? 14,
+      retain_count: cfg.retain_count ?? 10,
     }
+    archiveForm.value = {
+      enabled: cfg.monthly_archive?.enabled ?? false,
+      days: cfg.monthly_archive?.days ?? [1],
+      include_month_end: cfg.monthly_archive?.include_month_end ?? false,
+      retain_count: cfg.monthly_archive?.retain_count ?? 0,
+    }
+    savedArchive.value = cloneArchive(archiveForm.value)
   } catch (error) {
     appStore.showError((error as { message?: string })?.message || t('errors.networkError'))
   }
 }
 
 async function saveSchedule() {
+  if (scheduleValidationError.value) return
   savingSchedule.value = true
   try {
-    await adminAPI.backup.updateSchedule(scheduleForm.value)
+    const archive = archivePayload.value
+    await adminAPI.backup.updateSchedule({ ...scheduleForm.value, monthly_archive: archive })
+    savedArchive.value = cloneArchive(archive)
     appStore.showSuccess(t('admin.backup.schedule.saved'))
   } catch (error) {
     appStore.showError((error as { message?: string })?.message || t('errors.networkError'))
@@ -803,9 +865,10 @@ async function restoreBackup(id: string) {
 }
 
 async function removeBackup(id: string) {
-  if (!window.confirm(t('admin.backup.actions.deleteConfirm'))) return
+  const archived = !!backups.value.find(record => record.id === id)?.monthly_archive
+  if (!window.confirm(t(archived ? 'admin.backup.archive.deleteConfirm' : 'admin.backup.actions.deleteConfirm'))) return
   try {
-    await adminAPI.backup.deleteBackup(id)
+    await adminAPI.backup.deleteBackup(id, archived)
     appStore.showSuccess(t('admin.backup.actions.deleted'))
     await loadBackups()
   } catch (error) {

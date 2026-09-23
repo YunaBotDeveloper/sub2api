@@ -477,6 +477,18 @@ export default {
         saved: 'Đã lưu cài đặt làm mới mức sử dụng Ollama Cloud',
         saveFailed: 'Lưu cài đặt làm mới mức sử dụng Ollama Cloud thất bại'
       },
+      opencodeGoUsage: {
+        title: 'Làm mới mức dùng OpenCode Go',
+        description: 'Làm mới các cửa sổ sử dụng do tài khoản OpenCode Go upstream báo về, chỉ cho các tài khoản đã bật riêng. Mặc định tắt.',
+        enabled: 'Bật tự động làm mới toàn cục',
+        enabledHint: 'Chỉ làm mới các tài khoản đã bật công tắc tự động làm mới của riêng mình. Vẫn có thể làm mới thủ công.',
+        intervalMinutes: 'Thời gian chờ tối đa khi yêu cầu liên tục (phút)',
+        intervalHint: 'Phạm vi: 5–1440 phút. Khi các yêu cầu liên tục cứ đẩy lùi debounce, buộc làm mới sau khoảng chờ này.',
+        debounceMinutes: 'Khoảng yên lặng sau yêu cầu cuối (phút)',
+        debounceHint: 'Phạm vi: 1–60 phút và phải nhỏ hơn chu kỳ làm mới. Làm mới khi yêu cầu model gần nhất đã yên lặng đủ lâu như vậy.',
+        saved: 'Đã lưu cài đặt làm mới mức dùng OpenCode Go',
+        saveFailed: 'Lưu cài đặt làm mới mức dùng OpenCode Go thất bại'
+      },
       gatewayForwarding: {
         title: 'Chuyển tiếp yêu cầu',
         description: 'Kiểm soát cách yêu cầu được chuyển tiếp tới các tài khoản OAuth upstream',
@@ -542,6 +554,11 @@ export default {
         openaiCodexVersionAutoSync: 'Tự động đồng bộ phiên bản Codex',
         openaiCodexVersionAutoSyncHint: 'Lấy phiên bản client ổn định mới nhất từ kho chính thức mỗi 6 giờ, để bạn không cần nâng cấp dịch vụ này chỉ để cập nhật phiên bản. Khi tắt, chỉ dùng phiên bản ở trên hoặc giá trị mặc định tích hợp.',
         openaiCodexVersionSyncedValue: 'Đang đồng bộ: {version}',
+        claudeCodeClientVersion: 'Phiên bản client Claude Code',
+        claudeCodeClientVersionHint: 'Phiên bản client mà gateway khai báo với upstream khi giả lập Claude Code CLI chính thức. Để trống để dùng bản chính thức mới nhất được tự động đồng bộ; nhập giá trị sẽ ghim phiên bản và ngừng theo tự động đồng bộ. Biến môi trường SUB2API_CLAUDE_CLI_VERSION hoặc phiên bản tích hợp chỉ được dùng khi cả giá trị thủ công lẫn giá trị đã đồng bộ đều không hợp lệ.',
+        claudeCodeVersionAutoSync: 'Tự động đồng bộ phiên bản Claude Code',
+        claudeCodeVersionAutoSyncHint: 'Mỗi giờ lấy phiên bản client Claude Code mới nhất từ kênh phát hành chính thức, nên không cần nâng cấp dịch vụ này chỉ để cập nhật phiên bản. Khi tắt, việc lấy sẽ dừng nhưng phiên bản đã đồng bộ trước đó vẫn được dùng. Phiên bản thủ công ở trên luôn được ưu tiên.',
+        claudeCodeVersionSyncedValue: 'Đang đồng bộ: {version}',
         codexHardeningTitle: "Cài đặt Codex",
         codexClientRestrictionTitle: "Giới hạn client Codex",
         codexHardeningDesc:
@@ -1176,8 +1193,9 @@ export default {
         lowRatePriorityTitle: 'Ưu tiên giá thấp hơn',
         lowRatePriorityDescription: 'Khi bật, tài khoản có giá tính phí thấp hơn được ưu tiên. Nếu giá bằng nhau, sẽ xét độ ưu tiên tài khoản, tải hiện tại và các yếu tố điều phối khác. Công tắc này bị bỏ qua khi bật bộ điều phối thử nghiệm.',
         oauthRateTitle: 'Giá tham chiếu điều phối OAuth',
-        oauthRatePriorityDescription: 'Khi một nhóm có cả tài khoản API Key và OAuth, giá này được dùng để sắp xếp tài khoản OAuth cùng với giá tính phí API Key đã thăm dò.',
-        oauthRateWeightedDescription: 'Khi một nhóm có cả tài khoản API Key và OAuth, giá này được dùng cho tài khoản OAuth khi tính điểm giá tính phí.',
+        oauthRatePriorityDescription: 'Tài khoản OAuth dùng giá tham chiếu này khi sắp xếp ưu tiên giá thấp. Để trống để dùng giá riêng của từng tài khoản. Tài khoản API Key dùng giá đã thăm dò hợp lệ nếu có, nếu không thì dùng giá của tài khoản.',
+        oauthRateWeightedDescription: 'Tài khoản OAuth dùng giá tham chiếu này khi tính điểm giá tính phí. Để trống để dùng giá riêng của từng tài khoản. Tài khoản API Key dùng giá đã thăm dò hợp lệ nếu có, nếu không thì dùng giá của tài khoản.',
+        oauthRateInvalid: 'Giá tham chiếu điều phối OAuth phải là số không âm, hoặc để trống để dùng giá của tài khoản.',
         stickyWeightedTitle: 'Trọng số sticky',
         stickyWeightedDescription: 'Khi bật, mức gắn kết previous_response_id và session_hash được bộ điều phối nâng cao chấm điểm. Khi tắt, tài khoản sticky giữ hành vi trúng cứng như cũ.',
         subscriptionPriorityTitle: 'Ưu tiên gói đăng ký',

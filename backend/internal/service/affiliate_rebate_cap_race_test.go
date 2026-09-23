@@ -178,6 +178,10 @@ func (r *affiliateCapRaceRepoStub) GetAffiliateUserOverview(context.Context, int
 	panic("unexpected GetAffiliateUserOverview call")
 }
 
+func (r *affiliateCapRaceRepoStub) WithdrawQuota(context.Context, int64, float64, string) (*AffiliateWithdrawResult, error) {
+	panic("unexpected WithdrawQuota call")
+}
+
 var _ AffiliateRepository = (*affiliateCapRaceRepoStub)(nil)
 
 // TestAccrueInviteRebateForOrder_ConcurrentOrdersRespectPerInviteeCap 是 H1 的回归测试。

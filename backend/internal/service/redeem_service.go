@@ -650,8 +650,9 @@ func (s *RedeemService) redeem(ctx context.Context, userID int64, code string, r
 		postCommit(ctx)
 	}
 
-	// 重新获取更新后的兑换码
-	redeemCode, err = s.redeemRepo.GetByID(txCtx, redeemCode.ID)
+	// 重新获取更新后的兑换码。自持事务此时已提交，不能再用 txCtx；
+	// 复用外部事务时 txCtx == ctx，读到的仍是调用方事务内的数据。
+	redeemCode, err = s.redeemRepo.GetByID(ctx, redeemCode.ID)
 	if err != nil {
 		return nil, fmt.Errorf("get updated redeem code: %w", err)
 	}
@@ -812,12 +813,13 @@ func (s *RedeemService) reduceOrCancelSubscription(ctx context.Context, userID, 
 		}
 
 		now := time.Now()
-		remaining := int(sub.ExpiresAt.Sub(now).Hours() / 24)
-		if remaining < 0 {
-			remaining = 0
+		if s.subscriptionService.now != nil {
+			now = s.subscriptionService.now()
 		}
+		// Preserve calendar-day semantics without rounding away the remaining hours.
+		newExpiresAt := sub.ExpiresAt.AddDate(0, 0, -reduceDays)
 
-		if remaining <= reduceDays {
+		if !newExpiresAt.After(now) {
 			// 剩余天数不足，直接取消订阅
 			if err := s.subscriptionService.userSubRepo.UpdateStatus(txCtx, sub.ID, SubscriptionStatusExpired); err != nil {
 				return fmt.Errorf("cancel subscription: %w", err)
@@ -828,7 +830,6 @@ func (s *RedeemService) reduceOrCancelSubscription(ctx context.Context, userID, 
 			}
 		} else {
 			// 缩短天数
-			newExpiresAt := sub.ExpiresAt.AddDate(0, 0, -reduceDays)
 			if err := s.subscriptionService.userSubRepo.ExtendExpiry(txCtx, sub.ID, newExpiresAt); err != nil {
 				return fmt.Errorf("reduce subscription: %w", err)
 			}

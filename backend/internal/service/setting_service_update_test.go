@@ -402,7 +402,7 @@ func TestSettingService_UpdateSettingsRejectsInvalidOpenAIOAuthSchedulingRateMul
 	svc := NewSettingService(repo, &config.Config{})
 
 	for _, rate := range []float64{-0.01, math.NaN(), math.Inf(1)} {
-		err := svc.UpdateSettings(context.Background(), &SystemSettings{OpenAIOAuthSchedulingRateMultiplier: rate})
+		err := svc.UpdateSettings(context.Background(), &SystemSettings{OpenAIOAuthSchedulingRateMultiplier: &rate})
 		require.Error(t, err)
 	}
 }
@@ -463,8 +463,12 @@ func TestSettingService_UpdateSettings_OpenAIAdvancedSchedulerWeightSums(t *test
 func TestSettingService_ParseSettingsDefaultsOpenAIOAuthSchedulingRateMultiplier(t *testing.T) {
 	svc := NewSettingService(&settingUpdateRepoStub{}, &config.Config{})
 
-	require.Equal(t, 1.0, svc.parseSettings(map[string]string{}).OpenAIOAuthSchedulingRateMultiplier)
-	require.Equal(t, 0.05, svc.parseSettings(map[string]string{SettingKeyOpenAIOAuthSchedulingRateMultiplier: "0.05"}).OpenAIOAuthSchedulingRateMultiplier)
+	def := svc.parseSettings(map[string]string{}).OpenAIOAuthSchedulingRateMultiplier
+	require.NotNil(t, def)
+	require.Equal(t, 1.0, *def)
+	custom := svc.parseSettings(map[string]string{SettingKeyOpenAIOAuthSchedulingRateMultiplier: "0.05"}).OpenAIOAuthSchedulingRateMultiplier
+	require.NotNil(t, custom)
+	require.Equal(t, 0.05, *custom)
 }
 
 func TestSettingService_GetAllSettings_OpenAIAdvancedSchedulerEffectiveValuesUseConfig(t *testing.T) {
