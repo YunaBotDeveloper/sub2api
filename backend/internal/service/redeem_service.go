@@ -650,8 +650,9 @@ func (s *RedeemService) redeem(ctx context.Context, userID int64, code string, r
 		postCommit(ctx)
 	}
 
-	// 重新获取更新后的兑换码
-	redeemCode, err = s.redeemRepo.GetByID(txCtx, redeemCode.ID)
+	// 重新获取更新后的兑换码。自持事务此时已提交，不能再用 txCtx；
+	// 复用外部事务时 txCtx == ctx，读到的仍是调用方事务内的数据。
+	redeemCode, err = s.redeemRepo.GetByID(ctx, redeemCode.ID)
 	if err != nil {
 		return nil, fmt.Errorf("get updated redeem code: %w", err)
 	}
