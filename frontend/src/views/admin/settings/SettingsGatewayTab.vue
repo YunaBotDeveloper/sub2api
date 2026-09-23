@@ -1688,6 +1688,90 @@
       </div>
     </div>
 
+    <!-- OpenCode Go Usage Settings -->
+    <div class="card" data-testid="opencode-go-usage-global-settings">
+      <div class="card-header">
+        <h2 class="card-title">
+          {{ t("admin.settings.opencodeGoUsage.title") }}
+        </h2>
+        <p class="mt-1 text-sm text-fg-muted">
+          {{ t("admin.settings.opencodeGoUsage.description") }}
+        </p>
+      </div>
+      <div class="card-body space-y-5">
+        <div v-if="opencodeGoUsageLoading" class="flex items-center gap-2 text-fg-muted">
+          <div class="h-4 w-4 animate-spin rounded-full border-b-2 border-accent"></div>
+          {{ t("common.loading") }}
+        </div>
+        <template v-else>
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <label class="font-medium text-fg">
+                {{ t("admin.settings.opencodeGoUsage.enabled") }}
+              </label>
+              <p class="text-sm text-fg-muted">
+                {{ t("admin.settings.opencodeGoUsage.enabledHint") }}
+              </p>
+            </div>
+            <Toggle
+              v-model="opencodeGoUsageForm.enabled"
+              :aria-label="t('admin.settings.opencodeGoUsage.enabled')"
+              data-testid="opencode-go-usage-global-enabled"
+            />
+          </div>
+          <div v-if="opencodeGoUsageForm.enabled" class="space-y-4 border-t border-border pt-4">
+            <div>
+              <label class="input-label" for="opencode-go-usage-debounce">
+                {{ t("admin.settings.opencodeGoUsage.debounceMinutes") }}
+              </label>
+              <input
+                id="opencode-go-usage-debounce"
+                v-model.number="opencodeGoUsageForm.debounce_minutes"
+                type="number"
+                min="1"
+                max="60"
+                class="input w-32"
+                data-testid="opencode-go-usage-global-debounce"
+                @keydown.enter.prevent="saveOpenCodeGoUsageSettings"
+              />
+              <p class="input-hint">
+                {{ t("admin.settings.opencodeGoUsage.debounceHint") }}
+              </p>
+            </div>
+            <div>
+              <label class="input-label" for="opencode-go-usage-interval">
+                {{ t("admin.settings.opencodeGoUsage.intervalMinutes") }}
+              </label>
+              <input
+                id="opencode-go-usage-interval"
+                v-model.number="opencodeGoUsageForm.interval_minutes"
+                type="number"
+                min="5"
+                max="1440"
+                class="input w-32"
+                data-testid="opencode-go-usage-global-interval"
+                @keydown.enter.prevent="saveOpenCodeGoUsageSettings"
+              />
+              <p class="input-hint">
+                {{ t("admin.settings.opencodeGoUsage.intervalHint") }}
+              </p>
+            </div>
+          </div>
+          <div class="flex justify-end border-t border-border pt-4">
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              :disabled="opencodeGoUsageSaving"
+              data-testid="opencode-go-usage-global-save"
+              @click="saveOpenCodeGoUsageSettings"
+            >
+              {{ opencodeGoUsageSaving ? t("common.saving") : t("common.save") }}
+            </button>
+          </div>
+        </template>
+      </div>
+    </div>
+
     <!-- Gateway Scheduling Settings -->
     <div class="card">
       <div
@@ -2553,6 +2637,38 @@
           <Toggle v-model="form.openai_codex_version_auto_sync_enabled" />
         </div>
 
+        <!-- Claude Code 客户端版本号 -->
+        <div class="border-t border-border pt-4">
+          <label class="input-label">
+            {{ t("admin.settings.gatewayForwarding.claudeCodeClientVersion") }}
+          </label>
+          <input
+            v-model="form.claude_code_client_version"
+            type="text"
+            class="input w-full font-mono text-sm"
+            placeholder="2.1.280"
+          />
+          <p class="input-hint">
+            {{ t("admin.settings.gatewayForwarding.claudeCodeClientVersionHint") }}
+          </p>
+        </div>
+
+        <!-- Claude Code 版本号自动同步 -->
+        <div class="flex items-center justify-between border-t border-border pt-4">
+          <div>
+            <label class="text-sm font-medium text-fg">
+              {{ t("admin.settings.gatewayForwarding.claudeCodeVersionAutoSync") }}
+            </label>
+            <p class="mt-0.5 text-xs text-fg-muted">
+              {{ t("admin.settings.gatewayForwarding.claudeCodeVersionAutoSyncHint") }}
+            </p>
+            <p v-if="claudeSyncedVersionLabel" class="mt-0.5 text-xs text-fg-muted">
+              {{ claudeSyncedVersionLabel }}
+            </p>
+          </div>
+          <Toggle v-model="form.claude_code_version_auto_sync_enabled" />
+        </div>
+
       </div>
     </div>
 
@@ -3069,6 +3185,7 @@ const {
   codexBlacklistRows,
   codexFingerprintNoRequired,
   codexFingerprintRows,
+  claudeSyncedVersionLabel,
   codexSyncedVersionLabel,
   codexWhitelistRows,
   commonModelPatterns,
@@ -3084,6 +3201,9 @@ const {
   ollamaCloudUsageForm,
   ollamaCloudUsageLoading,
   ollamaCloudUsageSaving,
+  opencodeGoUsageForm,
+  opencodeGoUsageLoading,
+  opencodeGoUsageSaving,
   openAIAdvancedSchedulerWeightFields,
   openTestDialog,
   openaiFastPolicyActionOptions,
@@ -3113,6 +3233,7 @@ const {
   resetWebSearchUsage,
   saveBetaPolicySettings,
   saveOllamaCloudUsageSettings,
+  saveOpenCodeGoUsageSettings,
   saveOverloadCooldownSettings,
   saveRateLimit429CooldownSettings,
   saveRectifierSettings,

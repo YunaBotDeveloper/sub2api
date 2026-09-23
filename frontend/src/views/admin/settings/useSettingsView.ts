@@ -450,6 +450,14 @@ export function useSettingsView() {
     debounce_minutes: 1,
   });
 
+  const opencodeGoUsageLoading = ref(true);
+  const opencodeGoUsageSaving = ref(false);
+  const opencodeGoUsageForm = reactive({
+    enabled: false,
+    interval_minutes: 15,
+    debounce_minutes: 1,
+  });
+
   // Overload Cooldown (529) 状态
   const overloadCooldownLoading = ref(true);
   const overloadCooldownSaving = ref(false);
@@ -1178,6 +1186,10 @@ export function useSettingsView() {
     // 只读展示：自动同步任务写入的官方最新稳定版，不参与提交（提交载荷按字段显式构造）
     openai_codex_client_version_synced: "",
     openai_codex_version_auto_sync_enabled: true,
+    claude_code_client_version: "",
+    // 只读展示：自动同步任务写入的官方最新稳定版，不参与提交（提交载荷按字段显式构造）
+    claude_code_client_version_synced: "",
+    claude_code_version_auto_sync_enabled: true,
     // codex_cli_only 加固
     min_codex_version: "",
     max_codex_version: "",
@@ -2136,6 +2148,14 @@ export function useSettingsView() {
     });
   });
 
+  const claudeSyncedVersionLabel = computed(() => {
+    const synced = form.claude_code_client_version_synced?.trim();
+    if (!synced) return "";
+    return t("admin.settings.gatewayForwarding.claudeCodeVersionSyncedValue", {
+      version: synced,
+    });
+  });
+
   async function loadSettings() {
     loading.value = true;
     loadFailed.value = false;
@@ -2807,6 +2827,9 @@ export function useSettingsView() {
           form.openai_codex_client_version?.trim() || "",
         openai_codex_version_auto_sync_enabled:
           form.openai_codex_version_auto_sync_enabled,
+        claude_code_client_version: form.claude_code_client_version?.trim() || "",
+        claude_code_version_auto_sync_enabled:
+          form.claude_code_version_auto_sync_enabled,
         min_codex_version: form.min_codex_version?.trim() || "",
         max_codex_version: form.max_codex_version?.trim() || "",
         codex_cli_only_allow_app_server_clients:
@@ -3283,6 +3306,37 @@ export function useSettingsView() {
       );
     } finally {
       ollamaCloudUsageSaving.value = false;
+    }
+  }
+
+  async function loadOpenCodeGoUsageSettings() {
+    opencodeGoUsageLoading.value = true;
+    try {
+      Object.assign(
+        opencodeGoUsageForm,
+        await adminAPI.accounts.getOpenCodeGoUsageSettings(),
+      );
+    } catch (_error: unknown) {
+      // Keep the fail-safe disabled defaults when this optional setting cannot be loaded.
+    } finally {
+      opencodeGoUsageLoading.value = false;
+    }
+  }
+
+  async function saveOpenCodeGoUsageSettings() {
+    opencodeGoUsageSaving.value = true;
+    try {
+      const updated = await adminAPI.accounts.updateOpenCodeGoUsageSettings({
+        ...opencodeGoUsageForm,
+      });
+      Object.assign(opencodeGoUsageForm, updated);
+      appStore.showSuccess(t("admin.settings.opencodeGoUsage.saved"));
+    } catch (error: unknown) {
+      appStore.showError(
+        extractApiErrorMessage(error, t("admin.settings.opencodeGoUsage.saveFailed")),
+      );
+    } finally {
+      opencodeGoUsageSaving.value = false;
     }
   }
 
@@ -3898,6 +3952,7 @@ export function useSettingsView() {
     loadAdminApiKey();
     loadUpstreamBillingProbeSettings();
     loadOllamaCloudUsageSettings();
+    loadOpenCodeGoUsageSettings();
     loadOverloadCooldownSettings();
     loadRateLimit429CooldownSettings();
     loadPanelRateLimitSettings();
@@ -4304,6 +4359,9 @@ export function useSettingsView() {
     ollamaCloudUsageLoading,
     ollamaCloudUsageSaving,
     ollamaCloudUsageForm,
+    opencodeGoUsageLoading,
+    opencodeGoUsageSaving,
+    opencodeGoUsageForm,
     overloadCooldownLoading,
     overloadCooldownSaving,
     overloadCooldownForm,
@@ -4446,6 +4504,7 @@ export function useSettingsView() {
     addCodexWhitelistRow,
     removeCodexWhitelistRow,
     codexSyncedVersionLabel,
+    claudeSyncedVersionLabel,
     loadSettings,
     loadSubscriptionGroups,
     findNextAvailableSubscriptionGroup,
@@ -4469,6 +4528,8 @@ export function useSettingsView() {
     saveUpstreamBillingProbeSettings,
     loadOllamaCloudUsageSettings,
     saveOllamaCloudUsageSettings,
+    loadOpenCodeGoUsageSettings,
+    saveOpenCodeGoUsageSettings,
     loadOverloadCooldownSettings,
     saveOverloadCooldownSettings,
     loadPanelRateLimitSettings,
