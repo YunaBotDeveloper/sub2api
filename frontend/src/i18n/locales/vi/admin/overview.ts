@@ -125,10 +125,42 @@ export default {
         cronExpr: 'Biểu thức Cron',
         cronHint: 'Ví dụ: "0 2 * * *" nghĩa là 2:00 sáng mỗi ngày',
         retainDays: 'Số ngày hết hạn bản sao lưu',
-        retainDaysHint: 'Tệp sao lưu tự động bị xóa sau số ngày này, 0 = không bao giờ hết hạn',
+        retainDaysHint: 'Bản sao lưu thường bị xóa sau số ngày này; 0 = không giới hạn thời gian',
         retainCount: 'Số bản giữ lại tối đa',
-        retainCountHint: 'Số bản sao lưu tối đa được giữ lại, 0 = không giới hạn',
+        retainCountHint: 'Số bản sao lưu thường tối đa được giữ lại; 0 = không giới hạn số lượng',
+        ordinaryRetention: 'Lưu giữ bản sao lưu thường',
+        ordinaryHint: 'Khi chạm bất kỳ giới hạn nào, các bản sao lưu thường cũ nhất sẽ bị dọn dẹp. Bản lưu trữ hằng tháng được giữ riêng.',
+        preview: 'Xem trước chính sách lưu giữ',
+        previewBoth: 'Giữ tối đa {count} bản sao lưu thường trong {days} ngày gần nhất.',
+        previewDays: 'Giữ các bản sao lưu thường trong {days} ngày gần nhất, không giới hạn số lượng.',
+        previewCount: 'Giữ {count} bản sao lưu thường mới nhất, không giới hạn thời gian.',
+        previewUnlimited: 'Bản sao lưu thường không bị tự động xóa.',
         saved: 'Đã lưu cấu hình lịch sao lưu'
+      },
+      archive: {
+        title: 'Lưu trữ hằng tháng',
+        enabled: 'Bật',
+        dates: 'Ngày lưu trữ (chọn nhiều)',
+        selectDates: 'Chọn ít nhất một ngày lưu trữ',
+        selectedDates: 'Đã chọn {count} ngày',
+        day: 'Ngày {day}',
+        monthEnd: 'Cuối tháng',
+        done: 'Xong',
+        datesHint: 'Lưu trữ bản sao lưu định kỳ thành công đầu tiên của mỗi ngày đã chọn, dựa trên ngày bắt đầu và múi giờ của lịch.',
+        retention: 'Lưu giữ bản lưu trữ',
+        count: 'Số bản lưu trữ cần giữ',
+        copies: 'bản',
+        forever: 'Giữ vĩnh viễn',
+        foreverHint: 'Giữ vĩnh viễn mọi bản lưu trữ mới. Các bản lưu trữ vĩnh viễn hiện có vẫn được bảo vệ sau khi đổi cấu hình.',
+        countHint: 'Đếm chung các bản lưu trữ không vĩnh viễn của mọi ngày đã chọn; khi vượt giới hạn sẽ xóa bản cũ nhất.',
+        fallbackHint: 'Nếu ngày đã chọn không có bản sao lưu thành công, dùng bản thành công kế tiếp trong tháng đó. Ngày không tồn tại sẽ dùng cuối tháng. Mỗi bản sao lưu chỉ được tính một lần.',
+        independentHint: 'Bản lưu trữ dùng lại bản sao lưu định kỳ và không tính vào giới hạn lưu giữ thường. Nếu trong tháng không còn bản sao lưu thành công nào sau đó thì sẽ không tạo bản lưu trữ.',
+        disabledHint: 'Tắt sẽ ngừng tạo bản lưu trữ mới. Các bản lưu trữ hiện có giữ nguyên chính sách lưu giữ trước đó.',
+        invalidRetention: 'Số ngày và số bản lưu giữ phải là số nguyên không âm. Bản lưu trữ không vĩnh viễn cần giữ ít nhất 1 bản.',
+        preview: 'Mỗi tháng lưu trữ một bản sao lưu vào {dates}: {retention}.',
+        retainLatest: 'giữ tổng cộng {count} bản lưu trữ mới nhất',
+        badge: 'Lưu trữ tháng',
+        deleteConfirm: 'Đây là bản lưu trữ hằng tháng. Gỡ bảo vệ lưu trữ và xóa vĩnh viễn bản sao lưu này? Thao tác không thể hoàn tác.',
       },
       operations: {
         title: 'Bản ghi sao lưu',
@@ -393,10 +425,12 @@ export default {
 
     affiliates: {
       invitesDescription: 'Xem quan hệ người mời và người được mời trên toàn hệ thống',
-      rebatesDescription: 'Xem các đơn nạp tiền đã tạo hoa hồng giới thiệu',
-      transfersDescription: 'Xem các lần chuyển hạn mức giới thiệu vào số dư tài khoản',
+      rebatesDescription: 'Xem mọi khoản hoa hồng giới thiệu phát sinh từ đơn nạp tiền, mã đổi thưởng và nạp tiền bởi quản trị viên',
+      transfersDescription: 'Xem các lần chuyển hạn mức giới thiệu vào số dư và các lần rút tiền ngoại tuyến',
       errors: {
-        loadFailed: 'Không thể tải bản ghi giới thiệu'
+        loadFailed: 'Không thể tải bản ghi giới thiệu',
+        AFFILIATE_QUOTA_INSUFFICIENT: 'Hạn mức giới thiệu khả dụng không đủ',
+        AFFILIATE_WITHDRAW_AMOUNT_INVALID: 'Số tiền rút không hợp lệ'
       },
       records: {
         search: 'Tìm kiếm',
@@ -421,7 +455,33 @@ export default {
         historyQuotaAfter: 'Hoa hồng lũy kế sau',
         invitedAt: 'Mời lúc',
         rebatedAt: 'Nhận hoa hồng lúc',
-        transferredAt: 'Chuyển lúc'
+        transferredAt: 'Chuyển lúc',
+        outflowType: 'Loại'
+      },
+      outflowTypes: {
+        transfer: 'Chuyển vào số dư',
+        withdraw: 'Rút tiền ngoại tuyến'
+      },
+      withdraw: {
+        button: 'Ghi nhận rút tiền ngoại tuyến',
+        title: 'Ghi nhận rút tiền ngoại tuyến',
+        user: 'Người dùng',
+        userPlaceholder: 'Tìm theo email hoặc tên người dùng',
+        noUserFound: 'Không tìm thấy người dùng phù hợp',
+        changeUser: 'Đổi người dùng',
+        availableQuota: 'Hạn mức khả dụng',
+        frozenHint: 'Hoa hồng còn trong thời gian đóng băng không được tính vào hạn mức khả dụng',
+        amount: 'Số tiền rút (USD)',
+        amountHint: 'Nhập số tiền đã trả cho người dùng này bên ngoài hệ thống',
+        fillAll: 'Tất cả',
+        warning: 'Việc ghi nhận sẽ trừ số tiền này khỏi hạn mức giới thiệu khả dụng của người dùng và không thể hoàn tác. Hãy chắc chắn rằng khoản thanh toán bên ngoài đã hoàn tất.',
+        submit: 'Xác nhận',
+        submitting: 'Đang ghi nhận...',
+        success: 'Đã ghi nhận rút tiền ngoại tuyến {amount}; còn khả dụng {remaining}',
+        replayed: 'Lần rút tiền ngoại tuyến {amount} này đã được ghi nhận trước đó và không bị trừ lại; sau lần đó còn khả dụng {remaining}',
+        uncertainHint: 'Lần gửi trước không nhận được kết quả và có thể đã được ghi nhận. Người dùng và số tiền đã bị khóa; gửi lại sẽ thử lại đúng lần ghi nhận đó và không bao giờ trừ hai lần.',
+        amountRequired: 'Nhập số tiền lớn hơn 0',
+        amountExceeds: 'Số tiền không được vượt quá hạn mức khả dụng'
       },
       overview: {
         title: 'Tổng quan người dùng giới thiệu',

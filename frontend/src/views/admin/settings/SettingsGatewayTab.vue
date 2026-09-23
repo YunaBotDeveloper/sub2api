@@ -1831,7 +1831,6 @@
               class="input pr-8"
               data-testid="openai-oauth-scheduling-rate-multiplier"
               min="0"
-              required
               step="0.01"
               type="number"
             />
@@ -1920,7 +1919,6 @@
               class="input pr-8"
               data-testid="openai-oauth-scheduling-rate-multiplier"
               min="0"
-              required
               step="0.01"
               type="number"
             />

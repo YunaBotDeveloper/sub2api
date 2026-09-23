@@ -812,12 +812,13 @@ func (s *RedeemService) reduceOrCancelSubscription(ctx context.Context, userID, 
 		}
 
 		now := time.Now()
-		remaining := int(sub.ExpiresAt.Sub(now).Hours() / 24)
-		if remaining < 0 {
-			remaining = 0
+		if s.subscriptionService.now != nil {
+			now = s.subscriptionService.now()
 		}
+		// Preserve calendar-day semantics without rounding away the remaining hours.
+		newExpiresAt := sub.ExpiresAt.AddDate(0, 0, -reduceDays)
 
-		if remaining <= reduceDays {
+		if !newExpiresAt.After(now) {
 			// 剩余天数不足，直接取消订阅
 			if err := s.subscriptionService.userSubRepo.UpdateStatus(txCtx, sub.ID, SubscriptionStatusExpired); err != nil {
 				return fmt.Errorf("cancel subscription: %w", err)
@@ -828,7 +829,6 @@ func (s *RedeemService) reduceOrCancelSubscription(ctx context.Context, userID, 
 			}
 		} else {
 			// 缩短天数
-			newExpiresAt := sub.ExpiresAt.AddDate(0, 0, -reduceDays)
 			if err := s.subscriptionService.userSubRepo.ExtendExpiry(txCtx, sub.ID, newExpiresAt); err != nil {
 				return fmt.Errorf("reduce subscription: %w", err)
 			}
