@@ -63,12 +63,20 @@ func TestGrokWebSessionSolvesAndRetriesChallenge(t *testing.T) {
 	}
 }
 
-func TestSolveGrokClearanceRequiresCfClearance(t *testing.T) {
+// An unchallenged egress IP returns no cf_clearance; that is still a usable
+// solution (solver UA + cookies), while a missing UA is not.
+func TestSolveGrokClearanceWithoutChallenge(t *testing.T) {
+	reply := `{"status":"ok","solution":{"userAgent":"UA","cookies":[{"name":"__cf_bm","value":"x"}]}}`
 	solver := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte(`{"status":"ok","solution":{"userAgent":"UA","cookies":[{"name":"__cf_bm","value":"x"}]}}`))
+		_, _ = w.Write([]byte(reply))
 	}))
 	defer solver.Close()
+	got, err := solveGrokClearance(context.Background(), solver.URL, "")
+	if err != nil || got.UserAgent != "UA" || got.Cookies != "__cf_bm=x" {
+		t.Fatalf("unchallenged solution: %+v err=%v", got, err)
+	}
+	reply = `{"status":"ok","solution":{"cookies":[]}}`
 	if _, err := solveGrokClearance(context.Background(), solver.URL, ""); err == nil {
-		t.Fatal("a solution without cf_clearance must be an error")
+		t.Fatal("a solution without a user agent must be an error")
 	}
 }
