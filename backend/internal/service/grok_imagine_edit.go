@@ -13,8 +13,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
+	"go.uber.org/zap"
 )
 
 // grok.com edits images over REST, not the imagine WebSocket: upload each
@@ -174,6 +176,12 @@ func grokWebStatusError(c *gin.Context, resp *http.Response, stage string) error
 	}
 	body, _ := io.ReadAll(io.LimitReader(resp.Body, 4<<10))
 	setOpsUpstreamError(c, resp.StatusCode, message, truncateString(string(body), 512))
+	logger.L().Warn("grok_imagine_edit.upstream_rejected",
+		zap.String("stage", stage),
+		zap.Int("status", resp.StatusCode),
+		zap.String("cf_mitigated", resp.Header.Get("cf-mitigated")),
+		zap.String("content_type", resp.Header.Get("Content-Type")),
+		zap.String("body", truncateString(string(body), 512)))
 	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden || resp.StatusCode == http.StatusTooManyRequests {
 		return &UpstreamFailoverError{
 			StatusCode:   resp.StatusCode,

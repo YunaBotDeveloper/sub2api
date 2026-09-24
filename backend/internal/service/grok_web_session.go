@@ -48,7 +48,7 @@ type grokWebSession struct {
 }
 
 func (w *grokWebSession) do(ctx context.Context, method, url string, body []byte) (*http.Response, error) {
-	if w.solverURL != "" && w.clearance.Cookies == "" {
+	if w.solverURL != "" && w.clearance.UserAgent == "" {
 		clearance, err := grokWebClearance(ctx, w.solverURL, w.proxyURL, false)
 		if err != nil {
 			return nil, err
@@ -79,9 +79,11 @@ func (w *grokWebSession) send(ctx context.Context, method, url string, body []by
 		return nil, err
 	}
 	cookie, userAgent := "sso="+w.ssoToken, grokImagineUserAgent
+	if w.clearance.UserAgent != "" {
+		userAgent = w.clearance.UserAgent
+	}
 	if w.clearance.Cookies != "" {
 		cookie += "; " + w.clearance.Cookies
-		userAgent = w.clearance.UserAgent
 	}
 	req.Header.Set("Cookie", cookie)
 	req.Header.Set("User-Agent", userAgent)
@@ -158,19 +160,19 @@ func solveGrokClearance(ctx context.Context, solverURL, proxyURL string) (grokCl
 
 	solution := gjson.GetBytes(respBody, "solution")
 	cookies := make([]string, 0, 8)
-	hasClearance := false
 	for _, cookie := range solution.Get("cookies").Array() {
 		name := cookie.Get("name").String()
 		if name == "" || name == "sso" || name == "sso-rw" {
 			continue
 		}
-		hasClearance = hasClearance || name == "cf_clearance"
 		cookies = append(cookies, name+"="+cookie.Get("value").String())
 	}
 	userAgent := strings.TrimSpace(solution.Get("userAgent").String())
-	if !hasClearance || userAgent == "" {
-		return grokClearance{}, fmt.Errorf("flaresolverr returned no cf_clearance for grok.com")
+	if userAgent == "" {
+		return grokClearance{}, fmt.Errorf("flaresolverr returned no user agent for grok.com")
 	}
+	// An egress IP that Cloudflare does not challenge yields no cf_clearance;
+	// the solver's cookies and UA are still what a passing browser sends.
 	return grokClearance{
 		Cookies:   strings.Join(cookies, "; "),
 		UserAgent: userAgent,
