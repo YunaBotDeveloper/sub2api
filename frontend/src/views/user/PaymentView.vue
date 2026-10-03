@@ -51,7 +51,7 @@
               </div>
               <div class="meter-cell meter-cell-current">
                 <span class="meter-label">{{ t('payment.currentBalance') }}</span>
-                <span class="meter-value">${{ user?.balance?.toFixed(2) || '0.00' }}</span>
+                <span class="meter-value">{{ formatPaymentAmount(user?.balance ?? 0, 'USD', localeCode) }}</span>
               </div>
             </div>
             <div v-if="enabledMethods.length === 0" class="card empty-state">
@@ -109,11 +109,11 @@
                     </tr>
                     <tr v-if="bonusQuote.mode !== 'discount' && bonusQuote.bonus > 0" data-testid="recharge-bonus-row">
                       <td class="text-fg-muted">{{ t('payment.rechargeBonus.amountLabelWithPercent', { percent: formatRechargeBonusNumber(bonusQuote.percent) }) }}</td>
-                      <td class="text-right tabular-nums text-accent-strong">+${{ bonusQuote.bonus.toFixed(2) }}</td>
+                      <td class="text-right tabular-nums text-accent-strong">+{{ formatPaymentAmount(bonusQuote.bonus, 'USD', localeCode) }}</td>
                     </tr>
                     <tr :class="{ 'row-total': feeRate <= 0 && discountAmount <= 0 }">
                       <td :class="feeRate <= 0 && discountAmount <= 0 ? '' : 'text-fg-muted'">{{ t('payment.creditedBalance') }}</td>
-                      <td class="text-right tabular-nums">${{ creditedAmount.toFixed(2) }}</td>
+                      <td class="text-right tabular-nums">{{ formatPaymentAmount(creditedAmount, 'USD', localeCode) }}</td>
                     </tr>
                   </tbody>
                 </table>
