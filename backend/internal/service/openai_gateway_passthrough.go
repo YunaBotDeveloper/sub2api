@@ -1551,6 +1551,25 @@ func applyOpenAIStreamFailedErrorPassthroughRule(
 	)
 }
 
+// applyOpenAICompatFailedErrorRule 供 chat/messages 兼容端点使用：先走透传规则；
+// 未命中时把 context window 超限按客户端错误 400 返回而不是 502，
+// 否则客户端会把它当上游故障原样重试，而不是压缩上下文。
+// /v1/responses 不走这里：Codex 依赖流内 response.failed 识别该错误。
+func applyOpenAICompatFailedErrorRule(
+	c *gin.Context,
+	platform string,
+	payload []byte,
+	failedMessage string,
+) (status int, errType string, errMsg string, matched bool) {
+	if status, errType, errMsg, matched = applyOpenAIStreamFailedErrorPassthroughRule(c, platform, payload, failedMessage); matched {
+		return status, errType, errMsg, true
+	}
+	if isOpenAIContextWindowError(failedMessage, payload) {
+		return http.StatusBadRequest, "invalid_request_error", failedMessage, true
+	}
+	return 0, "", "", false
+}
+
 func openAIStreamFailedEventShouldFailover(payload []byte, message string) bool {
 	if hit, _, _ := detectOpenAICyberPolicy(payload); hit {
 		return false

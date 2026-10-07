@@ -493,7 +493,7 @@ func TestForwardAsChatCompletions_ClientDisconnectDrainsUpstreamUsage(t *testing
 	require.Equal(t, 4, result.Usage.CacheReadInputTokens)
 }
 
-func TestForwardAsChatCompletions_BufferedContextWindowResponseFailedReturnsErrorWithoutFailover(t *testing.T) {
+func TestForwardAsChatCompletions_BufferedContextWindowResponseFailedReturns400WithoutFailover(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	rec := httptest.NewRecorder()
@@ -532,11 +532,12 @@ func TestForwardAsChatCompletions_BufferedContextWindowResponseFailedReturnsErro
 	var failoverErr *UpstreamFailoverError
 	require.False(t, errors.As(err, &failoverErr))
 	require.True(t, c.Writer.Written())
-	require.Equal(t, http.StatusBadGateway, rec.Code)
+	require.Equal(t, http.StatusBadRequest, rec.Code)
+	require.Contains(t, rec.Body.String(), "invalid_request_error")
 	require.Contains(t, rec.Body.String(), "input exceeds the context window")
 }
 
-func TestForwardAsChatCompletions_StreamContextWindowResponseFailedReturnsErrorWithoutFailover(t *testing.T) {
+func TestForwardAsChatCompletions_StreamContextWindowResponseFailedReturns400WithoutFailover(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	rec := httptest.NewRecorder()
@@ -577,7 +578,8 @@ func TestForwardAsChatCompletions_StreamContextWindowResponseFailedReturnsErrorW
 	var failoverErr *UpstreamFailoverError
 	require.False(t, errors.As(err, &failoverErr))
 	require.True(t, c.Writer.Written())
-	require.Equal(t, http.StatusBadGateway, rec.Code)
+	require.Equal(t, http.StatusBadRequest, rec.Code)
+	require.Contains(t, rec.Body.String(), "invalid_request_error")
 	require.Contains(t, rec.Header().Get("Content-Type"), "application/json")
 	require.Contains(t, rec.Body.String(), "input exceeds the context window")
 	require.NotContains(t, rec.Body.String(), "[DONE]")
