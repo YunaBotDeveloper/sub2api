@@ -139,6 +139,26 @@ export default {
     acceptFailed: 'Gửi xác nhận thất bại'
   },
 
+  apiDocs: {
+    title: 'Tài liệu API',
+    navLabel: 'Các trang tài liệu',
+    pages: {
+      quickstart: 'Bắt đầu nhanh',
+      endpoints: 'Danh sách endpoint',
+      clients: 'Cấu hình client',
+      errors: 'Lỗi thường gặp & FAQ'
+    },
+    baseUrl: 'Base URL của bạn',
+    baseUrlHint: 'Client kiểu OpenAI dùng {v1}.',
+    copy: 'Sao chép',
+    copied: 'Đã sao chép',
+    onThisPage: 'Trong trang này',
+    previous: 'Trang trước',
+    next: 'Trang sau',
+    loadFailed: 'Không tải được trang này. Hãy làm mới và thử lại.',
+    getApiKey: 'Lấy API key'
+  },
+
   legal: {
     loadFailed: 'Tải tài liệu thất bại',
     retryLater: 'Hãy làm mới trang và thử lại sau.',

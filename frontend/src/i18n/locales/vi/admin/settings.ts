@@ -731,7 +731,7 @@ export default {
         contactInfoHint: 'Thông tin liên hệ hỗ trợ khách hàng, hiển thị trên trang đổi mã, hồ sơ, v.v.',
         docUrl: 'URL tài liệu',
         docUrlPlaceholder: 'https://docs.example.com',
-        docUrlHint: 'Liên kết tới trang tài liệu của bạn. Để trống để ẩn liên kết tài liệu.',
+        docUrlHint: 'Liên kết tới trang tài liệu bên ngoài. Để trống sẽ dùng tài liệu API có sẵn tại /docs.',
         siteLogo: 'Logo trang',
         uploadImage: 'Tải ảnh lên',
         remove: 'Xóa',

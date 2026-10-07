@@ -31,10 +31,9 @@
 
         <!-- Docs Link -->
         <a
-          v-if="docUrl"
-          :href="docUrl"
-          target="_blank"
-          rel="noopener noreferrer"
+          :href="docsLink.href"
+          :target="docsLink.external ? '_blank' : undefined"
+          :rel="docsLink.external ? 'noopener noreferrer' : undefined"
           class="btn btn-ghost hidden sm:inline-flex"
         >
           <Icon name="book" size="sm" />
@@ -257,6 +256,7 @@ import SubscriptionProgressMini from '@/components/common/SubscriptionProgressMi
 import AnnouncementBell from '@/components/common/AnnouncementBell.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { sanitizeUrl } from '@/utils/url'
+import { resolveDocsLink } from '@/utils/docsLink'
 import { FeatureFlags, isFeatureFlagEnabled } from '@/utils/featureFlags'
 import { resolveRouteMetaKeys } from '@/router/title'
 import { resolveSiteBillingMode } from '@/utils/siteBillingMode'
@@ -275,6 +275,7 @@ const dropdownRef = ref<HTMLElement | null>(null)
 const triggerRef = ref<HTMLButtonElement | null>(null)
 const contactInfo = computed(() => appStore.contactInfo)
 const docUrl = computed(() => sanitizeUrl(appStore.docUrl))
+const docsLink = computed(() => resolveDocsLink(docUrl.value))
 const modelPlazaEnabled = computed(() => isFeatureFlagEnabled(FeatureFlags.modelPlaza))
 const avatarUrl = computed(() => user.value?.avatar_url?.trim() || '')
 const availableBalance = computed(() => Number(user.value?.balance || 0))

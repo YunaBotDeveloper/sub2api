@@ -139,6 +139,26 @@ export default {
     acceptFailed: '提交确认失败'
   },
 
+  apiDocs: {
+    title: 'API 文档',
+    navLabel: '文档目录',
+    pages: {
+      quickstart: '快速开始',
+      endpoints: '接口列表',
+      clients: '客户端配置',
+      errors: '常见错误与 FAQ'
+    },
+    baseUrl: '你的 Base URL',
+    baseUrlHint: 'OpenAI 风格客户端请使用 {v1}。',
+    copy: '复制',
+    copied: '已复制',
+    onThisPage: '本页目录',
+    previous: '上一页',
+    next: '下一页',
+    loadFailed: '页面加载失败，请刷新后重试。',
+    getApiKey: '获取 API Key'
+  },
+
   legal: {
     loadFailed: '文档加载失败',
     retryLater: '请稍后刷新页面重试。',

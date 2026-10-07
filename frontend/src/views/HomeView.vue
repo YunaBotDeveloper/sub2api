@@ -27,10 +27,9 @@
         <div class="flex max-w-full shrink-0 flex-wrap items-center justify-end gap-1">
           <LocaleSwitcher />
           <a
-            v-if="docUrl"
-            :href="docUrl"
-            target="_blank"
-            rel="noopener noreferrer"
+            :href="docsLink.href"
+            :target="docsLink.external ? '_blank' : undefined"
+            :rel="docsLink.external ? 'noopener noreferrer' : undefined"
             class="btn btn-ghost h-10 w-10 px-0"
             :title="t('home.viewDocs')"
           >
@@ -97,10 +96,9 @@
         <div class="flex shrink-0 flex-wrap items-center justify-end gap-1">
           <LocaleSwitcher />
           <a
-            v-if="docUrl"
-            :href="docUrl"
-            target="_blank"
-            rel="noopener noreferrer"
+            :href="docsLink.href"
+            :target="docsLink.external ? '_blank' : undefined"
+            :rel="docsLink.external ? 'noopener noreferrer' : undefined"
             class="btn btn-ghost h-10 w-10 px-0"
             :title="t('home.viewDocs')"
           >
@@ -291,10 +289,9 @@
         </p>
         <div class="flex items-center gap-4 text-label">
           <a
-            v-if="docUrl"
-            :href="docUrl"
-            target="_blank"
-            rel="noopener noreferrer"
+            :href="docsLink.href"
+            :target="docsLink.external ? '_blank' : undefined"
+            :rel="docsLink.external ? 'noopener noreferrer' : undefined"
             class="text-fg-muted hover:text-accent-strong"
           >
             {{ t('home.docs') }}
@@ -322,6 +319,7 @@ import Icon from '@/components/icons/Icon.vue'
 import PlatformIcon from '@/components/common/PlatformIcon.vue'
 import type { GroupPlatform } from '@/types'
 import { sanitizeUrl } from '@/utils/url'
+import { resolveDocsLink } from '@/utils/docsLink'
 import { FeatureFlags, isFeatureFlagEnabled } from '@/utils/featureFlags'
 
 const { t } = useI18n()
@@ -334,6 +332,7 @@ const siteName = computed(() => appStore.cachedPublicSettings?.site_name || appS
 const siteLogo = computed(() => sanitizeUrl(appStore.cachedPublicSettings?.site_logo || appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
 const siteSubtitle = computed(() => appStore.cachedPublicSettings?.site_subtitle || 'AI API Gateway Platform')
 const docUrl = computed(() => sanitizeUrl(appStore.cachedPublicSettings?.doc_url || appStore.docUrl || ''))
+const docsLink = computed(() => resolveDocsLink(docUrl.value))
 const homeContent = computed(() => appStore.cachedPublicSettings?.home_content || '')
 const hasHomeContent = computed(() => homeContent.value.trim().length > 0)
 const compactHomeEnabled = computed(() => appStore.cachedPublicSettings?.compact_home_enabled === true)
