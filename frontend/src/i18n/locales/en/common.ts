@@ -139,6 +139,26 @@ export default {
     acceptFailed: 'Failed to submit acknowledgment'
   },
 
+  apiDocs: {
+    title: 'API Documentation',
+    navLabel: 'Documentation pages',
+    pages: {
+      quickstart: 'Quick start',
+      endpoints: 'Endpoints',
+      clients: 'Client setup',
+      errors: 'Errors & FAQ'
+    },
+    baseUrl: 'Your Base URL',
+    baseUrlHint: 'Use {v1} for OpenAI-style clients.',
+    copy: 'Copy',
+    copied: 'Copied',
+    onThisPage: 'On this page',
+    previous: 'Previous',
+    next: 'Next',
+    loadFailed: 'Failed to load this page. Refresh and try again.',
+    getApiKey: 'Get an API key'
+  },
+
   legal: {
     loadFailed: 'Failed to load document',
     retryLater: 'Refresh the page and try again later.',

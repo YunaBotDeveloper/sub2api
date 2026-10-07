@@ -731,7 +731,7 @@ export default {
         contactInfoHint: 'Customer support contact info, displayed on redeem page, profile, etc.',
         docUrl: 'Documentation URL',
         docUrlPlaceholder: 'https://docs.example.com',
-        docUrlHint: 'Link to your documentation site. Leave empty to hide the documentation link.',
+        docUrlHint: 'Link to an external documentation site. Leave empty to use the built-in API docs at /docs.',
         siteLogo: 'Site Logo',
         uploadImage: 'Upload Image',
         remove: 'Remove',

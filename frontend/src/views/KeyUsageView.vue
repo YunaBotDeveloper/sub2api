@@ -12,10 +12,9 @@
         <div class="flex shrink-0 items-center gap-1">
           <LocaleSwitcher />
           <a
-            v-if="docUrl"
-            :href="docUrl"
-            target="_blank"
-            rel="noopener noreferrer"
+            :href="docsLink.href"
+            :target="docsLink.external ? '_blank' : undefined"
+            :rel="docsLink.external ? 'noopener noreferrer' : undefined"
             class="btn btn-ghost btn-icon"
             :title="t('home.viewDocs')"
           >
@@ -270,10 +269,9 @@
         </p>
         <div class="flex items-center gap-4">
           <a
-            v-if="docUrl"
-            :href="docUrl"
-            target="_blank"
-            rel="noopener noreferrer"
+            :href="docsLink.href"
+            :target="docsLink.external ? '_blank' : undefined"
+            :rel="docsLink.external ? 'noopener noreferrer' : undefined"
             class="text-meta text-fg-muted transition-colors hover:text-accent-strong"
           >{{ t('home.docs') }}</a>
           <a
@@ -299,6 +297,7 @@ import Icon from '@/components/icons/Icon.vue'
 import { buildGatewayUrl } from '@/api/client'
 import { formatDateLocalInput } from '@/utils/format'
 import { sanitizeUrl } from '@/utils/url'
+import { resolveDocsLink } from '@/utils/docsLink'
 import type { ModelStat } from '@/types'
 
 const { t, locale } = useI18n()
@@ -310,6 +309,7 @@ const subscriptionFeatureEnabled = computed(() => resolveFeatureFlag(appStore.ca
 const siteName = computed(() => appStore.cachedPublicSettings?.site_name || appStore.siteName || 'Sub2API')
 const siteLogo = computed(() => sanitizeUrl(appStore.cachedPublicSettings?.site_logo || appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
 const docUrl = computed(() => sanitizeUrl(appStore.cachedPublicSettings?.doc_url || appStore.docUrl || ''))
+const docsLink = computed(() => resolveDocsLink(docUrl.value))
 const githubUrl = 'https://github.com/Wei-Shaw/sub2api'
 
 // ==================== Theme (same as HomeView) ====================
