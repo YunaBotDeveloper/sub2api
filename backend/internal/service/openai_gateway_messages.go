@@ -647,7 +647,7 @@ func (s *OpenAIGatewayService) handleAnthropicBufferedStreamingResponse(
 		message = s.recordOpenAIStreamUpstreamError(c, account, false, requestID, "http_error", payload, message)
 		// 统一走语义状态推断 + body 归一化（与 /v1/responses 路径一致），
 		// 使按错误码配置的透传规则可命中。
-		if status, errType, errMsg, matched := applyOpenAIStreamFailedErrorPassthroughRule(
+		if status, errType, errMsg, matched := applyOpenAICompatFailedErrorRule(
 			c, account.Platform, payload, message,
 		); matched {
 			if errMsg == "" {
@@ -1092,7 +1092,7 @@ func (s *OpenAIGatewayService) handleAnthropicStreamingResponse(
 				errStatus, errType, errMsg := http.StatusBadGateway, "api_error", message
 				// 统一走语义状态推断 + body 归一化（与 /v1/responses 路径一致），
 				// 使按错误码配置的透传规则可命中。
-				if status, et, em, matched := applyOpenAIStreamFailedErrorPassthroughRule(
+				if status, et, em, matched := applyOpenAICompatFailedErrorRule(
 					c, account.Platform, payloadBytes, message,
 				); matched {
 					if em == "" {
