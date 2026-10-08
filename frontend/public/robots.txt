@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /api/
+Disallow: /v1/
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /setup
+Disallow: /auth/
+
+Sitemap: https://api.lamtung.dev/sitemap.xml
