@@ -209,8 +209,9 @@
               <span
                 v-if="row.long_context_billing_applied"
                 data-testid="long-context-billing-marker"
+                :title="t('admin.usage.longContextPricingTooltip')"
                 class="badge badge-warning text-[10px] leading-tight"
-              >x2</span>
+              >{{ t('admin.usage.longContext') }}</span>
               <!-- Cost Detail Tooltip -->
               <div
                 class="group relative"
@@ -244,6 +245,8 @@
               <span v-else class="text-fg-subtle">-</span>
               <span class="text-fg-subtle">{{ t('usage.latencyDuration') }}</span>
               <span class="font-medium tabular-nums" :class="LATENCY_TEXT_CLASSES[durationSeverity(row.duration_ms ?? 0)]">{{ formatDuration(row.duration_ms) }}</span>
+              <span class="text-fg-subtle" :title="t('usage.outputTpsHint')">{{ t('usage.outputTps') }}</span>
+              <span data-testid="output-tps" class="font-medium tabular-nums text-fg">{{ formatUsageOutputRate(row) }}</span>
             </div>
           </div>
         </template>
@@ -494,7 +497,7 @@
           </div>
           <div class="flex items-center justify-between gap-6">
             <span class="text-fg-muted">{{ t('usage.rate') }}</span>
-            <span class="font-semibold text-accent-strong">{{ formatMultiplier(tooltipData?.rate_multiplier || 1) }}x</span>
+            <span class="font-semibold text-accent-strong">{{ formatMultiplier(tooltipData?.rate_multiplier ?? 1) }}x</span>
           </div>
           <div class="flex items-center justify-between gap-6">
             <span class="text-fg-muted">{{ t('usage.original') }}</span>
@@ -544,6 +547,7 @@ import {
   LATENCY_TEXT_CLASSES,
   durationSeverity,
   firstTokenSeverity,
+  formatUsageOutputRate,
 } from '@/utils/latencyHealth'
 import {
   BILLING_MODE_TOKEN,

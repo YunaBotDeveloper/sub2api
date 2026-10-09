@@ -2,8 +2,11 @@
  * Centralized platform color definitions.
  *
  * All components that need platform-specific styling should import from here
- * instead of defining their own color mappings.
+ * instead of defining their own color mappings. Platforms registered only on
+ * the server (see constants/platformCatalog) use the neutral *_DEFAULT styles.
  */
+
+import { getPlatformSpec } from '@/constants/platformCatalog'
 
 export type Platform =
   | 'anthropic'
@@ -17,6 +20,8 @@ export type Platform =
   | 'minimax'
   | 'opencode_go'
   | 'typesafe'
+  | 'command_code'
+  | 'cline'
   | 'composite'
 
 // ── Badge (bg + text + border, for inline badges with border) ───────
@@ -32,6 +37,8 @@ const BADGE: Record<Platform, string> = {
   minimax: 'bg-surface-sunken text-fg border-border-strong',
   opencode_go: 'bg-surface-sunken text-fg border-border-strong',
   typesafe: 'bg-surface-sunken text-fg border-border-strong',
+  command_code: 'bg-surface-sunken text-fg border-border-strong',
+  cline: 'bg-surface-sunken text-fg border-border-strong',
   composite: 'bg-surface-sunken text-fg border-border-strong',
 }
 const BADGE_DEFAULT = 'bg-surface-sunken text-fg border-border-strong'
@@ -49,6 +56,8 @@ const BADGE_LIGHT: Record<Platform, string> = {
   minimax: 'bg-surface-sunken text-fg',
   opencode_go: 'bg-surface-sunken text-fg',
   typesafe: 'bg-surface-sunken text-fg',
+  command_code: 'bg-surface-sunken text-fg',
+  cline: 'bg-surface-sunken text-fg',
   composite: 'bg-surface-sunken text-fg',
 }
 
@@ -65,6 +74,8 @@ const BORDER: Record<Platform, string> = {
   minimax: 'border-border',
   opencode_go: 'border-border',
   typesafe: 'border-border',
+  command_code: 'border-border',
+  cline: 'border-border',
   composite: 'border-border',
 }
 const BORDER_DEFAULT = 'border-border'
@@ -82,6 +93,8 @@ const BORDER_STRONG: Record<Platform, string> = {
   minimax: 'border-border-strong',
   opencode_go: 'border-border-strong',
   typesafe: 'border-border-strong',
+  command_code: 'border-border-strong',
+  cline: 'border-border-strong',
   composite: 'border-border-strong',
 }
 const BORDER_STRONG_DEFAULT = 'border-border-strong'
@@ -100,6 +113,8 @@ const ACCENT: Record<Platform, string> = {
   minimax: 'rgb(var(--accent))',
   opencode_go: 'rgb(var(--accent))',
   typesafe: 'rgb(var(--accent))',
+  command_code: 'rgb(var(--accent))',
+  cline: 'rgb(var(--accent))',
   composite: 'rgb(var(--accent))',
 }
 const ACCENT_DEFAULT = 'rgb(var(--accent))'
@@ -117,6 +132,8 @@ const ACCENT_BAR: Record<Platform, string> = {
   minimax: ' bg-accent',
   opencode_go: ' bg-accent',
   typesafe: ' bg-accent',
+  command_code: ' bg-accent',
+  cline: ' bg-accent',
   composite: ' bg-accent',
 }
 const ACCENT_BAR_DEFAULT = ' bg-accent'
@@ -134,6 +151,8 @@ const TEXT: Record<Platform, string> = {
   minimax: 'text-fg',
   opencode_go: 'text-fg',
   typesafe: 'text-fg',
+  command_code: 'text-fg',
+  cline: 'text-fg',
   composite: 'text-fg',
 }
 const TEXT_DEFAULT = 'text-fg'
@@ -151,6 +170,8 @@ const ICON: Record<Platform, string> = {
   minimax: 'text-accent',
   opencode_go: 'text-accent',
   typesafe: 'text-accent',
+  command_code: 'text-accent',
+  cline: 'text-accent',
   composite: 'text-accent',
 }
 const ICON_DEFAULT = 'text-accent'
@@ -168,6 +189,8 @@ const BUTTON: Record<Platform, string> = {
   minimax: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
   opencode_go: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
   typesafe: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
+  command_code: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
+  cline: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
   composite: 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken',
 }
 const BUTTON_DEFAULT = 'bg-accent text-white hover:bg-accent-strong dark:text-surface-sunken'
@@ -185,6 +208,8 @@ const DISCOUNT: Record<Platform, string> = {
   minimax: 'bg-danger-weak text-danger-strong',
   opencode_go: 'bg-danger-weak text-danger-strong',
   typesafe: 'bg-danger-weak text-danger-strong',
+  command_code: 'bg-danger-weak text-danger-strong',
+  cline: 'bg-danger-weak text-danger-strong',
   composite: 'bg-danger-weak text-danger-strong',
 }
 const DISCOUNT_DEFAULT = 'bg-danger-weak text-danger-strong'
@@ -202,6 +227,8 @@ const GRADIENT: Record<Platform, string> = {
   minimax: 'bg-accent',
   opencode_go: 'bg-accent',
   typesafe: 'bg-accent',
+  command_code: 'bg-accent',
+  cline: 'bg-accent',
   composite: 'bg-accent',
 }
 const GRADIENT_DEFAULT = 'bg-accent'
@@ -219,6 +246,8 @@ const GRADIENT_TEXT: Record<Platform, string> = {
   minimax: 'text-white',
   opencode_go: 'text-white',
   typesafe: 'text-white',
+  command_code: 'text-white',
+  cline: 'text-white',
   composite: 'text-white',
 }
 const GRADIENT_TEXT_DEFAULT = 'text-white'
@@ -235,6 +264,8 @@ const GRADIENT_SUBTEXT: Record<Platform, string> = {
   minimax: 'text-white/80',
   opencode_go: 'text-white/80',
   typesafe: 'text-white/80',
+  command_code: 'text-white/80',
+  cline: 'text-white/80',
   composite: 'text-white/80',
 }
 const GRADIENT_SUBTEXT_DEFAULT = 'text-white/80'
@@ -254,6 +285,8 @@ function isPlatform(p: string): p is Platform {
     p === 'minimax' ||
     p === 'opencode_go' ||
     p === 'typesafe' ||
+    p === 'command_code' ||
+    p === 'cline' ||
     p === 'composite'
   )
 }
@@ -310,20 +343,8 @@ export function platformGradientSubtextClass(p: string): string {
   return isPlatform(p) ? GRADIENT_SUBTEXT[p] : GRADIENT_SUBTEXT_DEFAULT
 }
 
+/** 平台展示名：来自平台清单（后端 domain/platforms.go），新登记的平台同样适用。 */
 export function platformLabel(p: string): string {
-  switch (p) {
-    case 'anthropic': return 'Anthropic'
-    case 'openai': return 'OpenAI'
-    case 'antigravity': return 'Antigravity'
-    case 'gemini': return 'Gemini'
-    case 'grok': return 'Grok'
-    case 'kimi': return 'Kimi'
-    case 'zhipu': return 'Zhipu GLM'
-    case 'deepseek': return 'DeepSeek'
-    case 'minimax': return 'MiniMax'
-    case 'opencode_go': return 'OpenCode'
-    case 'typesafe': return 'TypeSafe / Jev'
-    case 'composite': return 'Composite'
-    default: return p || 'API'
-  }
+  if (p === 'composite') return 'Composite'
+  return getPlatformSpec(p)?.display_name ?? (p || 'API')
 }

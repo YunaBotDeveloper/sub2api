@@ -1052,18 +1052,22 @@ func collectCacheControlPaths(body []byte) (invalidThinking []cacheControlPath, 
 	return invalidThinking, messagePaths, toolPaths, systemPaths
 }
 
-// enforceCacheControlLimit 强制执行 cache_control 块数量限制（最多 4 个）
-// 超限时优先移除工具断点，再移除 messages 断点，最后才移除 system 断点。
-//
-// 返回前还会跑一遍 normalizeCacheControlTTLOrder：它是 5 条 Anthropic 转发
-// 链路共用的最后一道收口，ttl 顺序必须在所有断点增删完成之后才能判定。
+// enforceCacheControlLimit 让出站 cache_control 满足上游约束：
+// 先执行块数量限制，再修正 TTL 顺序。
 func enforceCacheControlLimit(body []byte) []byte {
+	return normalizeCacheControlTTLOrder(enforceCacheControlBlockLimit(body))
+}
+
+// enforceCacheControlBlockLimit 强制执行 cache_control 块数量限制（最多 4 个）
+// 超限时优先移除工具断点，再移除 messages 断点，最后才移除 system 断点。
+func enforceCacheControlBlockLimit(body []byte) []byte {
 	if len(body) == 0 {
 		return body
 	}
 
 	invalidThinking, messagePaths, toolPaths, systemPaths := collectCacheControlPaths(body)
 	out := body
+	modified := false
 
 	// 先清理 thinking 块中的非法 cache_control（thinking 块不支持该字段）
 	for _, item := range invalidThinking {
@@ -1075,12 +1079,16 @@ func enforceCacheControlLimit(body []byte) []byte {
 			continue
 		}
 		out = next
+		modified = true
 		logger.LegacyPrintf("service.gateway", "%s", item.log)
 	}
 
 	count := len(messagePaths) + len(toolPaths) + len(systemPaths)
 	if count <= maxCacheControlBlocks {
-		return normalizeCacheControlTTLOrder(out)
+		if modified {
+			return out
+		}
+		return body
 	}
 
 	// 超限：优先从 tools 中移除，再从 messages 中移除，最后才从 system 中移除。
@@ -1095,6 +1103,7 @@ func enforceCacheControlLimit(body []byte) []byte {
 			continue
 		}
 		out = next
+		modified = true
 		remaining--
 	}
 
@@ -1110,6 +1119,7 @@ func enforceCacheControlLimit(body []byte) []byte {
 			continue
 		}
 		out = next
+		modified = true
 		remaining--
 	}
 
@@ -1123,47 +1133,45 @@ func enforceCacheControlLimit(body []byte) []byte {
 			continue
 		}
 		out = next
+		modified = true
 		remaining--
 	}
 
-	return normalizeCacheControlTTLOrder(out)
+	if modified {
+		return out
+	}
+	return body
 }
 
-// normalizeCacheControlTTLOrder 消除 Anthropic 的 ttl 顺序冲突。上游按
-// tools -> system -> messages 的顺序处理缓存块，ttl 为 1h 的块不允许排在
-// ttl 为 5m 的块之后，否则整个请求被 400 拒绝。
+// normalizeCacheControlTTLOrder raises earlier ephemeral breakpoints to 1h when
+// a later breakpoint uses 1h. Anthropic processes tools, system, then messages,
+// and rejects a ttl=1h breakpoint that follows a 5m one; an omitted ttl means 5m.
+// The mimic path adds its own 5m breakpoints to tools and system, so a client
+// 1h breakpoint in messages would otherwise turn a valid request into a 400.
 //
-// 触发场景：客户端自己在 messages 上打了 1h 断点，而网关按
-// claude.DefaultCacheControlTTL 在 tools[-1] 或 system 提示块上注入了 5m。
-// 网关注入的块永远排在客户端 messages 断点之前，于是必然违规。
-//
-// 归一方向是把靠前的块升到 1h，而不是把靠后的 1h 降到 5m：靠前的块
-// （billing header、system prompt、tools）本就是最稳定的前缀，真实
-// Claude Code CLI 对它们也用 1h；把客户端显式要的 1h 降级会让长会话反复
-// 重写缓存，反而更贵。
+// Raising keeps the client's choice. Tokens before a 1h breakpoint are already
+// written at the 1h rate, so the earlier breakpoints add no cache write cost.
+// Requests with a valid order are returned unchanged.
 func normalizeCacheControlTTLOrder(body []byte) []byte {
-	if len(body) == 0 {
-		return body
+	_, messagePaths, toolPaths, systemPaths := collectCacheControlPaths(body)
+	paths := make([]string, 0, len(toolPaths)+len(systemPaths)+len(messagePaths)+1)
+	paths = append(paths, toolPaths...)
+	paths = append(paths, systemPaths...)
+	paths = append(paths, messagePaths...)
+	// A top-level cache_control applies to the last cacheable block.
+	if gjson.GetBytes(body, "cache_control").Exists() {
+		paths = append(paths, "cache_control")
 	}
 
-	_, messagePaths, toolPaths, systemPaths := collectCacheControlPaths(body)
-	ordered := make([]string, 0, len(toolPaths)+len(systemPaths)+len(messagePaths))
-	ordered = append(ordered, toolPaths...)
-	ordered = append(ordered, systemPaths...)
-	ordered = append(ordered, messagePaths...)
-
 	last1h := -1
-	for i, path := range ordered {
+	for i, path := range paths {
 		if gjson.GetBytes(body, path+".ttl").String() == cacheTTLTarget1h {
 			last1h = i
 		}
 	}
-	if last1h <= 0 {
-		return body
-	}
 
 	out := body
-	for _, path := range ordered[:last1h] {
+	for _, path := range paths[:last1h+1] {
 		cc := gjson.GetBytes(out, path)
 		if cc.Get("type").String() != "ephemeral" || cc.Get("ttl").String() == cacheTTLTarget1h {
 			continue

@@ -31,7 +31,7 @@
               <span
                 class="badge badge-gray"
               >
-                {{ t("admin.groups.platforms." + group.platform) }}
+                {{ t("admin.groups.platforms." + group.platform, platformLabel(group.platform)) }}
               </span>
             </div>
           </div>
@@ -85,6 +85,7 @@
 import { useGroupsViewContext } from "./context";
 import BaseDialog from "@/components/common/BaseDialog.vue";
 import Icon from "@/components/icons/Icon.vue";
+import { platformLabel } from "@/utils/platformColors";
 import { VueDraggable } from "vue-draggable-plus";
 
 // 纯移动拆分：所有状态与方法来自 GroupsView 提供的上下文（openspec: rebuild-frontend-design-system Phase 3）

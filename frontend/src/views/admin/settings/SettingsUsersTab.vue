@@ -233,7 +233,7 @@
                 </tr>
               </thead>
               <tbody class="space-y-2">
-                <tr v-for="p in (['anthropic', 'openai', 'gemini', 'antigravity', 'grok', 'typesafe'] as const)" :key="p" class="align-top">
+                <tr v-for="p in platformQuotaRows(form.default_platform_quotas)" :key="p" class="align-top">
                   <td class="pr-4 py-1">
                     <span class="font-mono text-xs text-fg">{{ p }}</span>
                   </td>
@@ -570,7 +570,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="p in (['anthropic', 'openai', 'gemini', 'antigravity', 'grok', 'typesafe'] as const)" :key="`${authSource.source}-pq-${p}`" class="align-top">
+                      <tr v-for="p in platformQuotaRows(authSourceDefaults[authSource.source].platform_quotas)" :key="`${authSource.source}-pq-${p}`" class="align-top">
                         <td class="pr-4 py-1">
                           <span class="font-mono text-xs text-fg">{{ p }}</span>
                         </td>
@@ -625,6 +625,8 @@ import GroupBadge from "@/components/common/GroupBadge.vue";
 import GroupOptionItem from "@/components/common/GroupOptionItem.vue";
 import Select from "@/components/common/Select.vue";
 import Toggle from "@/components/common/Toggle.vue";
+import { listPlatformIds } from "@/constants/platformCatalog";
+import type { DefaultPlatformQuotasMap } from "@/api/admin/settings";
 
 // 纯移动拆分：所有状态与方法来自 SettingsView 提供的上下文（openspec: rebuild-frontend-design-system Phase 3）
 const ctx = useSettingsViewContext();
@@ -641,6 +643,12 @@ const {
   subscriptionGroups,
   t,
 } = ctx;
+
+// 平台限额表格的行：平台清单顺序中、已在归一化 map 里的平台（清单晚于设置加载时
+// 不渲染尚未归一化的平台，保持模板非空绑定）。
+function platformQuotaRows(map: DefaultPlatformQuotasMap | undefined): string[] {
+  return listPlatformIds().filter((platform) => !!map?.[platform as keyof DefaultPlatformQuotasMap]);
+}
 </script>
 
 <style scoped>

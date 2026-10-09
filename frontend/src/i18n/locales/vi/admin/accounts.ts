@@ -79,6 +79,8 @@ export default {
       editAccount: 'Sửa tài khoản',
       deleteAccount: 'Xóa tài khoản',
       searchAccounts: 'Tìm kiếm tài khoản...',
+      moreFilters: 'Bộ lọc khác',
+      moreFiltersActive: 'Bộ lọc khác ({count} đang bật)',
       notes: 'Ghi chú',
       notesPlaceholder: 'Nhập ghi chú',
       notesHint: 'Ghi chú là tùy chọn',
@@ -178,7 +180,10 @@ export default {
           add: 'Thêm quy tắc',
           remove: 'Xóa quy tắc',
           restoreDefaults: 'Khôi phục mặc định',
+          alsoSupports: 'Cũng hỗ trợ',
+          alsoSupportsHint: 'Request đến bằng một trong các giao thức này được chuyển thẳng, không cần chuyển đổi giao thức',
           fallback: 'Model không khớp → Chat Completions (/v1/chat/completions)',
+          catalogFallback: 'Model không khớp → giao thức theo danh sách model của upstream (supported_endpoints trong /models); dùng Chat Completions nếu không có',
         },
         title: 'Mức dùng OpenCode Go',
         panelHint: 'Các cửa sổ sử dụng do tài khoản OpenCode Go upstream báo về. Làm mới theo yêu cầu hoặc tự động khi được bật.',
@@ -203,7 +208,8 @@ export default {
         refreshSuccess: 'Đã làm mới mức dùng OpenCode Go',
         refreshFailed: 'Làm mới mức dùng OpenCode Go thất bại',
         errors: {
-          OPENCODE_GO_USAGE_REFRESH_RATE_LIMITED: 'Đang bị giới hạn làm mới. Thử lại sau {retry_after_seconds} giây.'
+          OPENCODE_GO_USAGE_REFRESH_RATE_LIMITED: 'Đang bị giới hạn làm mới. Thử lại sau {retry_after_seconds} giây.',
+          forbidden: 'Upstream trả về 403: có thể gói OpenCode Go chưa có/đã hết hạn hoặc bị WAF/chính sách truy cập chặn; hãy kiểm tra đường mạng và mã HTTP.'
         }
       },
       types: {
