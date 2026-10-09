@@ -4,6 +4,8 @@ export default {
       description: 'Giám sát vận hành và khắc phục sự cố',
       // Dashboard
       systemHealth: 'Tình trạng hệ thống',
+      outputTps: 'TPS đầu ra mỗi request',
+      outputTpsSamples: 'Mẫu hợp lệ: {count}',
       overview: 'Tổng quan',
       noSystemMetrics: 'Chưa thu thập được chỉ số hệ thống nào.',
       collectedAt: 'Thu thập lúc:',
@@ -807,6 +809,7 @@ export default {
         schedulerSignalsHint: 'Tín hiệu bộ điều phối nâng cao OpenAI trên instance này (tỉ lệ lỗi EWMA / thời gian đến token đầu tiên)'
       },
       tooltips: {
+        outputTps: 'Phân vị của output tokens / tổng thời gian (gồm thời gian chờ token đầu) của từng bản ghi usage hợp lệ trong khoảng thời gian, nền tảng và nhóm đã chọn. Output có thể gồm reasoning tokens; không cộng thêm lần nữa. P50 là trung vị; P5/P10 phản ánh các request chậm hơn. Càng cao càng nhanh. Không tính ảnh, Live và bản ghi không có output hoặc thời lượng dương. Mẫu lấy từ usage log còn lưu; — nghĩa là chưa có mẫu hoặc thống kê tạm thời không khả dụng.',
         totalRequests: 'Tổng số request (bao gồm cả request thành công và thất bại) trong khoảng thời gian đã chọn.',
         throughputTrend: 'Request/QPS + Token/TPS trong khoảng thời gian đã chọn.',
         switchRateTrend: 'Xu hướng số lần chuyển tài khoản / tổng số request trong 5 giờ gần nhất (số lần chuyển trung bình).',

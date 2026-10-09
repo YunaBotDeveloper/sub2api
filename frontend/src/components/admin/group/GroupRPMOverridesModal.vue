@@ -5,7 +5,7 @@
       <div class="flex flex-wrap items-center gap-3 border-b-2 border-accent pb-2.5 text-sm">
         <span class="inline-flex items-center gap-1.5" :class="platformColorClass">
           <PlatformIcon :platform="group.platform" size="sm" />
-          {{ t('admin.groups.platforms.' + group.platform) }}
+          {{ t('admin.groups.platforms.' + group.platform, platformLabel(group.platform)) }}
         </span>
         <span class="h-4 w-px bg-border-strong" aria-hidden="true"></span>
         <span class="font-medium text-fg">{{ group.name }}</span>
@@ -210,6 +210,7 @@ import BaseDialog from '@/components/common/BaseDialog.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import Icon from '@/components/icons/Icon.vue'
 import PlatformIcon from '@/components/common/PlatformIcon.vue'
+import { platformLabel } from '@/utils/platformColors'
 
 interface LocalEntry extends GroupRPMOverrideEntry {}
 
@@ -351,8 +352,9 @@ const handleAddLocal = () => {
 }
 
 const updateLocalRpm = (userId: number, value: string) => {
-  const num = parseInt(value, 10)
-  if (isNaN(num) || num < 0) return
+  if (!value.trim()) return
+  const num = Number(value)
+  if (!Number.isInteger(num) || num < 0) return
   const entry = localEntries.value.find(e => e.user_id === userId)
   if (entry) entry.rpm_override = num
 }

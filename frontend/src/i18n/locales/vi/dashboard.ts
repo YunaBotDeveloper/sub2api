@@ -422,6 +422,8 @@ export default {
     latency: 'Độ trễ',
     latencyFirstToken: 'Đầu',
     latencyDuration: 'Tổng',
+    outputTps: 'TPS đầu ra',
+    outputTpsHint: 'Output tokens chia cho tổng thời gian (gồm thời gian chờ token đầu), đơn vị tok/s. Output tokens có thể gồm reasoning tokens.',
     time: 'Thời gian',
     ws: 'WS',
     stream: 'Stream',

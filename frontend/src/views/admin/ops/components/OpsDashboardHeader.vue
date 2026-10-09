@@ -1317,6 +1317,27 @@ function handleToolbarRefresh() {
             </div>
           </dl>
         </div>
+
+        <!-- Per-request output speed, separate from system throughput. -->
+        <div class="meter-cell" data-testid="output-tps-card">
+          <div class="flex min-w-0 items-center gap-1">
+            <span class="meter-label">{{ t('admin.ops.outputTps') }}</span>
+            <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.outputTps')" />
+          </div>
+          <p class="meter-value">
+            <span data-testid="output-tps-p50">{{ overview.output_tps?.p50?.toFixed(1) ?? '—' }}</span>
+            <span class="text-meta font-normal text-fg-subtle"> tok/s (P50)</span>
+          </p>
+          <dl class="space-y-0.5 text-meta tabular-nums">
+            <div v-for="metric in ['p5', 'p10', 'avg'] as const" :key="metric" class="flex justify-between gap-2 whitespace-nowrap">
+              <dt class="text-fg-muted">{{ metric === 'avg' ? 'Avg' : metric.toUpperCase() }}</dt>
+              <dd><span class="font-semibold text-fg" :data-testid="`output-tps-${metric}`">{{ overview.output_tps?.[metric]?.toFixed(1) ?? '—' }}</span> <span class="text-fg-subtle">tok/s</span></dd>
+            </div>
+          </dl>
+          <p class="text-meta text-fg-muted" data-testid="output-tps-samples">
+            {{ t('admin.ops.outputTpsSamples', { count: overview.output_tps == null ? '—' : formatNumber(overview.output_tps.sample_count) }) }}
+          </p>
+        </div>
       </div>
 
       <!-- Row C: System health readings -->

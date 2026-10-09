@@ -139,7 +139,7 @@
           <template #cell-platform="{ value }">
             <span class="badge badge-gray gap-1.5 text-fg">
               <PlatformIcon :platform="value" size="xs" />
-              {{ t("admin.groups.platforms." + value) }}
+              {{ t("admin.groups.platforms." + value, platformLabel(value)) }}
             </span>
           </template>
 
@@ -504,6 +504,7 @@ import GroupSortOrderModal from "./groups/GroupSortOrderModal.vue";
 import Icon from "@/components/icons/Icon.vue";
 import Pagination from "@/components/common/Pagination.vue";
 import PlatformIcon from "@/components/common/PlatformIcon.vue";
+import { platformLabel } from "@/utils/platformColors";
 import Select from "@/components/common/Select.vue";
 import TablePageLayout from "@/components/layout/TablePageLayout.vue";
 

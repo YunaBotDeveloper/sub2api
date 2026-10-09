@@ -34,6 +34,7 @@ import {
   validateReasoningEffortMultipliers,
 } from "@/components/admin/channel/types";
 import type { ChannelModelPricing } from "@/api/admin/channels";
+import { platformLabel } from "@/utils/platformColors";
 import { createStableObjectKeyResolver } from "@/utils/stableObjectKey";
 import { extractApiErrorMessage } from "@/utils/apiError";
 import { useKeyedDebouncedSearch } from "@/composables/useKeyedDebouncedSearch";
@@ -532,7 +533,7 @@ export function useGroupsView() {
 
   const copyAccountsGroupLabel = (g: AdminGroup) => {
     const count = g.account_count || 0;
-    const platform = t("admin.groups.platforms." + g.platform);
+    const platform = t("admin.groups.platforms." + g.platform, platformLabel(g.platform));
     return `${g.name} - ${platform} (${t("admin.groups.accountsCount", { count })})`;
   };
 
@@ -2212,7 +2213,7 @@ export function useGroupsView() {
 
   const formatCompositePlatform = (platform: string) => {
     if (!platform) return "—";
-    return t(`admin.groups.platforms.${platform}`);
+    return t(`admin.groups.platforms.${platform}`, platformLabel(platform));
   };
 
   const compositeRouteSourceLabel = (source: string) => {

@@ -540,6 +540,8 @@ export default {
       allTypes: 'Tất cả loại',
       inputCost: 'Chi phí đầu vào',
       outputCost: 'Chi phí đầu ra',
+      longContext: 'Ngữ cảnh dài',
+      longContextPricingTooltip: 'Đã áp dụng giá ngữ cảnh dài. Đơn giá đầu vào và đầu ra tùy theo bậc giá, không phải một hệ số nhân đồng nhất.',
       cacheCreationCost: 'Chi phí tạo cache',
       cacheReadCost: 'Chi phí đọc cache',
       inputTokens: 'Token đầu vào',
