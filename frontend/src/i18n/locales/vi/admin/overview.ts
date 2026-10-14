@@ -982,6 +982,12 @@ export default {
         no: 'Không'
       },
       enterGroupName: 'Nhập tên nhóm',
+      i18nField: {
+        default: 'Mặc định',
+        add: 'Thêm bản {language}',
+        edit: 'Sửa bản {language}',
+        placeholder: 'Bản {language}; để trống để hiển thị văn bản mặc định'
+      },
       optionalDescription: 'Mô tả tùy chọn',
       platformHint: 'Chọn nền tảng liên kết với nhóm này',
       platformNotEditable: 'Không thể thay đổi nền tảng sau khi tạo',

@@ -854,6 +854,7 @@ func TestLoadDefaultSecurityToggles(t *testing.T) {
 
 	wantHosts := []string{
 		"api.kimi.com",
+		"api.kimi.ai",
 		"api.moonshot.ai",
 		"api.moonshot.cn",
 	}
@@ -865,6 +866,19 @@ func TestLoadDefaultSecurityToggles(t *testing.T) {
 		if _, ok := hostSet[want]; !ok {
 			t.Fatalf("URLAllowlist.UpstreamHosts missing %q; got %v", want, cfg.Security.URLAllowlist.UpstreamHosts)
 		}
+	}
+	opts := urlvalidator.ValidationOptions{
+		AllowedHosts:     cfg.Security.URLAllowlist.UpstreamHosts,
+		RequireAllowlist: true,
+		AllowPrivate:     cfg.Security.URLAllowlist.AllowPrivateHosts,
+	}
+	for _, host := range []string{"api.kimi.com", "api.kimi.ai"} {
+		target := "https://" + host + "/coding/v1/usages"
+		normalized, err := urlvalidator.ValidateHTTPSURL(target, opts)
+		require.NoError(t, err)
+		require.Equal(t, target, normalized)
+		_, err = urlvalidator.ValidateHTTPSURL("https://"+host+".attacker.example/coding/v1/usages", opts)
+		require.Error(t, err)
 	}
 }
 

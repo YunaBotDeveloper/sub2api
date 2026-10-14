@@ -14,6 +14,7 @@ import type {
   CompositeRouteDecision,
   CompositeRouteEndpoint,
   CompositeRouteMatchType,
+  GroupI18n,
   GroupPlatform,
   SubscriptionType,
 } from "@/types";
@@ -703,6 +704,7 @@ export function useGroupsView() {
   const createForm = reactive({
     name: "",
     description: "",
+    i18n: {} as GroupI18n,
     platform: "anthropic" as GroupPlatform,
     rate_multiplier: 1.0,
     is_exclusive: false,
@@ -1063,6 +1065,7 @@ export function useGroupsView() {
   const editForm = reactive({
     name: "",
     description: "",
+    i18n: {} as GroupI18n,
     platform: "anthropic" as GroupPlatform,
     rate_multiplier: 1.0,
     is_exclusive: false,
@@ -1504,6 +1507,7 @@ export function useGroupsView() {
     clearAllAccountSearchState();
     createForm.name = "";
     createForm.description = "";
+    createForm.i18n = {};
     createForm.platform = "anthropic";
     createForm.rate_multiplier = 1.0;
     createForm.is_exclusive = false;
@@ -1770,6 +1774,7 @@ export function useGroupsView() {
         ? {
             name: createForm.name,
             description: createForm.description,
+            i18n: createForm.i18n,
             platform: createForm.platform,
           }
         : requestData;
@@ -1796,6 +1801,12 @@ export function useGroupsView() {
     editingGroup.value = group;
     editForm.name = group.name;
     editForm.description = group.description || "";
+    editForm.i18n = Object.fromEntries(
+      Object.entries(group.i18n ?? {}).map(([locale, text]) => [
+        locale,
+        { ...text },
+      ]),
+    );
     editForm.platform = group.platform;
     editForm.rate_multiplier = group.rate_multiplier;
     editForm.is_exclusive = group.is_exclusive;
@@ -2134,6 +2145,7 @@ export function useGroupsView() {
         ? {
             name: editForm.name,
             description: editForm.description,
+            i18n: editForm.i18n,
           }
         : payload;
       await adminAPI.groups.update(editingGroup.value.id, requestData);

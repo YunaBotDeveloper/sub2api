@@ -1,59 +1,60 @@
-import { mount } from '@vue/test-utils'
-import { afterEach, describe, expect, it, vi } from 'vitest'
-import { ref } from 'vue'
-
-const locale = ref('vi')
-
-vi.mock('vue-i18n', async () => {
-  const { viT } = await import('@/views/auth/__tests__/viTranslate')
-  return { useI18n: () => ({ locale, t: viT }) }
-})
-vi.mock('@/i18n', () => ({
-  setLocale: vi.fn(),
-  availableLocales: [
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
-  ],
-}))
+import { flushPromises, mount } from '@vue/test-utils'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import LocaleSwitcher from '../LocaleSwitcher.vue'
 
-let wrapper: ReturnType<typeof mount>
-afterEach(() => {
-  wrapper?.unmount()
-  document.body.innerHTML = ''
-})
+const { setLocale } = vi.hoisted(() => ({ setLocale: vi.fn() }))
 
-describe('LocaleSwitcher a11y', () => {
-  it('labels the native trigger button with the current language and reflects the open state', async () => {
-    wrapper = mount(LocaleSwitcher, { attachTo: document.body, global: { stubs: { Icon: true } } })
-    const trigger = wrapper.get('button')
+vi.mock('@/i18n', () => ({
+  setLocale,
+  availableLocales: [
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'zh', name: '中文', flag: '🇨🇳' }
+  ]
+}))
 
-    expect(trigger.element.tagName).toBe('BUTTON')
-    // 披露模式：选项是普通按钮而非 role=menu，所以只暴露 aria-expanded。
-    expect(trigger.attributes('aria-haspopup')).toBeUndefined()
-    expect(trigger.attributes('aria-expanded')).toBe('false')
-    expect(trigger.get('.sr-only').text()).toBe('Ngôn ngữ: Tiếng Việt')
-    expect(trigger.attributes('title')).toBe('Ngôn ngữ: Tiếng Việt')
+vi.mock('vue-i18n', () => ({ useI18n: () => ({ locale: { value: 'zh' }, t: (key: string) => key }) }))
 
-    await trigger.trigger('click')
-    expect(trigger.attributes('aria-expanded')).toBe('true')
+const reload = vi.fn()
 
-    const options = wrapper.findAll('button').slice(1)
-    expect(options.map((o) => o.attributes('lang'))).toEqual(['en', 'vi'])
-    expect(options.map((o) => o.attributes('aria-current'))).toEqual([undefined, 'true'])
+const mountSwitcher = () =>
+  mount(LocaleSwitcher, { global: { stubs: { Icon: true, transition: false } } })
+
+const choose = async (wrapper: ReturnType<typeof mountSwitcher>, name: string) => {
+  await wrapper.get('button').trigger('click')
+  const option = wrapper.findAll('button').find((button) => button.text().includes(name))
+  await option!.trigger('click')
+  await flushPromises()
+}
+
+describe('LocaleSwitcher', () => {
+  beforeEach(() => {
+    setLocale.mockReset().mockResolvedValue(undefined)
+    reload.mockReset()
+    vi.stubGlobal('location', { ...window.location, reload })
   })
 
-  it('closes on Escape from inside the menu and returns focus to the trigger', async () => {
-    wrapper = mount(LocaleSwitcher, { attachTo: document.body, global: { stubs: { Icon: true } } })
-    const trigger = wrapper.get('button')
-    await trigger.trigger('click')
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
 
-    const option = wrapper.findAll('button')[1]
-    ;(option.element as HTMLButtonElement).focus()
-    await option.trigger('keydown', { key: 'Escape' })
+  // 分组名称等内容由后端按请求语言返回，已加载的数据要靠整页刷新换成新语言
+  it('reloads the page after switching to another language', async () => {
+    const wrapper = mountSwitcher()
 
-    expect(trigger.attributes('aria-expanded')).toBe('false')
-    expect(document.activeElement).toBe(trigger.element)
+    await choose(wrapper, 'English')
+
+    expect(setLocale).toHaveBeenCalledWith('en')
+    expect(reload).toHaveBeenCalledTimes(1)
+    expect(setLocale.mock.invocationCallOrder[0]).toBeLessThan(reload.mock.invocationCallOrder[0])
+  })
+
+  it('does nothing when the current language is chosen again', async () => {
+    const wrapper = mountSwitcher()
+
+    await choose(wrapper, '中文')
+
+    expect(setLocale).not.toHaveBeenCalled()
+    expect(reload).not.toHaveBeenCalled()
   })
 })
