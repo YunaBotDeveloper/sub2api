@@ -25,10 +25,8 @@ async function openCustomRange(now: Date) {
     } }
   })
   await flushPromises()
-  const selector = wrapper.findAllComponents({ name: 'Select' }).find(select =>
-    select.props('options').some((option: { value: unknown }) => option.value === 'custom')
-  )!
-  selector.vm.$emit('update:modelValue', 'custom')
+  // 本 fork 的时间范围是分段按钮而非 Select
+  await wrapper.findAll('button').find(button => button.text() === 'admin.ops.timeRange.custom')!.trigger('click')
   await flushPromises()
   return wrapper
 }
