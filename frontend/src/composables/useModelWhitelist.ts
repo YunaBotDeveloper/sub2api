@@ -39,6 +39,7 @@ export const claudeModels = [
   'claude-opus-5-5',
   'claude-opus-5',
   'claude-sonnet-5-5',
+  'claude-haiku-5-5',
   'claude-sonnet-5',
   'claude-sonnet-4-6',
   'claude-fable-5-1',
@@ -299,6 +300,7 @@ const anthropicPresetMappings = [
   { label: 'Opus 5', from: 'claude-opus-5', to: 'claude-opus-5', color: 'border border-border bg-surface text-fg hover:border-accent hover:text-accent-strong' },
   { label: 'Haiku 3.5', from: 'claude-3-5-haiku-20241022', to: 'claude-3-5-haiku-20241022', color: 'border border-border bg-surface text-fg hover:border-accent hover:text-accent-strong' },
   { label: 'Haiku 4.5', from: 'claude-haiku-4-5-20251001', to: 'claude-haiku-4-5-20251001', color: 'border border-border bg-surface text-fg hover:border-accent hover:text-accent-strong' },
+  { label: 'Haiku 5.5', from: 'claude-haiku-5-5', to: 'claude-haiku-5-5', color: 'border border-border bg-surface text-fg hover:border-accent hover:text-accent-strong' },
   { label: 'Opus->Sonnet', from: 'claude-opus-4-6', to: 'claude-sonnet-4-5-20250929', color: 'border border-border bg-surface text-fg hover:border-accent hover:text-accent-strong' }
 ]
 

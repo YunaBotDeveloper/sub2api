@@ -14,24 +14,24 @@
       class="space-y-5"
     >
       <div>
-        <label class="input-label">{{ t("admin.groups.form.name") }}</label>
-        <input
+        <GroupI18nField
           v-model="editForm.name"
-          type="text"
+          v-model:i18n="editForm.i18n"
+          :label="t('admin.groups.form.name')"
+          field="name"
           required
-          class="input"
           data-tour="edit-group-form-name"
         />
       </div>
       <div>
-        <label class="input-label">{{
-          t("admin.groups.form.description")
-        }}</label>
-        <textarea
+        <GroupI18nField
           v-model="editForm.description"
+          v-model:i18n="editForm.i18n"
+          :label="t('admin.groups.form.description')"
+          field="description"
+          multiline
           rows="3"
-          class="input"
-        ></textarea>
+        />
       </div>
       <div>
         <label class="input-label">{{
@@ -1764,6 +1764,7 @@ import { useGroupsViewContext } from "./context";
 import BaseDialog from "@/components/common/BaseDialog.vue";
 import CodexManifestAccountsField from "@/components/admin/group/CodexManifestAccountsField.vue";
 import Icon from "@/components/icons/Icon.vue";
+import GroupI18nField from "@/components/admin/group/GroupI18nField.vue";
 import PricingEntryCard from "@/components/admin/channel/PricingEntryCard.vue";
 import ReasoningEffortPolicyFields from "@/components/admin/group/ReasoningEffortPolicyFields.vue";
 import Select from "@/components/common/Select.vue";

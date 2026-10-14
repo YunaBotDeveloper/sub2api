@@ -96,6 +96,8 @@ export default {
       refreshTitle: 'Chu kỳ tổng hợp',
       refreshHint: 'Ảnh hưởng đến độ chi tiết thời gian của ma trận và chu kỳ làm mới',
       refreshAria: 'Chu kỳ tổng hợp',
+      selectPlatform: 'Chọn nền tảng',
+      addPlatform: 'Thêm nền tảng',
       platformsTitle: 'Nền tảng và mô hình',
       platformsHint:
         'Để trống = hiển thị mọi tên mô hình thực; khi điền, chỉ các mô hình được liệt kê có hàng riêng, còn lại gộp vào “Khác”',

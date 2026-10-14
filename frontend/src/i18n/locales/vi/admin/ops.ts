@@ -428,6 +428,7 @@ export default {
           kind: 'Loại',
           platform: 'Nền tảng',
           model: 'Model',
+          account: 'Tài khoản',
           duration: 'Thời lượng',
           status: 'Trạng thái',
           requestId: 'Request ID',
